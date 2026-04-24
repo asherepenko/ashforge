@@ -1,0 +1,9 @@
+{
+  "name": "avengers-council",
+  "description": "Extensible engineering advisory board (8 core + optional domain specialists) that reviews planning decisions, code changes, and plan files through structured multi-round debate with severity-weighted consensus verdicts and domain scoring. Use for comprehensive peer review before merging, shipping, or implementing architectural decisions",
+  "version": "2.3.4",
+  "author": {
+    "name": "Andrew Sherepenko"
+  },
+  "keywords": ["council", "review", "debate", "architecture", "security", "testing", "advisory"]
+}

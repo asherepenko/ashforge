@@ -1,0 +1,8 @@
+{
+  "name": "android-expert-toolkit",
+  "description": "Expert Android engineering agents, interactive pipelines, and skill for modern Kotlin/Compose/Gradle development",
+  "version": "2.10.1",
+  "author": {
+    "name": "Andrew Sherepenko"
+  }
+}

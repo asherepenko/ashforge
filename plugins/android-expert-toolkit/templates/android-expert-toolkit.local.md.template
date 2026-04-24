@@ -1,0 +1,51 @@
+---
+di_framework: auto-detect         # hilt | koin | dagger | manual | auto-detect
+state_management: auto-detect     # stateflow | livedata | auto-detect
+testing_strategy: test-doubles    # test-doubles | mockk | mockito
+feature_module_prefix: feature    # prefix for feature module paths
+cold_start_target_ms: 2000
+memory_baseline_mb: 100
+test_coverage_target: 80
+skip_stages: []                   # architecture | gradle | implementation | ui | testing
+---
+
+# Android Expert Toolkit — Project Settings
+
+Per-project configuration for the Android Expert Toolkit pipeline.
+
+## Usage
+
+1. Copy this file to your project root as `android-expert-toolkit.local.md`
+2. Customize the YAML frontmatter values above
+3. Pipeline reads these as defaults for DP1 (Configuration prompt)
+4. If all values are explicitly set (not auto-detect), DP1 is skipped entirely
+
+## Setting Descriptions
+
+### di_framework
+DI framework preference. Use `auto-detect` to let pattern detection choose.
+- `hilt` — Google's recommended, Jetpack integration
+- `koin` — Pure Kotlin, fast builds
+- `dagger` — Maximum control, KMP compatible
+- `manual` — No framework, ViewModelProvider.Factory
+
+### state_management
+Reactive state management approach.
+- `stateflow` — Modern Kotlin-first (recommended for new projects)
+- `livedata` — Legacy but well-supported
+- `auto-detect` — Match existing codebase patterns
+
+### testing_strategy
+Testing approach for new test code.
+- `test-doubles` — Real implementations (recommended)
+- `mockk` — Kotlin mocking framework
+- `mockito` — Java/Kotlin mocking
+
+### skip_stages
+Pipeline stages to skip. Useful for partial runs.
+Example: `[architecture, testing]` skips architect and testing specialist.
+
+### Performance Targets
+- `cold_start_target_ms` — App cold start target in milliseconds
+- `memory_baseline_mb` — Typical memory usage target in megabytes
+- `test_coverage_target` — Minimum test coverage percentage for business logic

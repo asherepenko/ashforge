@@ -1,0 +1,21 @@
+{
+  "name": "ashforge",
+  "owner": {
+    "name": "Andrew Sherepenko"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for multi-agent engineering workflows"
+  },
+  "plugins": [
+    {
+      "name": "android-expert-toolkit",
+      "source": "./plugins/android-expert-toolkit",
+      "description": "Expert Android engineering agents and skill for modern Kotlin/Compose/Gradle development"
+    },
+    {
+      "name": "avengers-council",
+      "source": "./plugins/avengers-council",
+      "description": "9-member engineering advisory board that reviews planning decisions, code changes, and plan files through structured debate. Nine principal-engineer personas each bring a deep specialty, debate their findings, and deliver a consensus verdict"
+    }
+  ]
+}
