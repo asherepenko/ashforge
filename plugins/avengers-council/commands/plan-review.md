@@ -59,6 +59,9 @@ Follow orchestration-protocol.md#phase-1--assemble-the-council-full-mode with th
     ACCEPTANCE CRITERIA:
     [List the plan's acceptance criteria — note if missing or vague]
     ```
+  - **Considered-but-not-flagged directive** (include verbatim in broadcast):
+    > Surface 1–3 design choices in your domain that looked risky but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings — it is the audit trail of judgment calls (e.g., "considered flagging the synchronous DB call in step 3 — left it because the plan explicitly bounds the dataset to <100 rows"). The user can override a dismissal only if they can see it was made. If the plan is too narrow for near-misses, say "Nothing material — plan scope too narrow" rather than padding. See @references/rubric-code-quality.md#forcing-function-considered-but-not-flagged.
+  - Each member's Round 1 response must include a `Considered but not flagged:` line (1–3 items or "Nothing material — plan scope too narrow").
 - **Verdict synthesis additions:**
   - Check if acceptance criteria are testable and measurable
   - If major criteria missing → downgrade to "NEEDS REVISION" minimum
@@ -77,6 +80,7 @@ Follow orchestration-protocol.md#phase-1--assemble-the-council-full-mode with th
 | "Only 2-3 members need to weigh in on this" | Use `--quick` explicitly for quorum mode. Default is full council — each member catches domain-specific issues others miss. |
 | "The acceptance criteria are implied, no need to list them" | Missing acceptance criteria → downgrade to NEEDS REVISION minimum. Implied criteria are untestable criteria. |
 | "This finding is minor, I'll soften it" | Report findings at their actual severity. LLM evaluators have a documented tendency to praise LLM-generated work. Resist. |
+| "I considered flagging this design choice but it's probably fine" | Silent dismissals are opaque. Record near-misses in the "Considered but not flagged" section with reasoning. The user decides whether your judgment was correct. |
 | "The debate round produced agreement, skip Round 2 challenges" | Agreement in Round 1 often means groupthink. Round 2 challenges are mandatory — they surface assumptions everyone shares but nobody questioned. |
 
 ## Red Flags
@@ -96,5 +100,6 @@ After council review completes, confirm:
 - [ ] Round 2 challenges were exchanged (not skipped)
 - [ ] Final verdict includes Standards Compliance section
 - [ ] Acceptance criteria validated as testable and measurable
+- [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — plan scope too narrow")
 - [ ] Verdict saved to `.artifacts/reviews/`
 - [ ] Post-verdict action taken per verdict routing (approved/conditions/revision/blocked)

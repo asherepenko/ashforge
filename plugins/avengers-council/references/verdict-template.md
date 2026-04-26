@@ -19,37 +19,88 @@ For full consensus rules and severity guidelines, see @references/verdict-rules.
 
 ## Council Positions
 
+> Each position uses this shape:
+> ```
+> ### [Member] ([Domain]) — [VERDICT] | Score: X/10
+> **Findings:**
+> - [Finding 1 with file:line]
+> - [Finding 2 with file:line]
+>
+> **Considered but not flagged:** (1–3 near-misses with reasoning, or "Nothing material — diff too narrow for near-misses")
+> - [Pattern that looked wrong + why it's actually fine]
+> ```
+
 ### Iron Man (Architecture & Scalability) — [VERDICT] | Score: X/10
+**Findings:**
 - [Finding 1]
 - [Finding 2]
 
+**Considered but not flagged:**
+- [Near-miss with reasoning]
+
 ### Thor (Backend & API) — [VERDICT] | Score: X/10
+**Findings:**
 - [Finding 1]
+
+**Considered but not flagged:**
+- [Near-miss with reasoning]
 
 ### Scarlet Witch (Frontend & UX) — [VERDICT] | Score: X/10
+**Findings:**
 - [Finding 1]
+
+**Considered but not flagged:**
+- [Near-miss with reasoning]
 
 ### Hulk (Testing & QA) — [VERDICT] | Score: X/10
+**Findings:**
 - [Finding 1]
+
+**Considered but not flagged:**
+- [Near-miss with reasoning]
 
 ### Black Widow (Security & Privacy) — [VERDICT] | Score: X/10
+**Findings:**
 - [Finding 1]
+
+**Considered but not flagged:**
+- [Near-miss with reasoning]
 
 ### Hawkeye (Mobile Platforms) — [VERDICT] | Score: X/10
+**Findings:**
 - [Finding 1]
+
+**Considered but not flagged:**
+- [Near-miss with reasoning]
 
 ### Vision (Data & Observability) — [VERDICT] | Score: X/10
+**Findings:**
 - [Finding 1]
+
+**Considered but not flagged:**
+- [Near-miss with reasoning]
 
 ### Doctor Strange (DevOps & Cross-platform) — [VERDICT] | Score: X/10
+**Findings:**
 - [Finding 1]
+
+**Considered but not flagged:**
+- [Near-miss with reasoning]
 
 ### Captain America (Standards & Delivery) — [VERDICT]
+**Findings:**
 - [Finding 1]
 
-<!-- If optional members participated, add their positions here -->
+**Considered but not flagged:**
+- [Near-miss with reasoning]
+
+<!-- If optional members participated, add their positions here using the same shape -->
 ### [Optional Member Name] ([Domain]) — [VERDICT] | Score: X/10
+**Findings:**
 - [Finding 1]
+
+**Considered but not flagged:**
+- [Near-miss with reasoning]
 <!-- End optional members -->
 
 ## Domain Scores

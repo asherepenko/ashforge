@@ -38,3 +38,21 @@ Can another developer modify this code in 6 months without understanding the ent
 
 **STRONG**: Names reveal intent. Functions are short enough to fit in working memory. Dependencies are injected and mockable. Changes to one module don't cascade through others. Tests document behavior and catch regressions.
 **WEAK**: Abbreviated names that require context to understand. God classes/functions that do too much. Tight coupling where changing one file requires changing five others. No tests, or tests that test implementation details rather than behavior.
+
+---
+
+## Forcing function: "Considered but not flagged"
+
+The anti-leniency rule above guards against silently dismissing real issues. This rule guards the inverse failure: **silently dismissing the calls you almost made**.
+
+For each review, surface 1–3 things in your domain that **looked wrong but you chose not to flag**, with the reasoning. Examples:
+
+- "The deeply nested callback chain in `webhooks.kt:120` looked like a refactor target — left it because it preserves event ordering that a coroutine-based rewrite would break."
+- "Considered flagging the `runBlocking { … }` in `migration.kt:45` — kept it because the call site is a one-shot CLI entry point, not a coroutine context."
+- "Force-unwrap `try!` in `KeychainStore.swift:88` looked dangerous — left it because the preceding `guard` makes the failure path unreachable; would still annotate."
+
+This is **not** a list of LOW-severity findings — those go in the findings table. This is the audit trail of judgment calls: things a reviewer would notice and ask about, with the rationale for why the council chose silence. An empty section signals shallow review unless the diff is genuinely small enough that no near-misses exist.
+
+**Why this matters**: LLM reviewers tend to either flag everything (noise) or pattern-match to "looks fine" without recording the dismissal (opacity). Forcing the dismissal to be explicit makes the review auditable — the user can override a judgment call only if they can see it was made.
+
+**When to skip**: very small diffs (< 50 LOC, single-purpose change) where no patterns triggered consideration. Say "Nothing material — diff was too narrow for near-misses" rather than padding.

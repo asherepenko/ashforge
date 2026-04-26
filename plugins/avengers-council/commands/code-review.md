@@ -70,6 +70,8 @@ Follow orchestration-protocol.md#phase-1--assemble-the-council-full-mode with th
   - **Grading rubric**: Read @references/rubric-code-quality.md and include its 5 criteria in the broadcast. Each council member grades findings using STRONG/ADEQUATE/WEAK per criterion. Only report WEAK findings.
   - **Anti-leniency directive** (include verbatim in broadcast):
     > Your job is to find problems, not to be encouraging. If you identify an issue, report it — do not rationalize it away or soften it. LLM evaluators have a documented tendency to praise LLM-generated work even when quality is mediocre. Resist this. When in doubt, flag it. The user decides what's acceptable, not you.
+  - **Considered-but-not-flagged directive** (include verbatim in broadcast):
+    > Surface 1–3 patterns in your domain that looked wrong but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings (those go in Key Findings) — it is the audit trail of judgment calls so the user can override a dismissal only if they can see it was made. If the diff is genuinely too narrow for near-misses, say "Nothing material — diff too narrow" rather than padding. See @references/rubric-code-quality.md#forcing-function-considered-but-not-flagged.
   - Require suggested fixes where applicable:
     ```
     Key Findings: max 5, each with:
@@ -78,6 +80,8 @@ Follow orchestration-protocol.md#phase-1--assemble-the-council-full-mode with th
     - Specific issue description
     - Suggested fix (if applicable)
     - Standards alignment: any violations of project conventions?
+
+    Considered but not flagged: 1–3 near-misses with reasoning, or "Nothing material — diff too narrow"
     ```
 - **Verdict synthesis additions:**
   - Check naming conventions, style/organization standards, testing coverage, commit message format
@@ -96,6 +100,7 @@ Follow orchestration-protocol.md#phase-1--assemble-the-council-full-mode with th
 | "The code is AI-generated and looks clean, probably fine" | LLM evaluators have a documented bias toward praising LLM-generated work. The anti-leniency directive exists for this reason. |
 | "I'm not the security/testing expert, I'll skip those checks" | Every member checks their own domain. Deferring on your primary expertise leaves a blind spot. Challenge when it's your area. |
 | "The diff is small, a quick review is sufficient" | Small diffs can contain critical issues (auth bypass, data exposure). Apply the full checklist regardless of diff size. |
+| "I considered flagging X but it's probably fine, no need to mention it" | Silent dismissals are opaque. Surface near-misses in the "Considered but not flagged" section with reasoning. The user decides whether your dismissal was correct. |
 
 ## Red Flags
 
@@ -115,4 +120,5 @@ After code review completes, confirm:
 - [ ] Rubric grading applied (5 criteria, STRONG/ADEQUATE/WEAK)
 - [ ] Standards compliance checked (naming, style, testing, commit format)
 - [ ] Round 2 challenges exchanged between members
+- [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — diff too narrow")
 - [ ] Verdict saved with findings grouped by severity
