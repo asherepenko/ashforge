@@ -10,12 +10,12 @@
     {
       "name": "android-expert-toolkit",
       "source": "./plugins/android-expert-toolkit",
-      "description": "Expert Android engineering agents and skill for modern Kotlin/Compose/Gradle development"
+      "description": "Expert Android engineering agents, interactive multi-agent pipelines, and 80/20 pattern detection for modern Kotlin/Compose/Gradle development"
     },
     {
       "name": "avengers-council",
       "source": "./plugins/avengers-council",
-      "description": "9-member engineering advisory board that reviews planning decisions, code changes, and plan files through structured debate. Nine principal-engineer personas each bring a deep specialty, debate their findings, and deliver a consensus verdict"
+      "description": "Engineering advisory board (8 core members + Captain America orchestrator) for reviewing plans, code, and architecture through structured 3-round debate with domain scoring and security veto"
     }
   ]
 }

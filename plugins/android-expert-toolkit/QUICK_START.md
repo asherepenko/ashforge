@@ -6,28 +6,25 @@ Get productive with the toolkit in 5 minutes.
 
 ## Installation
 
-Install as a user-scope Claude Code plugin:
+Install via the [ashforge](https://github.com/asherepenko/ashforge) marketplace:
 
-```bash
-mkdir -p ~/.claude/plugins/cache/local/android-expert-toolkit/latest
-
-ln -sf /path/to/android-expert-toolkit/* \
-  ~/.claude/plugins/cache/local/android-expert-toolkit/latest/
-ln -sf /path/to/android-expert-toolkit/.claude-plugin \
-  ~/.claude/plugins/cache/local/android-expert-toolkit/latest/.claude-plugin
 ```
-
-Register in `~/.claude/plugins/installed_plugins.json` and enable in `~/.claude/settings.json`. See [README.md](README.md) for the full manifest format.
+/plugin marketplace add asherepenko/ashforge
+/plugin install android-expert-toolkit@ashforge
+/reload-plugins
+```
 
 ### Optional: Per-Project Settings
 
-Skip the pipeline's interactive configuration step by adding a settings file to your project root:
+Skip the pipeline's interactive configuration step by copying the template into your project root:
 
 ```bash
-cp /path/to/android-expert-toolkit/templates/android-expert-toolkit.local.md.template \
+cp "$CLAUDE_PLUGIN_ROOT/templates/android-expert-toolkit.local.md.template" \
   ./android-expert-toolkit.local.md
 # Edit to set DI framework, state management, and stages to skip.
 ```
+
+(`$CLAUDE_PLUGIN_ROOT` resolves to the cached plugin location — `~/.claude/plugins/cache/...`.)
 
 ---
 
@@ -171,16 +168,11 @@ This reads `.artifacts/aet/state.json` and shows:
 
 **"Command not found: /aet-pipeline"**
 
-Plugin isn't installed or enabled. Check:
-```bash
-ls ~/.claude/plugins/cache/local/android-expert-toolkit/latest/
-# Should show: agents/, commands/, skills/, ...
-```
-Verify `android-expert-toolkit` is in `~/.claude/settings.json` under `enabledPlugins` and restart Claude Code.
+Plugin isn't installed or active. Run `/plugin marketplace list` (should show `ashforge`) and `/plugin` to confirm `android-expert-toolkit` is installed and enabled. Run `/reload-plugins` or restart Claude Code.
 
 **"Agent keeps producing wrong patterns for my codebase"**
 
-Run `/aet-check` to surface what the 80/20 detection actually sees. If detection is wrong (e.g., project uses Dagger, not Hilt), update the detection commands in `references/pattern-detection.md` or pass explicit context in your next pipeline invocation.
+Run `/aet-check` to surface what the 80/20 detection actually sees. If detection is wrong (e.g., project uses Dagger, not Hilt), pass explicit context in your next pipeline invocation or pin the value in `android-expert-toolkit.local.md`.
 
 **"Pipeline stalled at a decision gate"**
 

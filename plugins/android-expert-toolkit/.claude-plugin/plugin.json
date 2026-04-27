@@ -1,8 +1,9 @@
 {
   "name": "android-expert-toolkit",
-  "description": "Expert Android engineering agents, interactive pipelines, and skill for modern Kotlin/Compose/Gradle development",
+  "description": "Expert Android engineering agents, interactive multi-agent pipelines, and 80/20 pattern detection for modern Kotlin/Compose/Gradle development",
   "version": "2.10.1",
   "author": {
     "name": "Andrew Sherepenko"
-  }
+  },
+  "keywords": ["android", "kotlin", "compose", "gradle", "architecture", "testing", "pipelines"]
 }

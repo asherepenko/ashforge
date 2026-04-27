@@ -35,10 +35,12 @@ tests/           — Hook integration tests
 - Optional members auto-join based on topic matching. Add new ones via `member-registry.md`.
 - Black Widow retains VETO power on unmitigated CRITICAL security issues.
 
-## Testing
+## Tests
+
+Python tests for the `PreToolUse:ExitPlanMode` hook under `tests/`. Run:
 
 ```bash
-python3 tests/test_council_hook.py
+pytest tests/
 ```
 
 All 6 tests must pass.

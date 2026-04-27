@@ -1,6 +1,6 @@
 # Android Expert Toolkit
 
-Production-grade Android development plugin for Claude Code with specialized agents, pattern detection, and decision support.
+Expert Android engineering agents, interactive multi-agent pipelines, and 80/20 pattern detection for modern Kotlin/Compose/Gradle development.
 
 ## What It Does
 
@@ -13,40 +13,15 @@ Production-grade Android development plugin for Claude Code with specialized age
 
 ## Installation
 
-Install as a user-scope Claude Code plugin:
+Install via the [ashforge](https://github.com/asherepenko/ashforge) marketplace:
 
-```bash
-mkdir -p ~/.claude/plugins/cache/local/android-expert-toolkit/latest
-
-ln -sf /path/to/android-expert-toolkit/* \
-  ~/.claude/plugins/cache/local/android-expert-toolkit/latest/
-ln -sf /path/to/android-expert-toolkit/.claude-plugin \
-  ~/.claude/plugins/cache/local/android-expert-toolkit/latest/.claude-plugin
+```
+/plugin marketplace add asherepenko/ashforge
+/plugin install android-expert-toolkit@ashforge
+/reload-plugins
 ```
 
-Register in `~/.claude/plugins/installed_plugins.json`:
-
-```json
-[
-  {
-    "name": "android-expert-toolkit",
-    "version": "latest",
-    "source": "local"
-  }
-]
-```
-
-Enable in `~/.claude/settings.json`:
-
-```json
-{
-  "enabledPlugins": [
-    "android-expert-toolkit"
-  ]
-}
-```
-
-Restart Claude Code to activate.
+Plugin assets land in `~/.claude/plugins/cache/`. Use `${CLAUDE_PLUGIN_ROOT}` inside hooks/configs rather than relative paths.
 
 ## Usage
 
@@ -112,4 +87,4 @@ Built on [Now in Android](https://github.com/android/nowinandroid) patterns, Mod
 
 ## License
 
-MIT
+[MIT](./LICENSE)

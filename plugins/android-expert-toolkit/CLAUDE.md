@@ -108,7 +108,11 @@ Registered in `hooks/hooks.json`:
 
 ## Tests
 
-`tests/` contains Python tests for the validator hooks. Run with pytest.
+Python tests for hooks and agent prompts under `tests/`. Run:
+
+```bash
+pytest tests/
+```
 
 ## Versioning
 
