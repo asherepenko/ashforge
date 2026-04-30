@@ -2,12 +2,24 @@
 name: aet-pipeline
 description: Execute multi-agent Android development pipelines with automated orchestration, validation, and handoff artifacts
 argument-hint: "<pipeline-type> [feature name] (types: feature-build, architecture-review, migration, ui-redesign, build-optimization, test, code-review)"
-allowed-tools: Agent, Read, Write, Glob, Grep, AskUserQuestion, Bash(python3:*), Bash(git:*), Bash(date:*), Bash(mkdir:*), Bash(ls:*)
+allowed-tools: Agent, Read, Write, Glob, Grep, AskUserQuestion, Bash(python3:*), Bash(git:*), Bash(date:*), Bash(mkdir:*), Bash(ls:*), Bash(cat:*), Bash(find:*), Bash(wc:*)
 ---
 
 # Android Expert Pipeline Orchestration
 
 Automated multi-agent workflows with validation checkpoints and handoff artifacts.
+
+## Pre-flight Context
+
+Project fingerprint pre-loaded via shell expansion (parallel, kept under 1s):
+
+- **Settings file**: !`cat settings.gradle.kts 2>/dev/null | head -60 || cat settings.gradle 2>/dev/null | head -60 || echo "NO_SETTINGS_GRADLE"`
+- **Module count**: !`find . -maxdepth 4 -name 'build.gradle.kts' -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null | wc -l | tr -d ' '`
+- **Top-level modules**: !`find . -maxdepth 3 -name 'build.gradle.kts' -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null | head -30`
+- **Existing pipeline state**: !`cat .artifacts/aet/state.json 2>/dev/null | head -40 || echo "NO_ACTIVE_PIPELINE"`
+- **Active branch**: !`git branch --show-current 2>/dev/null || echo "NOT_A_REPO"`
+
+Use this fingerprint to skip the project-discovery phase. Pass it through to dispatched agents (architect, gradle-build-engineer) so they don't re-scan. If `NO_SETTINGS_GRADLE`, abort early — pipeline requires a Gradle project.
 
 ## Available Pipelines
 

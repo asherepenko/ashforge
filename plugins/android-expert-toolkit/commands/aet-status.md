@@ -1,12 +1,22 @@
 ---
 name: aet-status
 description: Display current pipeline status, completed stages, artifacts, and recovery options
-allowed-tools: Read, Glob, AskUserQuestion, Bash(ls:*), Bash(git log:*)
+allowed-tools: Read, Glob, AskUserQuestion, Bash(ls:*), Bash(cat:*), Bash(git log:*)
 ---
 
 # Android Expert Pipeline Status
 
 Read `.artifacts/aet/state.json` and display the current pipeline status with actionable options.
+
+## Pre-flight Context
+
+Pipeline state and feature history pre-loaded via shell expansion (parallel, no extra tool calls):
+
+- **State file**: !`cat .artifacts/aet/state.json 2>/dev/null || echo "NO_STATE_FILE"`
+- **Handoff directories**: !`ls -1 .artifacts/aet/handoffs/ 2>/dev/null || echo "NO_HANDOFFS"`
+- **Recent pipeline commits**: !`git log --oneline -20 --grep='^aet:' 2>/dev/null || echo "NO_COMMITS"`
+
+Use this context to skip the initial Read/Bash steps below — the state JSON and history are already in scope. If `NO_STATE_FILE`, jump straight to Step 6 (Feature History).
 
 ## Usage
 

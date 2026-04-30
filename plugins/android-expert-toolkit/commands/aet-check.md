@@ -2,12 +2,27 @@
 name: aet-check
 description: Run pattern detection against the codebase to analyze consistency and recommend approaches
 argument-hint: "[state (management) | di (injection) | testing (coverage) | architecture (layers) | security | performance | accessibility | all]"
-allowed-tools: Grep, Glob, Read, Bash(cat:*), Bash(shasum:*)
+allowed-tools: Grep, Glob, Read, Bash(cat:*), Bash(shasum:*), Bash(find:*), Bash(wc:*), Bash(grep:*)
 ---
 
 # Android Expert Pattern Check
 
 Run pattern detection from `references/pattern-detection.md` against the current codebase. Reports consistency percentages and applies the 80/20 decision matrix.
+
+## Pre-flight Context
+
+Cheap codebase fingerprint pre-loaded via shell expansion (parallel, capped output):
+
+- **Project hash**: !`cat settings.gradle.kts build.gradle.kts 2>/dev/null | shasum -a 256 | cut -d' ' -f1`
+- **Cached patterns**: !`cat .artifacts/aet/cache/detected-patterns.json 2>/dev/null | head -30 || echo "NO_CACHE"`
+- **Kotlin file count**: !`find . -name '*.kt' -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null | wc -l | tr -d ' '`
+- **DI fingerprint**: !`grep -rln --include='*.kt' -E '@HiltAndroidApp|@HiltViewModel|startKoin\(|@Component' . 2>/dev/null | head -5`
+- **State fingerprint**: !`grep -rcEh --include='*.kt' '(StateFlow<|LiveData<|MutableLiveData<)' . 2>/dev/null | awk -F: '{s+=$1} END{print s+0}'`
+
+Use this fingerprint to:
+1. Skip cache compute step if hash matches cached `project_hash` (Step 1.5).
+2. Decide whether full Grep sweep is needed — if file count < 50, single-pass detection suffices.
+3. Pre-bias detection categories: if DI fingerprint shows `@HiltAndroidApp` → skip Koin/Dagger sweeps in `di` category.
 
 ## Usage
 
