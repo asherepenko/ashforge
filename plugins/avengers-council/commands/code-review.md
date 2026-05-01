@@ -16,8 +16,8 @@ Diff scope pre-loaded via shell expansion when reviewing local changes (skip if 
 
 - **Current branch**: !`git branch --show-current 2>/dev/null || echo "NOT_A_REPO"`
 - **Working tree status**: !`git status -s 2>/dev/null | head -40 || echo ""`
-- **Diff stat (vs base)**: !`git diff --stat $(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null)...HEAD 2>/dev/null | tail -30 || echo "NO_BASE"`
-- **Commits ahead**: !`git log --oneline $(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null)..HEAD 2>/dev/null | head -20 || echo ""`
+- **Diff stat (vs base)**: !`bash -c 'BASE=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null); if [ -z "$BASE" ]; then echo NO_BASE; else git diff --stat "$BASE"...HEAD 2>/dev/null | tail -30; fi'`
+- **Commits ahead**: !`bash -c 'BASE=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null); if [ -z "$BASE" ]; then echo NONE; else git log --oneline "$BASE"..HEAD 2>/dev/null | head -20; fi'`
 
 Use this to bound review scope before Step 1: if `git status -s` is empty AND no commits ahead → no `--diff` to review; ask user to clarify target. If `--pr <n>` was passed, this section is informational only — gh pr fetch still required in Step 1.
 

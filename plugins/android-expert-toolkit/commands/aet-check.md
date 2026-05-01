@@ -13,8 +13,8 @@ Run pattern detection from `references/pattern-detection.md` against the current
 
 Cheap codebase fingerprint pre-loaded via shell expansion (parallel, capped output):
 
-- **Project hash**: !`cat settings.gradle.kts build.gradle.kts 2>/dev/null | shasum -a 256 | cut -d' ' -f1`
-- **Cached patterns**: !`cat .artifacts/aet/cache/detected-patterns.json 2>/dev/null | head -30 || echo "NO_CACHE"`
+- **Project hash**: !`bash -c 'if [ -f settings.gradle.kts ] || [ -f build.gradle.kts ]; then cat settings.gradle.kts build.gradle.kts 2>/dev/null | shasum -a 256 | cut -d" " -f1; else echo NO_GRADLE_FILES; fi'`
+- **Cached patterns**: !`bash -c 'if [ -f .artifacts/aet/cache/detected-patterns.json ]; then head -30 .artifacts/aet/cache/detected-patterns.json; else echo NO_CACHE; fi'`
 - **Kotlin file count**: !`find . -name '*.kt' -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null | wc -l | tr -d ' '`
 - **DI fingerprint**: !`grep -rln --include='*.kt' -E '@HiltAndroidApp|@HiltViewModel|startKoin\(|@Component' . 2>/dev/null | head -5`
 - **State fingerprint**: !`grep -rcEh --include='*.kt' '(StateFlow<|LiveData<|MutableLiveData<)' . 2>/dev/null | awk -F: '{s+=$1} END{print s+0}'`

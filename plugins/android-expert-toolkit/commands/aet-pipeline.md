@@ -13,10 +13,10 @@ Automated multi-agent workflows with validation checkpoints and handoff artifact
 
 Project fingerprint pre-loaded via shell expansion (parallel, kept under 1s):
 
-- **Settings file**: !`cat settings.gradle.kts 2>/dev/null | head -60 || cat settings.gradle 2>/dev/null | head -60 || echo "NO_SETTINGS_GRADLE"`
+- **Settings file**: !`bash -c 'if [ -f settings.gradle.kts ]; then head -60 settings.gradle.kts; elif [ -f settings.gradle ]; then head -60 settings.gradle; else echo NO_SETTINGS_GRADLE; fi'`
 - **Module count**: !`find . -maxdepth 4 -name 'build.gradle.kts' -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null | wc -l | tr -d ' '`
 - **Top-level modules**: !`find . -maxdepth 3 -name 'build.gradle.kts' -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null | head -30`
-- **Existing pipeline state**: !`cat .artifacts/aet/state.json 2>/dev/null | head -40 || echo "NO_ACTIVE_PIPELINE"`
+- **Existing pipeline state**: !`bash -c 'if [ -f .artifacts/aet/state.json ]; then head -40 .artifacts/aet/state.json; else echo NO_ACTIVE_PIPELINE; fi'`
 - **Active branch**: !`git branch --show-current 2>/dev/null || echo "NOT_A_REPO"`
 
 Use this fingerprint to skip the project-discovery phase. Pass it through to dispatched agents (architect, gradle-build-engineer) so they don't re-scan. If `NO_SETTINGS_GRADLE`, abort early — pipeline requires a Gradle project.

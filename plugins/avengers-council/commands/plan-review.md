@@ -14,10 +14,10 @@ Read @references/orchestration-protocol.md before proceeding.
 
 Plan-file discovery pre-loaded via shell expansion (parallel, supports auto-detect path in Step 1):
 
-- **Local plans dir**: !`ls -1t .claude/plans/*.md 2>/dev/null | head -10 || echo "NO_LOCAL_PLANS"`
-- **Global plans dir**: !`ls -1t ~/.claude/plans/*.md 2>/dev/null | head -10 || echo "NO_GLOBAL_PLANS"`
-- **Artifact specs (PRDs)**: !`ls -1t .artifacts/specs/prd-*.md 2>/dev/null | head -5 || echo "NO_PRDS"`
-- **Recent reviews**: !`ls -1t .artifacts/reviews/*.md 2>/dev/null | head -5 || echo "NO_REVIEWS"`
+- **Local plans dir**: !`bash -c 'set -o pipefail; ls -1t .claude/plans/*.md 2>/dev/null | head -10' || echo "NO_LOCAL_PLANS"`
+- **Global plans dir**: !`bash -c 'set -o pipefail; ls -1t ~/.claude/plans/*.md 2>/dev/null | head -10' || echo "NO_GLOBAL_PLANS"`
+- **Artifact specs (PRDs)**: !`bash -c 'set -o pipefail; ls -1t .artifacts/specs/prd-*.md 2>/dev/null | head -5' || echo "NO_PRDS"`
+- **Recent reviews**: !`bash -c 'set -o pipefail; ls -1t .artifacts/reviews/*.md 2>/dev/null | head -5' || echo "NO_REVIEWS"`
 
 Use this to short-circuit Step 1 auto-detection: when no `@file` argument is provided, the most recent entry from `.claude/plans/` is the auto-detect target — read it directly with the Read tool. If all four sections show no matches AND no topic argument, prompt the user (don't guess).
 
