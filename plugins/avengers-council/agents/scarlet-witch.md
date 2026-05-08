@@ -46,6 +46,7 @@ When planning frontend work, verify:
 - [ ] Bundle size impact and lazy loading strategy
 - [ ] SSR/CSR/ISR rendering strategy
 - [ ] Animation performance (60fps, GPU acceleration)
+- [ ] **Glossary consistency** (UX/domain vocabulary): plan terminology for user-facing concepts must match `CONTEXT.md` glossary when present. Flag conflicting terms verbatim (e.g., "plan says 'account', glossary defines 'Customer' and 'User' as distinct"). UI-relevant ADRs (design-system, routing, state-management decisions) must not be silently contradicted; cite ADR-NNNN.
 
 ## Code Review Checklist
 

@@ -41,6 +41,7 @@ When in planning mode, Thor evaluates:
 - [ ] Data consistency guarantees (eventual vs strong)
 - [ ] Transaction management and isolation levels
 - [ ] Migration strategy (zero-downtime, rollback plan)
+- [ ] **ADR consistency** (data/API/persistence): plan must not contradict any accepted ADR in `docs/adr/` covering data models, API contracts, transaction semantics, or storage choices. Cite ADR-NNNN when flagging. Unacknowledged contradiction → minimum NEEDS REVISION per `standards-protocol.md`.
 
 ## Code Review Checklist
 
