@@ -18,8 +18,12 @@ Plan-file discovery pre-loaded via shell expansion (parallel, supports auto-dete
 - **Global plans dir**: !`bash -c 'set -o pipefail; ls -1t ~/.claude/plans/*.md 2>/dev/null | head -10' || echo "NO_GLOBAL_PLANS"`
 - **Artifact specs (PRDs)**: !`bash -c 'set -o pipefail; ls -1t .artifacts/specs/prd-*.md 2>/dev/null | head -5' || echo "NO_PRDS"`
 - **Recent reviews**: !`bash -c 'set -o pipefail; ls -1t .artifacts/reviews/*.md 2>/dev/null | head -5' || echo "NO_REVIEWS"`
+- **Domain glossary**: !`bash -c 'for f in CONTEXT-MAP.md CONTEXT.md; do [ -f "$f" ] && echo "$f" && exit 0; done; echo "NONE"'`
+- **ADRs (most recent 20)**: !`bash -c 'set -o pipefail; ls -1t docs/adr/*.md 2>/dev/null | head -20' || echo "NONE"`
 
-Use this to short-circuit Step 1 auto-detection: when no `@file` argument is provided, the most recent entry from `.claude/plans/` is the auto-detect target — read it directly with the Read tool. If all four sections show no matches AND no topic argument, prompt the user (don't guess).
+Use this to short-circuit Step 1 auto-detection: when no `@file` argument is provided, the most recent entry from `.claude/plans/` is the auto-detect target — read it directly with the Read tool. If all four plan/PRD/review sections show no matches AND no topic argument, prompt the user (don't guess).
+
+**Domain artifacts** (CONTEXT.md / docs/adr/) feed Step 1's Domain Model loading and Step 3's per-agent spawn brief. They are NOT part of plan-detection — they're independent context every reviewer must see.
 
 ## Arguments
 
@@ -41,7 +45,8 @@ Parse the arguments:
    - Not found → check `~/.claude/plans/` as fallback
    - Still not found → ask the user what to review (suggest running plan mode first or providing a file path)
 4. **Detect project standards** per orchestration-protocol.md#standards-detection-shared-across-all-commands
-5. Prepare a context summary for the council, including which standards apply
+5. **Locate domain artifacts** per standards-protocol.md#locate-domain-artifacts — read `CONTEXT-MAP.md` or `CONTEXT.md` (whichever the preflight surfaced) and the ADR titles + headers from `docs/adr/`. These feed the per-agent spawn brief in Step 3.
+6. Prepare a context summary for the council, including which standards apply AND a `DOMAIN MODEL` block (when artifacts are present) summarizing the glossary and ADR list.
 
 ### Step 2 — Determine Mode
 

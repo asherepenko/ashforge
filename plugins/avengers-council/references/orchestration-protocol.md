@@ -85,6 +85,17 @@ REVIEW CONTEXT:
 STANDARDS IN EFFECT:
 [applicable standards list]
 
+DOMAIN MODEL:
+[Include this block ONLY when standards-protocol.md#locate-domain-artifacts found CONTEXT.md or docs/adr/. Otherwise omit entirely — do not insert empty or placeholder text.]
+- Glossary: <CONTEXT-MAP.md path | CONTEXT.md path>
+  <inline excerpt, capped at 60 lines>
+- ADRs (most recent 20): cite ADR-NNNN by path; titles only — agents Read on demand
+  - docs/adr/0001-...md — <title>
+  - docs/adr/0002-...md — <title>
+  ...
+
+Reviewers MUST flag any plan claim that contradicts an accepted ADR (cite ADR-NNNN and quote the contradicting line) or drifts from CONTEXT.md vocabulary (cite the conflicting term). An unacknowledged ADR contradiction triggers automatic verdict downgrade per standards-protocol.md#phase-5-determine-verdict-based-on-standards.
+
 CODEBASE AUDIT:
 [audit summary from Codebase Audit step]
 

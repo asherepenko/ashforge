@@ -29,6 +29,27 @@ Search in this order; stop when found:
 
 Check for: `CONTRIBUTING.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `docs/standards/`, `docs/contributing/`
 
+### Locate Domain Artifacts
+
+Domain artifacts are not standards documents — they're *bindings* between the plan's vocabulary and the project's existing concept model. A plan that contradicts an accepted ADR is a real failure mode that has nothing to do with code style.
+
+Check for, in this order:
+
+1. **Domain glossary**: `CONTEXT-MAP.md` (multi-context repos) → if absent, `CONTEXT.md` (single-context repos) at the repo root
+2. **Architecture Decision Records**: `docs/adr/*.md` (and any per-context `<context>/docs/adr/*.md` if `CONTEXT-MAP.md` exists)
+
+When found, capture for downstream phases:
+
+- **Glossary excerpt** (cap at ~60 lines) — terms reviewers must use canonically
+- **ADR list** (titles + paths, most recent 20) — decisions reviewers must not contradict without explicit acknowledgement
+
+These feed two places:
+- **Phase 3 plan checklist** (a new ADR-consistency item)
+- **Phase 5 downgrade rules** (unacknowledged ADR contradiction → minimum NEEDS REVISION)
+- **Per-agent spawn brief** in `orchestration-protocol.md#step-3-spawn-template` (the agents need to see them)
+
+If neither artifact exists, skip silently — greenfield repos and operational changes (CI, deps, infra) don't require domain alignment.
+
 ### Index Standards Found
 
 Create an index of all conventions discovered, covering:
@@ -72,6 +93,7 @@ Performance optimization tips, architecture patterns, code comment density, refa
 - [ ] Testing strategy meets project baseline
 - [ ] Security/compliance review required?
 - [ ] Performance SLAs stated and achievable?
+- [ ] **Domain alignment**: plan terminology matches `CONTEXT.md` glossary (when present); plan does not contradict any accepted ADR in `docs/adr/` without explicitly proposing to supersede it
 
 ### For Code
 
@@ -95,6 +117,7 @@ Include in the verdict: applicable standards, compliance status (met/violated/co
 1. **CRITICAL mandatory standard violation** → minimum "NEEDS REVISION"
 2. **Unmitigated CRITICAL security finding** → minimum "NEEDS REVISION"
 3. **Missing required documentation for deployment** → minimum "APPROVED WITH CONDITIONS"
+4. **Unacknowledged contradiction with an accepted ADR** → minimum "NEEDS REVISION" unless the plan explicitly proposes superseding the ADR (and names it as such — silent contradiction does not qualify)
 
 ### Standard Compliance Consensus Rules
 
