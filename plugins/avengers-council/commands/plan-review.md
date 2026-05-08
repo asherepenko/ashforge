@@ -45,8 +45,8 @@ Parse the arguments:
    - Not found → check `~/.claude/plans/` as fallback
    - Still not found → ask the user what to review (suggest running plan mode first or providing a file path)
 4. **Detect project standards** per orchestration-protocol.md#standards-detection-shared-across-all-commands
-5. **Locate domain artifacts** per standards-protocol.md#locate-domain-artifacts — read `CONTEXT-MAP.md` or `CONTEXT.md` (whichever the preflight surfaced) and the ADR titles + headers from `docs/adr/`. These feed the per-agent spawn brief in Step 3.
-6. Prepare a context summary for the council, including which standards apply AND a `DOMAIN MODEL` block (when artifacts are present) summarizing the glossary and ADR list.
+5. **Locate domain artifacts** per standards-protocol.md#locate-domain-artifacts. **If the preflight surfaced `NONE` for BOTH `Domain glossary` AND `ADRs`, skip this step entirely** — domain alignment is opt-in by file presence; absent artifacts mean greenfield, operational, or otherwise non-domain-aware repos. Otherwise read whichever artifact(s) the preflight surfaced (CONTEXT.md or CONTEXT-MAP.md, ADR titles + headers from `docs/adr/`). These feed the per-agent spawn brief in Step 3.
+6. Prepare a context summary for the council, including which standards apply AND a `DOMAIN MODEL` block ONLY when artifacts are present. When absent, the spawn brief omits the `DOMAIN MODEL` section entirely (no warning, no placeholder).
 
 ### Step 2 — Determine Mode
 

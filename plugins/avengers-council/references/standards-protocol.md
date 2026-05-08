@@ -33,6 +33,8 @@ Check for: `CONTRIBUTING.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `docs/standard
 
 Domain artifacts are not standards documents — they're *bindings* between the plan's vocabulary and the project's existing concept model. A plan that contradicts an accepted ADR is a real failure mode that has nothing to do with code style.
 
+> **Opt-in by file presence.** Domain alignment is *enabled* by the existence of `CONTEXT.md` (or `CONTEXT-MAP.md`) and/or `docs/adr/`. Absence is not a warning — it's an explicit signal that the repo doesn't use this pattern (greenfield, operational, infra-only, etc.). When neither is present, every reference to domain alignment downstream (Phase 3 checklist item, Phase 5 rule #4, red-lines.md ADR row, agent ADR-consistency criteria, verdict-template Domain Alignment section, spawn-brief `DOMAIN MODEL` block) is silently skipped. No warnings to Andrew. No "missing domain model" messages. The council operates exactly as it did pre-domain-awareness for these repos.
+
 Check for, in this order:
 
 1. **Domain glossary**: `CONTEXT-MAP.md` (multi-context repos) → if absent, `CONTEXT.md` (single-context repos) at the repo root
