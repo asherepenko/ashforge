@@ -125,6 +125,16 @@ For full consensus rules and severity guidelines, see @references/verdict-rules.
 ## Tiebreaker (if applicable)
 [Captain America's deciding rationale]
 
+## Domain Alignment
+
+[Include this section ONLY when the spawn brief carried a `DOMAIN MODEL` block. Otherwise omit entirely.]
+
+- **Glossary contradictions**: terms used in the plan that conflict with `CONTEXT.md` (cite term + glossary line)
+- **ADR contradictions**: plan claims that contradict accepted ADRs (cite ADR-NNNN + contradicting plan line)
+- **Acknowledged supersession**: ADRs the plan explicitly proposes to supersede (with rationale)
+
+If any unacknowledged ADR contradiction exists → automatic verdict downgrade to minimum NEEDS REVISION per `standards-protocol.md#phase-5-determine-verdict-based-on-standards`. Note the trigger here.
+
 ## Conditions for Approval
 [Items that must be addressed]
 

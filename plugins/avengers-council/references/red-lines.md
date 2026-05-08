@@ -32,6 +32,7 @@ Black Widow retains VETO power on unmitigated CRITICAL security violations -- ov
 - No breaking existing patterns without migration path
 - No premature abstraction without proven need
 - No single points of failure for critical paths
+- No unacknowledged contradiction with an accepted ADR (`docs/adr/`). Cite ADR-NNNN. Allowed only if the plan explicitly proposes superseding the ADR — silent contradiction is a red line.
 
 ## Backend & API (Thor)
 
