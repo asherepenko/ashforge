@@ -46,7 +46,7 @@ When planning frontend work, verify:
 - [ ] Bundle size impact and lazy loading strategy
 - [ ] SSR/CSR/ISR rendering strategy
 - [ ] Animation performance (60fps, GPU acceleration)
-- [ ] **Glossary consistency** (UX/domain vocabulary): plan terminology for user-facing concepts must match `CONTEXT.md` glossary when present. Flag conflicting terms verbatim (e.g., "plan says 'account', glossary defines 'Customer' and 'User' as distinct"). UI-relevant ADRs (design-system, routing, state-management decisions) must not be silently contradicted; cite ADR-NNNN.
+- [ ] **Glossary + ADR consistency** (UX/domain vocabulary) — *applies only when the spawn brief includes a `DOMAIN MODEL` block*: plan terminology for user-facing concepts must match the `CONTEXT.md` glossary in the brief; flag conflicting terms verbatim (e.g., "plan says 'account', glossary defines 'Customer' and 'User' as distinct"). UI-relevant ADRs (design-system, routing, state-management decisions) listed in the brief must not be silently contradicted; cite ADR-NNNN. When the spawn brief omits `DOMAIN MODEL`, this criterion is not applicable — proceed with the rest of the checklist.
 
 ## Code Review Checklist
 
