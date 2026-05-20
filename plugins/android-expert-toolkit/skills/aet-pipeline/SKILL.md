@@ -1,25 +1,27 @@
 ---
 name: aet-pipeline
-description: Execute multi-agent Android development pipelines with automated orchestration, validation, and handoff artifacts
-argument-hint: "<pipeline-type> [feature name] (types: feature-build, architecture-review, migration, ui-redesign, build-optimization, test, code-review)"
-allowed-tools: Agent, Read, Write, Glob, Grep, AskUserQuestion, Bash(python3:*), Bash(git:*), Bash(date:*), Bash(mkdir:*), Bash(ls:*), Bash(cat:*), Bash(find:*), Bash(wc:*)
+description: "Use when running a multi-agent Android development pipeline end-to-end — feature builds, architecture reviews, migrations, UI redesigns, build optimizations, test backfills, or code reviews. Triggers on 'build a feature', 'review architecture', 'migrate to X', 'redesign UI', 'optimize build', 'add tests', 'code review module'. Orchestrates architect → gradle/developer → compose → testing handoffs with validation and artifact generation."
+argument-hint: "<pipeline-type> [feature name] (types: feature-build, architecture-review, migration, ui-redesign, build-optimization, test, code-review) [--verbose]"
 ---
 
 # Android Expert Pipeline Orchestration
 
 Automated multi-agent workflows with validation checkpoints and handoff artifacts.
 
+> **Platform notes:** Tool names in this skill use Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). For Codex CLI / Codex App, substitute per `references/codex-tools.md` — `Agent` → `spawn_agent`, `TaskCreate` → `update_plan`, `AskUserQuestion` → prompt the user as plain text and parse the free-form reply. Codex requires `multi_agent = true` in `~/.codex/config.toml` for parallel dispatch.
+
 ## Pre-flight Context
 
-Project fingerprint pre-loaded via shell expansion (parallel, kept under 1s):
+Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
 
-- **Settings file**: !`bash -c 'if [ -f settings.gradle.kts ]; then head -60 settings.gradle.kts; elif [ -f settings.gradle ]; then head -60 settings.gradle; else echo NO_SETTINGS_GRADLE; fi'`
-- **Module count**: !`find . -maxdepth 4 -name 'build.gradle.kts' -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null | wc -l | tr -d ' '`
-- **Top-level modules**: !`find . -maxdepth 3 -name 'build.gradle.kts' -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null | head -30`
-- **Existing pipeline state**: !`bash -c 'if [ -f .artifacts/aet/state.json ]; then head -40 .artifacts/aet/state.json; else echo NO_ACTIVE_PIPELINE; fi'`
-- **Active branch**: !`git branch --show-current 2>/dev/null || echo "NOT_A_REPO"`
+```bash
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
+bash "$PLUGIN_ROOT/skills/aet-pipeline/scripts/preflight.sh"
+```
 
-Use this fingerprint to skip the project-discovery phase. Pass it through to dispatched agents (architect, gradle-build-engineer) so they don't re-scan. If `NO_SETTINGS_GRADLE`, abort early — pipeline requires a Gradle project.
+The script collects: settings file, module count, top-level modules, existing pipeline state, active branch, and per-project settings (`android-expert-toolkit.local.md`).
+
+Use the output to skip the project-discovery phase and pass values through to dispatched agents (architect, gradle-build-engineer) so they don't re-scan. If the `Settings file` section reports `NO_SETTINGS_GRADLE`, abort early — pipeline requires a Gradle project.
 
 ## Available Pipelines
 
@@ -33,16 +35,22 @@ Use this fingerprint to skip the project-discovery phase. Pass it through to dis
 | `test` | Add tests to existing code | testing-specialist only | "Add tests for [module]", "Improve test coverage" |
 | `code-review` | Review code for issues | architect (review mode) | "Review [module] code", "Code review [PR/feature]" |
 
-## Usage
+## Invocation
 
-```bash
-/aet-pipeline feature-build "Social Feed"
-/aet-pipeline architecture-review
-/aet-pipeline migration "LiveData to StateFlow"
-/aet-pipeline ui-redesign "Profile Screen"
-/aet-pipeline build-optimization
-/aet-pipeline test "User Profile"
-/aet-pipeline code-review "Authentication Module"
+Claude Code: invoke via the Skill tool, e.g. `Skill(skill="aet-pipeline", args="feature-build Social Feed")`. The skill description above also auto-triggers on natural-language requests.
+
+Codex: state the intent in natural language ("build a social feed pipeline"). The skill loads when the description matches.
+
+Examples:
+
+```
+aet-pipeline feature-build "Social Feed"
+aet-pipeline architecture-review
+aet-pipeline migration "LiveData to StateFlow"
+aet-pipeline ui-redesign "Profile Screen"
+aet-pipeline build-optimization
+aet-pipeline test "User Profile"
+aet-pipeline code-review "Authentication Module"
 ```
 
 ### Flags
@@ -51,19 +59,15 @@ Use this fingerprint to skip the project-discovery phase. Pass it through to dis
 |------|-------------|
 | `--verbose` | Enable detailed logging to `.artifacts/aet/log.md`. Logs agent dispatch times, validation results, artifact sizes, and error details for each stage. |
 
-```bash
-/aet-pipeline feature-build "Social Feed" --verbose
-```
-
 ## Execution Protocol
 
 ## Argument Parsing
 
-Parse `$ARGUMENTS`:
+Parse the arguments string:
 1. Split into tokens. First token = pipeline type, remaining tokens = feature name (joined).
 2. If first token is `resume` → jump to Step 0 (Resume Check).
 3. If first token is not a valid pipeline type → error: "Unknown pipeline type. Valid: feature-build, architecture-review, migration, ui-redesign, build-optimization, test, code-review"
-4. If pipeline type requires a feature name (feature-build, migration, ui-redesign, test, code-review) and none given → prompt via AskUserQuestion: "What feature/module should this pipeline target?"
+4. If pipeline type requires a feature name (feature-build, migration, ui-redesign, test, code-review) and none given → prompt the user: "What feature/module should this pipeline target?" (Claude: `AskUserQuestion`. Codex: plain prompt.)
 5. Extract flags: `--verbose` enables detailed logging.
 
 ## Execution Protocol
@@ -71,7 +75,7 @@ Parse `$ARGUMENTS`:
 When a pipeline is triggered, follow this protocol:
 
 ### Step 0: Resume Check
-**If `$ARGUMENTS` starts with `resume`:**
+**If arguments start with `resume`:**
 1. Read `.artifacts/aet/state.json` — abort with error if missing
 2. Extract `feature_slug`, `run_timestamp`, `pipeline_type`, `completed_stages`, and `artifacts` from existing state
 3. **Do NOT generate a new run_timestamp or feature_slug** — reuse the values from state to preserve artifact continuity
@@ -98,6 +102,8 @@ git checkout -b aet/{feature_slug}/{run_timestamp}
 ```
 This isolates all pipeline changes from the main working branch. Store the original branch name in pipeline state for later merge-back.
 
+**Codex App sandbox:** If branch creation fails with a permission error (detached HEAD in a managed worktree), skip the branch step and continue — emit a handoff note at the end describing what would have been committed, and direct the user to the App's "Create branch" / "Hand off to local" controls.
+
 ### Step 3: Initialize State
 ```json
 {
@@ -118,6 +124,8 @@ This isolates all pipeline changes from the main working branch. Store the origi
 
 `original_prompt`: stored at pipeline start from user's input. `pipeline_context`: populated after android-architect completes — the full Pipeline Context Block (business purpose, key constraints) extracted from the blueprint. Used on resume to reconstruct agent task prompts without re-reading the blueprint.
 
+**State file maintenance:** Update `state.json` inline at each stage transition. The `PostToolUse:Write` hook (`track-progress.py`) is the fast path on Claude and is also wired into Codex via `.codex-plugin/hooks.json`, but it only fires on Codex when `[features] hooks = true, plugin_hooks = true` and the user has trusted the hook command. Treat inline updates as the source of truth and the hook as a write-through cache.
+
 ### Step 4: Execute Agent Sequence
 Follow pipeline definition order, respecting dependencies:
 - Dispatch agents sequentially when handoff dependency exists
@@ -126,6 +134,11 @@ Follow pipeline definition order, respecting dependencies:
 - Each agent writes handoff artifact to `.artifacts/aet/handoffs/{feature_slug}/`
 - Orchestrator passes feature_slug and run_timestamp to each agent so they can construct output paths
 - **Context budget warning:** If the codebase has >500 source files, instruct agents to reference file paths in handoff artifacts instead of inlining file content. This prevents context window exhaustion in downstream agents.
+
+**Agent dispatch — platform mapping:**
+
+- Claude: `Agent({subagent_type: 'android-expert-toolkit:android-architect', prompt: ...})`
+- Codex: `spawn_agent(prompt)` — the prompt must include the full agent persona (read from `agents/android-architect.md`) plus the Pipeline Context Block. Codex has no `subagent_type` registry.
 
 **Pipeline Context Block (mandatory in every agent task prompt):**
 
@@ -161,10 +174,16 @@ This enables:
 - Comparison between stages: `git diff HEAD~1` to see what an agent changed
 - Clean merge back: `git merge --squash aet/{feature_slug}/{run_timestamp}` for a single commit
 
-**Parallel dispatch for `feature-build` pipelines (mandatory):**
-After android-architect completes and DP2 is approved, dispatch gradle-build-engineer and android-developer as **two Task tool calls in a single orchestrator message**. Both agents read `architecture-blueprint.md` independently and write to separate artifacts — there is no handoff dependency between them.
+**Codex App sandbox:** If commits are blocked, stage changes with `git add -A` and record the intended commit message in `.artifacts/aet/log.md` instead.
 
-Wait for both Task calls to complete before proceeding to compose-expert.
+**Parallel dispatch for `feature-build` pipelines (mandatory):**
+After android-architect completes and DP2 is approved, dispatch gradle-build-engineer and android-developer in parallel.
+- Claude: two `Agent({...})` calls in a single orchestrator message.
+- Codex: two `spawn_agent` calls in a single turn, then `wait_agent` for each.
+
+Both agents read `architecture-blueprint.md` independently and write to separate artifacts — there is no handoff dependency between them.
+
+Wait for both dispatches to complete before proceeding to compose-expert.
 
 #### Stage Dependency Graph (feature-build)
 
@@ -265,19 +284,17 @@ When an agent fails repeatedly (3+ auto-fix attempts):
 
 ### Step 8: Generate Summary
 
-After pipeline completes, generate a summary report, store completion metrics in pipeline state, and offer to squash-merge the pipeline branch. See `templates/aet-pipeline-summary-template.md` for the report template, metrics schema, and merge commands.
+After pipeline completes, generate a summary report, store completion metrics in pipeline state, and offer to squash-merge the pipeline branch. See `templates/pipeline-summary-template.md` for the report template, metrics schema, and merge commands.
 
 ## Interactive Decision Points
 
-The pipeline includes 4 interactive decision points (DPs) that use `AskUserQuestion` to involve the user at critical moments. These replace fully-automated decisions with structured prompts.
+The pipeline includes 4 interactive decision points (DPs) that involve the user at critical moments. On Claude these use `AskUserQuestion`; on Codex, print the question and options as plain text and wait for the user's reply.
 
 ### DP1 — Pipeline Configuration (before agent dispatch)
 
 **When**: Step 4 begins, before dispatching the first agent.
 
 **Skip if**: `android-expert-toolkit.local.md` exists in project root with all values explicitly set (not `auto-detect`).
-
-**Prompt using `AskUserQuestion`**:
 
 **Pattern Detection Cache**: Before prompting, check `.artifacts/aet/cache/detected-patterns.json` for a valid cache (see `references/pattern-detection.md` § Pattern Detection Cache). If the cache is fresh, pre-populate auto-detect answers from cached values and log `"pattern_cache_status": "hit"` in pipeline state. If stale or missing, run detection and write the cache, logging `"pattern_cache_status": "miss"` or `"stale"`.
 
@@ -307,8 +324,6 @@ The pipeline includes 4 interactive decision points (DPs) that use `AskUserQuest
 
 **When**: After android-architect writes `architecture-blueprint.md`, before dispatching next agents.
 
-**Prompt using `AskUserQuestion`**:
-
 Present a summary of key decisions from the blueprint (module count, DI choice, state management pattern, key ADRs), then ask:
 
 **Question** (header: "Architecture"):
@@ -328,8 +343,6 @@ Present a summary of key decisions from the blueprint (module count, DI choice, 
 
 **When**: During pattern detection (either in DP1 auto-detect or android-architect analysis), when the 80/20 decision matrix has no clear winner (no pattern reaches 80% threshold).
 
-**Prompt using `AskUserQuestion`**:
-
 Present the detection results (e.g., "LiveData: 51%, StateFlow: 49%"), then ask:
 
 **Question** (header: "Conflict"):
@@ -347,14 +360,12 @@ Present the detection results (e.g., "LiveData: 51%, StateFlow: 49%"), then ask:
 
 **When**: Any validation failure (handoff validation, dependency validation, build failure, test failure) during pipeline execution. Replaces the current silent "pause" behavior.
 
-**Prompt using `AskUserQuestion`**:
-
 Present the error details (which validation failed, error message, affected stage), then ask:
 
 **Question** (header: "Recovery"):
 "Pipeline error: [error summary]. How should recovery proceed?"
 - Auto-fix: re-run agent with fix instructions (Recommended) — Re-invoke the producing agent with error context
-- Manual fix: pause for user edits — Pause pipeline, user fixes manually, then `/aet-pipeline resume`
+- Manual fix: pause for user edits — Pause pipeline, user fixes manually, then invoke with `resume`
 - Skip validation: continue anyway — Mark validation as skipped, proceed (not recommended)
 - Abort pipeline — Cancel pipeline execution
 
@@ -426,7 +437,7 @@ Pipeline state stored in `.artifacts/aet/state.json`:
 
 ## Resuming Interrupted Pipelines
 
-Resume with `/aet-pipeline resume` — see Step 0 (Resume Check) above for the full protocol.
+Resume by re-invoking with `resume` as the first argument — see Step 0 (Resume Check) above for the full protocol.
 
 ### Common Error Scenarios
 
@@ -455,7 +466,7 @@ See `references/pipeline-error-scenarios.md` for detailed recovery walkthroughs 
 - Running gradle-build-engineer and android-developer sequentially instead of in parallel
 - Agent exceeding 35 tool calls without producing a handoff artifact (stalled)
 - Proceeding after validation failure without DP4 recovery decision
-- Not creating git checkpoints after each stage
+- Not creating git checkpoints after each stage (Codex App sandbox exempt — see notes above)
 - Agent writing code outside its scope boundaries (architect writing implementation, developer writing tests)
 
 ## Verification
@@ -464,7 +475,7 @@ After pipeline completion, confirm:
 
 - [ ] Every stage produced a validated handoff artifact
 - [ ] All parallel stages dispatched correctly (not sequential)
-- [ ] Git checkpoints exist for each completed stage
+- [ ] Git checkpoints exist for each completed stage (or sandbox-handoff note if Codex App)
 - [ ] Pipeline summary generated with metrics
 - [ ] No scope violations (each agent stayed within boundaries)
 - [ ] Pipeline state file reflects accurate completion status

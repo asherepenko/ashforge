@@ -2,7 +2,7 @@
 
 Common error scenarios encountered during pipeline execution, with detailed recovery walkthroughs.
 
-Referenced from `commands/aet-pipeline.md`. See also: SKILL.md Error Recovery section.
+Referenced from `skills/aet-pipeline/SKILL.md`. See also: Error Recovery section there.
 
 ## When to use
 
@@ -58,7 +58,7 @@ e: /src/feature/profile/impl/ProfileViewModel.kt: (15, 25): Unresolved reference
 ```bash
 # Option 1: Fix manually
 # Add import androidx.example.core.model.User to ProfileViewModel.kt
-/aet-pipeline resume
+aet-pipeline resume
 
 # Option 2: Re-run android-developer
 Use android-developer to fix the unresolved reference to 'User' in ProfileViewModel.kt line 15
@@ -156,7 +156,7 @@ This violates user constraints.
 Use android-architect to revise the architecture-blueprint.md to use Manual DI with ViewModelProvider.Factory instead of Hilt. Keep all other architectural decisions the same.
 
 # Then resume
-/aet-pipeline resume
+aet-pipeline resume
 ```
 
 ---
@@ -209,7 +209,7 @@ Unmerged paths:
 
 Pipeline state in `.artifacts/aet/state.json` tracks completed stages. After resolving conflicts, resume with:
 ```bash
-/aet-pipeline resume
+aet-pipeline resume
 ```
 The resume command reads pipeline state and picks up from the last incomplete stage.
 
@@ -218,14 +218,14 @@ The resume command reads pipeline state and picks up from the last incomplete st
 # Quick path: handoff-only conflicts
 git checkout --theirs .artifacts/aet/
 git add .artifacts/aet/
-/aet-pipeline resume
+aet-pipeline resume
 
 # Full path: source code conflicts
 # 1. Resolve conflicts in editor
 # 2. Stage resolved files
 git add <resolved-files>
 # 3. Resume pipeline
-/aet-pipeline resume
+aet-pipeline resume
 ```
 
 ---

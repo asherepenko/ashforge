@@ -178,7 +178,7 @@ def check_interrupted_pipeline():
             print(f"    Run: {run_timestamp}")
         print(f"    Progress: {completed}/{total} stages completed")
         print(f"    Last stage: {current_stage}")
-        print(f"    Resume with: /aet-pipeline resume")
+        print(f"    Resume by invoking the aet-pipeline skill with 'resume'")
     except Exception as e:
         print(f"  Warning: Could not read pipeline state: {e}", file=sys.stderr)
 

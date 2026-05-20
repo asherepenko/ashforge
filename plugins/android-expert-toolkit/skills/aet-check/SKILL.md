@@ -1,42 +1,47 @@
 ---
 name: aet-check
-description: Run pattern detection against the codebase to analyze consistency and recommend approaches
-argument-hint: "[state (management) | di (injection) | testing (coverage) | architecture (layers) | security | performance | accessibility | all]"
-allowed-tools: Grep, Glob, Read, Bash(cat:*), Bash(shasum:*), Bash(find:*), Bash(wc:*), Bash(grep:*)
+description: "Use when analyzing pattern consistency in an Android codebase — state management, dependency injection, testing, architecture, security, performance, or accessibility. Runs detection sweeps and applies the 80/20 decision matrix. Trigger on 'check patterns', 'which DI is used', 'state management consistency', 'audit Compose patterns', 'aet check'."
+argument-hint: "[state | di | testing | architecture | security | performance | accessibility | all] [--fresh]"
 ---
 
 # Android Expert Pattern Check
 
 Run pattern detection from `references/pattern-detection.md` against the current codebase. Reports consistency percentages and applies the 80/20 decision matrix.
 
+> **Platform notes:** Pure read-only — uses Grep, Glob, Read, and shell. No subagent dispatch, no interactive prompts. Works identically on Claude and Codex. See `references/codex-tools.md` only if you need to substitute the shell tool name.
+
 ## Pre-flight Context
 
-Cheap codebase fingerprint pre-loaded via shell expansion (parallel, capped output):
-
-- **Project hash**: !`bash -c 'if [ -f settings.gradle.kts ] || [ -f build.gradle.kts ]; then cat settings.gradle.kts build.gradle.kts 2>/dev/null | shasum -a 256 | cut -d" " -f1; else echo NO_GRADLE_FILES; fi'`
-- **Cached patterns**: !`bash -c 'if [ -f .artifacts/aet/cache/detected-patterns.json ]; then head -30 .artifacts/aet/cache/detected-patterns.json; else echo NO_CACHE; fi'`
-- **Kotlin file count**: !`find . -name '*.kt' -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null | wc -l | tr -d ' '`
-- **DI fingerprint**: !`grep -rln --include='*.kt' -E '@HiltAndroidApp|@HiltViewModel|startKoin\(|@Component' . 2>/dev/null | head -5`
-- **State fingerprint**: !`grep -rcEh --include='*.kt' '(StateFlow<|LiveData<|MutableLiveData<)' . 2>/dev/null | awk -F: '{s+=$1} END{print s+0}'`
-
-Use this fingerprint to:
-1. Skip cache compute step if hash matches cached `project_hash` (Step 1.5).
-2. Decide whether full Grep sweep is needed — if file count < 50, single-pass detection suffices.
-3. Pre-bias detection categories: if DI fingerprint shows `@HiltAndroidApp` → skip Koin/Dagger sweeps in `di` category.
-
-## Usage
+Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
 
 ```bash
-/aet-check              # Run all categories
-/aet-check state        # State management only
-/aet-check di           # Dependency injection only
-/aet-check testing      # Testing patterns only
-/aet-check architecture # Architecture patterns only
-/aet-check security     # Security patterns
-/aet-check performance  # Performance patterns
-/aet-check accessibility # Accessibility patterns
-/aet-check --fresh      # Force re-detection, ignore cache
-/aet-check di --fresh   # Re-detect specific category
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
+bash "$PLUGIN_ROOT/skills/aet-check/scripts/preflight.sh"
+```
+
+The script collects: project hash (shasum over settings.gradle.kts + build.gradle.kts), cached patterns, Kotlin file count, DI fingerprint, state fingerprint, and testing fingerprint.
+
+Use the output to:
+1. Skip the cache compute step if the `Project hash` value matches cached `project_hash` (Step 1.5).
+2. Decide whether full Grep sweep is needed — if `Kotlin file count` < 50, single-pass detection suffices.
+3. Pre-bias detection categories: if `DI fingerprint` shows `@HiltAndroidApp` → skip Koin/Dagger sweeps in the `di` category. Same logic for `Testing fingerprint` (MockK/Test doubles markers) and `State fingerprint` (StateFlow/LiveData counts).
+
+## Invocation
+
+Claude: `Skill(skill="aet-check", args="di")` or auto-trigger on natural-language prompts. Codex: state intent naturally.
+
+Examples:
+```
+aet-check              # Run all categories
+aet-check state        # State management only
+aet-check di           # Dependency injection only
+aet-check testing      # Testing patterns only
+aet-check architecture # Architecture patterns only
+aet-check security     # Security patterns
+aet-check performance  # Performance patterns
+aet-check accessibility # Accessibility patterns
+aet-check --fresh      # Force re-detection, ignore cache
+aet-check di --fresh   # Re-detect specific category
 ```
 
 ## Execution

@@ -1,0 +1,40 @@
+{
+  "name": "avengers-council",
+  "version": "3.0.0",
+  "description": "Engineering advisory board for reviewing plans, code, and architecture through structured debate with domain scoring and security veto",
+  "author": {
+    "name": "Andrew Sherepenko",
+    "url": "https://github.com/asherepenko"
+  },
+  "homepage": "https://github.com/asherepenko/ashforge/tree/main/plugins/avengers-council",
+  "repository": "https://github.com/asherepenko/ashforge",
+  "license": "MIT",
+  "keywords": [
+    "council",
+    "review",
+    "debate",
+    "architecture",
+    "security",
+    "testing",
+    "advisory"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Avengers Council",
+    "shortDescription": "Multi-perspective engineering reviews for plans and code",
+    "longDescription": "An engineering advisory board for plan, code, and architecture reviews through structured debate, domain scoring, and security veto logic.",
+    "developerName": "Andrew Sherepenko",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/asherepenko/ashforge/tree/main/plugins/avengers-council",
+    "defaultPrompt": [
+      "Review this implementation plan.",
+      "Run a council code review.",
+      "Stress-test this architecture."
+    ],
+    "brandColor": "#B91C1C"
+  }
+}

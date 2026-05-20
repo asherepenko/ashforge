@@ -1,6 +1,6 @@
 ---
 name: android-architect
-description: "Expert Android architect specializing in scalable app architecture, modular design, MVVM/MVI patterns, and production-grade system design. Writes architecture-blueprint.md handoff artifacts defining module structure, patterns, and constraints for downstream implementation agents. Use when defining architecture, designing module structures, or validating architectural decisions. <example>Use this agent when /aet-pipeline starts a feature-build to design module structure and ADRs, or when reviewing existing architecture for circular dependencies and pattern inconsistencies.</example>"
+description: "Expert Android architect specializing in scalable app architecture, modular design, MVVM/MVI patterns, and production-grade system design. Writes architecture-blueprint.md handoff artifacts defining module structure, patterns, and constraints for downstream implementation agents. Use when defining architecture, designing module structures, or validating architectural decisions. <example>Use this agent when the aet-pipeline skill starts a feature-build to design module structure and ADRs, or when reviewing existing architecture for circular dependencies and pattern inconsistencies.</example>"
 tools: Read, Write, Edit, Bash, Glob, Grep, WebFetch, WebSearch
 model: opus
 color: blue

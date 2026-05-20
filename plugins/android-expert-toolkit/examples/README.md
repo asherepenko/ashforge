@@ -112,7 +112,7 @@ python hooks/validate-handoff.py .artifacts/aet/handoffs/social-feed/2026-02-18-
 
 1. **User Request:**
    ```
-   /aet-pipeline feature-build "Social Feed"
+   aet-pipeline feature-build "Social Feed"
    ```
 
 2. **Pipeline Triggered:**

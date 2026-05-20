@@ -5,8 +5,10 @@ After printing the verdict (including the `> **Verdict saved to:** ...` path lin
 ## Protocol
 
 1. Determine which options to show based on the **consensus verdict**
-2. Present options using `AskUserQuestion` with verdict-dependent choices
-3. If the review type supports context-specific actions (code-review or plan), add a second question when verdict is NEEDS REVISION or BLOCKED
+2. Present options to the user:
+   - **Claude:** use `AskUserQuestion` with verdict-dependent choices
+   - **Codex:** print the question + numbered options as plain text and wait for the user's free-form reply (no `AskUserQuestion` tool)
+3. If the review type supports context-specific actions (council-code-review or plan), add a second question when verdict is NEEDS REVISION or BLOCKED (same Claude/Codex split)
 4. Execute the chosen action
 5. Only proceed to cleanup **after** the action completes
 
@@ -14,13 +16,13 @@ After printing the verdict (including the `> **Verdict saved to:** ...` path lin
 
 ### APPROVED
 
-Present `AskUserQuestion` with:
+Present the user with (Claude: `AskUserQuestion`; Codex: plain prompt + numbered options):
 - **"Proceed"** (default) — Acknowledge verdict, continue to cleanup
 - **"Save action items as TODOs"** — Extract any minor suggestions from verdict, create via the `/todo` skill
 
 ### APPROVED WITH CONDITIONS
 
-Present `AskUserQuestion` with:
+Present the user with (Claude: `AskUserQuestion`; Codex: plain prompt + numbered options):
 - **"Address conditions now"** (default) — Captain summarizes the top-priority conditions and begins working through them interactively
 - **"Save conditions as TODOs"** — Extract conditions from verdict as actionable items, create via the `/todo` skill
 - **"Proceed without addressing"** — Acknowledge conditions, continue to cleanup
@@ -35,14 +37,14 @@ When verdict is APPROVED WITH CONDITIONS:
 
 ### NEEDS REVISION
 
-Present `AskUserQuestion` with:
+Present the user with (Claude: `AskUserQuestion`; Codex: plain prompt + numbered options):
 - **"Address findings now"** (default) — Captain summarizes the highest-severity findings and begins working through them interactively
 - **"Save action items as TODOs"** — Extract all findings as actionable items grouped by severity, create via the `/todo` skill
 - **"Re-review after changes"** — User makes changes, then Captain re-invokes the same council command with the same arguments
 
 ### BLOCKED
 
-Present `AskUserQuestion` with:
+Present the user with (Claude: `AskUserQuestion`; Codex: plain prompt + numbered options):
 - **"Address blocking issues now"** (default) — Captain summarizes CRITICAL/blocking findings and begins working through them interactively
 - **"Save action items as TODOs"** — Extract blocking issues and all findings as actionable items, create via the `/todo` skill
 - **"Re-review after changes"** — User makes changes, then Captain re-invokes the same council command with the same arguments
@@ -69,7 +71,7 @@ Second question: "Would you like to update the plan based on findings?"
 1. Extract top-priority items from the verdict (CRITICAL first, then HIGH, then MEDIUM)
 2. Present a numbered summary to the user
 3. Begin working through each item interactively — propose a fix, get user confirmation, apply it
-4. **Partial completion**: If the user wants to stop before all items are addressed, use `AskUserQuestion` to offer: "Save remaining items as TODOs" or "Done for now" (remaining items stay in the saved verdict file for reference)
+4. **Partial completion**: If the user wants to stop before all items are addressed, prompt (Claude: `AskUserQuestion`; Codex: plain prompt + numbered options): "Save remaining items as TODOs" or "Done for now" (remaining items stay in the saved verdict file for reference)
 5. After all items addressed (or user chooses to stop), fall through to cleanup
 
 ### "Save as TODOs"
@@ -84,13 +86,15 @@ Second question: "Would you like to update the plan based on findings?"
 2. Fall through to cleanup immediately
 
 ### "Re-review after changes"
-1. **Clean up the current council first** — send `shutdown_request` to all teammates, then `TeamDelete`
+1. **Clean up the current council first** —
+   - **Claude:** send `shutdown_request` to all teammates, then `TeamDelete`
+   - **Codex:** workers already terminated after their final `wait_agent`; nothing to tear down
 2. Tell the user to make their changes
 3. Wait for user confirmation that changes are ready
-4. Re-invoke the same council command with the original arguments
-5. The new review starts fresh (new council, new debate)
+4. Re-invoke the same council skill with the original arguments
+5. The new review starts fresh (new debate)
 
-### "Apply suggested fixes" (code-review only)
+### "Apply suggested fixes" (council-code-review only)
 1. Collect all findings that include both a `file:line` reference and a suggested fix
 2. Present the list of fixes to the user for confirmation
 3. Apply each fix using the Edit tool

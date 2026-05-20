@@ -1,28 +1,27 @@
 ---
 name: aet-status
-description: Display current pipeline status, completed stages, artifacts, and recovery options
-allowed-tools: Read, Glob, AskUserQuestion, Bash(ls:*), Bash(cat:*), Bash(git log:*)
+description: "Use when checking on an Android Expert Toolkit pipeline run — show progress, completed stages, generated artifacts, timing, and recovery options. Trigger on 'pipeline status', 'aet status', 'what's running', 'where are we in the pipeline', 'show pipeline progress'."
+argument-hint: "(no arguments)"
 ---
 
 # Android Expert Pipeline Status
 
 Read `.artifacts/aet/state.json` and display the current pipeline status with actionable options.
 
+> **Platform notes:** This skill references `AskUserQuestion` for the action menu — on Codex, print the options as plain text and parse the user's reply. See `references/codex-tools.md`. The state file is normally updated inline by `aet-pipeline` (the `track-progress.py` hook is a write-through cache that fires on Claude always and on Codex only when `[features] hooks = true, plugin_hooks = true` and the user has trusted the hook). When `state.json` is stale or missing — e.g. hooks disabled on Codex, or stage written before inline update — fall back to deriving stage progress from the handoff directory.
+
 ## Pre-flight Context
 
-Pipeline state and feature history pre-loaded via shell expansion (parallel, no extra tool calls):
-
-- **State file**: !`cat .artifacts/aet/state.json 2>/dev/null || echo "NO_STATE_FILE"`
-- **Handoff directories**: !`ls -1 .artifacts/aet/handoffs/ 2>/dev/null || echo "NO_HANDOFFS"`
-- **Recent pipeline commits**: !`git log --oneline -20 --grep='^aet:' 2>/dev/null || echo "NO_COMMITS"`
-
-Use this context to skip the initial Read/Bash steps below — the state JSON and history are already in scope. If `NO_STATE_FILE`, jump straight to Step 6 (Feature History).
-
-## Usage
+Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
 
 ```bash
-/aet-status
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
+bash "$PLUGIN_ROOT/skills/aet-status/scripts/preflight.sh"
 ```
+
+The script collects: state file content, handoff directory listing, recent pipeline commits, active branch, and the five most-recent handoff artifacts by mtime.
+
+Use the output to skip the initial Read steps below. If the `State file` section reports `NO_STATE_FILE` and `Handoff directories` reports `NO_HANDOFFS`, jump straight to Step 6 (Feature History). If `NO_STATE_FILE` but artifacts exist, run the filesystem fallback (Step 1b) to reconstruct stage status from the mtime listing.
 
 ## Execution
 
@@ -30,9 +29,26 @@ Use this context to skip the initial Read/Bash steps below — the state JSON an
 
 Read `.artifacts/aet/state.json` from the project root.
 
-**If file does not exist**: Display "No active pipeline. Start one with `/aet-pipeline <type> \"<name>\"`" then continue to Step 6 (Feature History) to show past runs.
+**If file does not exist**: Run filesystem fallback (Step 1b) before declaring no active pipeline. Then continue to Step 6 (Feature History).
 
 **If file exists**: Continue with Step 2.
+
+### 1b. Filesystem Fallback (Codex-safe)
+
+If `state.json` is missing or older than the most recent handoff artifact, derive stage status from the filesystem:
+
+1. List subdirectories under `.artifacts/aet/handoffs/`. Each subdirectory is a `feature_slug`.
+2. For each subdirectory, list files matching `<run_timestamp>-*.md`. Group by `run_timestamp` prefix.
+3. The newest `run_timestamp` group is the active or most-recent pipeline.
+4. Map artifact filenames back to stage names:
+   - `architecture-blueprint.md` → `android-architect`
+   - `module-setup.md` → `gradle-build-engineer`
+   - `implementation-report.md` → `android-developer`
+   - `ui-report.md` → `compose-expert`
+   - `test-report.md` → `android-testing-specialist`
+   - `code-review-report.md` → `android-architect` (review mode)
+5. Build a synthetic state record from the discovered artifacts and proceed with Step 2.
+6. If no handoff directory exists either, display "No active pipeline. Start one with the `aet-pipeline` skill." and continue to Step 6.
 
 ### 2. Parse State
 
@@ -98,6 +114,8 @@ Format output as:
 | gradle-build-engineer | 10:45 | 11:15 | 30m |
 ```
 
+When this section is built from the filesystem fallback (Step 1b), mark it `(derived from filesystem — state.json missing or stale)` so the user knows timing fields may be approximations from file mtimes.
+
 ### 4b. Pipeline Summary (completed pipelines only)
 
 When status is `completed`, also display metrics from pipeline state:
@@ -124,11 +142,11 @@ When status is `completed`, also display metrics from pipeline state:
 ```
 
 Read metrics from `stage_durations`, `artifact_sizes`, and `validation_counts` in pipeline state.
-If these fields are not present (older state files), skip this section.
+If these fields are not present (older state files or filesystem-derived state), skip this section.
 
 ### 5. Offer Actions
 
-After displaying status, use `AskUserQuestion` to offer context-appropriate actions:
+After displaying status, offer context-appropriate actions (Claude: `AskUserQuestion`; Codex: print options and parse free-form reply):
 
 **If status is `in_progress`**:
 
@@ -207,7 +225,7 @@ settings-screen/
 ### 7. Execute Action
 
 Based on user's choice:
-- **Continue/Resume**: Read state, dispatch next agent in sequence
+- **Continue/Resume**: Read state, dispatch next agent in sequence (invoke the `aet-pipeline` skill with `resume`)
 - **View artifact**: Ask which artifact, then read and display it
 - **Re-run stage**: Re-dispatch the specified agent
 - **Abort/Clean up**: Delete `.artifacts/aet/state.json`

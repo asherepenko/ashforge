@@ -44,7 +44,7 @@ Or just don't set the variable (off is default).
 ```
 You: [exit plan mode]
 Assistant: "The Avengers Council plugin is active. Consider running
-        `/avengers-council:plan-review` to get a multi-expert engineering
+        `council-plan-review` to get a multi-expert engineering
         advisory review of this plan before proceeding."
 [You can choose to run it or skip]
 ```
@@ -73,7 +73,7 @@ Then restart Claude Code or reload shell.
 You: [exit plan mode]
 Assistant: "The Avengers Council plugin is active with auto-review enabled.
         BEFORE proceeding with this plan, I'll invoke
-        `/avengers-council:plan-review` to get the council's verdict."
+        `council-plan-review` to get the council's verdict."
 [Assistant automatically runs council review]
 [You see full council debate and verdict]
 [Assistant waits for approval before implementing]
@@ -165,13 +165,13 @@ Then test by entering and exiting plan mode in a Claude Code session.
   {
     "hookSpecificOutput": {
       "hookEventName": "PreToolUse",
-      "additionalContext": "The Avengers Council plugin is active. Consider running `/avengers-council:plan-review` to get a multi-expert engineering advisory review of this plan before proceeding."
+      "additionalContext": "The Avengers Council plugin is active. Consider running `council-plan-review` to get a multi-expert engineering advisory review of this plan before proceeding."
     }
   }
   ```
 - The assistant sees this as a system message
 - The assistant mentions the suggestion to the user
-- User can choose to run `/avengers-council:plan-review` or skip
+- User can choose to run `council-plan-review` or skip
 
 **Mode `auto`:**
 - Returns JSON with `additionalContext`:
@@ -179,11 +179,11 @@ Then test by entering and exiting plan mode in a Claude Code session.
   {
     "hookSpecificOutput": {
       "hookEventName": "PreToolUse",
-      "additionalContext": "The Avengers Council plugin is active with auto-review enabled. BEFORE proceeding with this plan, invoke `/avengers-council:plan-review` to get the council's verdict on this plan. Do not continue until the council review is complete."
+      "additionalContext": "The Avengers Council plugin is active with auto-review enabled. BEFORE proceeding with this plan, invoke `council-plan-review` to get the council's verdict on this plan. Do not continue until the council review is complete."
     }
   }
   ```
-- The assistant is instructed to run `/avengers-council:plan-review` automatically
+- The assistant is instructed to run `council-plan-review` automatically
 - Implementation waits until council review completes
 - If verdict is BLOCKED → the assistant pauses for user decision
 
@@ -223,7 +223,7 @@ export AVENGERS_COUNCIL_ON_PLAN=off
 ### "Hook requires review but I want to skip this time"
 
 **Solution:** You can't skip in `auto` mode — that's the point. Options:
-1. Run the quick review: `/avengers-council:plan-review --quick`
+1. Run the quick review: `council-plan-review --quick`
 2. Temporarily switch to `prompt` mode
 3. Address the council's concerns
 
@@ -313,8 +313,8 @@ Assistant: [enters plan mode, designs auth system]
 Assistant: [calls ExitPlanMode]
 Hook: [prompts council review]
 Assistant: "I've created the plan. The Avengers Council plugin suggests
-        running `/avengers-council:plan-review` for advisory review."
-User: "/avengers-council:plan-review"
+        running `council-plan-review` for advisory review."
+User: "council-plan-review"
 Council: [reviews plan, finds security gaps]
 Council: "NEEDS REVISION — add password hashing, rate limiting"
 User: "Update the plan to include bcrypt and rate limiting"
@@ -331,7 +331,7 @@ Assistant: [calls ExitPlanMode]
 Hook: [requires council review]
 Assistant: "Before proceeding, I'm invoking the Avengers Council for
         mandatory plan review."
-Assistant: [automatically runs /avengers-council:plan-review]
+Assistant: [automatically runs council-plan-review]
 Council: [reviews, finds issues]
 Council: "APPROVED WITH CONDITIONS — add distributed tracing"
 Assistant: "The council approved with conditions. Would you like me to
@@ -348,7 +348,7 @@ Assistant: [enters plan mode, designs refactor]
 Assistant: [calls ExitPlanMode]
 Hook: [does nothing — off mode]
 Assistant: "Plan is ready. Shall I proceed?"
-User: "Let me review it first. /avengers-council:plan-review"
+User: "Let me review it first. council-plan-review"
 Council: [reviews plan]
 User: "Looks good, proceed"
 Assistant: [implements]

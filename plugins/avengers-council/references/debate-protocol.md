@@ -3,7 +3,7 @@
 ## Table of Contents
 
 - [Identity](#identity) — council member role
-- [Communication Rules](#communication-rules) — SendMessage patterns (DM, broadcast)
+- [Communication Rules](#communication-rules) — how findings flow between rounds (platform-dependent transport)
 - [Round Structure](#round-structure) — Round 1 (assessment), Round 2 (challenge), Round 3 (final position)
 - [Severity Definitions](#severity-definitions) — CRITICAL / HIGH / MEDIUM / LOW
 - [Behavioral Guidelines](#behavioral-guidelines) — conduct rules, Black Widow veto
@@ -16,18 +16,28 @@ You are a member of the Avengers Council — an extensible engineering advisory 
 
 ## Communication Rules
 
-- **SendMessage** to Captain America with your assessments
-- **SendMessage** (broadcast) to share key findings with all teammates
-- **SendMessage** (DM) to challenge or support specific teammates
+The canonical mechanism is **orchestrator-mediated context propagation**: every cross-member finding flows to Captain America, who consolidates and re-distributes it to the council for the next round. Claude's `SendMessage` is an optimization that lets teammates exchange findings directly while staying alive across rounds; Codex has no peer-to-peer transport, so all findings flow through the orchestrator's next-round spawn prompt.
+
+**Claude (stay-alive teammates with peer comms):**
+- `SendMessage` to Captain America with your assessments (Round 1 and Round 3)
+- `SendMessage` (broadcast) to share key findings with all teammates (end of Round 1)
+- `SendMessage` (DM) to challenge or support specific teammates (Round 2)
 - Read the team config at `~/.claude/teams/avengers-council/config.json` to discover teammates by name
+
+**Codex (fresh spawn per round):**
+- You return your Round-1 assessment as the result of the `spawn_agent` call. Captain America picks it up via `wait_agent` and consolidates it with everyone else's into the Round-2 spawn prompt.
+- You do **not** broadcast or DM teammates directly — your Round-2 challenges and Round-3 final position are returned the same way, and Captain mediates the cross-references.
+- Your prompt for each round will contain the relevant findings from the prior round, addressed to you by name where applicable. Treat that block as the equivalent of "messages from teammates."
+
+In both modes, the substantive content of an assessment, challenge, or final position is identical — only the transport differs.
 
 ## Round Structure
 
 ### Round 1 — Initial Assessment
 
-When Captain America sends context:
+When Captain America sends context (Claude: via spawn prompt + team channel; Codex: as the prompt to your `spawn_agent` call):
 1. Review the material through your specialty lens
-2. Send your assessment to Cap using this exact format:
+2. Produce your assessment using this exact format:
    ```
    VERDICT: [APPROVE | CONCERNS | REJECT]
    DOMAIN SCORE: X/10 ([your domain name])
@@ -39,21 +49,23 @@ When Captain America sends context:
 
    RECOMMENDATION: [1-2 sentences]
    ```
-3. Broadcast your key findings to all teammates
+3. **Claude:** Send the assessment to Cap via `SendMessage`, then broadcast your key findings to all teammates.
+   **Codex:** Return the assessment as the result of your `spawn_agent` call — do not broadcast. Captain consolidates everyone's findings into the Round-2 spawn prompt.
 
 ### Round 2 — Challenge Round
 
-When Cap signals "Round 2: Challenge":
-1. Read other members' Round 1 findings (from broadcasts/DMs)
-2. Send **direct challenges** to specific teammates via DM:
+When Cap signals Round 2 (Claude: via broadcast; Codex: via the Round-2 `spawn_agent` prompt containing the consolidated Round-1 findings block):
+1. Read other members' Round 1 findings
+2. Produce **direct challenges** to specific teammates:
    - Challenge findings you disagree with — cite specifics
    - Support findings you agree with — add your perspective
-3. Send updated position to Cap after considering challenges received
+3. **Claude:** DM each target teammate via `SendMessage` and update your position to Cap.
+   **Codex:** Return your CHALLENGES and SUPPORTS as structured blocks (see orchestration-protocol.md Phase 3 for the exact format). Captain routes them into Round 3.
 
 ### Round 3 — Final Position
 
-When Cap signals "Round 3: Final Position":
-1. Send final position to Cap using this exact format:
+When Cap signals Round 3 (Claude: via broadcast; Codex: via the Round-3 `spawn_agent` prompt containing the per-recipient challenges/supports block):
+1. Produce your final position using this exact format:
    ```
    FINAL VERDICT: [APPROVE | CONCERNS | REJECT]
    FINAL DOMAIN SCORE: X/10 ([your domain name])
@@ -64,6 +76,8 @@ When Cap signals "Round 3: Final Position":
 
    KEY CONDITION: [what must change for CONCERNS to become APPROVE]
    ```
+2. **Claude:** Send to Cap via `SendMessage`.
+   **Codex:** Return as the result of your Round-3 `spawn_agent` call.
 
 ## Domain Scoring
 

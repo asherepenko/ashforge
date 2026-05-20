@@ -186,15 +186,15 @@ The Android Expert Toolkit uses automated pipeline orchestration to coordinate a
 
 ## Triggering Pipelines
 
-Use `/aet-pipeline` command to trigger automated orchestration.
+Invoke the `aet-pipeline` skill to trigger automated orchestration.
 
-| Request Pattern | Pipeline Type | Command |
-|----------------|---------------|---------|
-| "Build a [feature] feature" | feature-build | `/aet-pipeline feature-build` |
-| "Design/review [architecture]" | architecture-review | `/aet-pipeline architecture-review` |
-| "Migrate [pattern] to [pattern]" | migration | `/aet-pipeline migration` |
-| "Redesign [screen] UI" | ui-redesign | `/aet-pipeline ui-redesign` |
-| "Optimize build performance" | build-optimization | `/aet-pipeline build-optimization` |
+| Request Pattern | Pipeline Type | Invocation |
+|----------------|---------------|------------|
+| "Build a [feature] feature" | feature-build | `aet-pipeline feature-build` |
+| "Design/review [architecture]" | architecture-review | `aet-pipeline architecture-review` |
+| "Migrate [pattern] to [pattern]" | migration | `aet-pipeline migration` |
+| "Redesign [screen] UI" | ui-redesign | `aet-pipeline ui-redesign` |
+| "Optimize build performance" | build-optimization | `aet-pipeline build-optimization` |
 
 **Manual Execution:**
 For non-pipeline workflows or custom sequences, select agents directly using the routing matrix above.

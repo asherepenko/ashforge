@@ -1,6 +1,6 @@
 ---
 name: android-expert
-description: "Use for ad-hoc Android/Kotlin questions, pattern guidance, and code review — Jetpack Compose, ViewModel, StateFlow, Hilt/Koin, Room, Coroutines/Flow, Navigation, DataStore, WorkManager, Gradle convention plugins, ProGuard/R8, Material 3, or Android architecture. Trigger whenever the user mentions Android, Kotlin, Compose, or any Android framework — even if they don't explicitly ask for an 'expert'. NOT for multi-agent pipeline execution (use /aet-pipeline for end-to-end feature builds, migrations, or reviews)."
+description: "Use for ad-hoc Android/Kotlin questions, pattern guidance, and code review — Jetpack Compose, ViewModel, StateFlow, Hilt/Koin, Room, Coroutines/Flow, Navigation, DataStore, WorkManager, Gradle convention plugins, ProGuard/R8, Material 3, or Android architecture. Trigger whenever the user mentions Android, Kotlin, Compose, or any Android framework — even if they don't explicitly ask for an 'expert'. NOT for multi-agent pipeline execution (use the `aet-pipeline` skill for end-to-end feature builds, migrations, or reviews)."
 argument-hint: "[question or topic] — e.g. 'Room offline-first', 'ViewModel StateFlow pattern', 'Hilt setup for feature module', 'best practice for offline sync'"
 ---
 
@@ -13,10 +13,10 @@ Apply modern Android patterns (Now in Android reference) with 5 specialized agen
 **Choose your path:**
 
 1. **Automated Multi-Agent Workflows**
-   - Use `/aet-pipeline` command for end-to-end orchestration
+   - Use the `aet-pipeline` skill for end-to-end orchestration
    - 7 pipeline types: `feature-build`, `architecture-review`, `migration`, `ui-redesign`, `build-optimization`, `test`, `code-review`
    - Automatic validation, handoff artifacts, error recovery
-   - See [Pipeline Commands](#pipeline-commands) section below
+   - Companion skills: `aet-status` (progress + recovery), `aet-check` (80/20 pattern detection)
 
 2. **Pattern Reference & Guidelines**
    - Browse [Core Principles](#core-principles) for Android best practices
@@ -28,7 +28,7 @@ Apply modern Android patterns (Now in Android reference) with 5 specialized agen
    - See [Agent Orchestration](#agent-orchestration) section for coordination patterns
    - Refer to `references/agent-routing.md` for agent selection guidance
 
-**New to the toolkit?** Start with automated workflows (`/aet-pipeline`) for guided multi-agent execution.
+**New to the toolkit?** Start with the `aet-pipeline` skill for guided multi-agent execution.
 
 ---
 
@@ -178,7 +178,7 @@ When implementing a new feature, verify (adapt to match detected codebase patter
 
 ### Workflow Pipelines
 
-Use `/aet-pipeline <pipeline> [feature_name]` for automated orchestration with validation and error recovery. For manual orchestration, here's the agent sequence for each pipeline type:
+Invoke the `aet-pipeline` skill with `<pipeline> [feature_name]` for automated orchestration with validation and error recovery. For manual orchestration, here's the agent sequence for each pipeline type:
 
 | Pipeline | Agent Sequence | Artifacts Produced |
 |----------|---------------|--------------------|
@@ -190,7 +190,7 @@ Use `/aet-pipeline <pipeline> [feature_name]` for automated orchestration with v
 | `test` | testing (reads source directly, no prerequisite) | test |
 | `code-review` | architect (review mode) | code-review |
 
-Parentheses indicate optional stages. For the full execution protocol, parallel dispatch rules, and handoff validation, see `commands/aet-pipeline.md`.
+Parentheses indicate optional stages. For the full execution protocol, parallel dispatch rules, and handoff validation, see `skills/aet-pipeline/SKILL.md`.
 
 ### Handoff Artifact Protocol
 
@@ -217,21 +217,21 @@ Agents communicate through structured handoff files in `.artifacts/aet/handoffs/
 - [Limits the downstream agent must respect]
 ```
 
-For artifact types by agent, reading protocol, and parallel dispatch rules, see `commands/aet-pipeline.md` § Handoff Artifact Protocol.
+For artifact types by agent, reading protocol, and parallel dispatch rules, see `skills/aet-pipeline/SKILL.md` § Handoff Artifact Protocol.
 
-## Pipeline Commands
+## Pipeline Skills
 
-For pipeline orchestration (types, execution protocol, handoff validation, error recovery), see `commands/aet-pipeline.md`.
+For pipeline orchestration (types, execution protocol, handoff validation, error recovery), see `skills/aet-pipeline/SKILL.md`.
 
-- `/aet-pipeline <type> "<name>"` — run a pipeline
-- `/aet-status` — check progress
-- `/aet-check [category]` — detect patterns
+- `aet-pipeline <type> "<name>"` — run a pipeline
+- `aet-status` — check progress
+- `aet-check [category]` — detect patterns
 
 7 pipeline types: `feature-build`, `architecture-review`, `migration`, `ui-redesign`, `build-optimization`, `test`, `code-review`.
 
 ## Error Recovery
 
-Pipeline error handling is defined in `commands/aet-pipeline.md` (Decision Point 4 and Error Recovery sections). Key principle: auto-fix first (max 2 retries), then escalate to user. Escalate to manual intervention after 3+ failed attempts or when root cause is unclear.
+Pipeline error handling is defined in `skills/aet-pipeline/SKILL.md` (Decision Point 4 and Error Recovery sections). Key principle: auto-fix first (max 2 retries), then escalate to user. Escalate to manual intervention after 3+ failed attempts or when root cause is unclear.
 
 ## Reference Projects
 

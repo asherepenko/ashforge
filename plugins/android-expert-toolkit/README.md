@@ -13,7 +13,9 @@ Expert Android engineering agents, interactive multi-agent pipelines, and 80/20 
 
 ## Installation
 
-Install via the [ashforge](https://github.com/asherepenko/ashforge) marketplace:
+The toolkit ships in the [ashforge](https://github.com/asherepenko/ashforge) marketplace and works on both Claude Code and Codex (CLI / App).
+
+### Claude Code
 
 ```
 /plugin marketplace add asherepenko/ashforge
@@ -21,21 +23,49 @@ Install via the [ashforge](https://github.com/asherepenko/ashforge) marketplace:
 /reload-plugins
 ```
 
-Plugin assets land in `~/.claude/plugins/cache/`. Use `${CLAUDE_PLUGIN_ROOT}` inside hooks/configs rather than relative paths.
+Plugin assets land in `~/.claude/plugins/cache/`. Hooks use `${CLAUDE_PLUGIN_ROOT}` to resolve plugin paths.
+
+### Codex (CLI / App)
+
+```bash
+codex plugin marketplace add asherepenko/ashforge
+```
+
+Then enable the plugin — either via the Codex UI or by adding to `~/.codex/config.toml`:
+
+```toml
+[plugins."android-expert-toolkit@ashforge"]
+enabled = true
+
+[features]
+hooks = true            # enable hooks at all
+plugin_hooks = true     # enable plugin-bundled hooks (gated separately while in beta)
+multi_agent = true      # required for aet-pipeline parallel agent dispatch
+```
+
+On first run Codex will prompt to trust each plugin hook command — accept to record the `trusted_hash` entries. Without trust, hooks register but never execute.
+
+Plugin assets land under `~/.codex/plugins/cache/`. Hooks use `${PLUGIN_ROOT}` (not `${CLAUDE_PLUGIN_ROOT}`). The Codex manifest lives at `.codex-plugin/plugin.json`; hooks at `.codex-plugin/hooks.json`. See [`references/codex-tools.md`](references/codex-tools.md) for the full Claude → Codex tool mapping and the PreToolUse deny-only caveat.
 
 ## Usage
 
-```bash
-/aet-pipeline feature-build "Social Feed"    # Multi-agent feature build
-/aet-pipeline architecture-review            # Analyze codebase
-/aet-pipeline migration "LiveData to StateFlow"
-/aet-pipeline test "User Profile"            # Add tests only
-/aet-pipeline code-review "Auth Module"      # Code review
-/aet-status                                  # Check pipeline progress
-/aet-check di                                # Detect DI patterns
+The toolkit ships as **skills** — invoke by intent on Claude Code or Codex CLI/App. No slash commands.
+
+```
+aet-pipeline feature-build "Social Feed"       # Multi-agent feature build
+aet-pipeline architecture-review               # Analyze codebase
+aet-pipeline migration "LiveData to StateFlow"
+aet-pipeline test "User Profile"               # Add tests only
+aet-pipeline code-review "Auth Module"         # Code review
+aet-status                                     # Check pipeline progress
+aet-check di                                   # Detect DI patterns
+aet-check                                      # Run all pattern checks
+android-expert "ViewModel StateFlow pattern"   # Ad-hoc Android question
 ```
 
-See [QUICK_START.md](QUICK_START.md) for guided examples and scenarios.
+Claude: the Skill tool auto-triggers on description match, or invoke explicitly with `Skill(skill="aet-pipeline", args="feature-build Social Feed")`. Codex: state the intent in natural language — the multi-agent feature must be enabled (`multi_agent = true` in `~/.codex/config.toml`) for parallel agent dispatch.
+
+See [QUICK_START.md](QUICK_START.md) for guided examples and scenarios, and [codex-tools](references/codex-tools.md) for the Claude → Codex tool mapping used inside the skills.
 
 ## Agents
 
@@ -55,12 +85,18 @@ Agents hand off through markdown artifacts under `.artifacts/aet/handoffs/{featu
 
 ```
 android-expert-toolkit/
-├── .claude-plugin/plugin.json    # Plugin manifest
-├── agents/                       # 5 specialized agents
-├── commands/                     # pipeline, status, check
-├── skills/android-expert/        # Core Android skill (SKILL.md)
-├── hooks/                        # Session-start, progress tracking, validators
-├── references/                   # 18 deep-dive references with "When to use"
+├── .claude-plugin/plugin.json    # Claude Code manifest
+├── .codex-plugin/
+│   ├── plugin.json               # Codex CLI / Codex App manifest
+│   └── hooks.json                # Codex hooks (mirrors hooks/hooks.json with Codex matchers + ${PLUGIN_ROOT})
+├── agents/                       # 5 specialized agents (subagent_type on Claude; persona templates on Codex)
+├── skills/
+│   ├── android-expert/           # Ad-hoc Android Q&A
+│   ├── aet-pipeline/             # Multi-agent orchestration
+│   ├── aet-status/               # Pipeline status & recovery
+│   └── aet-check/                # Pattern detection (80/20)
+├── hooks/                        # Shared Python scripts — registered by both .claude-plugin and .codex-plugin manifests
+├── references/                   # Deep-dive references with "When to use" + codex-tools.md mapping
 ├── templates/                    # Handoff artifact scaffolds + project settings
 ├── examples/                     # Example pipeline outputs
 └── tests/                        # Hook validation tests
@@ -76,10 +112,10 @@ Copy `templates/android-expert-toolkit.local.md.template` to your project root a
 |-----|---------|
 | [QUICK_START.md](QUICK_START.md) | Getting started with slash commands and scenarios |
 | [CLAUDE.md](CLAUDE.md) | Plugin internals (for maintainers) |
-| [references/scenarios.md](references/scenarios.md) | End-to-end pipeline walkthroughs |
-| [references/agent-routing.md](references/agent-routing.md) | Agent selection matrix |
-| [references/pattern-detection.md](references/pattern-detection.md) | Detection commands and 80/20 framework |
-| [references/conflict-resolution.md](references/conflict-resolution.md) | Priority hierarchy (P0–P3) |
+| [scenarios](references/scenarios.md) | End-to-end pipeline walkthroughs |
+| [agent-routing](references/agent-routing.md) | Agent selection matrix |
+| [pattern-detection](references/pattern-detection.md) | Detection commands and 80/20 framework |
+| [conflict-resolution](references/conflict-resolution.md) | Priority hierarchy (P0–P3) |
 
 ## Credits
 

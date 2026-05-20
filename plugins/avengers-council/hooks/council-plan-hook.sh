@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Avengers Council — ExitPlanMode hook
-# Suggests or auto-invokes /avengers-council:plan-review when exiting plan mode.
+# Avengers Council — ExitPlanMode hook (Claude Code only)
+# Suggests or auto-invokes the council-plan-review skill when exiting plan mode.
 #
 # Controlled by AVENGERS_COUNCIL_ON_PLAN env var:
 #   off     (default) — do nothing
-#   prompt  — suggest running /avengers-council:plan-review
-#   auto    — instruct Claude to invoke /avengers-council:plan-review before proceeding
+#   prompt  — suggest invoking the council-plan-review skill
+#   auto    — instruct Claude to invoke the council-plan-review skill before proceeding
 
 set -euo pipefail
 
@@ -20,7 +20,7 @@ case "$MODE" in
 {
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
-    "additionalContext": "The Avengers Council plugin is active. Consider running `/avengers-council:plan-review` to get a multi-expert engineering advisory review of this plan before proceeding."
+    "additionalContext": "The Avengers Council plugin is active. Consider invoking the `council-plan-review` skill (via the Skill tool) to get a multi-expert engineering advisory review of this plan before proceeding."
   }
 }
 EOF
@@ -29,10 +29,10 @@ EOF
     cat <<'EOF'
 {
   "decision": "block",
-  "reason": "Council review required before proceeding. Run /avengers-council:plan-review first.",
+  "reason": "Council review required before proceeding. Invoke the council-plan-review skill first (Skill tool with skill=council-plan-review).",
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
-    "additionalContext": "The Avengers Council plugin is active with auto-review enabled. BEFORE proceeding with this plan, invoke `/avengers-council:plan-review` to get the council's verdict on this plan. Do not continue until the council review is complete."
+    "additionalContext": "The Avengers Council plugin is active with auto-review enabled. BEFORE proceeding with this plan, invoke the `council-plan-review` skill (via the Skill tool) to get the council's verdict on this plan. Do not continue until the council review is complete."
   }
 }
 EOF

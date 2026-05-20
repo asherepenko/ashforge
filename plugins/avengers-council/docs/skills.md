@@ -1,12 +1,14 @@
-# Avengers Council Command Reference
+# Avengers Council Skill Reference
 
-Comprehensive reference for Avengers Council commands: `plan-review` and `code-review`.
+Comprehensive reference for Avengers Council skills: `council-plan-review` and `council-code-review`.
+
+> Invoke by intent (the Skill tool on Claude / natural-language prompt on Codex). The slash-command form (`/avengers-council:plan-review`) was retired in version 3.0.0.
 
 ---
 
-## Command Comparison
+## Skill Comparison
 
-| Feature | `/avengers-council:plan-review` | `/avengers-council:code-review` |
+| Feature | `council-plan-review` | `council-code-review` |
 |---------|-------------------------|--------------------------------|
 | **Purpose** | Review plans, design specs, PRDs, `.claude/plans/` files | Review code changes, diffs, PRs |
 | **Input** | Topic, file path, or auto-detects `.claude/plans/` | Diff, PR number, or files |
@@ -19,7 +21,7 @@ Comprehensive reference for Avengers Council commands: `plan-review` and `code-r
 
 ## When to Use Each Command
 
-### Use `/avengers-council:plan-review` when:
+### Use `council-plan-review` when:
 - Evaluating a design decision before implementation begins
 - Reviewing architectural specs, PRDs, or technical proposals
 - Discussing framework choices, system design, or patterns
@@ -28,7 +30,7 @@ Comprehensive reference for Avengers Council commands: `plan-review` and `code-r
 - Manually reviewing a generated `.claude/plans/` file
 - Need broader perspective on "should we build this?" or "is this plan complete?"
 
-### Use `/avengers-council:code-review` when:
+### Use `council-code-review` when:
 - Reviewing code changes before merging
 - Auditing security-sensitive code
 - Checking PRs for quality, correctness, and standards
@@ -37,7 +39,7 @@ Comprehensive reference for Avengers Council commands: `plan-review` and `code-r
 
 ---
 
-## `/avengers-council:plan-review`
+## `council-plan-review`
 
 ### Purpose
 
@@ -46,7 +48,7 @@ Review planning decisions, design specifications, PRDs, or architectural plans t
 ### Syntax
 
 ```bash
-/avengers-council:plan-review [topic or @file] [--focus <area>] [--quick]
+council-plan-review [topic or @file] [--focus <area>] [--quick]
 ```
 
 ### Arguments
@@ -74,7 +76,7 @@ Review planning decisions, design specifications, PRDs, or architectural plans t
 #### Example 1: Review a Plan File
 
 ```bash
-/avengers-council:plan-review @.claude/plans/phase-1-auth.md
+council-plan-review @.claude/plans/phase-1-auth.md
 ```
 
 **What happens:**
@@ -106,7 +108,7 @@ Two critical conditions: add rate limiting for login endpoints and define token 
 #### Example 2: Review a Topic
 
 ```bash
-/avengers-council:plan-review "Migrate from REST to GraphQL for mobile API"
+council-plan-review "Migrate from REST to GraphQL for mobile API"
 ```
 
 **What happens:**
@@ -129,7 +131,7 @@ Two critical conditions: add rate limiting for login endpoints and define token 
 #### Example 3: Quick Security Review
 
 ```bash
-/avengers-council:plan-review @docs/api-design.md --quick --focus security
+council-plan-review @docs/api-design.md --quick --focus security
 ```
 
 **What happens:**
@@ -161,7 +163,7 @@ Vote: 0 Approve / 1 Concerns / 2 Reject
 #### Example 4: Architecture-Focused Review
 
 ```bash
-/avengers-council:plan-review "Event-driven architecture for order processing" --focus architecture
+council-plan-review "Event-driven architecture for order processing" --focus architecture
 ```
 
 **What happens:**
@@ -183,7 +185,7 @@ Vote: 0 Approve / 1 Concerns / 2 Reject
 #### Example 5: Mobile-First Plan Review
 
 ```bash
-/avengers-council:plan-review @.planning/offline-mode-spec.md --focus mobile
+council-plan-review @.planning/offline-mode-spec.md --focus mobile
 ```
 
 **What happens:**
@@ -280,7 +282,7 @@ When `--quick` is specified, Captain America selects the 2 most relevant members
 
 ---
 
-## `/avengers-council:code-review`
+## `council-code-review`
 
 ### Purpose
 
@@ -289,7 +291,7 @@ Review code changes (diffs, pull requests, specific files) with the Avengers Cou
 ### Syntax
 
 ```bash
-/avengers-council:code-review [--pr <number>] [--diff] [--files <paths>] [--focus <area>] [--quick]
+council-code-review [--pr <number>] [--diff] [--files <paths>] [--focus <area>] [--quick]
 ```
 
 ### Arguments
@@ -309,7 +311,7 @@ Review code changes (diffs, pull requests, specific files) with the Avengers Cou
 #### Example 1: Review Unstaged Changes (Default)
 
 ```bash
-/avengers-council:code-review
+council-code-review
 ```
 
 **What happens:**
@@ -331,7 +333,7 @@ Review code changes (diffs, pull requests, specific files) with the Avengers Cou
 #### Example 2: Review Pull Request
 
 ```bash
-/avengers-council:code-review --pr 789
+council-code-review --pr 789
 ```
 
 **What happens:**
@@ -373,7 +375,7 @@ None
 #### Example 3: Review Specific Files
 
 ```bash
-/avengers-council:code-review --files src/auth/AuthService.ts,src/db/UserRepository.ts
+council-code-review --files src/auth/AuthService.ts,src/db/UserRepository.ts
 ```
 
 **What happens:**
@@ -391,7 +393,7 @@ None
 #### Example 4: Quick Security Review of PR
 
 ```bash
-/avengers-council:code-review --pr 123 --quick --focus security
+council-code-review --pr 123 --quick --focus security
 ```
 
 **What happens:**
@@ -419,7 +421,7 @@ None
 #### Example 5: Quick Mobile Code Review
 
 ```bash
-/avengers-council:code-review --files app/ProfileViewModel.kt,app/SettingsScreen.kt --quick --focus mobile
+council-code-review --files app/ProfileViewModel.kt,app/SettingsScreen.kt --quick --focus mobile
 ```
 
 **What happens:**
@@ -445,7 +447,7 @@ None
 
 ### Output Format
 
-Same structure as `/avengers-council:plan-review`, with additional code-specific details:
+Same structure as `council-plan-review`, with additional code-specific details:
 
 ```markdown
 ## Key Findings
@@ -475,7 +477,7 @@ Same structure as `/avengers-council:plan-review`, with additional code-specific
 
 ### Consensus Rules
 
-Same as `/avengers-council:plan-review` command (see above).
+Same as `council-plan-review` command (see above).
 
 ### Performance Notes
 
@@ -510,7 +512,7 @@ When `--quick` + code changes detected, Captain America selects members based on
 Enter plan mode, produce `.claude/plans/feature-x.md`
 
 # Step 2: Review plan (auto or manual — auto-detects .claude/plans/)
-/avengers-council:plan-review
+council-plan-review
 
 # Step 3: Address findings
 Update plan based on verdict conditions
@@ -519,7 +521,7 @@ Update plan based on verdict conditions
 Proceed with implementation
 
 # Step 5: Pre-merge review
-/avengers-council:code-review --pr 123
+council-code-review --pr 123
 ```
 
 **Duration:** Plan review (30-60 min) + Code review (30-60 min) = 1-2 hours total council time
@@ -530,12 +532,12 @@ Proceed with implementation
 
 ```bash
 # Step 1: Quick plan check
-/avengers-council:plan-review @docs/api-change.md --quick --focus backend
+council-plan-review @docs/api-change.md --quick --focus backend
 
 # Step 2: Implement based on feedback
 
 # Step 3: Quick code review
-/avengers-council:code-review --quick --focus backend
+council-code-review --quick --focus backend
 
 # Step 4: Merge after approval
 ```
@@ -548,14 +550,14 @@ Proceed with implementation
 
 ```bash
 # Step 1: Full security-focused plan review
-/avengers-council:plan-review @.planning/auth-redesign.md --focus security
+council-plan-review @.planning/auth-redesign.md --focus security
 
 # Step 2: Address Black Widow's findings
 
 # Step 3: Implement with security measures
 
 # Step 4: Full security-focused code review
-/avengers-council:code-review --pr 456 --focus security
+council-code-review --pr 456 --focus security
 
 # Step 5: Re-review if BLOCKED or NEEDS REVISION
 ```
@@ -568,12 +570,12 @@ Proceed with implementation
 
 ### "No plan file found"
 
-**Problem:** `/avengers-council:plan-review` can't auto-detect a plan file
+**Problem:** `council-plan-review` can't auto-detect a plan file
 
 **Solution:**
 ```bash
 # Option 1: Specify file explicitly
-/avengers-council:plan-review @path/to/plan.md
+council-plan-review @path/to/plan.md
 
 # Option 2: Check plan directory
 ls .claude/plans/
@@ -588,10 +590,10 @@ ls .claude/plans/
 **Solution:**
 ```bash
 # Use quick mode for faster reviews
-/avengers-council:plan-review @file.md --quick
+council-plan-review @file.md --quick
 
 # Or focus on specific area
-/avengers-council:plan-review @file.md --quick --focus security
+council-plan-review @file.md --quick --focus security
 ```
 
 **Expected performance:**
@@ -605,17 +607,17 @@ ls .claude/plans/
 **Decision tree:**
 
 1. **Reviewing a design/plan before coding?**
-   - Use `/avengers-council:plan-review`
+   - Use `council-plan-review`
 
 2. **Reviewing code changes?**
-   - Use `/avengers-council:code-review`
+   - Use `council-code-review`
 
 3. **Just exited plan mode?**
-   - Use `/avengers-council:plan-review` with no args (auto-detects `.claude/plans/` files, or auto-runs via hook)
+   - Use `council-plan-review` with no args (auto-detects `.claude/plans/` files, or auto-runs via hook)
 
 4. **Not sure?**
    - Plans/specs/design/`.claude/plans/` → `plan`
-   - Code/diff/PR → `code-review`
+   - Code/diff/PR → `council-code-review`
 
 ---
 
@@ -649,7 +651,7 @@ The conditions (adding load tests and defining SLOs) adequately mitigate the ris
 **Workaround:** Address the security issue, then re-run the review:
 ```bash
 # After fixing the vulnerability
-/avengers-council:code-review --pr 123 --quick --focus security
+council-code-review --pr 123 --quick --focus security
 ```
 
 ---
@@ -678,19 +680,19 @@ The conditions (adding load tests and defining SLOs) adequately mitigate the ris
 
 **Pattern 1: Focused Quick Review**
 ```bash
-/avengers-council:code-review --pr 123 --quick --focus mobile
+council-code-review --pr 123 --quick --focus mobile
 ```
 **Use case:** Fast mobile-specific review before merge
 
 **Pattern 2: Security-First Full Review**
 ```bash
-/avengers-council:plan-review @docs/payment-flow.md --focus security
+council-plan-review @docs/payment-flow.md --focus security
 ```
 **Use case:** Comprehensive security evaluation (still uses full council, security findings prioritized)
 
 **Pattern 3: Specific Files with Focus**
 ```bash
-/avengers-council:code-review --files AuthService.ts --quick --focus security
+council-code-review --files AuthService.ts --quick --focus security
 ```
 **Use case:** Laser-focused security audit of single file
 
@@ -711,7 +713,7 @@ The conditions (adding load tests and defining SLOs) adequately mitigate the ris
 - Do not ship. Address CRITICAL/HIGH issues first.
 - Re-run review after fixes:
   ```bash
-  /avengers-council:code-review --quick  # Faster re-review
+  council-code-review --quick  # Faster re-review
   ```
 
 **BLOCKED:**
@@ -784,7 +786,7 @@ Quorum: Scarlet Witch (frontend), Hulk (testing), Black Widow (security)
 
 ```bash
 # Step 1: Review plan
-/avengers-council:plan-review @.planning/feature-x.md
+council-plan-review @.planning/feature-x.md
 # Output: APPROVED WITH CONDITIONS (add error handling, define test strategy)
 
 # Step 2: Update plan to address conditions
@@ -794,7 +796,7 @@ Update plan file
 Code the feature
 
 # Step 4: Review implementation
-/avengers-council:code-review
+council-code-review
 # Output: APPROVED (all plan conditions satisfied)
 ```
 
@@ -824,15 +826,15 @@ fi
 
 ```bash
 # Review a plan, design, or auto-detect .claude/plans/ file
-/avengers-council:plan-review [topic or @file] [--focus <area>] [--quick]
+council-plan-review [topic or @file] [--focus <area>] [--quick]
 
 # Review code changes
-/avengers-council:code-review [--pr <number>] [--diff] [--files <paths>] [--focus <area>] [--quick]
+council-code-review [--pr <number>] [--diff] [--files <paths>] [--focus <area>] [--quick]
 ```
 
 ### Key Takeaways
 
-1. **Use the right command:** Plans/specs/design → `plan`, Code → `code-review`
+1. **Use the right command:** Plans/specs/design → `plan`, Code → `council-code-review`
 2. **Quick mode for speed:** 5-10 min instead of 30-60 min
 3. **Focus for specificity:** `--focus security` prioritizes security findings
 4. **Read the verdict:** APPROVED (ship), CONDITIONS (fix then ship), REVISION (fix then re-review), BLOCKED (stop)

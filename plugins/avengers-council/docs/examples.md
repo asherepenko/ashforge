@@ -5,7 +5,7 @@ Three end-to-end walkthroughs covering the most common review shapes.
 ## Example 1 — Architecture plan review
 
 ```bash
-/avengers-council:plan-review "Migrate from monolith to microservices"
+council-plan-review "Migrate from monolith to microservices"
 ```
 
 **Council process:**
@@ -32,7 +32,7 @@ Saved to `.artifacts/reviews/plans/council/2026-02-13/103045-review-concerns.md`
 ## Example 2 — Security-sensitive PR review
 
 ```bash
-/avengers-council:code-review --pr 789 --focus security
+council-code-review --pr 789 --focus security
 ```
 
 **Council process:**
@@ -55,7 +55,7 @@ Saved to `.artifacts/reviews/code/council/2026-02-13/153020-review-blocked.md`.
 ## Example 3 — Quick mobile review
 
 ```bash
-/avengers-council:code-review --files app/ProfileViewModel.kt --quick --focus mobile
+council-code-review --files app/ProfileViewModel.kt --quick --focus mobile
 ```
 
 **3-member quorum:**

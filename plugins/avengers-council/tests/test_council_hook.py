@@ -60,8 +60,8 @@ def test_mode_prompt():
     assert "additionalContext" in output["hookSpecificOutput"], "Should have additionalContext"
 
     context = output["hookSpecificOutput"]["additionalContext"]
-    assert "consider running" in context.lower(), "Should suggest (not require) review"
-    assert "/avengers-council:plan-review" in context, "Should mention command"
+    assert "consider invoking" in context.lower(), "Should suggest (not require) review"
+    assert "council-plan-review" in context, "Should mention skill name"
 
     print("✓ Mode 'prompt' suggests council review")
 
@@ -83,8 +83,8 @@ def test_mode_auto():
 
     context = output["hookSpecificOutput"]["additionalContext"]
     assert "before proceeding" in context.lower(), "Should require (not suggest) review"
-    assert "invoke" in context.lower() or "run" in context.lower(), "Should instruct Claude to run command"
-    assert "/avengers-council:plan-review" in context, "Should mention command"
+    assert "invoke" in context.lower() or "run" in context.lower(), "Should instruct Claude to run the skill"
+    assert "council-plan-review" in context, "Should mention skill name"
     assert "do not continue" in context.lower() or "wait" in context.lower(), "Should block until review complete"
 
     print("✓ Mode 'auto' blocks ExitPlanMode and requires council review")

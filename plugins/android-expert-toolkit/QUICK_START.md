@@ -28,26 +28,31 @@ cp "$CLAUDE_PLUGIN_ROOT/templates/android-expert-toolkit.local.md.template" \
 
 ---
 
-## Commands
+## Skills
 
-| Command | Use when |
-|---------|----------|
-| `/aet-pipeline <type> "<name>"` | You want a multi-agent workflow (default entry point) |
-| `/aet-status` | You want to see where an in-flight pipeline stopped and resume |
-| `/aet-check [category]` | You want pattern detection only (DI, state, UI, etc.) — no code changes |
+The toolkit ships as skills — invoke by intent. On Claude Code, the Skill tool auto-triggers from natural-language requests or explicit `Skill(skill="…", args="…")`. On Codex CLI/App, just state your intent.
+
+| Skill | Use when |
+|-------|----------|
+| `aet-pipeline <type> "<name>"` | You want a multi-agent workflow (default entry point) |
+| `aet-status` | You want to see where an in-flight pipeline stopped and resume |
+| `aet-check [category]` | You want pattern detection only (DI, state, UI, etc.) — no code changes |
+| `android-expert` | Ad-hoc Android Q&A outside any pipeline |
+
+Codex requires `multi_agent = true` in `~/.codex/config.toml` to run `aet-pipeline`'s parallel agent dispatch. See [`references/codex-tools.md`](references/codex-tools.md) for the Claude → Codex primitive mapping the skills use internally.
 
 ---
 
 ## Pipeline Types
 
-```bash
-/aet-pipeline feature-build "Social Feed"
-/aet-pipeline architecture-review
-/aet-pipeline migration "LiveData to StateFlow"
-/aet-pipeline ui-redesign "Profile Screen"
-/aet-pipeline build-optimization
-/aet-pipeline test "User Profile"
-/aet-pipeline code-review "Auth Module"
+```
+aet-pipeline feature-build "Social Feed"
+aet-pipeline architecture-review
+aet-pipeline migration "LiveData to StateFlow"
+aet-pipeline ui-redesign "Profile Screen"
+aet-pipeline build-optimization
+aet-pipeline test "User Profile"
+aet-pipeline code-review "Auth Module"
 ```
 
 | Type | What happens | Agents involved |
@@ -70,8 +75,8 @@ Each pipeline has up to 4 interactive decision points: configuration, architectu
 
 Goal: Add a social feed feature that matches the codebase's established patterns.
 
-```bash
-/aet-pipeline feature-build "Social Feed"
+```
+aet-pipeline feature-build "Social Feed"
 ```
 
 What happens:
@@ -81,14 +86,14 @@ What happens:
 4. **UI** — compose-expert builds screens with Material 3
 5. **Tests** — android-testing-specialist adds test doubles and coverage
 
-All artifacts land in `.artifacts/aet/handoffs/social-feed/`. Resume anytime with `/aet-status`.
+All artifacts land in `.artifacts/aet/handoffs/social-feed/`. Resume anytime with the `aet-status` skill.
 
 ### Scenario 2 — Migrating from LiveData to StateFlow
 
 Goal: Decide whether to migrate, then execute phased migration.
 
-```bash
-/aet-pipeline migration "LiveData to StateFlow"
+```
+aet-pipeline migration "LiveData to StateFlow"
 ```
 
 What happens:
@@ -101,8 +106,8 @@ What happens:
 
 Goal: Understand an unfamiliar codebase before making changes.
 
-```bash
-/aet-pipeline architecture-review
+```
+aet-pipeline architecture-review
 ```
 
 You get a report in `.artifacts/aet/handoffs/` with pattern detection, module structure analysis, technical debt priorities, and recommendations.
@@ -111,11 +116,11 @@ You get a report in `.artifacts/aet/handoffs/` with pattern detection, module st
 
 Goal: Quick check without running a full pipeline.
 
-```bash
-/aet-check di          # Hilt vs Koin vs manual
-/aet-check state       # LiveData vs StateFlow
-/aet-check ui          # Compose vs XML
-/aet-check             # All categories
+```
+aet-check di          # Hilt vs Koin vs manual
+aet-check state       # LiveData vs StateFlow
+aet-check ui          # Compose vs XML
+aet-check             # All categories
 ```
 
 Reports consistency percentages and applies the 80/20 rule to recommend matching existing patterns or proposing alternatives.
@@ -124,8 +129,8 @@ Reports consistency percentages and applies the 80/20 rule to recommend matching
 
 Goal: Improve coverage without touching production code.
 
-```bash
-/aet-pipeline test "ProfileViewModel"
+```
+aet-pipeline test "ProfileViewModel"
 ```
 
 testing-specialist creates test doubles (no mocking framework), Turbine Flow tests, and Given-When-Then structured unit tests targeting 80%+ coverage.
@@ -151,10 +156,10 @@ See [references/pattern-detection.md](references/pattern-detection.md) for detec
 
 ## Resuming an Interrupted Pipeline
 
-If a pipeline stops mid-flow (error, Claude session ended, you paused):
+If a pipeline stops mid-flow (error, session ended, you paused):
 
-```bash
-/aet-status
+```
+aet-status
 ```
 
 This reads `.artifacts/aet/state.json` and shows:
@@ -166,13 +171,13 @@ This reads `.artifacts/aet/state.json` and shows:
 
 ## Troubleshooting
 
-**"Command not found: /aet-pipeline"**
+**"Skill 'aet-pipeline' not loading"**
 
-Plugin isn't installed or active. Run `/plugin marketplace list` (should show `ashforge`) and `/plugin` to confirm `android-expert-toolkit` is installed and enabled. Run `/reload-plugins` or restart Claude Code.
+Plugin isn't installed or active. On Claude Code, run `/plugin marketplace list` (should show `ashforge`) and `/plugin` to confirm `android-expert-toolkit` is installed and enabled. Run `/reload-plugins` or restart. On Codex CLI, confirm the plugin appears in `~/.codex/plugins/` and that `multi_agent = true` is set in `~/.codex/config.toml`.
 
 **"Agent keeps producing wrong patterns for my codebase"**
 
-Run `/aet-check` to surface what the 80/20 detection actually sees. If detection is wrong (e.g., project uses Dagger, not Hilt), pass explicit context in your next pipeline invocation or pin the value in `android-expert-toolkit.local.md`.
+Invoke the `aet-check` skill to surface what the 80/20 detection actually sees. If detection is wrong (e.g., project uses Dagger, not Hilt), pass explicit context in your next pipeline invocation or pin the value in `android-expert-toolkit.local.md`.
 
 **"Pipeline stalled at a decision gate"**
 

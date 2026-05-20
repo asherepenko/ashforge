@@ -1,0 +1,40 @@
+{
+  "name": "android-expert-toolkit",
+  "version": "3.0.0",
+  "description": "Expert Android engineering agents, interactive multi-agent pipelines, and 80/20 pattern detection for modern Kotlin/Compose/Gradle development",
+  "author": {
+    "name": "Andrew Sherepenko",
+    "url": "https://github.com/asherepenko"
+  },
+  "homepage": "https://github.com/asherepenko/ashforge/tree/main/plugins/android-expert-toolkit",
+  "repository": "https://github.com/asherepenko/ashforge",
+  "license": "MIT",
+  "keywords": [
+    "android",
+    "kotlin",
+    "compose",
+    "gradle",
+    "architecture",
+    "testing",
+    "pipelines"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Android Expert Toolkit",
+    "shortDescription": "Android engineering agents, pipelines, and pattern detection",
+    "longDescription": "Production-grade Android development guidance for Kotlin, Compose, Gradle, architecture, testing, and pipeline-style engineering workflows.",
+    "developerName": "Andrew Sherepenko",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/asherepenko/ashforge/tree/main/plugins/android-expert-toolkit",
+    "defaultPrompt": [
+      "Review this Android module architecture.",
+      "Run Android pattern detection.",
+      "Plan an Android feature pipeline."
+    ],
+    "brandColor": "#3DDC84"
+  }
+}

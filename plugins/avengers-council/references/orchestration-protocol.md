@@ -1,10 +1,12 @@
 # Avengers Council Orchestration Protocol
 
-Shared flow for all council commands. Each command handles context gathering independently, then delegates to this protocol for team orchestration.
+Shared flow for all council skills. Each skill handles context gathering independently, then delegates to this protocol for team orchestration.
 
-> **Cost note:** Full mode spawns 8 core teammates + any matching optional members (~8-10x single-session cost).
+> **Cost note:** Full mode spawns 8 core teammates + any matching optional members (~8-10x single-session cost on Claude; ~24-30x on Codex because each of the 3 rounds is a separate parallel fan-out).
 > Recommend Quick Mode (3 members) for non-critical reviews.
 > Full mode is justified for: security-sensitive changes, architectural decisions, pre-release reviews.
+
+> **Platform branch:** Steps below are written for Claude Code's agent-team primitives (`TeamCreate`, parallel `Agent`, peer-to-peer `SendMessage`). The Claude execution path is unchanged. For Codex CLI / Codex App, follow the `Codex:` annotation at each tool callsite — debate becomes hub-mediated context propagation through the orchestrator. See @references/codex-tools.md for the full mapping and the cost/fidelity trade-off.
 
 ## Table of Contents
 
@@ -62,15 +64,19 @@ Read @references/member-registry.md to build the active roster:
 
 ### Step 2: Create Team
 
-Call `TeamCreate` with:
+**Claude:** Call `TeamCreate` with:
 - `team_name`: "avengers-council"
-- `description`: "Reviewing: [topic summary from calling command]"
+- `description`: "Reviewing: [topic summary from calling skill]"
+
+**Codex:** Skip this step entirely — no team primitive exists. Concurrency is just parallel `spawn_agent` calls in one turn. Track the active roster in a local variable instead.
 
 ### Step 3: Spawn Teammates
 
-Spawn all active roster members using the `Agent` tool. Launch ALL in a SINGLE message for parallel startup.
+Spawn all active roster members in parallel. Launch ALL in a SINGLE turn for parallel startup.
 
 Each spawn call embeds the FULL review context and Round 1 instructions so agents self-start immediately (teammates only receive their spawn prompt + CLAUDE.md — they do NOT get the lead's conversation history):
+
+**Claude:**
 
 ```
 Agent({
@@ -120,6 +126,8 @@ Follow the debate protocol from your agent definition for all rounds.",
 })
 ```
 
+**Codex:** Same prompt template, but use `spawn_agent(prompt)` per member with the persona text from `agents/<name>.md` pasted verbatim above the `REVIEW CONTEXT` block (Codex has no `subagent_type` registry). Drop the trailing line about "wait for captain-america to signal Round 2 and Round 3" — Codex workers terminate after returning; Captain re-spawns them for each round with the next round's context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
+
 **Core agent roster** (always spawned):
 
 | Name | subagent_type |
@@ -143,7 +151,8 @@ If the review target exceeds 500 lines (large PR, lengthy plan), summarize chang
 
 ### Step 4: Timeout and Quorum
 
-- Wait for teammate responses. Messages from teammates are delivered automatically.
+- **Claude:** Wait for teammate responses. Messages from teammates are delivered automatically via the team channel.
+- **Codex:** Call `wait_agent(agent_id)` on each spawned worker; collect the returned verdicts. `close_agent(agent_id)` after each to free slots.
 - **Timeout policy:** If fewer than the timeout threshold (Step 1) respond, proceed with available responses. Note which members were silent in the verdict.
 - **Minimum quorum:** At least the minimum quorum (Step 1) responses required. If fewer respond, report the issue to the user and ask whether to proceed with available responses or retry.
 
@@ -151,16 +160,21 @@ If the review target exceeds 500 lines (large PR, lengthy plan), summarize chang
 
 Agents self-start Round 1 immediately from their spawn prompt — no broadcast needed.
 
-1. Create task: "Round 1 — Initial Assessment" via TaskCreate (optional — for progress tracking), mark in_progress
-2. Collect responses (apply timeout policy from Phase 1 Step 3)
+1. **Claude:** Create task: "Round 1 — Initial Assessment" via `TaskCreate` (optional — for progress tracking), mark in_progress.
+   **Codex:** Use `update_plan` with the same step name for visibility.
+2. Collect responses (apply timeout policy from Phase 1 Step 4)
 3. Mark Round 1 task as completed
 
 ## Phase 3 — Rounds 2 & 3: Challenge and Final Position
 
-After collecting Round 1 responses, send ONE broadcast to trigger both remaining rounds (1 broadcast = 8 messages):
+After collecting Round 1 responses:
 
-1. Create task: "Rounds 2 & 3 — Challenge and Final Position" via TaskCreate (optional — for progress tracking), mark in_progress
-2. Broadcast to all members via SendMessage (type: broadcast):
+1. **Claude:** Create task "Rounds 2 & 3 — Challenge and Final Position" via `TaskCreate`, mark in_progress.
+   **Codex:** Use `update_plan` with the same step name.
+
+2. **Trigger Round 2 + Round 3.**
+
+   **Claude:** Send ONE broadcast via `SendMessage` (type: broadcast) to all stay-alive teammates. Agents DM each other to challenge in Round 2, then send final position to captain-america.
 
    ```
    ROUND 1 COMPLETE.
@@ -180,7 +194,50 @@ After collecting Round 1 responses, send ONE broadcast to trigger both remaining
    - Key Condition: what must change for CONCERNS to become APPROVE
    ```
 
-3. **Completion gate:** Wait until all active members send their final position to captain-america. Apply same timeout policy — if members don't signal completion, proceed after receiving signals from the quorum.
+   **Codex:** Workers from Round 1 are terminated. Fan out Round 2 as a fresh parallel `spawn_agent` × N call. Each prompt embeds the persona + REVIEW CONTEXT + the consolidated Round-1 findings block + a Round-2 instruction block:
+
+   ```
+   ROUND 2 — CHALLENGE (you are [agent-name]):
+
+   Round 1 produced these verdicts and findings from your fellow council members:
+   [Per-member verdict + key findings + considered-but-not-flagged, ordered by domain score]
+
+   Identify positions you disagree with. For each disagreement, write a CHALLENGE block addressed to that member:
+   - Target: [agent-name]
+   - Their position: [quoted]
+   - Your challenge: [your counterargument]
+   - Evidence: [reference]
+
+   Identify positions you agree with — write a SUPPORT block for each:
+   - Target: [agent-name]
+   - Their finding: [quoted]
+   - Why it strengthens your own assessment: [reasoning]
+
+   Return CHALLENGES and SUPPORTS as the result of this spawn. Do not request your final verdict yet — that's Round 3.
+   ```
+
+   After `wait_agent` collects all Round-2 results, consolidate the cross-member challenges/supports into a Round-3 context block. Fan out again as a fresh parallel `spawn_agent` × N for Round 3:
+
+   ```
+   ROUND 3 — FINAL POSITION (you are [agent-name]):
+
+   Round 2 produced these challenges and supports involving you:
+   [Per-member challenges directed AT you + your own challenges + supports you received]
+
+   Reach your final position. Return:
+   - Verdict: APPROVE / CONCERNS / REJECT
+   - Final Domain Score: X/10 (your domain)
+   - Confidence: HIGH / MEDIUM / LOW
+   - Unresolved Disagreements: reference the specific Round-2 exchanges that did not converge
+   - Key Condition: what must change for CONCERNS to become APPROVE
+   ```
+
+   Cost: 2 additional `spawn_agent` fan-outs for full debate (3 rounds × N members = 3N total spawns vs Claude's N stay-alive). Fidelity is preserved — every cross-agent finding flows through the orchestrator's prompt instead of through SendMessage.
+
+3. **Completion gate:**
+   - **Claude:** Wait until all active members send their final position to captain-america.
+   - **Codex:** Wait for all Round-3 `spawn_agent` calls to return via `wait_agent`.
+   Apply same timeout policy — if members don't return, proceed after receiving results from the quorum.
 4. Mark task as completed
 
 ## Phase 4 — Synthesize Verdict
@@ -229,15 +286,21 @@ Write verdict to permanent record:
 ## Phase 6 — Interactive Follow-up
 
 Follow @references/post-verdict-actions.md:
-1. Present AskUserQuestion based on verdict and review type
+1. **Claude:** Present `AskUserQuestion` based on verdict and review type.
+   **Codex:** Print the question with numbered options as plain text; wait for and parse the user's free-form reply.
 2. Execute chosen action
 3. Only proceed to cleanup after action completes
 
 ## Phase 7 — Cleanup
 
+**Claude:**
 1. Send `shutdown_request` (type: "shutdown_request") to each teammate by name
 2. Wait for shutdown confirmations
 3. Call `TeamDelete` to remove team and task list
+
+**Codex:**
+1. Workers are already terminated after their final `wait_agent`. If any are still in-flight at the timeout boundary, call `close_agent` on each to free slots.
+2. No team to delete.
 
 ---
 
@@ -251,7 +314,8 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
 
 ### Quick Flow
 
-1. TeamCreate + spawn only the 2 selected members
+1. **Claude:** `TeamCreate` + spawn the 2 selected members via `Agent`.
+   **Codex:** Skip `TeamCreate`; spawn the 2 selected members via parallel `spawn_agent`.
 2. Single assessment round (no challenge/final rounds):
    ```
    QUICK REVIEW — Single Round
@@ -263,7 +327,7 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
    - Key Findings: max 3
    - Recommendation: 1-2 sentences
    ```
-3. Collect 2 positions + add your own = 3 votes
+3. Collect 2 positions + add your own = 3 votes (Claude: messages arrive automatically; Codex: `wait_agent` on each)
 4. Quick consensus per @references/verdict-rules.md Quick Mode section
 5. Format abbreviated verdict (3 positions only)
 6. Save verdict (same Phase 5)

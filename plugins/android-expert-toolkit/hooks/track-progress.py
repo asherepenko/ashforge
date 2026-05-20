@@ -155,16 +155,34 @@ def mark_validation_passed(tool_input: Dict[str, Any], tool_output: str):
             return
 
 
+CLAUDE_SHELL_TOOLS = {"Bash"}
+CODEX_SHELL_TOOLS = {"local_shell", "shell", "shell_command", "exec_command"}
+SHELL_TOOLS = CLAUDE_SHELL_TOOLS | CODEX_SHELL_TOOLS
+
+CLAUDE_WRITE_TOOLS = {"Write"}
+CODEX_WRITE_TOOLS: set = set()  # Codex apply_patch payload differs; tracking deferred to skill-side inline state updates
+WRITE_TOOLS = CLAUDE_WRITE_TOOLS | CODEX_WRITE_TOOLS
+
+
 def update_pipeline_state(tool_name: str, tool_input: Dict[str, Any], tool_output: str):
     """Update pipeline state after a tool use."""
 
-    # Track Bash calls for validation results
-    if tool_name == "Bash":
+    # Track shell calls for validation results (validate-handoff.py invocation)
+    if tool_name in SHELL_TOOLS:
+        # Codex shell payloads put the command in different fields than Claude's Bash
+        if "command" not in tool_input:
+            for key in ("command_string", "input", "cmd"):
+                if key in tool_input:
+                    tool_input = {**tool_input, "command": tool_input[key]}
+                    break
         mark_validation_passed(tool_input, tool_output)
         return
 
-    # Only track Write tool for handoff artifacts
-    if tool_name != "Write":
+    # Only track write tool for handoff artifacts.
+    # On Codex, apply_patch payloads do not expose `file_path`/`content` the same way —
+    # the aet-pipeline skill is required to update state.json inline, so the hook
+    # silently no-ops there. See references/codex-tools.md.
+    if tool_name not in WRITE_TOOLS:
         return
 
     file_path = tool_input.get("file_path", "")

@@ -5,9 +5,9 @@
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                         User's Request                          │
-│     /avengers-council:plan-review @proposal.md                  │
+│     council-plan-review @proposal.md                  │
 │     OR                                                          │
-│     /avengers-council:code-review --pr 123                      │
+│     council-code-review --pr 123                      │
 └────────────────────┬────────────────────────────────────────────┘
                      │
                      ▼
@@ -234,7 +234,7 @@ Consensus rules applied during verdict synthesis: see @references/verdict-rules.
 ### Plan Review Flow
 
 ```
-START: /avengers-council:plan-review @proposal.md
+START: council-plan-review @proposal.md
   │
   ├─ Captain reads proposal
   ├─ Captain detects CLAUDE.md standards
@@ -275,7 +275,7 @@ START: /avengers-council:plan-review @proposal.md
 ### Code Review Flow
 
 ```
-START: /avengers-council:code-review --pr 123
+START: council-code-review --pr 123
   │
   ├─ Captain gets PR diff
   ├─ Captain detects CLAUDE.md standards

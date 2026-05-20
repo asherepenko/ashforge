@@ -236,7 +236,7 @@ data class UserEntity(
 ## Re-Review Process
 
 **After fixes:**
-1. Request security-focused re-review: `/avengers-council:code-review --pr 456 --focus security`
+1. Request security-focused re-review: invoke the `council-code-review` skill with `--pr 456 --focus security`
 2. Black Widow will verify all CRITICAL issues resolved
 3. Council will re-vote
 4. If CRITICAL issues remain → BLOCKED again
