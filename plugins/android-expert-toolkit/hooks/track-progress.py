@@ -284,9 +284,12 @@ def main():
 
     tool_name = data.get("tool_name", "")
     tool_input = data.get("tool_input", {})
+    tool_output = data.get("tool_response", data.get("tool_output", ""))
+    if not isinstance(tool_output, str):
+        tool_output = json.dumps(tool_output)
 
     try:
-        update_pipeline_state(tool_name, tool_input, "")
+        update_pipeline_state(tool_name, tool_input, tool_output)
     except Exception as e:
         print(f"Warning: Progress tracking error: {e}", file=sys.stderr)
 

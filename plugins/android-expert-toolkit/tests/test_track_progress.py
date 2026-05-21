@@ -5,6 +5,7 @@ Tests artifact detection, stage updates, validation marking, timing data.
 """
 
 import json
+import io
 import sys
 import tempfile
 import shutil
@@ -303,3 +304,63 @@ class TestBashToolHandling:
             )
             state = track_progress.load_state()
             assert len(state["completed_stages"]) == 0
+
+    def test_main_passes_tool_response_to_validation(self, temp_project):
+        state_path = temp_project / ".artifacts" / "aet" / "state.json"
+        state = json.loads(state_path.read_text())
+        state["completed_stages"] = [{
+            "agent": "android-architect",
+            "artifact": ".artifacts/aet/handoffs/test-feature/2026-03-01-100000-architecture-blueprint.md",
+            "completed_at": "2026-03-01T10:05:00Z",
+            "validation_passed": False,
+            "validation_errors": []
+        }]
+        state_path.write_text(json.dumps(state, indent=2))
+
+        payload = {
+            "tool_name": "exec_command",
+            "tool_input": {
+                "cmd": "python3 hooks/validate-handoff.py .artifacts/aet/handoffs/test-feature/2026-03-01-100000-architecture-blueprint.md"
+            },
+            "tool_response": "validation failed\n  - Missing section: Decisions"
+        }
+
+        with patch.object(track_progress, 'get_state_file_path', return_value=state_path):
+            with patch.object(sys, 'stdin', io.StringIO(json.dumps(payload))):
+                with pytest.raises(SystemExit) as exc:
+                    track_progress.main()
+
+        assert exc.value.code == 0
+        updated = json.loads(state_path.read_text())
+        assert updated["completed_stages"][0]["validation_passed"] is False
+        assert updated["completed_stages"][0]["validation_errors"] == ["Missing section: Decisions"]
+
+    def test_main_falls_back_to_tool_output(self, temp_project):
+        state_path = temp_project / ".artifacts" / "aet" / "state.json"
+        state = json.loads(state_path.read_text())
+        state["completed_stages"] = [{
+            "agent": "android-architect",
+            "artifact": ".artifacts/aet/handoffs/test-feature/2026-03-01-100000-architecture-blueprint.md",
+            "completed_at": "2026-03-01T10:05:00Z",
+            "validation_passed": False,
+            "validation_errors": []
+        }]
+        state_path.write_text(json.dumps(state, indent=2))
+
+        payload = {
+            "tool_name": "exec_command",
+            "tool_input": {
+                "cmd": "python3 hooks/validate-handoff.py .artifacts/aet/handoffs/test-feature/2026-03-01-100000-architecture-blueprint.md"
+            },
+            "tool_output": "validation failed\n  - Missing section: Risks"
+        }
+
+        with patch.object(track_progress, 'get_state_file_path', return_value=state_path):
+            with patch.object(sys, 'stdin', io.StringIO(json.dumps(payload))):
+                with pytest.raises(SystemExit) as exc:
+                    track_progress.main()
+
+        assert exc.value.code == 0
+        updated = json.loads(state_path.read_text())
+        assert updated["completed_stages"][0]["validation_passed"] is False
+        assert updated["completed_stages"][0]["validation_errors"] == ["Missing section: Risks"]
