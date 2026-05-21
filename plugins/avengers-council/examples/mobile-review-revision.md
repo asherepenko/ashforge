@@ -1,5 +1,7 @@
 # Avengers Council Verdict — Code Review: Social Feed Feature, Android (Needs Revision)
 
+> **Runtime:** This walkthrough describes behavior on Claude Code (agent team + `SendMessage` debate). On Codex, the same scenario runs via hub-mediated `spawn_agent` rounds — see `references/codex-tools.md` for the primitive mapping and `references/codex-fallback.md` for the single-orchestrator path when `multi_agent` is disabled. Verdict format, decision points, and saved-artifact paths under `.artifacts/reviews/` are identical across runtimes.
+
 **Review Date:** 2026-02-13
 **Review Type:** Code Review (Pull Request #789)
 **Topic:** Add Social Feed Feature (Android)

@@ -41,7 +41,30 @@ enabled = true
 multi_agent = true      # REQUIRED — spawn_agent/wait_agent/close_agent for the debate
 ```
 
-The council uses `spawn_agent` for each debate round; `multi_agent = true` is required. The plugin does not ship Codex-side hooks (the `ExitPlanMode` hook is Claude-only — Codex has no equivalent tool). See [`references/codex-tools.md`](references/codex-tools.md) for the full Claude → Codex primitive mapping including the hub-mediated debate trade-off.
+**Sandbox mode**: Codex must run with `sandbox_mode = "workspace-write"` (or `danger-full-access`) so the council can write verdicts under `.artifacts/reviews/`. `read-only` mode blocks the verdict save (Phase 5) and any post-verdict actions that edit files. Check your `~/.codex/config.toml`:
+
+```toml
+sandbox_mode = "workspace-write"
+```
+
+The council uses `spawn_agent` for each debate round; `multi_agent = true` is required. Without it, skills detect the gap via preflight and fall back to single-orchestrator mode per `references/codex-fallback.md`.
+
+The plugin does not ship Codex-side hooks (the `ExitPlanMode` hook is Claude-only — Codex has no equivalent tool). See [`references/codex-tools.md`](references/codex-tools.md) for the full Claude → Codex primitive mapping including the hub-mediated debate trade-off.
+
+### Project-Level Setup (both runtimes)
+
+The council writes verdict files under `.artifacts/reviews/`. By default these are worth keeping in version control (they form an audit trail). If you'd rather treat them as transient, add to `.gitignore`:
+
+```gitignore
+.artifacts/reviews/
+```
+
+If you keep verdicts versioned but want to exclude any cached / temporary council state, ignore just:
+
+```gitignore
+.artifacts/cassandra/cache/
+.artifacts/tmp/
+```
 
 ## Usage
 

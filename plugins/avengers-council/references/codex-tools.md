@@ -45,6 +45,26 @@ Round 3 — Final Position
 
 **Persona embedding:** before each `spawn_agent`, Captain reads `agents/<member>.md` and pastes the full persona text (omitting the "REFERENCE ONLY" header for `captain-america`) into the spawn prompt. This keeps personas a single source of truth across platforms — no duplication.
 
+## `update_plan` example
+
+Where the orchestration-protocol says "TaskCreate / TaskUpdate", on Codex use `update_plan` instead. Pass the full list of steps each call; mark each step with `pending`, `in_progress`, or `completed`.
+
+```javascript
+update_plan({
+  steps: [
+    { label: "Phase 1 — Assemble Council (roster + spawn)", status: "completed"   },
+    { label: "Phase 2 — Round 1 Initial Assessment",        status: "completed"   },
+    { label: "Phase 3 — Round 2 Challenge",                 status: "in_progress" },
+    { label: "Phase 3 — Round 3 Final Position",            status: "pending"     },
+    { label: "Phase 4 — Synthesize Verdict",                status: "pending"     },
+    { label: "Phase 5 — Save Verdict to .artifacts/reviews/", status: "pending"   },
+    { label: "Phase 6 — Interactive Follow-up",             status: "pending"     }
+  ]
+})
+```
+
+Codex renders the plan to the user as a checklist. Update it at each phase transition so the user can see progress through the 3-round debate. Plan updates are cheap — call them liberally.
+
 ## `--quick` mode (single round)
 
 Both platforms collapse to a single fan-out:

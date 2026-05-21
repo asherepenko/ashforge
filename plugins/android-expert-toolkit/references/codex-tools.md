@@ -24,6 +24,27 @@ This file is platform-glue. Claude Code reads the original tool names natively; 
 | Plugin hooks (`hooks/hooks.json`) | Auto-discovered, fires on all standard events | Mirror manifest at `.codex-plugin/hooks.json` — same JSON schema, see "Hooks" section below |
 | `@references/foo.md` mention in skill/agent text | Claude @-mention — auto-resolves and inlines the file content | No @-mention syntax. Treat any `@references/<file>.md` reference as a `Read` instruction — load the file at that relative path before continuing. The skill bodies use this idiom heavily for `references/orchestration-protocol.md`, `references/codex-tools.md`, `references/codex-fallback.md`, etc. |
 
+## `update_plan` example
+
+Where the skill body says "TaskCreate / TaskUpdate", on Codex use `update_plan` instead. Pass the full list of steps each call; mark each step with `pending`, `in_progress`, or `completed`.
+
+```javascript
+update_plan({
+  steps: [
+    { label: "Step 1 — Validate Android project structure",   status: "completed"   },
+    { label: "Step 2 — Create pipeline branch",                status: "completed"   },
+    { label: "Step 3 — Initialize state.json",                 status: "completed"   },
+    { label: "Step 4 — Dispatch android-architect",            status: "in_progress" },
+    { label: "Step 4 — Dispatch gradle + developer (parallel)", status: "pending"     },
+    { label: "Step 4 — Dispatch compose-expert",               status: "pending"     },
+    { label: "Step 4 — Dispatch android-testing-specialist",   status: "pending"     },
+    { label: "Step 8 — Generate pipeline summary",             status: "pending"     }
+  ]
+})
+```
+
+Codex renders the plan to the user as a checklist. Update it at every stage transition. Plan updates are cheap — call them liberally to keep the user informed.
+
 ## Codex feature flags
 
 ```toml

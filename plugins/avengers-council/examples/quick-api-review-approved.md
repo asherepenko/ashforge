@@ -1,5 +1,7 @@
 # Avengers Council Verdict — Quick Code Review: /api/users Pagination (Approved)
 
+> **Runtime:** This walkthrough describes behavior on Claude Code (agent team + `SendMessage` debate). On Codex, the same scenario runs via hub-mediated `spawn_agent` rounds — see `references/codex-tools.md` for the primitive mapping and `references/codex-fallback.md` for the single-orchestrator path when `multi_agent` is disabled. Verdict format, decision points, and saved-artifact paths under `.artifacts/reviews/` are identical across runtimes.
+
 **Review Date:** 2026-02-14
 **Review Type:** Code Review (Pull Request #234)
 **Topic:** Add Pagination to /api/users Endpoint

@@ -43,9 +43,33 @@ plugin_hooks = true     # enable plugin-bundled hooks (gated separately while in
 multi_agent = true      # required for aet-pipeline parallel agent dispatch
 ```
 
+**Sandbox mode**: Codex must run with `sandbox_mode = "workspace-write"` (or `danger-full-access`) for the plugin to function. `read-only` mode blocks hook writes to `.artifacts/aet/state.json`, handoff artifact creation, and pipeline branch operations. Check your `~/.codex/config.toml`:
+
+```toml
+sandbox_mode = "workspace-write"
+```
+
 On first run Codex will prompt to trust each plugin hook command — accept to record the `trusted_hash` entries. Without trust, hooks register but never execute.
 
 Plugin assets land under `~/.codex/plugins/cache/`. Hooks use `${PLUGIN_ROOT}` (not `${CLAUDE_PLUGIN_ROOT}`). The Codex manifest lives at `.codex-plugin/plugin.json`; hooks at `.codex-plugin/hooks.json`. See [`references/codex-tools.md`](references/codex-tools.md) for the full Claude → Codex tool mapping and the PreToolUse deny-only caveat.
+
+### Project-Level Setup (both runtimes)
+
+The plugin writes pipeline state, handoff artifacts, and detection caches under `.artifacts/aet/`. These are transient per-run outputs — add them to your project's `.gitignore`:
+
+```gitignore
+.artifacts/aet/state.json
+.artifacts/aet/handoffs/
+.artifacts/aet/cache/
+.artifacts/aet/log.md
+```
+
+If you want to keep handoff artifacts in version control (useful for review history and reproducibility), exclude only `state.json` and `cache/`:
+
+```gitignore
+.artifacts/aet/state.json
+.artifacts/aet/cache/
+```
 
 ## Usage
 
