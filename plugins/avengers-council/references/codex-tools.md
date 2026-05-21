@@ -17,6 +17,7 @@ The Claude path is **unchanged** — team primitives still drive Round-1 broadca
 | Round-tracking task list | `TaskCreate` / `TaskUpdate` (optional, for progress) | `update_plan` |
 | Post-verdict action menu | `AskUserQuestion({questions: [{options: [...]}]})` | Print the question and options as plain text and wait for the user's reply. Parse free-form answer. |
 | Plan-mode entry hook | `PreToolUse:ExitPlanMode` (Claude `hooks/council-plan-hook.sh`) | **Claude-only.** Codex has no `ExitPlanMode` tool. Skip the hook — the user invokes the skill explicitly. |
+| `@references/foo.md` mention in skill/agent text | Claude @-mention — auto-resolves and inlines the file content | No @-mention syntax. Treat any `@references/<file>.md` reference as a `Read` instruction — load the file at that relative path before continuing. The skill bodies use this for `references/orchestration-protocol.md`, `references/codex-tools.md`, `references/codex-fallback.md`, `references/red-lines.md`, `references/verdict-rules.md`, etc. |
 
 ## Hub-mediated debate (Codex full mode)
 

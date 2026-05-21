@@ -22,7 +22,7 @@ The canonical mechanism is **orchestrator-mediated context propagation**: every 
 - `SendMessage` to Captain America with your assessments (Round 1 and Round 3)
 - `SendMessage` (broadcast) to share key findings with all teammates (end of Round 1)
 - `SendMessage` (DM) to challenge or support specific teammates (Round 2)
-- Read the team config at `~/.claude/teams/avengers-council/config.json` to discover teammates by name
+- Read the team config at `~/.claude/teams/avengers-council/config.json` to discover teammates by name (Claude-only path — the file does not exist on Codex; teammate names there come directly from the orchestrator's spawn prompt)
 
 **Codex (fresh spawn per round):**
 - You return your Round-1 assessment as the result of the `spawn_agent` call. Captain America picks it up via `wait_agent` and consolidates it with everyone else's into the Round-2 spawn prompt.

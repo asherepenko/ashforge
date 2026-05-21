@@ -1,6 +1,6 @@
 {
   "name": "avengers-council",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Engineering advisory board for reviewing plans, code, and architecture through structured debate with domain scoring and security veto",
   "author": {
     "name": "Andrew Sherepenko",

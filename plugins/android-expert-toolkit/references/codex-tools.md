@@ -22,6 +22,7 @@ This file is platform-glue. Claude Code reads the original tool names natively; 
 | `allowed-tools` frontmatter field | Restricts available tools per command | Not honored — Codex skills inherit whatever the session permits |
 | Plan mode / `ExitPlanMode` tool | First-class plan mode with hook | No equivalent — skip plan-mode hooks |
 | Plugin hooks (`hooks/hooks.json`) | Auto-discovered, fires on all standard events | Mirror manifest at `.codex-plugin/hooks.json` — same JSON schema, see "Hooks" section below |
+| `@references/foo.md` mention in skill/agent text | Claude @-mention — auto-resolves and inlines the file content | No @-mention syntax. Treat any `@references/<file>.md` reference as a `Read` instruction — load the file at that relative path before continuing. The skill bodies use this idiom heavily for `references/orchestration-protocol.md`, `references/codex-tools.md`, `references/codex-fallback.md`, etc. |
 
 ## Codex feature flags
 

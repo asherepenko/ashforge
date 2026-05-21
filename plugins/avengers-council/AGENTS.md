@@ -56,6 +56,19 @@ Codex requires `[features] multi_agent = true` in `~/.codex/config.toml` for par
 - Optional members auto-join based on topic matching. Add new ones via `member-registry.md`. The roster decision happens before any spawn — platform-agnostic.
 - Black Widow retains VETO power on unmitigated CRITICAL security issues — platform-agnostic.
 
+## Persona Frontmatter — Claude-only Metadata
+
+Each `agents/<name>.md` declares frontmatter like:
+
+```yaml
+tools: All tools
+model: sonnet
+```
+
+These fields apply on Claude Code only — they configure Claude's subagent registry. On Codex, `spawn_agent` ignores them: tool availability follows the session's permissions and the model follows the session's configured model. Don't read `model: sonnet` as "this council member runs on Sonnet when invoked from Codex" — it doesn't.
+
+Persona body content (specialty lens, planning/code-review checklists, debate behavior, character) is platform-agnostic and applies on both runtimes. The orchestrator skill reads the persona at runtime and embeds the body text into the Codex `spawn_agent` prompt; the frontmatter is discarded.
+
 ## Hooks (Claude-only)
 
 `hooks/hooks.json` registers `PreToolUse:ExitPlanMode` → `hooks/council-plan-hook.sh`. The hook fires when the user exits Claude plan mode and offers a council review based on the `AVENGERS_COUNCIL_ON_PLAN` env var (off | prompt | auto).

@@ -70,6 +70,19 @@ When `android-expert-toolkit.local.md` exists in the project root with all value
 
 `android-architect`, `android-developer`, and `compose-expert` have `WebFetch`/`WebSearch` for researching patterns and design inspiration. `gradle-build-engineer` and `android-testing-specialist` don't — their work is deterministic (build config, local code testing) and shouldn't drift based on web content.
 
+### Persona frontmatter — Claude-only metadata
+
+Each `agents/<name>.md` declares frontmatter like:
+
+```yaml
+tools: Read, Write, Edit, Bash, Glob, Grep, WebFetch, WebSearch
+model: opus
+```
+
+These fields apply on Claude Code only — they configure Claude's subagent registry. On Codex, `spawn_agent` ignores them: tool availability follows the session's permissions and the model follows the session's configured model. Don't read `model: opus` as "this agent runs on Opus when invoked from Codex" — it doesn't.
+
+Persona body content (specialty lens, checklists, red flags) is platform-agnostic and applies on both runtimes. The skill orchestrator reads the persona at runtime and embeds the body text into the Codex `spawn_agent` prompt; the frontmatter is discarded.
+
 ## Skill
 
 `skills/android-expert/SKILL.md` is the entry point for ad-hoc Android questions ("Room offline-first", "ViewModel StateFlow pattern", etc.) — used when the user isn't running a full pipeline. It points to `references/` for deep dives.

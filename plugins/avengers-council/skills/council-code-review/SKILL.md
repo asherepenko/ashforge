@@ -37,6 +37,17 @@ The preflight's `== Codex multi_agent capability ==` section emits one of:
 
 The fallback skips debate rounds and caps the verdict at APPROVED WITH CONDITIONS (lower-fidelity than the full debate). The cap exists because there is no independent-instance challenge dynamic and no Black Widow security veto from a separate agent — both are mitigations the cap replaces.
 
+## Codex App Sandbox
+
+If running inside a Codex App managed worktree where branch creation, commits, or pushes are blocked (sandbox permission denial), the review still produces its verdict and writes the artifact under `.artifacts/reviews/{code}/council/YYYY-MM-DD/HHMMSS-review-{verdict}.md` — verdict writes work in any sandbox because they're scoped to `.artifacts/`.
+
+What's NOT available in a sandboxed run:
+- "Apply suggested fixes" post-verdict action (Edit calls may succeed but commit/push won't)
+- Re-review after changes that need branch creation
+- `gh pr view` / `gh pr diff` may also fail without authenticated `gh` and network access
+
+If the user picks an action that requires git ops the sandbox blocks, surface the limit explicitly and direct them to use the App's native "Create branch" / "Hand off to local" controls. The verdict and any TODOs created via the `/todo` skill survive the handoff.
+
 ## Arguments
 
 The user invoked the `council-code-review` skill with arguments: $ARGUMENTS

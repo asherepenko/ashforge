@@ -1,7 +1,7 @@
 {
   "name": "avengers-council",
   "description": "Engineering advisory board (8 core members + Captain America orchestrator) for reviewing plans, code, and architecture through structured 3-round debate with domain scoring and security veto",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "author": {
     "name": "Andrew Sherepenko"
   },

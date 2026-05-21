@@ -1,6 +1,6 @@
 ---
 name: council-plan-review
-description: "Use when reviewing planning decisions, design specs, PRDs, or architectural plans with the Avengers Council. Triggers on 'review my plan', 'council feedback on this design', 'sanity check this approach', 'review this plan file', 'council review the plan', or after exiting plan mode. Works on files (@path), free-text topics, or auto-detects .claude/plans/ files."
+description: "Use when reviewing planning decisions, design specs, PRDs, or architectural plans with the Avengers Council. Triggers on 'review my plan', 'council feedback on this design', 'sanity check this approach', 'review this plan file', 'council review the plan'. On Claude Code the skill is also auto-suggested by the PreToolUse:ExitPlanMode hook when AVENGERS_COUNCIL_ON_PLAN is set to prompt or auto (no Codex equivalent — invoke explicitly there). Works on files (@path), free-text topics, or auto-detects .claude/plans/ files."
 argument-hint: "[topic or @file (plan path)] [--focus <area> (e.g. security, scalability)] [--quick (fewer debate rounds)]"
 ---
 
@@ -38,6 +38,16 @@ The preflight's `== Codex multi_agent capability ==` section emits one of:
 | `DISABLED` or `NO_CONFIG` | **Read `@references/codex-fallback.md`** and run single-orchestrator persona walk instead. Do NOT attempt `spawn_agent` — it will fail at the tool layer. |
 
 The fallback skips debate rounds and caps the verdict at APPROVED WITH CONDITIONS (lower-fidelity than the full debate). The cap exists because there is no independent-instance challenge dynamic and no Black Widow security veto from a separate agent — both are mitigations the cap replaces.
+
+## Codex App Sandbox
+
+If running inside a Codex App managed worktree where branch creation, commits, or pushes are blocked (sandbox permission denial), the review still produces its verdict and writes the artifact under `.artifacts/reviews/{plans}/council/YYYY-MM-DD/HHMMSS-review-{verdict}.md` — verdict writes work in any sandbox because they're scoped to `.artifacts/`.
+
+What's NOT available in a sandboxed run:
+- Post-verdict "Address findings now" action that would commit fixes
+- Re-review after changes that need branch creation
+
+If the user picks an action that requires git ops the sandbox blocks, surface the limit explicitly and direct them to use the App's native "Create branch" / "Hand off to local" controls. The verdict and any TODOs created via the `/todo` skill survive the handoff.
 
 ## Arguments
 
