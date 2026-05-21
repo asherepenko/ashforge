@@ -53,4 +53,26 @@ set -uo pipefail
   fi
 ) &
 
+(
+  echo "== Codex multi_agent capability =="
+  # Skip on Claude — parallel Agent dispatch is not gated by a feature flag
+  if [ -z "${CODEX_HOME:-}" ] && [ ! -d "$HOME/.codex" ]; then
+    echo "NOT_CODEX"
+  elif [ -f "${CODEX_HOME:-$HOME/.codex}/config.toml" ]; then
+    # Find `multi_agent = true` under [features] (whitespace-tolerant, comment-safe)
+    if awk '
+      /^\[features\]/ { in_features = 1; next }
+      /^\[/           { in_features = 0 }
+      in_features && /^[[:space:]]*multi_agent[[:space:]]*=[[:space:]]*true/ { found = 1; exit }
+      END { exit !found }
+    ' "${CODEX_HOME:-$HOME/.codex}/config.toml" 2>/dev/null; then
+      echo "ENABLED"
+    else
+      echo "DISABLED"
+    fi
+  else
+    echo "NO_CONFIG"
+  fi
+) &
+
 wait

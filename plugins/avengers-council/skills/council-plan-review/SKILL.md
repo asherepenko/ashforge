@@ -27,6 +27,18 @@ Use the output to short-circuit Step 1 auto-detection: when no `@file` argument 
 
 **Domain artifacts** (CONTEXT.md / docs/adr/) feed Step 1's Domain Model loading and Step 3's per-agent spawn brief. They are NOT part of plan-detection — they're independent context every reviewer must see.
 
+## Multi-Agent Capability Check (Codex only)
+
+The preflight's `== Codex multi_agent capability ==` section emits one of:
+
+| Value | Action |
+|---|---|
+| `NOT_CODEX` | Ignore — Claude `TeamCreate`/`Agent` not gated by a flag. Proceed with full debate. |
+| `ENABLED` | Proceed with full hub-mediated debate (3 rounds × N members). |
+| `DISABLED` or `NO_CONFIG` | **Read `@references/codex-fallback.md`** and run single-orchestrator persona walk instead. Do NOT attempt `spawn_agent` — it will fail at the tool layer. |
+
+The fallback skips debate rounds and caps the verdict at APPROVED WITH CONDITIONS (lower-fidelity than the full debate). The cap exists because there is no independent-instance challenge dynamic and no Black Widow security veto from a separate agent — both are mitigations the cap replaces.
+
 ## Arguments
 
 The user invoked the `council-plan-review` skill with arguments: $ARGUMENTS

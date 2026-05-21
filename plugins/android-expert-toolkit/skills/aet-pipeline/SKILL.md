@@ -23,6 +23,18 @@ The script collects: settings file, module count, top-level modules, existing pi
 
 Use the output to skip the project-discovery phase and pass values through to dispatched agents (architect, gradle-build-engineer) so they don't re-scan. If the `Settings file` section reports `NO_SETTINGS_GRADLE`, abort early — pipeline requires a Gradle project.
 
+## Multi-Agent Capability Check (Codex only)
+
+The preflight's `== Codex multi_agent capability ==` section emits one of:
+
+| Value | Action |
+|---|---|
+| `NOT_CODEX` | Ignore — Claude doesn't gate `Agent` dispatch behind a flag. Proceed with full flow. |
+| `ENABLED` | Proceed with full flow. |
+| `DISABLED` or `NO_CONFIG` | **Read `@references/codex-fallback.md`** and run sequential single-orchestrator dispatch instead. Do NOT attempt `spawn_agent` — it will fail at the tool layer. |
+
+The fallback produces the same pipeline artifacts (`architecture-blueprint.md`, `module-setup.md`, etc.) via sequential persona dispatch by the orchestrating model. Slower (no parallel gradle+developer stage) and lower-fidelity (no peer cross-review), but functional. The state.json records `dispatch_mode: "single-orchestrator-fallback"` so downstream tooling knows what produced the artifacts.
+
 ## Available Pipelines
 
 | Pipeline Type | Purpose | Agents Involved | When to Use |

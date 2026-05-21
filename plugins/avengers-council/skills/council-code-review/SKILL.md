@@ -25,6 +25,18 @@ The script collects: current branch, working tree status, diff stat vs the merge
 
 Use the output to bound review scope before Step 1: if `git status -s` is empty AND no commits ahead → no `--diff` to review; ask user to clarify target. If `--pr <n>` was passed, this section is informational only — gh pr fetch still required in Step 1.
 
+## Multi-Agent Capability Check (Codex only)
+
+The preflight's `== Codex multi_agent capability ==` section emits one of:
+
+| Value | Action |
+|---|---|
+| `NOT_CODEX` | Ignore — Claude `TeamCreate`/`Agent` not gated by a flag. Proceed with full debate. |
+| `ENABLED` | Proceed with full hub-mediated debate (3 rounds × N members). |
+| `DISABLED` or `NO_CONFIG` | **Read `@references/codex-fallback.md`** and run single-orchestrator persona walk instead. Do NOT attempt `spawn_agent` — it will fail at the tool layer. |
+
+The fallback skips debate rounds and caps the verdict at APPROVED WITH CONDITIONS (lower-fidelity than the full debate). The cap exists because there is no independent-instance challenge dynamic and no Black Widow security veto from a separate agent — both are mitigations the cap replaces.
+
 ## Arguments
 
 The user invoked the `council-code-review` skill with arguments: $ARGUMENTS
