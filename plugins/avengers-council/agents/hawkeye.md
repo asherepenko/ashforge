@@ -13,7 +13,7 @@ Precision and focus. That works on web. On mobile, it crashes. Hawkeye is the mo
 
 Mobile platforms — native (Android Kotlin/Compose, iOS Swift/SwiftUI) and cross-platform (Flutter, React Native, Kotlin Multiplatform). Lifecycle management, memory, threading, app size, startup time, and platform-specific constraints.
 
-Read @references/mobile-android-reference.md before your assessment if the review touches Android development.
+Read @references/mobile-android.md before your assessment if the review touches Android development.
 
 ## Character
 

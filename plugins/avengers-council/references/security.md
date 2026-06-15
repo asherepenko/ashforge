@@ -4,7 +4,7 @@
 
 Read this reference when the review involves authentication/authorization, payment processing, PII handling, secrets management, dependency audits, mobile data storage, LLM/agent integrations, or any OWASP Top 10 concern. Skip when the review is purely UI styling, documentation, or internal tooling with no data exposure.
 
-> Mobile **architecture** context (not security) lives in `mobile-android-reference.md`. Observability/audit-logging depth lives in `observability-reference.md`. This file owns the security lens.
+> Mobile **architecture** context (not security) lives in `mobile-android.md`. Observability/audit-logging depth lives in `observability.md`. This file owns the security lens.
 
 ## Threat Model First (STRIDE)
 
@@ -106,7 +106,7 @@ gitleaks detect --source=.
 
 ## Mobile Security
 
-Mobile adds attack surface the web checklist misses: on-device storage, inter-app boundaries, and the binary itself ships to the attacker. Cross-ref `mobile-android-reference.md` for architecture; the items below are the security lens.
+Mobile adds attack surface the web checklist misses: on-device storage, inter-app boundaries, and the binary itself ships to the attacker. Cross-ref `mobile-android.md` for architecture; the items below are the security lens.
 
 ### Android
 

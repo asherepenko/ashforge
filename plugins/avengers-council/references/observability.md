@@ -124,3 +124,47 @@ Benefit: Searchable, parseable logs in production
 Recommendation: Enable PostgreSQL log_min_duration_statement = 100
 Benefit: Identify performance bottlenecks before they impact users
 ```
+
+## Mobile Observability
+
+Mobile telemetry differs from backend — there are no server logs to grep. You get crash reports, analytics events, and on-device traces shipped from the field, so instrument **before** release; the first crash report is often your only window into a bug. Never log PII/tokens (cross-ref `security.md`).
+
+### Android
+
+**Detection:**
+```bash
+grep -q "firebase-crashlytics\|crashlytics" build.gradle* 2>/dev/null && echo "✓ Crashlytics"
+grep -q "firebase-analytics" build.gradle* 2>/dev/null && echo "✓ Analytics"
+grep -rq "androidx.tracing\|Trace.beginSection" . 2>/dev/null && echo "✓ Perfetto/systrace tracing"
+grep -rq "StrictMode" . 2>/dev/null && echo "✓ StrictMode (dev)"
+```
+
+**Signals:**
+- **Crashes / ANRs**: Crashlytics (or Sentry) — record handled exceptions via `recordException`, not just fatals. ANR rate surfaces in Play Console vitals.
+- **Analytics events**: structured events (stable names + typed params), not free-text logs — the mobile form of "log events, not prose."
+- **Tracing**: `androidx.tracing` `Trace.beginSection` / Perfetto for custom spans; frame-level via `systrace`.
+- **Logging**: `Timber`/structured logger; strip verbose logs in release (R8). No PII/tokens.
+- **Vitals (RUM equivalent)**: Play Console Android Vitals — ANR rate, crash-free rate, frozen/slow frames.
+
+**Example finding:**
+```
+❌ HIGH: Network failure path swallows the exception with no telemetry
+Recommendation: Crashlytics.recordException() in the catch + an analytics event tagged with the error class
+Benefit: Field failures become queryable instead of invisible
+```
+
+### iOS
+
+**Signals:**
+- **Crashes / hangs**: Crashlytics/Sentry; MetricKit `MXCrashDiagnostic` + `MXHangDiagnostic` for field diagnostics.
+- **Metrics (RUM equivalent)**: **MetricKit** `MXMetricPayload` — launch time, hang rate, hitches, memory, disk, battery — daily aggregated from the field.
+- **Tracing / signposts**: `os_signpost` / `OSLog` (`Logger`) with structured, privacy-annotated fields (`.public` / `.private`); Instruments consumes signposts.
+- **Logging**: unified logging (`OSLog`), not `print`; mark user data `.private` so it's redacted.
+- **Vitals**: Xcode Organizer — crash rate, hang rate, launch time, disk writes.
+
+**Example finding:**
+```
+⚠️ MEDIUM: Logging via print() — not captured in production
+Recommendation: Use OSLog/Logger with structured fields; mark user data .private
+Benefit: Queryable, redacted logs visible in Console and Organizer
+```

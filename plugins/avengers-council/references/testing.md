@@ -21,10 +21,9 @@ test -f pytest.ini && echo "✓ pytest configured"
 # Android
 grep -q "junit" build.gradle.kts 2>/dev/null && echo "✓ JUnit detected"
 grep -q "turbine" build.gradle.kts 2>/dev/null && echo "✓ Turbine (Flow testing)"
-
-# Check for android-expert-toolkit (Android testing patterns)
-ls ~/.claude/plugins/cache/*/android-expert-toolkit/*/skills/android-expert/SKILL.md 2>/dev/null >/dev/null && echo "✓ android-expert-toolkit available"
 ```
+
+> `android-expert-toolkit` adds deeper Android testing patterns when installed — it surfaces in your available-skills list (don't probe the filesystem). Cite its guidance if present.
 
 ## Framework-Specific Patterns
 

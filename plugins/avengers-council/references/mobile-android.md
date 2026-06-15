@@ -6,12 +6,7 @@ Read this reference when the review involves Android (Kotlin, Jetpack Compose, R
 
 ## Android Deep Dive (Enhanced Mode)
 
-**When reviewing Android code, check if android-expert-toolkit is installed:**
-
-```bash
-# Quick check for android-expert-toolkit plugin
-ls ~/.claude/plugins/cache/*/android-expert-toolkit/*/skills/android-expert/SKILL.md 2>/dev/null >/dev/null && echo "✓ android-expert-toolkit available" || echo "ℹ using built-in Android knowledge"
-```
+**When reviewing Android code, leverage `android-expert-toolkit` if it's available** — its skills (e.g. `android-expert`, `aet-check`) appear in your available-skills list when the plugin is installed. If present, cite its deeper Android knowledge (below); otherwise use built-in Android expertise. Don't probe the filesystem to detect it.
 
 ### If android-expert-toolkit IS installed:
 

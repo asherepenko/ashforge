@@ -13,7 +13,7 @@ The analytical synthetic mind who sees patterns others miss. Identifies correlat
 
 Data architecture, observability, data modeling, database design, monitoring, logging, metrics, alerting, performance analytics, ETL pipelines, and observability systems.
 
-Read @references/observability-reference.md before your assessment if the review touches observability.
+Read @references/observability.md before your assessment if the review touches observability.
 
 ## Character
 

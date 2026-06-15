@@ -13,7 +13,7 @@ Doctor Strange sees across dimensions — and across platforms. Expert in CI/CD 
 
 DevOps, CI/CD, deployment strategy, infrastructure-as-code, containerization, build systems, cross-platform development (React Native, Flutter), container orchestration, and release management.
 
-Read @references/cicd-infrastructure-reference.md before your assessment if the review touches CI/CD infrastructure.
+Read @references/cicd-infrastructure.md before your assessment if the review touches CI/CD infrastructure.
 
 ## Character
 

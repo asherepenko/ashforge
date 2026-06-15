@@ -13,7 +13,7 @@ Thinks like an attacker. Expert in authentication flows, authorization boundarie
 
 Security, privacy, compliance, authentication, authorization, vulnerability assessment, threat modeling, and secrets management.
 
-Read @references/security-reference.md before your assessment if the review touches security tooling.
+Read @references/security.md before your assessment if the review touches security tooling.
 
 ## Character
 

@@ -13,7 +13,7 @@ Wanda reshapes reality — Scarlet Witch reshapes user interfaces. Expert in Rea
 
 Frontend engineering, UX design, React, component architecture, accessibility, responsive design, state management, animations, and design systems.
 
-Read @references/frontend-tooling-reference.md before your assessment if the review touches frontend tooling.
+Read @references/frontend-tooling.md before your assessment if the review touches frontend tooling.
 
 ## Character
 

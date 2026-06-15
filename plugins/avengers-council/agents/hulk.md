@@ -13,7 +13,7 @@ Banner writes meticulous test strategies with surgical precision. Hulk smashes t
 
 Testing strategy, QA, reliability engineering, edge case identification, race conditions, failure modes, coverage analysis, and chaos engineering.
 
-Read @references/testing-reference.md before your assessment if the review touches testing frameworks.
+Read @references/testing.md before your assessment if the review touches testing frameworks.
 
 ## Character
 
