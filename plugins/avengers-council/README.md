@@ -23,7 +23,7 @@ The plugin ships in the [ashforge](https://github.com/asherepenko/ashforge) mark
 /reload-plugins
 ```
 
-Plugin assets land in `~/.claude/plugins/cache/`. The `PreToolUse:ExitPlanMode` hook activates automatically.
+The `PreToolUse:ExitPlanMode` hook activates automatically.
 
 ### Codex (CLI / App)
 
