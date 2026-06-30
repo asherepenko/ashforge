@@ -2,21 +2,21 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "apply_patch",
+        "matcher": "Write",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${PLUGIN_ROOT}/hooks/track-progress.py",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/track-progress.py\"",
             "timeout": 10
           }
         ]
       },
       {
-        "matcher": "local_shell|shell|shell_command|exec_command",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${PLUGIN_ROOT}/hooks/track-progress.py",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/track-progress.py\"",
             "timeout": 10
           }
         ]
@@ -24,11 +24,12 @@
     ],
     "SessionStart": [
       {
+        "matcher": "startup|resume|clear",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${PLUGIN_ROOT}/hooks/session-start.py",
-            "timeout": 5
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/session-start.py\"",
+            "timeout": 30
           }
         ]
       }
