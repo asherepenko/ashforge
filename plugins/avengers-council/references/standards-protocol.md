@@ -4,7 +4,7 @@
 
 Every Avengers Council review session begins with comprehensive standards detection. Captain America's job is to surface what standards exist in the project and validate whether the plan or code aligns with them.
 
-For detailed examples, see @references/standards-examples.md
+For detailed examples, see @assets/standards-examples.md
 
 ## Table of Contents
 
@@ -48,7 +48,7 @@ When found, capture for downstream phases:
 These feed two places:
 - **Phase 3 plan checklist** (a new ADR-consistency item)
 - **Phase 5 downgrade rules** (unacknowledged ADR contradiction → minimum NEEDS REVISION)
-- **Per-agent spawn brief** in `orchestration-protocol.md#step-3-spawn-template` (the agents need to see them)
+- **Per-agent spawn brief** in `orchestration-protocol.md#step-3-spawn-teammates` (the agents need to see them)
 
 If neither artifact exists, skip silently — greenfield repos and operational changes (CI, deps, infra) don't require domain alignment.
 

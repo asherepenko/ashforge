@@ -72,13 +72,11 @@ def test_mode_auto():
 
     assert exit_code == 0, "Hook should exit successfully"
 
-    # Verify decision field blocks the tool call
-    assert "decision" in output, "Should have decision field"
-    assert output["decision"] == "block", "Should block ExitPlanMode"
-    assert "reason" in output, "Should have reason field"
-
-    # Verify hookSpecificOutput still present
+    # Verify permissionDecision blocks the tool call (current PreToolUse schema)
     assert "hookSpecificOutput" in output, "Should have hookSpecificOutput"
+    hso = output["hookSpecificOutput"]
+    assert hso.get("permissionDecision") == "deny", "Should deny ExitPlanMode"
+    assert "permissionDecisionReason" in hso, "Should have permissionDecisionReason"
     assert "additionalContext" in output["hookSpecificOutput"], "Should have additionalContext"
 
     context = output["hookSpecificOutput"]["additionalContext"]
@@ -118,14 +116,16 @@ def test_json_format_valid():
         assert isinstance(output["hookSpecificOutput"]["additionalContext"], str), \
             f"Mode '{mode}' additionalContext should be string"
 
-    # Verify auto mode has decision field
+    # Verify auto mode denies via permissionDecision
     _, auto_output = run_hook("auto")
-    assert auto_output.get("decision") == "block", "Auto mode should have decision: block"
-    assert "reason" in auto_output, "Auto mode should have reason field"
+    auto_hso = auto_output["hookSpecificOutput"]
+    assert auto_hso.get("permissionDecision") == "deny", "Auto mode should deny"
+    assert "permissionDecisionReason" in auto_hso, "Auto mode should have permissionDecisionReason"
 
-    # Verify prompt mode does NOT have decision field
+    # Verify prompt mode does NOT deny
     _, prompt_output = run_hook("prompt")
-    assert "decision" not in prompt_output, "Prompt mode should not block"
+    assert "permissionDecision" not in prompt_output.get("hookSpecificOutput", {}), "Prompt mode should not block"
+    assert "decision" not in prompt_output, "Prompt mode should not use deprecated decision field"
 
     print("✓ JSON format valid for prompt and auto modes")
 

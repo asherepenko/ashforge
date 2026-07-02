@@ -359,7 +359,7 @@ Assistant: [implements]
 ## See Also
 
 - **[README.md](../README.md)** — Plugin overview and installation
-- **[commands.md](commands.md)** — Command reference
+- **[skills.md](skills.md)** — Skill reference
 - **[references/debate-protocol.md](../references/debate-protocol.md)** — How council debate works
 - **[examples/](../examples/)** — Example council verdicts
 

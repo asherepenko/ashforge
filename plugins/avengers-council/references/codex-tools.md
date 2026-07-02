@@ -43,7 +43,7 @@ Round 3 — Final Position
 
 **Cost:** ~3× the spawn count vs Claude's single-team approach. **Fidelity:** preserved — every cross-agent finding flows through the orchestrator's next-round prompt instead of through SendMessage.
 
-**Persona embedding:** before each `spawn_agent`, Captain reads `agents/<member>.md` and pastes the full persona text (omitting the "REFERENCE ONLY" header for `captain-america`) into the spawn prompt. This keeps personas a single source of truth across platforms — no duplication.
+**Persona embedding:** before each `spawn_agent`, Captain reads `agents/<member>.md` and pastes the full persona text into the spawn prompt. This keeps personas a single source of truth across platforms — no duplication. (Captain America is never spawned — the orchestrator role is defined in `references/captain-america-orchestrator.md`.)
 
 ## `update_plan` example
 
@@ -87,12 +87,12 @@ Without `multi_agent`, the skill must fall back to single-orchestrator-perspecti
 
 ## Read-only environment (Codex App sandbox)
 
-If commits / branch creation are blocked, the council can still produce its verdict and write the artifact under `.artifacts/avengers-council/`. Direct the user to use Codex App's "Create branch" / "Hand off to local" controls for any follow-through actions.
+If commits / branch creation are blocked, the council can still produce its verdict and write the artifact under `.artifacts/reviews/`. See `references/codex-runtime-notes.md#codex-app-sandbox` for the full list of sandbox limits. Direct the user to use Codex App's "Create branch" / "Hand off to local" controls for any follow-through actions.
 
 ## What stays identical across platforms
 
 - All persona files in `agents/`
-- `references/verdict-rules.md`, `shared-principles.md`, `red-lines.md`, `member-registry.md`, `standards-protocol.md`, `verdict-template.md`
+- `references/verdict-rules.md`, `shared-principles.md`, `red-lines.md`, `member-registry.md`, `standards-protocol.md`, and `assets/verdict-template.md`
 - Domain-scoring math (1-10 per member, aggregate < 5.0 → NEEDS REVISION)
 - Black Widow's veto on unmitigated CRITICAL security findings
 - Optional-member auto-join based on topic-tag matching (decided pre-spawn by the orchestrator)

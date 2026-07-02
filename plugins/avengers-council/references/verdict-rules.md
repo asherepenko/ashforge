@@ -1,6 +1,13 @@
 # Verdict Consensus Rules & Severity Guidelines
 
-Canonical rules for determining council verdict outcomes. Referenced by verdict-template.md and agents/captain-america.md.
+Canonical rules for determining council verdict outcomes. Referenced by assets/verdict-template.md and references/captain-america-orchestrator.md.
+
+## Contents
+
+- [Consensus Rules (N voters)](#consensus-rules-n-voters) — vote thresholds + severity-weighted consensus
+- [Domain Scoring](#domain-scoring) — per-member scores, aggregate, interpretation, override rule
+- [Severity Guidelines](#severity-guidelines) — CRITICAL / HIGH / MEDIUM / LOW definitions
+- [Quick Mode Consensus Rules (3 voters)](#quick-mode-consensus-rules-3-voters) — abbreviated quorum rules
 
 ## Consensus Rules (N voters)
 

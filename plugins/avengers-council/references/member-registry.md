@@ -2,6 +2,13 @@
 
 Single source of truth for the Avengers Council roster. The orchestration protocol reads this to determine which members to spawn.
 
+## Contents
+
+- [Core Members (always active)](#core-members-always-active) — the 8-member roster
+- [Optional Members (topic-activated)](#optional-members-topic-activated) — auto-join criteria and threshold math
+- [Quick Mode Member Selection](#quick-mode-member-selection) — focus and code-review routing tables
+- [How to Add a New Optional Member](#how-to-add-a-new-optional-member) — extensibility steps
+
 ## Core Members (always active)
 
 Core members participate in every full council session. They define the council's identity.
@@ -17,7 +24,7 @@ Core members participate in every full council session. They define the council'
 | vision | avengers-council:vision | Data & Observability | data, monitoring, logging, metrics, alerting, etl |
 | doctor-strange | avengers-council:doctor-strange | DevOps & Infrastructure | devops, cicd, deployment, containers, infrastructure-as-code |
 
-**Captain America** (orchestrator) is always the session model — never spawned as a teammate. See `agents/captain-america.md`.
+**Captain America** (orchestrator) is always the session model — never spawned as a teammate. See `references/captain-america-orchestrator.md`.
 
 ## Optional Members (topic-activated)
 

@@ -6,6 +6,17 @@ Read this reference when the review involves authentication/authorization, payme
 
 > Mobile **architecture** context (not security) lives in `mobile-android.md`. Observability/audit-logging depth lives in `observability.md`. This file owns the security lens.
 
+## Contents
+
+- [Threat Model First (STRIDE)](#threat-model-first-stride) — think attacker before controls
+- [Three-Tier Baseline](#three-tier-baseline) — Always Do / Ask First / Never Do
+- [Security Tooling Integration](#security-tooling-integration) — SAST, dependency, secret, header scans
+- [Recommend Security Scans in Findings](#recommend-security-scans-in-findings) — citing scans in verdicts
+- [Mobile Security](#mobile-security) — Android and iOS specifics
+- [LLM / Agent Security](#llm--agent-security) — prompt injection, tool misuse
+- [Enhanced Finding Format](#enhanced-finding-format) — security finding template
+- [OWASP Top 10 (2021) Quick Reference](#owasp-top-10-2021-quick-reference)
+
 ## Threat Model First (STRIDE)
 
 Controls bolted on without a threat model are guesses. Before judging or recommending controls, spend a few minutes thinking like an attacker:

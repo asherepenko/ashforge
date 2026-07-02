@@ -4,6 +4,14 @@
 
 Read this reference when the review involves logging, metrics, distributed tracing, APM, alerting thresholds, or data pipeline instrumentation. Use to cite stack-specific patterns (Winston/Pino, Prometheus, OpenTelemetry, Sentry, etc.) in findings. Skip for reviews that don't touch observability surface.
 
+## Contents
+
+- [Observability Stack Detection](#observability-stack-detection) — detection commands
+- [Stack-Specific Recommendations](#stack-specific-recommendations) — Prometheus, OpenTelemetry, Sentry
+- [Logging Standards](#logging-standards) — structure, levels, redaction
+- [Database Observability](#database-observability) — query monitoring
+- [Mobile Observability](#mobile-observability) — Android and iOS
+
 ## Observability Stack Detection
 
 **Detect monitoring and observability infrastructure:**

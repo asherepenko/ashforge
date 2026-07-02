@@ -165,7 +165,7 @@ avengers-council/
 | [docs/architecture.md](docs/architecture.md) | System architecture and data flow |
 | [references/debate-protocol.md](references/debate-protocol.md) | How rounds, challenges, and consensus work |
 | [references/verdict-rules.md](references/verdict-rules.md) | Severity guidelines and verdict thresholds |
-| [references/verdict-template.md](references/verdict-template.md) | Output format for saved verdicts |
+| [assets/verdict-template.md](assets/verdict-template.md) | Output format for saved verdicts |
 | [CLAUDE.md](CLAUDE.md) | Plugin internals (for maintainers) |
 
 ## License

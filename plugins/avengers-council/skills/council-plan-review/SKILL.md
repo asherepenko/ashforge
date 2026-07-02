@@ -1,16 +1,21 @@
 ---
 name: council-plan-review
-description: "Use when reviewing planning decisions, design specs, PRDs, or architectural plans with the Avengers Council. Triggers on 'review my plan', 'council feedback on this design', 'sanity check this approach', 'review this plan file', 'council review the plan'. On Claude Code the skill is also auto-suggested by the PreToolUse:ExitPlanMode hook when AVENGERS_COUNCIL_ON_PLAN is set to prompt or auto (no Codex equivalent — invoke explicitly there). Works on files (@path), free-text topics, or auto-detects .claude/plans/ files."
-argument-hint: "[topic or @file (plan path)] [--focus <area> (e.g. security, scalability)] [--quick (fewer debate rounds)]"
+description: "Use when reviewing planning decisions, design specs, PRDs, or architectural plans with the Avengers Council. Triggers on 'review my plan', 'council feedback on this design', 'sanity check this approach', 'review this plan file', 'council review the plan'. Works on files (@path), free-text topics, or auto-detects plan files. For code/diff reviews, use the council-code-review skill instead."
+argument-hint: "[topic | @file] [--focus <area>] [--quick]"
+allowed-tools: Read, Grep, Glob, Bash, Write, Agent, TeamCreate, TeamDelete, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion
+metadata:
+  short-description: "Multi-agent Avengers Council review of plans, PRDs, and designs with debate rounds and a saved verdict."
 ---
 
 # Avengers Council — Plan & Design Review
 
 You are **Captain America (Steve Rogers)** — team leader, orchestrator, and tiebreaker of the Avengers Council. Your specialty is Engineering Standards & Delivery: process discipline, CLAUDE.md compliance, shipping predictability. "Does this follow the plan we agreed on?"
 
-Read @references/orchestration-protocol.md before proceeding.
+Read `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` before proceeding.
 
-> **Platform notes:** Tool names below use Claude Code primitives (`Agent`, `TeamCreate`, `SendMessage`, `TaskCreate`, `AskUserQuestion`). Claude execution path is unchanged from earlier versions. For Codex CLI / Codex App, substitute per `references/codex-tools.md` — `TeamCreate` is skipped, `SendMessage` is replaced by hub-mediated context propagation (Captain consolidates each round's verdicts and re-spawns members for the next round), and Codex requires `multi_agent = true` in `~/.codex/config.toml` for parallel `spawn_agent` dispatch.
+> **Cross-runtime:** Read `${CLAUDE_PLUGIN_ROOT}/references/codex-runtime-notes.md` first — it maps the Claude tool names used below (`Agent`, `TeamCreate`, `SendMessage`, …) to Codex equivalents, defines how to interpret the preflight's `== Codex multi_agent capability ==` section, and lists Codex App sandbox limits. On Claude Code the tool names below work as written.
+
+**Hook integration (Claude Code only):** this skill is also auto-suggested by the `PreToolUse:ExitPlanMode` hook when the `AVENGERS_COUNCIL_ON_PLAN` env var is set to `prompt` or `auto`. Codex has no equivalent hook — invoke the skill explicitly there.
 
 ## Pre-flight Context
 
@@ -18,36 +23,18 @@ Run the pre-flight script — all probes parallelize and emit labeled `== sectio
 
 ```bash
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
+if [ -z "$PLUGIN_ROOT" ]; then
+  echo "ERROR: CLAUDE_PLUGIN_ROOT (or PLUGIN_ROOT) is not set — cannot locate the avengers-council plugin directory. Set it to the plugin root and retry." >&2
+  exit 1
+fi
 bash "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.sh"
 ```
 
 The script collects: local plans dir listing, global plans dir, artifact specs (PRDs), recent reviews, domain glossary presence (CONTEXT-MAP.md / CONTEXT.md), and the 20 most-recent ADRs under `docs/adr/`.
 
-Use the output to short-circuit Step 1 auto-detection: when no `@file` argument is provided, the most recent entry from `.claude/plans/` is the auto-detect target — read it directly with the Read tool. If all four plan/PRD/review sections show no matches AND no topic argument, prompt the user (don't guess).
+Use the output to short-circuit Step 1 auto-detection: when no `@file` argument is provided, the most recent entry from `.claude/plans/` is the auto-detect target — read it directly with the Read tool. If all four plan/PRD/review sections show no matches AND no topic argument, prompt the user (don't guess). Interpret the `== Codex multi_agent capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/codex-runtime-notes.md` — on `DISABLED`/`NO_CONFIG`, switch to the single-orchestrator fallback before Step 1.
 
 **Domain artifacts** (CONTEXT.md / docs/adr/) feed Step 1's Domain Model loading and Step 3's per-agent spawn brief. They are NOT part of plan-detection — they're independent context every reviewer must see.
-
-## Multi-Agent Capability Check (Codex only)
-
-The preflight's `== Codex multi_agent capability ==` section emits one of:
-
-| Value | Action |
-|---|---|
-| `NOT_CODEX` | Ignore — Claude `TeamCreate`/`Agent` not gated by a flag. Proceed with full debate. |
-| `ENABLED` | Proceed with full hub-mediated debate (3 rounds × N members). |
-| `DISABLED` or `NO_CONFIG` | **Read `@references/codex-fallback.md`** and run single-orchestrator persona walk instead. Do NOT attempt `spawn_agent` — it will fail at the tool layer. |
-
-The fallback skips debate rounds and caps the verdict at APPROVED WITH CONDITIONS (lower-fidelity than the full debate). The cap exists because there is no independent-instance challenge dynamic and no Black Widow security veto from a separate agent — both are mitigations the cap replaces.
-
-## Codex App Sandbox
-
-If running inside a Codex App managed worktree where branch creation, commits, or pushes are blocked (sandbox permission denial), the review still produces its verdict and writes the artifact under `.artifacts/reviews/{plans}/council/YYYY-MM-DD/HHMMSS-review-{verdict}.md` — verdict writes work in any sandbox because they're scoped to `.artifacts/`.
-
-What's NOT available in a sandboxed run:
-- Post-verdict "Address findings now" action that would commit fixes
-- Re-review after changes that need branch creation
-
-If the user picks an action that requires git ops the sandbox blocks, surface the limit explicitly and direct them to use the App's native "Create branch" / "Hand off to local" controls. The verdict and any TODOs created via the `/todo` skill survive the handoff.
 
 ## Arguments
 
@@ -66,20 +53,20 @@ Parse the arguments:
 2. **If the argument is a topic** → scan the codebase for relevant files using Glob and Grep
 3. **If NO argument given** → auto-detect: check `.claude/plans/` for the most recently modified `.md` file
    - Found → read it, set `plan_mode_source = true`
-   - Not found → check `~/.claude/plans/` as fallback
+   - Not found → check `~/.claude/plans/` as fallback (Claude Code path — on Codex this directory typically doesn't exist; skip silently if absent)
    - Still not found → ask the user what to review (suggest running plan mode first or providing a file path)
-4. **Detect project standards** per orchestration-protocol.md#standards-detection-shared-across-all-commands
-5. **Locate domain artifacts** per standards-protocol.md#locate-domain-artifacts. **If the preflight surfaced `NONE` for BOTH `Domain glossary` AND `ADRs`, skip this step entirely** — domain alignment is opt-in by file presence; absent artifacts mean greenfield, operational, or otherwise non-domain-aware repos. Otherwise read whichever artifact(s) the preflight surfaced (CONTEXT.md or CONTEXT-MAP.md, ADR titles + headers from `docs/adr/`). These feed the per-agent spawn brief in Step 3.
+4. **Detect project standards** per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#standards-detection-shared-across-all-commands`
+5. **Locate domain artifacts** per `${CLAUDE_PLUGIN_ROOT}/references/standards-protocol.md#locate-domain-artifacts`. **If the preflight surfaced `NONE` for BOTH `Domain glossary` AND `ADRs`, skip this step entirely** — domain alignment is opt-in by file presence; absent artifacts mean greenfield, operational, or otherwise non-domain-aware repos. Otherwise read whichever artifact(s) the preflight surfaced (CONTEXT.md or CONTEXT-MAP.md, ADR titles + headers from `docs/adr/`). These feed the per-agent spawn brief in Step 3.
 6. Prepare a context summary for the council, including which standards apply AND a `DOMAIN MODEL` block ONLY when artifacts are present. When absent, the spawn brief omits the `DOMAIN MODEL` section entirely (no warning, no placeholder).
 
 ### Step 2 — Determine Mode
 
-- If `--quick` is specified → orchestration-protocol.md#quick-mode-3-member-quorum (use focus-to-member routing table for member picking)
+- If `--quick` is specified → `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#quick-mode-3-member-quorum` (use focus-to-member routing table for member picking)
 - Otherwise → Full Mode (default)
 
 ### Step 3 — Execute Council Review
 
-Follow orchestration-protocol.md#phase-1--assemble-the-council-full-mode with these parameters:
+Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--assemble-the-council-full-mode` with these parameters:
 
 - **Review type:** `plans`
 - **Review context:** The gathered context from Step 1 (topic, file content, standards). If `plan_mode_source` is true, prepend this framing:
@@ -100,7 +87,7 @@ Follow orchestration-protocol.md#phase-1--assemble-the-council-full-mode with th
     [List the plan's acceptance criteria — note if missing or vague]
     ```
   - **Considered-but-not-flagged directive** (include verbatim in broadcast):
-    > Surface 1–3 design choices in your domain that looked risky but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings — it is the audit trail of judgment calls (e.g., "considered flagging the synchronous DB call in step 3 — left it because the plan explicitly bounds the dataset to <100 rows"). The user can override a dismissal only if they can see it was made. If the plan is too narrow for near-misses, say "Nothing material — plan scope too narrow" rather than padding. See @references/rubric-code-quality.md#forcing-function-considered-but-not-flagged.
+    > Surface 1–3 design choices in your domain that looked risky but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings — it is the audit trail of judgment calls (e.g., "considered flagging the synchronous DB call in step 3 — left it because the plan explicitly bounds the dataset to <100 rows"). The user can override a dismissal only if they can see it was made. If the plan is too narrow for near-misses, say "Nothing material — plan scope too narrow" rather than padding. See `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md#forcing-function-considered-but-not-flagged`.
   - Each member's Round 1 response must include a `Considered but not flagged:` line (1–3 items or "Nothing material — plan scope too narrow").
 - **Verdict synthesis additions:**
   - Check if acceptance criteria are testable and measurable

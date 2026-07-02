@@ -4,6 +4,15 @@
 
 Read this reference when the review involves React components, design systems, Next.js/SSR patterns, accessibility, or frontend performance. Detects installed frontend skills (ui-ux-pro-max, vercel-react-best-practices, frontend-design, next-best-practices) to leverage deeper analysis. Skip for backend, infra, or non-UI reviews.
 
+## Contents
+
+- [Frontend Deep Dive (Enhanced Mode)](#frontend-deep-dive-enhanced-mode) — skill detection commands
+- [If ui-ux-pro-max IS available](#if-ui-ux-pro-max-is-available) — design-system patterns
+- [If vercel-react-best-practices IS available](#if-vercel-react-best-practices-is-available) — React optimization patterns
+- [If next-best-practices IS available](#if-next-best-practices-is-available) — Next.js conventions
+- [If frontend-design IS available](#if-frontend-design-is-available) — creative design patterns
+- [If NO frontend tools available (Fallback)](#if-no-frontend-tools-available-fallback) — built-in React/UX checks
+
 ## Frontend Deep Dive (Enhanced Mode)
 
 **Check for specialized frontend tooling:**

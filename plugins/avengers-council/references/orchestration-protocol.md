@@ -111,11 +111,13 @@ Check for red line violations (references/red-lines.md) in your domain.
 
 ROUND 1 INSTRUCTIONS:
 Review this from your specialty lens using your [planning|code review] checklist.
-Send your assessment to captain-america with:
+Send your assessment to captain-america using the Round-1 format from
+references/debate-protocol.md#round-1--initial-assessment (canonical — do not improvise fields):
 - Verdict: APPROVE / CONCERNS / REJECT
 - Domain Score: X/10 (your domain)
 - Key Findings: max 5, each with severity (CRITICAL/HIGH/MEDIUM/LOW)
 - Red Line Violations: any from references/red-lines.md (or 'None')
+- Considered but not flagged: 1-3 near-misses with reasoning (or 'Nothing material — scope too narrow')
 - Recommendation: 1-2 sentences
 
 Then broadcast your key findings to all teammates.
@@ -143,11 +145,14 @@ Follow the debate protocol from your agent definition for all rounds.",
 
 **Optional members** are listed in @references/member-registry.md. Spawn any that matched in Step 1 using the same prompt template.
 
-**Context optimization:** If the review context exceeds 200 lines (large diffs, multi-file PRs), write it to `.artifacts/tmp/council-context.md` and reference it in the spawn prompt rather than embedding in each prompt.
-
 ### Context Management
 
-If the review target exceeds 500 lines (large PR, lengthy plan), summarize changes by file before distributing to agents. Provide full content path so agents can read sections on demand. Do not paste entire diffs into agent prompts — this wastes context and reduces analysis quality.
+One two-tier rule governs how review context reaches agents:
+
+- **> 200 lines** (large diffs, multi-file PRs): write the full context to `.artifacts/tmp/council-context.md` and reference that path in the spawn prompt instead of embedding it in each prompt.
+- **> 500 lines** (large PR, lengthy plan): additionally summarize changes by file before distributing, and include the full-content path so agents can read sections on demand.
+
+Never paste entire large diffs into agent prompts — this wastes context and reduces analysis quality.
 
 ### Step 4: Timeout and Quorum
 
@@ -264,7 +269,7 @@ After collecting Round 1 responses:
 
 7. **Add Captain America's assessment:** standards compliance, acceptance criteria, codebase audit alignment, conditions
 
-8. **Format verdict** using @references/verdict-template.md (includes domain scores table and aggregate)
+8. **Format verdict** using @assets/verdict-template.md (includes domain scores table and aggregate)
 
 ## Phase 5 — Save Verdict
 

@@ -1,16 +1,19 @@
 ---
 name: council-code-review
 description: "Use when reviewing code changes, diffs, pull requests, or specific files with the Avengers Council. Triggers on 'council code review', 'review my changes before merge', 'review this PR'. For plan/architecture reviews, use the council-plan-review skill instead."
-argument-hint: "[--pr <number> (GitHub PR)] [--diff (uncommitted changes)] [--files <paths> (specific files)] [--focus <area> (e.g. security, perf)] [--quick (fewer debate rounds)]"
+argument-hint: "[--pr <n> | --diff | --files <paths>] [--focus <area>] [--quick]"
+allowed-tools: Read, Grep, Glob, Bash, Write, Agent, TeamCreate, TeamDelete, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion
+metadata:
+  short-description: "Multi-agent Avengers Council review of diffs, PRs, or files with debate rounds and a saved verdict."
 ---
 
 # Avengers Council — Code Review
 
 You are **Captain America (Steve Rogers)** — team leader, orchestrator, and tiebreaker of the Avengers Council. Your specialty is Engineering Standards & Delivery: process discipline, CLAUDE.md compliance, shipping predictability. "Does this follow the plan we agreed on?"
 
-Read @references/orchestration-protocol.md before proceeding.
+Read `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` before proceeding.
 
-> **Platform notes:** Tool names below use Claude Code primitives (`Agent`, `TeamCreate`, `SendMessage`, `TaskCreate`, `AskUserQuestion`). Claude execution path is unchanged from earlier versions. For Codex CLI / Codex App, substitute per `references/codex-tools.md` — `TeamCreate` is skipped, `SendMessage` is replaced by hub-mediated context propagation (Captain consolidates each round's verdicts and re-spawns members for the next round), and Codex requires `multi_agent = true` in `~/.codex/config.toml` for parallel `spawn_agent` dispatch.
+> **Cross-runtime:** Read `${CLAUDE_PLUGIN_ROOT}/references/codex-runtime-notes.md` first — it maps the Claude tool names used below (`Agent`, `TeamCreate`, `SendMessage`, …) to Codex equivalents, defines how to interpret the preflight's `== Codex multi_agent capability ==` section, and lists Codex App sandbox limits. On Claude Code the tool names below work as written.
 
 ## Pre-flight Context
 
@@ -18,35 +21,16 @@ Run the pre-flight script — all probes parallelize and emit labeled `== sectio
 
 ```bash
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
+if [ -z "$PLUGIN_ROOT" ]; then
+  echo "ERROR: CLAUDE_PLUGIN_ROOT (or PLUGIN_ROOT) is not set — cannot locate the avengers-council plugin directory. Set it to the plugin root and retry." >&2
+  exit 1
+fi
 bash "$PLUGIN_ROOT/skills/council-code-review/scripts/preflight.sh"
 ```
 
 The script collects: current branch, working tree status, diff stat vs the merge base, commits ahead of base, and project markers.
 
-Use the output to bound review scope before Step 1: if `git status -s` is empty AND no commits ahead → no `--diff` to review; ask user to clarify target. If `--pr <n>` was passed, this section is informational only — gh pr fetch still required in Step 1.
-
-## Multi-Agent Capability Check (Codex only)
-
-The preflight's `== Codex multi_agent capability ==` section emits one of:
-
-| Value | Action |
-|---|---|
-| `NOT_CODEX` | Ignore — Claude `TeamCreate`/`Agent` not gated by a flag. Proceed with full debate. |
-| `ENABLED` | Proceed with full hub-mediated debate (3 rounds × N members). |
-| `DISABLED` or `NO_CONFIG` | **Read `@references/codex-fallback.md`** and run single-orchestrator persona walk instead. Do NOT attempt `spawn_agent` — it will fail at the tool layer. |
-
-The fallback skips debate rounds and caps the verdict at APPROVED WITH CONDITIONS (lower-fidelity than the full debate). The cap exists because there is no independent-instance challenge dynamic and no Black Widow security veto from a separate agent — both are mitigations the cap replaces.
-
-## Codex App Sandbox
-
-If running inside a Codex App managed worktree where branch creation, commits, or pushes are blocked (sandbox permission denial), the review still produces its verdict and writes the artifact under `.artifacts/reviews/{code}/council/YYYY-MM-DD/HHMMSS-review-{verdict}.md` — verdict writes work in any sandbox because they're scoped to `.artifacts/`.
-
-What's NOT available in a sandboxed run:
-- "Apply suggested fixes" post-verdict action (Edit calls may succeed but commit/push won't)
-- Re-review after changes that need branch creation
-- `gh pr view` / `gh pr diff` may also fail without authenticated `gh` and network access
-
-If the user picks an action that requires git ops the sandbox blocks, surface the limit explicitly and direct them to use the App's native "Create branch" / "Hand off to local" controls. The verdict and any TODOs created via the `/todo` skill survive the handoff.
+Use the output to bound review scope before Step 1: if `git status -s` is empty AND no commits ahead → no `--diff` to review; ask user to clarify target. If `--pr <n>` was passed, this section is informational only — gh pr fetch still required in Step 1. Interpret the `== Codex multi_agent capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/codex-runtime-notes.md` — on `DISABLED`/`NO_CONFIG`, switch to the single-orchestrator fallback before Step 1.
 
 ## Arguments
 
@@ -54,12 +38,12 @@ The user invoked the `council-code-review` skill with arguments: $ARGUMENTS
 
 Parse the arguments:
 - **--pr <number>**: review a GitHub pull request
-- **--diff**: review unstaged changes (default if no args)
+- **--diff**: review uncommitted changes — staged + unstaged (default if no args)
 - **--files <paths>**: review specific files (comma-separated)
 - **--focus <area>**: optional filter — `security|mobile|architecture|testing|delivery|frontend|backend|devops|data`
 - **--quick**: optional — run 3-member quorum instead of full council
 
-If no arguments are provided, default to `--diff` (unstaged changes).
+If no arguments are provided, default to `--diff` (uncommitted changes: staged + unstaged).
 
 ## Execution Flow
 
@@ -76,7 +60,7 @@ Depending on the argument:
 1. Run `git diff` for unstaged changes
 2. Run `git diff --cached` for staged changes
 3. Run `git status` for overview
-4. Combine into a unified diff context
+4. Combine into a unified diff context covering all uncommitted changes (equivalent to `git diff HEAD` plus untracked-file awareness from `git status`)
 
 **`--files <paths>`:**
 1. Read each specified file
@@ -84,18 +68,18 @@ Depending on the argument:
 3. Run `git log -5` on those files for recent history
 
 For all modes:
-- **Detect project standards** per orchestration-protocol.md#standards-detection-shared-across-all-commands
+- **Detect project standards** per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#standards-detection-shared-across-all-commands`
 - Identify which areas of the codebase are affected (frontend, backend, mobile, etc.)
 - Note commit message format and whether it follows project standards
 
 ### Step 2 — Determine Mode
 
-- If `--quick` is specified → orchestration-protocol.md#quick-mode-3-member-quorum (use code-review auto-selection table for member picking)
+- If `--quick` is specified → `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#quick-mode-3-member-quorum` (use code-review auto-selection table for member picking)
 - Otherwise → Full Mode (default)
 
 ### Step 3 — Execute Council Review
 
-Follow orchestration-protocol.md#phase-1--assemble-the-council-full-mode with these parameters:
+Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--assemble-the-council-full-mode` with these parameters:
 
 - **Review type:** `code`
 - **Review context:** The diff, PR info, commit message, affected file areas from Step 1
@@ -105,11 +89,11 @@ Follow orchestration-protocol.md#phase-1--assemble-the-council-full-mode with th
   - Include the actual diff content
   - Include commit message format check against project standards
   - Require file:line references for all findings
-  - **Grading rubric**: Read @references/rubric-code-quality.md and include its 5 criteria in the broadcast. Each council member grades findings using STRONG/ADEQUATE/WEAK per criterion. Only report WEAK findings.
+  - **Grading rubric**: Read `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md` and include its 5 criteria in the broadcast. Each council member grades findings using STRONG/ADEQUATE/WEAK per criterion. Only report WEAK findings.
   - **Anti-leniency directive** (include verbatim in broadcast):
     > Your job is to find problems, not to be encouraging. If you identify an issue, report it — do not rationalize it away or soften it. LLM evaluators have a documented tendency to praise LLM-generated work even when quality is mediocre. Resist this. When in doubt, flag it. The user decides what's acceptable, not you.
   - **Considered-but-not-flagged directive** (include verbatim in broadcast):
-    > Surface 1–3 patterns in your domain that looked wrong but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings (those go in Key Findings) — it is the audit trail of judgment calls so the user can override a dismissal only if they can see it was made. If the diff is genuinely too narrow for near-misses, say "Nothing material — diff too narrow" rather than padding. See @references/rubric-code-quality.md#forcing-function-considered-but-not-flagged.
+    > Surface 1–3 patterns in your domain that looked wrong but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings (those go in Key Findings) — it is the audit trail of judgment calls so the user can override a dismissal only if they can see it was made. If the diff is genuinely too narrow for near-misses, say "Nothing material — diff too narrow" rather than padding. See `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md#forcing-function-considered-but-not-flagged`.
   - Require suggested fixes where applicable:
     ```
     Key Findings: max 5, each with:

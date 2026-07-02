@@ -2,6 +2,13 @@
 
 After printing the verdict (including the `> **Verdict saved to:** ...` path line from Phase 5), Captain America presents an interactive menu so the user can act on findings immediately.
 
+## Contents
+
+- [Protocol](#protocol) — question flow (Claude AskUserQuestion / Codex plain-text)
+- [Verdict Options](#verdict-options) — menus per APPROVED / CONDITIONS / REVISION / BLOCKED
+- [Context-Specific Actions](#context-specific-actions) — code-review vs plan extras
+- [Action Implementations](#action-implementations) — how each menu choice executes
+
 ## Protocol
 
 1. Determine which options to show based on the **consensus verdict**

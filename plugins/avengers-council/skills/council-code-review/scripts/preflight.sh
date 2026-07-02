@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 # Pre-flight context for the council-code-review skill.
-# Output is labeled with `== section ==` headers. All probes parallelize.
+# Output is labeled with `== section ==` headers. Probes run in parallel,
+# each captured to its own temp file, then printed serially so section
+# blocks never interleave on shared stdout.
 # Use the output to bound review scope before Step 1 — if working tree is
 # clean and no commits ahead, there is no `--diff` to review.
 set -uo pipefail
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
 
 resolve_base() {
   git merge-base HEAD origin/main 2>/dev/null \
@@ -15,12 +20,12 @@ resolve_base() {
 (
   echo "== Current branch =="
   git branch --show-current 2>/dev/null || echo "NOT_A_REPO"
-) &
+) > "$tmp/01" 2>&1 &
 
 (
   echo "== Working tree status =="
   git status -s 2>/dev/null | head -40 || echo "NO_REPO"
-) &
+) > "$tmp/02" 2>&1 &
 
 (
   echo "== Diff stat (vs base) =="
@@ -30,7 +35,7 @@ resolve_base() {
   else
     git diff --stat "$BASE"...HEAD 2>/dev/null | tail -30
   fi
-) &
+) > "$tmp/03" 2>&1 &
 
 (
   echo "== Commits ahead =="
@@ -40,18 +45,18 @@ resolve_base() {
   else
     git log --oneline "$BASE"..HEAD 2>/dev/null | head -20
   fi
-) &
+) > "$tmp/04" 2>&1 &
 
 (
   echo "== Project markers =="
   ls build.gradle.kts package.json pyproject.toml go.mod Cargo.toml settings.gradle.kts 2>/dev/null \
     || echo "NO_MARKERS"
-) &
+) > "$tmp/05" 2>&1 &
 
 (
   echo "== Recent reviews =="
   ls -1t .artifacts/reviews/*.md 2>/dev/null | head -5 || echo "NO_REVIEWS"
-) &
+) > "$tmp/06" 2>&1 &
 
 (
   echo "== Codex multi_agent capability =="
@@ -72,6 +77,7 @@ resolve_base() {
   else
     echo "NO_CONFIG"
   fi
-) &
+) > "$tmp/07" 2>&1 &
 
 wait
+cat "$tmp"/*

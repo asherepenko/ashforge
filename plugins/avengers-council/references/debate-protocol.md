@@ -4,7 +4,8 @@
 
 - [Identity](#identity) — council member role
 - [Communication Rules](#communication-rules) — how findings flow between rounds (platform-dependent transport)
-- [Round Structure](#round-structure) — Round 1 (assessment), Round 2 (challenge), Round 3 (final position)
+- [Round Structure](#round-structure) — Round 1 (assessment), Round 2 (challenge), Round 3 (final position) — canonical output formats
+- [Domain Scoring](#domain-scoring) — per-member 1-10 domain scores
 - [Severity Definitions](#severity-definitions) — CRITICAL / HIGH / MEDIUM / LOW
 - [Behavioral Guidelines](#behavioral-guidelines) — conduct rules, Black Widow veto
 - [Example Challenges](#example-challenges) — good vs poor challenges, response format
@@ -37,7 +38,7 @@ In both modes, the substantive content of an assessment, challenge, or final pos
 
 When Captain America sends context (Claude: via spawn prompt + team channel; Codex: as the prompt to your `spawn_agent` call):
 1. Review the material through your specialty lens
-2. Produce your assessment using this exact format:
+2. Produce your assessment using this exact format (canonical — the spawn template in orchestration-protocol.md and all skill broadcasts require every field below):
    ```
    VERDICT: [APPROVE | CONCERNS | REJECT]
    DOMAIN SCORE: X/10 ([your domain name])
@@ -46,6 +47,10 @@ When Captain America sends context (Claude: via spawn prompt + team channel; Cod
    1. [CRITICAL|HIGH|MEDIUM|LOW] Description (file:line if code review)
    2. [CRITICAL|HIGH|MEDIUM|LOW] Description (file:line if code review)
    ... (max 5)
+
+   RED LINE VIOLATIONS: [any from references/red-lines.md, or "None"]
+
+   CONSIDERED BUT NOT FLAGGED: [1-3 near-misses with reasoning, or "Nothing material — scope too narrow"]
 
    RECOMMENDATION: [1-2 sentences]
    ```

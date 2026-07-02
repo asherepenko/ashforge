@@ -4,6 +4,13 @@ Read this when the `council-plan-review` or `council-code-review` skill's prefli
 
 This file documents the single-orchestrator fallback. Claude users never hit this path (Claude's `TeamCreate` / `Agent` are not gated). Codex users with `multi_agent = true` use the normal hub-mediated flow in `references/orchestration-protocol.md`.
 
+## Contents
+
+- [Capability Decision Matrix](#capability-decision-matrix) — preflight value → mode
+- [Fallback Behavior](#fallback-behavior) — announce, sequential persona walk, verdict cap, header, post-verdict
+- [What does NOT change](#what-does-not-change) — roster, standards, audit, schema, red lines
+- [Detection failure cases](#detection-failure-cases) — `NO_CONFIG`, mid-round `spawn_agent` failure
+
 ## Capability Decision Matrix
 
 | Preflight value | Mode | Source |
@@ -93,7 +100,7 @@ Follow `references/post-verdict-actions.md` normally. The action menu (Address n
 - Roster decision (`references/member-registry.md`)
 - Standards detection and domain-artifact loading (Step 1 in the skill bodies)
 - Codebase audit
-- Verdict schema (`references/verdict-template.md`)
+- Verdict schema (`assets/verdict-template.md`)
 - Red-lines list (`references/red-lines.md`)
 - Black Widow's veto **logic** — but it operates on Captain's own security-persona pass, not an independent agent's findings (this is the fidelity loss the cap exists to mitigate)
 - Save path under `.artifacts/reviews/`

@@ -4,6 +4,12 @@
 
 Read this reference when the review involves CI/CD pipelines, Dockerfile/container builds, Kubernetes/Helm manifests, deployment strategies (blue-green, canary), IaC (Terraform, CloudFormation), or release automation. Use to cite platform-specific patterns in findings. Skip for pure code/logic reviews with no infra surface.
 
+## Contents
+
+- [CI/CD Platform & Infrastructure Detection](#cicd-platform--infrastructure-detection) — detection commands
+- [Platform-Specific Recommendations](#platform-specific-recommendations) — GitHub Actions, Docker, Kubernetes
+- [Infrastructure as Code](#infrastructure-as-code) — Terraform / CloudFormation patterns
+
 ## CI/CD Platform & Infrastructure Detection
 
 **Detect deployment infrastructure:**

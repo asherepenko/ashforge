@@ -4,6 +4,12 @@
 
 Read this reference when the review involves test strategy, coverage analysis, test framework choices (Jest, Vitest, pytest, JUnit, Turbine), flaky tests, or CI test optimization. Use to ground findings in framework-specific patterns. Skip for reviews without testable code changes.
 
+## Contents
+
+- [Test Framework Detection & Integration](#test-framework-detection--integration) — detection commands
+- [Framework-Specific Patterns](#framework-specific-patterns) — Jest/Vitest, RTL, pytest, JUnit + Turbine
+- [Coverage Analysis](#coverage-analysis) — per-ecosystem coverage commands
+
 ## Test Framework Detection & Integration
 
 **Detect project's testing stack:**

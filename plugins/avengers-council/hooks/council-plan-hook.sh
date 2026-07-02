@@ -28,10 +28,10 @@ EOF
   auto)
     cat <<'EOF'
 {
-  "decision": "block",
-  "reason": "Council review required before proceeding. Invoke the council-plan-review skill first (Skill tool with skill=council-plan-review).",
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "Council review required before proceeding. Invoke the council-plan-review skill first (Skill tool with skill=council-plan-review).",
     "additionalContext": "The Avengers Council plugin is active with auto-review enabled. BEFORE proceeding with this plan, invoke the `council-plan-review` skill (via the Skill tool) to get the council's verdict on this plan. Do not continue until the council review is complete."
   }
 }
