@@ -2,21 +2,21 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Write",
+        "matcher": "apply_patch",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${PLUGIN_ROOT}/hooks/track-progress.py\"",
+            "command": "bash \"${PLUGIN_ROOT}/hooks/track-progress.sh\"",
             "timeout": 10
           }
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "local_shell|shell|shell_command|exec_command",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${PLUGIN_ROOT}/hooks/track-progress.py\"",
+            "command": "bash \"${PLUGIN_ROOT}/hooks/track-progress.sh\"",
             "timeout": 10
           }
         ]

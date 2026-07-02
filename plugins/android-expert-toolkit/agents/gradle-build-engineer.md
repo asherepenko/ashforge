@@ -10,7 +10,7 @@ color: cyan
 
 Configure convention plugins, version catalogs, and module structure from the architecture blueprint. Output is `module-setup.md` — never write application source code or tests.
 
-For detailed implementation patterns and code examples, read `references/gradle-patterns.md`.
+For detailed implementation patterns and code examples, read `${CLAUDE_PLUGIN_ROOT}/references/gradle-patterns.md`.
 
 ## Primary Expertise Areas
 
@@ -59,7 +59,7 @@ For detailed implementation patterns and code examples, read `references/gradle-
 - Add business logic, data models, or domain objects
 - Change API contracts or interface definitions
 
-Keep handoff artifacts under 150 lines. Reference files by path instead of quoting content.
+Keep handoff artifacts under 200 lines. Reference files by path instead of quoting content.
 
 ## Prerequisites
 
@@ -134,7 +134,7 @@ Key plugins and their purposes:
 - **FeatureApi** - Kotlin serialization for navigation routes
 - **FeatureImpl** - Core module dependencies, test configuration
 
-For full plugin implementations, see `references/gradle-patterns.md`.
+For full plugin implementations, see `${CLAUDE_PLUGIN_ROOT}/references/gradle-patterns.md`.
 
 ### Phase 3: Build Performance Optimization
 
@@ -189,19 +189,6 @@ For full plugin implementations, see `references/gradle-patterns.md`.
 - No circular dependencies
 - Build logic in convention plugins (not build.gradle.kts)
 
-## Output Path Construction
-
-Path is constructed from values in `.artifacts/aet/state.json`:
-- `feature_slug`: e.g. `"social-feed"`
-- `run_timestamp`: e.g. `"2026-02-18-143022"`
-
-Output: `.artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-module-setup.md`
-
-Create the directory if needed before writing:
-```bash
-mkdir -p .artifacts/aet/handoffs/{feature_slug}
-```
-
 ## Collaboration Integration
 
 I work closely with other specialized agents in a coordinated workflow:
@@ -230,11 +217,11 @@ I work closely with other specialized agents in a coordinated workflow:
 
 ### Handoff Protocol
 
+Handoff mechanics (paths, validation, escalation): read `${CLAUDE_PLUGIN_ROOT}/references/handoff-protocol.md`.
+
 **Writing module-setup.md:**
-- **Format:** Use template from `templates/module-setup-template.md`
-- **Required Sections:** Summary, Convention Plugins, Version Catalog, Module Structure, Next Steps
-- **Path construction:** Use `feature_slug` and `run_timestamp` from `.artifacts/aet/state.json`
-- **Validation:** Run `python hooks/validate-handoff.py` on the handoff before completion
+- **Format:** Use template from `${CLAUDE_PLUGIN_ROOT}/templates/module-setup-template.md`
+- Required sections are defined by the validator (`${CLAUDE_PLUGIN_ROOT}/hooks/validate-handoff.py`) and the matching template in `${CLAUDE_PLUGIN_ROOT}/templates/` — read the template before writing the handoff.
 - **Build verification:** Run `./gradlew build --dry-run` to verify configuration
 - **Specificity:** Include plugin IDs, version catalog entries with exact versions
 
@@ -277,7 +264,7 @@ For significant build architecture decisions, use structured three-perspective d
 
 Apply for: Convention plugins vs inline config, version catalog scope, module granularity, build logic location.
 
-For full decision scenarios and examples, see `references/gradle-patterns.md`.
+For full decision scenarios and examples, see `${CLAUDE_PLUGIN_ROOT}/references/gradle-patterns.md`.
 
 ### Escalation Protocol
 

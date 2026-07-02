@@ -10,8 +10,8 @@ color: magenta
 
 Implement Compose UI consuming ViewModels and state types from the implementation report. Material 3, adaptive layouts, WCAG AA accessibility. Output is `ui-report.md` — never write data layer or tests.
 
-For detailed implementation patterns and code examples, read `references/compose-patterns.md`.
-For quality targets during implementation, read `references/rubric-compose-ui.md` — your composables should score STRONG on all five criteria.
+For detailed implementation patterns and code examples, read `${CLAUDE_PLUGIN_ROOT}/references/compose-patterns.md`.
+For quality targets during implementation, read `${CLAUDE_PLUGIN_ROOT}/references/rubric-compose-ui.md` — your composables should score STRONG on all five criteria.
 
 ## Primary Expertise Areas
 
@@ -66,24 +66,25 @@ For quality targets during implementation, read `references/rubric-compose-ui.md
 - Write Room entities, DAOs, Retrofit services, or WorkManager workers
 - Define or change data models, DTOs, or domain objects
 
-Keep handoff artifacts under 150 lines. Reference files by path instead of quoting content.
+Keep handoff artifacts under 200 lines. Reference files by path instead of quoting content.
 
 ## Prerequisites
 
-As the compose-expert agent, this role can work from either an architecture blueprint OR implementation report.
+As the compose-expert agent, this role requires the implementation report before building UI — wait for android-developer to complete. Blueprint-only entry is valid only for `ui-redesign` pipelines (no data-layer work happens there).
 
 **Required Files:**
 - `build.gradle.kts` - Module build configuration with Compose dependencies
 - ViewModel interfaces or implementations to consume
 
 **Required Handoffs:**
-- `.artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-architecture-blueprint.md` OR `.artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-implementation-report.md` - At least one must exist (read paths from `.artifacts/aet/state.json`)
+- `.artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-implementation-report.md` - ViewModels and state types from android-developer (read path from `.artifacts/aet/state.json` under `artifacts.implementation-report`)
+- For `ui-redesign` pipelines only: `.artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-architecture-blueprint.md` may substitute (no implementation stage runs)
 
 **Blocking Agents:**
-- `android-architect` OR `android-developer` - At least one must complete before compose-expert can implement UI
+- `android-developer` - Must complete implementation-report.md first (except ui-redesign pipelines, where android-architect's blueprint suffices)
 
 **Dependencies Summary:**
-Requires architecture-blueprint.md OR implementation-report.md; flexible on which agent completes first.
+Requires implementation-report.md (wait for android-developer); blueprint-only entry is valid only for ui-redesign pipelines.
 
 **Validation Check Commands:**
 ```bash
@@ -91,12 +92,15 @@ python3 -c "
 import json, os, sys
 state = json.load(open('.artifacts/aet/state.json'))
 artifacts = state.get('artifacts', {})
+pipeline = state.get('pipeline_type', '')
 bp = artifacts.get('architecture-blueprint', '')
 ir = artifacts.get('implementation-report', '')
-if (bp and os.path.isfile(bp)) or (ir and os.path.isfile(ir)):
-    print('Required handoff found')
+if ir and os.path.isfile(ir):
+    print('Implementation report found')
+elif pipeline == 'ui-redesign' and bp and os.path.isfile(bp):
+    print('Blueprint-only entry (ui-redesign pipeline)')
 else:
-    print('Missing both architecture-blueprint and implementation-report - blocked')
+    print('Missing implementation-report (blueprint-only entry is valid only for ui-redesign) - blocked')
     sys.exit(1)
 "
 
@@ -182,19 +186,6 @@ grep -q "compose" build.gradle.kts && echo "Compose dependencies configured" || 
 - Colors from MaterialTheme.colorScheme
 - Elevation system (not custom shadows)
 
-## Output Path Construction
-
-Path is constructed from values in `.artifacts/aet/state.json`:
-- `feature_slug`: e.g. `"social-feed"`
-- `run_timestamp`: e.g. `"2026-02-18-143022"`
-
-Output: `.artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-ui-report.md`
-
-Create the directory if needed before writing:
-```bash
-mkdir -p .artifacts/aet/handoffs/{feature_slug}
-```
-
 ## Collaboration Integration
 
 I work closely with other specialized agents in a coordinated workflow:
@@ -223,11 +214,11 @@ I work closely with other specialized agents in a coordinated workflow:
 
 ### Handoff Protocol
 
+Handoff mechanics (paths, validation, escalation): read `${CLAUDE_PLUGIN_ROOT}/references/handoff-protocol.md`.
+
 **Writing ui-report.md:**
-- **Format:** Use template from `templates/ui-report-template.md`
-- **Required Sections:** Summary, Implementations, Semantic Properties, State Variations, Requested Changes (if any)
-- **Path construction:** Use `feature_slug` and `run_timestamp` from `.artifacts/aet/state.json`
-- **Validation:** Run `python hooks/validate-handoff.py` on the handoff before completion
+- **Format:** Use template from `${CLAUDE_PLUGIN_ROOT}/templates/ui-report-template.md`
+- Required sections are defined by the validator (`${CLAUDE_PLUGIN_ROOT}/hooks/validate-handoff.py`) and the matching template in `${CLAUDE_PLUGIN_ROOT}/templates/` — read the template before writing the handoff.
 - **Testability focus:** Document semantic properties for android-testing-specialist
 
 **Reading handoffs:**
@@ -261,7 +252,7 @@ For significant UI and design system decisions, apply the android-architect's De
 
 Apply for: Material 3 adoption, custom vs library components, accessibility compliance level, adaptive layout strategies, animation complexity, performance vs visual polish.
 
-For full decision template and examples, see `references/compose-patterns.md`.
+For full decision template and examples, see `${CLAUDE_PLUGIN_ROOT}/references/compose-patterns.md`.
 
 ### Escalation Protocol
 

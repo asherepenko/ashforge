@@ -134,9 +134,9 @@ Copy `templates/android-expert-toolkit.local.md.template` to your project root a
 
 | Doc | Purpose |
 |-----|---------|
-| [QUICK_START.md](QUICK_START.md) | Getting started with slash commands and scenarios |
+| [QUICK_START.md](QUICK_START.md) | Getting started with the skills, guided examples |
 | [CLAUDE.md](CLAUDE.md) | Plugin internals (for maintainers) |
-| [scenarios](references/scenarios.md) | End-to-end pipeline walkthroughs |
+| [examples/](examples/) | End-to-end example pipeline output |
 | [agent-routing](references/agent-routing.md) | Agent selection matrix |
 | [pattern-detection](references/pattern-detection.md) | Detection commands and 80/20 framework |
 | [conflict-resolution](references/conflict-resolution.md) | Priority hierarchy (P0–P3) |

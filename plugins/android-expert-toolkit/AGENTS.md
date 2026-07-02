@@ -7,16 +7,14 @@ Maintainer notes for the plugin itself. For user-facing usage, see `README.md` a
 ```
 android-expert-toolkit/
 ├── .claude-plugin/plugin.json    # Claude Code manifest (name, version, description)
-├── .codex-plugin/
-│   ├── plugin.json               # Codex CLI / Codex App manifest (points at skills/)
-│   └── hooks.json                # Codex hook manifest — same Python scripts, Codex matchers + ${PLUGIN_ROOT}
+├── .codex-plugin/plugin.json     # Codex CLI / Codex App manifest (points at skills/, hooks/hooks-codex.json)
 ├── agents/                       # 5 specialized agents (functional, not roleplay)
 ├── skills/                       # All entry points are skills — no slash commands
 │   ├── android-expert/           # SKILL.md — ad-hoc Android engineering knowledge
 │   ├── aet-pipeline/             # SKILL.md — multi-agent orchestration
 │   ├── aet-status/               # SKILL.md — pipeline status & recovery
 │   └── aet-check/                # SKILL.md — pattern detection (80/20)
-├── hooks/                        # Shared Python scripts + Claude-side hooks.json
+├── hooks/                        # Shared Python scripts + hooks.json (Claude) + hooks-codex.json (Codex)
 ├── references/                   # Deep-dive references (read on demand) + codex-tools.md
 ├── templates/                    # Handoff artifact scaffolds
 ├── examples/                     # End-to-end example pipeline output
@@ -52,15 +50,15 @@ When `android-expert-toolkit.local.md` exists in the project root with all value
 
 ## Agents
 
-| Agent | Role | Plan Mode | Model |
-|-------|------|-----------|-------|
-| android-architect | Architecture design, ADRs, pattern detection | Yes (feature-build, migration, conflict) | Opus |
-| android-developer | Data layer, ViewModels, repositories | No | Sonnet |
-| compose-expert | Compose UI, Material 3, adaptive layouts | No | Sonnet |
-| gradle-build-engineer | Convention plugins, version catalogs | No | Sonnet |
-| android-testing-specialist | Test doubles, Turbine, coverage | No | Sonnet |
+| Agent | Role | Model |
+|-------|------|-------|
+| android-architect | Architecture design, ADRs, pattern detection | Opus |
+| android-developer | Data layer, ViewModels, repositories | Sonnet |
+| compose-expert | Compose UI, Material 3, adaptive layouts | Sonnet |
+| gradle-build-engineer | Convention plugins, version catalogs | Sonnet |
+| android-testing-specialist | Test doubles, Turbine, coverage | Sonnet |
 
-"Plan Mode = Yes" means the agent enters Claude Code plan mode before acting, so the user approves the plan before file changes happen. Only the architect gates this way because its output (blueprints, ADRs) needs explicit approval before downstream agents consume it.
+Architect output (blueprints, ADRs) is user-approved at the pipeline's DP2 decision point before downstream agents consume it. Plugin subagents cannot enter Claude Code plan mode themselves, so the approval gate lives in the `aet-pipeline` orchestrator, not the agent.
 
 ### Agent template asymmetry (intentional)
 
@@ -89,14 +87,14 @@ Persona body content (specialty lens, checklists, red flags) is platform-agnosti
 
 ## References
 
-18 deep-dive references under `references/`. Each starts with `## When to use` so agents (and humans) know when to load the file. Organized by role:
+Deep-dive references under `references/`. Each starts with `## When to use` so agents (and humans) know when to load the file. Organized by role:
 
 - **Architect-facing**: `architecture-patterns.md`, `architect-code-examples.md`, `pattern-detection.md`, `rubric-android-architecture.md`
 - **Developer-facing**: `developer-patterns.md`, `data-layer-patterns.md`, `ui-patterns.md`
 - **Compose-facing**: `compose-patterns.md`, `rubric-compose-ui.md`
 - **Gradle-facing**: `gradle-patterns.md`
 - **Testing-facing**: `testing-patterns.md`, `testing-patterns-detail.md`
-- **Cross-cutting**: `conflict-resolution.md`, `performance-targets.md`, `pragmatic-examples.md`, `agent-routing.md`, `scenarios.md`, `pipeline-error-scenarios.md`, `codex-tools.md`
+- **Cross-cutting**: `conflict-resolution.md`, `performance-targets.md`, `pragmatic-examples.md`, `agent-routing.md`, `pipeline-error-scenarios.md`, `codex-tools.md`, `handoff-protocol.md`
 
 The **80/20 rule** (in `pattern-detection.md`) is the core decision framework: if a pattern has ≥80% prevalence in the codebase, match it; below 80%, propose a modern alternative. This keeps agents consistent with existing code instead of imposing ideal-world patterns.
 
@@ -111,7 +109,7 @@ Written to `.artifacts/aet/handoffs/{feature_slug}/` with run timestamp prefix:
 - `{run_timestamp}-test-report.md` — test doubles, coverage
 - `{run_timestamp}-code-review-report.md` — findings with severity ratings
 
-Scaffolds live in `templates/` — each agent reads its template before writing to keep artifact structure consistent.
+Scaffolds live in `templates/` — each agent reads its template before writing to keep artifact structure consistent. Required section headings are defined by `hooks/validate-handoff.py` (`REQUIRED_SECTIONS`) — the validator and templates are the single source of truth; agents carry no hand-maintained section lists. Shared handoff mechanics (path construction, validation, escalation) live in `references/handoff-protocol.md`.
 
 Example path: `.artifacts/aet/handoffs/social-feed/2026-02-18-143022-architecture-blueprint.md`
 
@@ -119,13 +117,13 @@ Example path: `.artifacts/aet/handoffs/social-feed/2026-02-18-143022-architectur
 
 Two parallel manifests register the same Python scripts:
 
-- `hooks/hooks.json` — Claude Code. Uses `${CLAUDE_PLUGIN_ROOT}` and Claude tool matchers (`Write`, `Bash`).
-- `.codex-plugin/hooks.json` — Codex CLI / App. Uses `${PLUGIN_ROOT}` and Codex tool matchers (`apply_patch`, `local_shell|shell|shell_command|exec_command`).
+- `hooks/hooks.json` — Claude Code. Uses `${CLAUDE_PLUGIN_ROOT}` and Claude tool matchers (`Write|Edit|MultiEdit`, `Bash`), routed through `hooks/track-progress.sh` — a cost guard that no-ops fast unless `.artifacts/aet` exists in cwd.
+- `hooks/hooks-codex.json` — Codex CLI / App. Uses `${PLUGIN_ROOT}` and Codex tool matchers (`apply_patch`, `local_shell|shell|shell_command|exec_command`), same `track-progress.sh` guard.
 
 | Hook | Trigger (Claude → Codex) | Purpose |
 |------|---------|---------|
-| `session-start.py` | SessionStart → SessionStart | Plugin-loaded banner, warns if no Android project detected, surfaces interrupted-pipeline state |
-| `track-progress.py` | PostToolUse (Write, Bash) → PostToolUse (apply_patch, shell-family) | Updates `.artifacts/aet/state.json`. On Codex the `apply_patch` branch silently no-ops (payload doesn't expose `file_path`); the shell branch still records validate-handoff results. The `aet-pipeline` skill is required to update state inline regardless — the hook is a write-through cache, not the source of truth. |
+| `session-start.py` | SessionStart (`startup\|resume\|clear`) → SessionStart | Plugin banner and interrupted-pipeline state; exits silently when no Gradle markers in cwd, so non-Android projects get zero output |
+| `track-progress.py` (via `track-progress.sh`) | PostToolUse (Write/Edit/MultiEdit, Bash) → PostToolUse (apply_patch, shell-family) | Updates `.artifacts/aet/state.json`. On Codex the `apply_patch` branch silently no-ops (payload doesn't expose `file_path`); the shell branch still records validate-handoff results. The `aet-pipeline` skill is required to update state inline regardless — the hook is a write-through cache, not the source of truth. |
 | `validate-handoff.py` | (invoked by agents) | Validates handoff artifact schema before downstream agent consumes it |
 | `validate-dependencies.py` | (invoked by agents) | Validates module dependency graph for circularity |
 

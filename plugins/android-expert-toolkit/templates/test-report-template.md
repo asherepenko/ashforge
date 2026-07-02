@@ -15,6 +15,8 @@ Written by: [AGENT NAME]
 Timestamp: [ISO 8601 - e.g., 2026-02-13T10:30:00Z]
 ```
 
+<!-- Keep the completed handoff ≤200 lines; include sections marked "optional" only when relevant. -->
+
 ## Pipeline Context
 
 <!-- Copy verbatim from architecture-blueprint.md Pipeline Context section -->
@@ -26,8 +28,6 @@ Timestamp: [ISO 8601 - e.g., 2026-02-13T10:30:00Z]
 ## Summary
 
 [Brief overview of testing work completed]
-
-## Test Doubles Created
 
 **Overall Coverage:**
 - Unit Tests: [X% coverage]
@@ -191,6 +191,8 @@ fun `data flow emits expected sequence`() = runTest {
 
 ## Integration Tests
 
+<!-- optional -->
+
 **Database Tests:**
 ```kotlin
 @Test
@@ -235,6 +237,8 @@ fun `api service returns expected response`() = runTest {
 ```
 
 ## UI Tests
+
+<!-- optional -->
 
 **Compose UI Tests:**
 ```kotlin
@@ -293,6 +297,8 @@ fun `click on item triggers action`() {
 
 ## Test Execution
 
+<!-- optional -->
+
 **Running All Tests:**
 ```bash
 # Unit tests
@@ -333,6 +339,8 @@ UI Composables: [X%] coverage
 
 ## Testing Strategy
 
+<!-- optional -->
+
 **What Was Tested:**
 1. **Business Logic** - All ViewModels and repositories have comprehensive tests
 2. **Data Flow** - Flow emissions tested with Turbine
@@ -349,6 +357,8 @@ UI Composables: [X%] coverage
 
 ## Known Testing Gaps
 
+<!-- optional -->
+
 **Current Limitations:**
 - [List any testing gaps]
 - [Tests not implemented and why]
@@ -359,6 +369,8 @@ UI Composables: [X%] coverage
 - [Steps taken to stabilize]
 
 ## Test Maintenance
+
+<!-- optional -->
 
 **Test Doubles Location:**
 ```

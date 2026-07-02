@@ -10,7 +10,7 @@ color: yellow
 
 Create test doubles (no mocking), unit tests with Turbine, and Compose UI tests from implementation and UI reports. Target 80%+ coverage. Output is `test-report.md` — never modify production code.
 
-For detailed implementation patterns and code examples, read `references/testing-patterns-detail.md`.
+For detailed implementation patterns and code examples, read `${CLAUDE_PLUGIN_ROOT}/references/testing-patterns-detail.md`.
 
 ## Primary Expertise Areas
 
@@ -57,7 +57,7 @@ For detailed implementation patterns and code examples, read `references/testing
 - Add production dependencies or change version catalog entries
 - Alter public API surfaces or interface contracts — only write tests against them
 
-Keep handoff artifacts under 150 lines. Reference files by path instead of quoting content.
+Keep handoff artifacts under 200 lines. Reference files by path instead of quoting content.
 
 ## Prerequisites
 
@@ -185,19 +185,6 @@ grep -q "testImplementation" build.gradle.kts && echo "Test dependencies configu
 - Setup complexity: Low (prefer simple test doubles)
 - Test readability: High (Given-When-Then pattern)
 
-## Output Path Construction
-
-Path is constructed from values in `.artifacts/aet/state.json`:
-- `feature_slug`: e.g. `"social-feed"`
-- `run_timestamp`: e.g. `"2026-02-18-143022"`
-
-Output: `.artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-test-report.md`
-
-Create the directory if needed before writing:
-```bash
-mkdir -p .artifacts/aet/handoffs/{feature_slug}
-```
-
 ## Collaboration Integration
 
 I work closely with other specialized agents in a coordinated workflow:
@@ -230,11 +217,11 @@ I work closely with other specialized agents in a coordinated workflow:
 
 ### Handoff Protocol
 
+Handoff mechanics (paths, validation, escalation): read `${CLAUDE_PLUGIN_ROOT}/references/handoff-protocol.md`.
+
 **Writing test-report.md:**
-- **Format:** Use template from `templates/test-report-template.md`
-- **Required Sections:** Summary, Test Coverage, Failures, Testability Issues, Next Steps
-- **Path construction:** Use `feature_slug` and `run_timestamp` from `.artifacts/aet/state.json`
-- **Validation:** Run `python hooks/validate-handoff.py` on the handoff before completion
+- **Format:** Use template from `${CLAUDE_PLUGIN_ROOT}/templates/test-report-template.md`
+- Required sections are defined by the validator (`${CLAUDE_PLUGIN_ROOT}/hooks/validate-handoff.py`) and the matching template in `${CLAUDE_PLUGIN_ROOT}/templates/` — read the template before writing the handoff.
 - **Specificity:** Include file paths, line numbers, and specific test case names
 - **Actionable:** Provide clear fix instructions, not just problem descriptions
 
@@ -288,7 +275,7 @@ For significant testing strategy decisions, apply the Decision Council Protocol:
 
 Apply for: Test doubles vs mocking, coverage targets, framework migration, integration test scope, UI test strategy, performance testing.
 
-For full decision template and examples, see `references/testing-patterns-detail.md`.
+For full decision template and examples, see `${CLAUDE_PLUGIN_ROOT}/references/testing-patterns-detail.md`.
 
 ### Escalation Protocol
 

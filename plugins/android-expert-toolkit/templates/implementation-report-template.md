@@ -15,6 +15,8 @@ Written by: [AGENT NAME]
 Timestamp: [ISO 8601 - e.g., 2026-02-13T10:30:00Z]
 ```
 
+<!-- Keep the completed handoff ≤200 lines; include sections marked "optional" only when relevant. -->
+
 ## Pipeline Context
 
 <!-- Copy verbatim from architecture-blueprint.md Pipeline Context section -->
@@ -149,6 +151,8 @@ interface [Feature]ApiService {
 
 ## Dependency Injection
 
+<!-- optional -->
+
 **Hilt Modules:**
 ```kotlin
 @Module
@@ -170,6 +174,8 @@ abstract class [Feature]DataModule {
 - [Additional bindings]
 
 ## Testing Interfaces
+
+<!-- optional (include whenever tests are expected downstream) -->
 
 **Repository Interface for Testing:**
 ```kotlin
@@ -198,6 +204,8 @@ class Fake[Repository] : [Repository] {
 
 ## Build Requirements
 
+<!-- optional (include when gradle-build-engineer must act) -->
+
 **Gradle Dependencies Used:**
 ```kotlin
 dependencies {
@@ -225,6 +233,8 @@ dependencies {
 
 ## Verification Steps
 
+<!-- optional -->
+
 **Manual Testing:**
 1. [Step-by-step instructions to verify feature works]
 2. [Expected behavior at each step]
@@ -247,6 +257,8 @@ sqlite3 [db-name] ".schema"
 ```
 
 ## Known Issues and Limitations
+
+<!-- optional -->
 
 **Current Limitations:**
 - [List any known limitations]

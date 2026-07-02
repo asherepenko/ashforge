@@ -1,7 +1,9 @@
 ---
 name: android-expert
-description: "Use for ad-hoc Android/Kotlin questions, pattern guidance, and code review — Jetpack Compose, ViewModel, StateFlow, Hilt/Koin, Room, Coroutines/Flow, Navigation, DataStore, WorkManager, Gradle convention plugins, ProGuard/R8, Material 3, or Android architecture. Trigger whenever the user mentions Android, Kotlin, Compose, or any Android framework — even if they don't explicitly ask for an 'expert'. NOT for multi-agent pipeline execution (use the `aet-pipeline` skill for end-to-end feature builds, migrations, or reviews)."
-argument-hint: "[question or topic] — e.g. 'Room offline-first', 'ViewModel StateFlow pattern', 'Hilt setup for feature module', 'best practice for offline sync'"
+description: "Use for ad-hoc Android app development questions, pattern guidance, and code review — Jetpack Compose UI, ViewModel, StateFlow, Hilt/Koin, Room, Coroutines/Flow, Navigation, DataStore, WorkManager, Android Gradle convention plugins, ProGuard/R8, Material 3, or Android app architecture. Trigger on Android app work (Compose UI, Android framework, app architecture) — NOT for backend/server Kotlin or plain Gradle JVM builds. NOT for multi-agent pipeline execution (use the `aet-pipeline` skill for end-to-end feature builds, migrations, or reviews)."
+argument-hint: "[question or topic] — e.g. 'Room offline-first', 'ViewModel StateFlow pattern'"
+metadata:
+  short-description: "Ad-hoc Android app development guidance — Compose, architecture, DI, testing patterns"
 ---
 
 # Android Engineering Expert
@@ -21,12 +23,12 @@ Apply modern Android patterns (Now in Android reference) with 5 specialized agen
 2. **Pattern Reference & Guidelines**
    - Browse [Core Principles](#core-principles) for Android best practices
    - Check [Pragmatic Development Principles](#pragmatic-development-principles) for real-world guidance
-   - Review detailed patterns in `references/` (see pointers below)
+   - Review detailed patterns in `${CLAUDE_PLUGIN_ROOT}/references/` (see pointers below)
 
 3. **Manual Agent Orchestration**
    - Use individual agents for specific tasks
    - See [Agent Orchestration](#agent-orchestration) section for coordination patterns
-   - Refer to `references/agent-routing.md` for agent selection guidance
+   - Refer to `${CLAUDE_PLUGIN_ROOT}/references/agent-routing.md` for agent selection guidance
 
 **New to the toolkit?** Start with the `aet-pipeline` skill for guided multi-agent execution.
 
@@ -42,17 +44,17 @@ Apply modern Android patterns (Now in Android reference) with 5 specialized agen
 6. **Type Safety** - Sealed interfaces, value objects, compile-time verification
 7. **Convention Over Configuration** - Gradle convention plugins for standardization
 
-For detailed architecture, DI, module organization, and Kotlin patterns, read `references/architecture-patterns.md`.
+For detailed architecture, DI, module organization, and Kotlin patterns, read `${CLAUDE_PLUGIN_ROOT}/references/architecture-patterns.md`.
 
-For detailed data layer, persistence, networking, and sync patterns, read `references/data-layer-patterns.md`.
+For detailed data layer, persistence, networking, and sync patterns, read `${CLAUDE_PLUGIN_ROOT}/references/data-layer-patterns.md`.
 
-For detailed Compose, navigation, and UI implementation patterns, read `references/ui-patterns.md`.
+For detailed Compose, navigation, and UI implementation patterns, read `${CLAUDE_PLUGIN_ROOT}/references/ui-patterns.md`.
 
-For detailed testing strategy, test doubles, and coverage guidance, read `references/testing-patterns.md`.
+For detailed testing strategy, test doubles, and coverage guidance, read `${CLAUDE_PLUGIN_ROOT}/references/testing-patterns.md`.
 
-For detailed security architecture and hardening guidance, see the Security Architecture section in `references/architecture-patterns.md`.
+For detailed security architecture and hardening guidance, see the Security Architecture section in `${CLAUDE_PLUGIN_ROOT}/references/architecture-patterns.md`.
 
-For detailed performance benchmarks and monitoring thresholds, read `references/performance-targets.md`.
+For detailed performance benchmarks and monitoring thresholds, read `${CLAUDE_PLUGIN_ROOT}/references/performance-targets.md`.
 
 ## Pragmatic Development Principles
 
@@ -103,7 +105,7 @@ Real-world Android development often involves legacy code, tight deadlines, and 
 
 **Document Technical Debt:** Use `TODO(tech-debt):` comments with ticket references and suppression annotations.
 
-See `references/pragmatic-examples.md` for Good/Bad code examples demonstrating these principles.
+See `${CLAUDE_PLUGIN_ROOT}/references/pragmatic-examples.md` for Good/Bad code examples demonstrating these principles.
 
 ## Conflict Resolution Hierarchy
 
@@ -145,7 +147,7 @@ All else equal -> P3 wins, apply modern best practices
 3. If inconsistent, check constraints
 4. If no constraints, apply best practice
 
-**See also:** [Conflict Resolution Guide](../../references/conflict-resolution.md) for decision trees and edge cases.
+**See also:** `${CLAUDE_PLUGIN_ROOT}/references/conflict-resolution.md` for decision trees and edge cases.
 
 ## Checklist: New Feature Implementation
 
@@ -176,69 +178,9 @@ When implementing a new feature, verify (adapt to match detected codebase patter
 | `compose-expert` | Sonnet | Compose screens, Material 3, adaptive UI, accessibility |
 | `gradle-build-engineer` | Sonnet | Convention plugins, version catalogs, module setup, build optimization |
 
-### Workflow Pipelines
+### Pipeline Work
 
-Invoke the `aet-pipeline` skill with `<pipeline> [feature_name]` for automated orchestration with validation and error recovery. For manual orchestration, here's the agent sequence for each pipeline type:
-
-| Pipeline | Agent Sequence | Artifacts Produced |
-|----------|---------------|--------------------|
-| `feature-build` | architect → gradle + developer (parallel) → compose → testing | blueprint, module-setup, implementation, ui, test |
-| `architecture-review` | architect | blueprint |
-| `migration` | architect → developer → testing | blueprint, implementation, test |
-| `ui-redesign` | (architect) → compose → (testing) | (blueprint), ui, (test) |
-| `build-optimization` | architect → gradle | blueprint, module-setup |
-| `test` | testing (reads source directly, no prerequisite) | test |
-| `code-review` | architect (review mode) | code-review |
-
-Parentheses indicate optional stages. For the full execution protocol, parallel dispatch rules, and handoff validation, see `skills/aet-pipeline/SKILL.md`.
-
-### Handoff Artifact Protocol
-
-Agents communicate through structured handoff files in `.artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-{artifact-name}.md`. Each artifact must contain these sections so downstream agents can consume it unambiguously:
-
-```markdown
-# [Artifact Type]: [Feature Name]
-<!-- Written by: [agent-name] -->
-<!-- Timestamp: [ISO 8601] -->
-
-## Summary
-[1-3 sentence overview]
-
-## Decisions
-- [Key decision]: [choice] — [rationale]
-
-## Artifacts Created
-- `path/to/File.kt` — [purpose]
-
-## Next Steps
-- [What the downstream agent should do]
-
-## Constraints
-- [Limits the downstream agent must respect]
-```
-
-For artifact types by agent, reading protocol, and parallel dispatch rules, see `skills/aet-pipeline/SKILL.md` § Handoff Artifact Protocol.
-
-## Pipeline Skills
-
-For pipeline orchestration (types, execution protocol, handoff validation, error recovery), see `skills/aet-pipeline/SKILL.md`.
-
-- `aet-pipeline <type> "<name>"` — run a pipeline
-- `aet-status` — check progress
-- `aet-check [category]` — detect patterns
-
-7 pipeline types: `feature-build`, `architecture-review`, `migration`, `ui-redesign`, `build-optimization`, `test`, `code-review`.
-
-## Error Recovery
-
-Pipeline error handling is defined in `skills/aet-pipeline/SKILL.md` (Decision Point 4 and Error Recovery sections). Key principle: auto-fix first (max 2 retries), then escalate to user. Escalate to manual intervention after 3+ failed attempts or when root cause is unclear.
-
-## Reference Projects
-
-- **Now in Android** - Google's official reference app
-- **dpconde/claude-android-skill** - Existing Claude skill
-- **futurice/android-best-practices** - Industry standards
-- **awesome-claude-code-subagents** - Subagent patterns
+Multi-agent pipeline work → `/aet-pipeline` (pipeline types, execution protocol, parallel dispatch rules, error recovery; the handoff contract is enforced by its validator — do not hand-maintain section lists here). Companions: `/aet-status` (progress + recovery), `/aet-check` (pattern detection).
 
 ## Common Rationalizations
 
@@ -273,7 +215,5 @@ After using the Android Expert skill, confirm:
 ## Version Requirements
 
 - Minimum SDK: 24 (Android 7.0)
-- Target SDK: Latest stable
-- Kotlin: 2.3.0+
-- Compose: BOM 2025.09.01+
-- AGP: 9.0.0+
+- Target SDK: latest stable
+- Kotlin, AGP, Compose BOM: latest stable releases — verify current versions against the project's version catalog rather than pinning here

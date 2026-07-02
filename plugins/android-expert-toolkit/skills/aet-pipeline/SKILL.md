@@ -1,14 +1,16 @@
 ---
 name: aet-pipeline
-description: "Use when running a multi-agent Android development pipeline end-to-end — feature builds, architecture reviews, migrations, UI redesigns, build optimizations, test backfills, or code reviews. Triggers on 'build a feature', 'review architecture', 'migrate to X', 'redesign UI', 'optimize build', 'add tests', 'code review module'. Orchestrates architect → gradle/developer → compose → testing handoffs with validation and artifact generation."
-argument-hint: "<pipeline-type> [feature name] (types: feature-build, architecture-review, migration, ui-redesign, build-optimization, test, code-review) [--verbose]"
+description: "Use when running a multi-agent Android development pipeline end-to-end — feature builds, architecture reviews, migrations, UI redesigns, build optimizations, test backfills, or code reviews. Triggers on 'build a feature', 'review architecture', 'migrate to X', 'redesign UI', 'optimize build', 'add tests', 'code review module'. Not for ad-hoc Android questions (use android-expert)."
+argument-hint: "<feature-build|architecture-review|migration|ui-redesign|build-optimization|test|code-review>"
+metadata:
+  short-description: "Run a multi-agent Android pipeline (feature build, migration, review) with validated handoffs"
 ---
 
 # Android Expert Pipeline Orchestration
 
 Automated multi-agent workflows with validation checkpoints and handoff artifacts.
 
-> **Platform notes:** Tool names in this skill use Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). For Codex CLI / Codex App, substitute per `references/codex-tools.md` — `Agent` → `spawn_agent`, `TaskCreate` → `update_plan`, `AskUserQuestion` → prompt the user as plain text and parse the free-form reply. Codex requires `multi_agent = true` in `~/.codex/config.toml` for parallel dispatch.
+> **Platform notes:** Tool names in this skill use Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). For Codex CLI / Codex App, substitute per `${CLAUDE_PLUGIN_ROOT}/references/codex-tools.md` — `Agent` → `spawn_agent`, `TaskCreate` → `update_plan`, `AskUserQuestion` → prompt the user as plain text and parse the free-form reply. Codex requires `multi_agent = true` in `~/.codex/config.toml` for parallel dispatch.
 
 ## Pre-flight Context
 
@@ -31,7 +33,7 @@ The preflight's `== Codex multi_agent capability ==` section emits one of:
 |---|---|
 | `NOT_CODEX` | Ignore — Claude doesn't gate `Agent` dispatch behind a flag. Proceed with full flow. |
 | `ENABLED` | Proceed with full flow. |
-| `DISABLED` or `NO_CONFIG` | **Read `@references/codex-fallback.md`** and run sequential single-orchestrator dispatch instead. Do NOT attempt `spawn_agent` — it will fail at the tool layer. |
+| `DISABLED` or `NO_CONFIG` | **Read `${CLAUDE_PLUGIN_ROOT}/references/codex-fallback.md`** and run sequential single-orchestrator dispatch instead. Do NOT attempt `spawn_agent` — it will fail at the tool layer. |
 
 The fallback produces the same pipeline artifacts (`architecture-blueprint.md`, `module-setup.md`, etc.) via sequential persona dispatch by the orchestrating model. Slower (no parallel gradle+developer stage) and lower-fidelity (no peer cross-review), but functional. The state.json records `dispatch_mode: "single-orchestrator-fallback"` so downstream tooling knows what produced the artifacts.
 
@@ -47,31 +49,11 @@ The fallback produces the same pipeline artifacts (`architecture-blueprint.md`, 
 | `test` | Add tests to existing code | testing-specialist only | "Add tests for [module]", "Improve test coverage" |
 | `code-review` | Review code for issues | architect (review mode) | "Review [module] code", "Code review [PR/feature]" |
 
-## Invocation
-
-Claude Code: invoke via the Skill tool, e.g. `Skill(skill="aet-pipeline", args="feature-build Social Feed")`. The skill description above also auto-triggers on natural-language requests.
-
-Codex: state the intent in natural language ("build a social feed pipeline"). The skill loads when the description matches.
-
-Examples:
-
-```
-aet-pipeline feature-build "Social Feed"
-aet-pipeline architecture-review
-aet-pipeline migration "LiveData to StateFlow"
-aet-pipeline ui-redesign "Profile Screen"
-aet-pipeline build-optimization
-aet-pipeline test "User Profile"
-aet-pipeline code-review "Authentication Module"
-```
-
-### Flags
+## Flags
 
 | Flag | Description |
 |------|-------------|
 | `--verbose` | Enable detailed logging to `.artifacts/aet/log.md`. Logs agent dispatch times, validation results, artifact sizes, and error details for each stage. |
-
-## Execution Protocol
 
 ## Argument Parsing
 
@@ -94,7 +76,7 @@ When a pipeline is triggered, follow this protocol:
 4. Determine the next uncompleted stage from the pipeline sequence
 5. Re-validate the last completed artifact before proceeding:
    ```bash
-   python hooks/validate-handoff.py <last_completed_artifact_path>
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/validate-handoff.py" <last_completed_artifact_path>
    ```
 6. Jump directly to Step 4 (Execute Agent Sequence), starting from the next stage
 7. Update `status` back to `in_progress` in state if it was `aborted`
@@ -150,7 +132,7 @@ Follow pipeline definition order, respecting dependencies:
 **Agent dispatch — platform mapping:**
 
 - Claude: `Agent({subagent_type: 'android-expert-toolkit:android-architect', prompt: ...})`
-- Codex: `spawn_agent(prompt)` — the prompt must include the full agent persona (read from `agents/android-architect.md`) plus the Pipeline Context Block. Codex has no `subagent_type` registry.
+- Codex: `spawn_agent(prompt)` — the prompt must include the full agent persona (read from `${CLAUDE_PLUGIN_ROOT}/agents/android-architect.md`) plus the Pipeline Context Block. Codex has no `subagent_type` registry.
 
 **Pipeline Context Block (mandatory in every agent task prompt):**
 
@@ -216,37 +198,22 @@ android-architect
 - testing-specialist UI tests: sequential after compose-expert (needs ui-report.md)
 - compose-expert MUST wait for android-developer (reads implementation-report.md)
 
-#### Agent Token Budgets
+#### Agent Budget (tool calls)
 
-Per-agent token budget guidance for pipeline dispatch:
-
-| Agent | Model | Budget | Rationale |
-|-------|-------|--------|-----------|
-| android-architect | Opus | ~60K tokens max | Architecture decisions are complex but bounded |
-| android-developer | Sonnet | ~40K tokens max | Implementation is scoped by blueprint |
-| gradle-build-engineer | Sonnet | ~30K tokens max | Build config is well-defined |
-| compose-expert | Sonnet | ~40K tokens max | UI implementation scoped by blueprint + impl report |
-| android-testing-specialist | Sonnet | ~40K tokens max | Test scope defined by prior artifacts |
-
-These are guidelines, not hard limits. If an agent exceeds its budget by >50%, consider whether the task scope is too broad and should be split.
-
-**Stalled agent detection:** If an agent has made >35 tool calls without producing a handoff artifact, treat as stalled. Trigger DP4 (Error Recovery).
+**Stalled agent detection:** If an agent has made >35 tool calls without producing a handoff artifact, treat as stalled. Trigger DP4 (Error Recovery). Tool-call count is the only budget the orchestrator can observe — there is no per-subagent token telemetry.
 
 ### Step 5: Validate Handoffs
 After each agent completes, validate handoff artifact:
 ```bash
-python hooks/validate-handoff.py .artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-<artifact-file>.md
+python3 "${CLAUDE_PLUGIN_ROOT}/hooks/validate-handoff.py" .artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-<artifact-file>.md
 ```
 
-Validation checks:
-- Required sections present (Summary, Decisions, Artifacts Created, Next Steps, Constraints)
-- Artifact-specific sections present (varies by artifact type)
-- No placeholder text (e.g., "[TODO]", "[FILL IN]")
+The validator (`${CLAUDE_PLUGIN_ROOT}/hooks/validate-handoff.py`) is the single source of truth for what each artifact must contain — see § Validation below.
 
 ### Step 6: Check Dependencies
 Before dispatching next agent, validate dependencies:
 ```bash
-python hooks/validate-dependencies.py .artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-<artifact-file>.md
+python3 "${CLAUDE_PLUGIN_ROOT}/hooks/validate-dependencies.py" .artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-<artifact-file>.md
 ```
 
 Dependency validation ensures:
@@ -284,7 +251,7 @@ When an agent writes incorrect code that cannot be auto-fixed:
 When the handoff artifact has minor issues that don't require re-running the agent:
 1. Pause pipeline
 2. User or orchestrator edits the handoff artifact directly
-3. Re-validate: `python hooks/validate-handoff.py <artifact-path>`
+3. Re-validate: `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/validate-handoff.py" <artifact-path>`
 4. Resume pipeline if validation passes
 
 **Switch Agent Model**:
@@ -296,7 +263,7 @@ When an agent fails repeatedly (3+ auto-fix attempts):
 
 ### Step 8: Generate Summary
 
-After pipeline completes, generate a summary report, store completion metrics in pipeline state, and offer to squash-merge the pipeline branch. See `templates/pipeline-summary-template.md` for the report template, metrics schema, and merge commands.
+After pipeline completes, generate a summary report, store completion metrics in pipeline state, and offer to squash-merge the pipeline branch. See `${CLAUDE_PLUGIN_ROOT}/templates/pipeline-summary-template.md` for the report template, metrics schema, and merge commands.
 
 ## Interactive Decision Points
 
@@ -308,7 +275,7 @@ The pipeline includes 4 interactive decision points (DPs) that involve the user 
 
 **Skip if**: `android-expert-toolkit.local.md` exists in project root with all values explicitly set (not `auto-detect`).
 
-**Pattern Detection Cache**: Before prompting, check `.artifacts/aet/cache/detected-patterns.json` for a valid cache (see `references/pattern-detection.md` § Pattern Detection Cache). If the cache is fresh, pre-populate auto-detect answers from cached values and log `"pattern_cache_status": "hit"` in pipeline state. If stale or missing, run detection and write the cache, logging `"pattern_cache_status": "miss"` or `"stale"`.
+**Pattern Detection Cache**: Before prompting, check `.artifacts/aet/cache/detected-patterns.json` for a valid cache (see `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` § Pattern Detection Cache). If the cache is fresh, pre-populate auto-detect answers from cached values and log `"pattern_cache_status": "hit"` in pipeline state. If stale or missing, run detection and write the cache, logging `"pattern_cache_status": "miss"` or `"stale"`.
 
 **Question 1** (header: "DI Framework"):
 "Which dependency injection framework should the pipeline use?"
@@ -410,7 +377,7 @@ When `android-expert-toolkit.local.md` exists in the project root:
 
 ### Validation
 
-Required sections per artifact type are defined in `hooks/validate-handoff.py` (REQUIRED_SECTIONS dict) — that is the source of truth. Templates in `templates/` show the expected structure. Do not maintain a separate list here.
+Required sections per artifact type are defined in `${CLAUDE_PLUGIN_ROOT}/hooks/validate-handoff.py` (REQUIRED_SECTIONS dict) — that is the source of truth. Templates in `${CLAUDE_PLUGIN_ROOT}/templates/` show the expected structure. Do not maintain a separate list here.
 
 ## Progress Tracking
 
@@ -453,7 +420,7 @@ Resume by re-invoking with `resume` as the first argument — see Step 0 (Resume
 
 ### Common Error Scenarios
 
-See `references/pipeline-error-scenarios.md` for detailed recovery walkthroughs covering:
+See `${CLAUDE_PLUGIN_ROOT}/references/pipeline-error-scenarios.md` for detailed recovery walkthroughs covering:
 - Incomplete handoff artifact (missing sections)
 - Build failure after implementation (compilation errors)
 - Test failures after implementation (assertion mismatches)

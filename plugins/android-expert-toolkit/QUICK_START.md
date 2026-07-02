@@ -193,7 +193,7 @@ The `validate-handoff.py` hook should catch this before the next agent runs. If 
 
 - **[README.md](README.md)** — Plugin overview, installation, plugin structure
 - **[CLAUDE.md](CLAUDE.md)** — Plugin internals (for maintainers)
-- **[references/scenarios.md](references/scenarios.md)** — Full walkthrough examples
+- **[examples/](examples/)** — End-to-end example pipeline output
 - **[references/agent-routing.md](references/agent-routing.md)** — When each agent is the right choice
 - **[references/conflict-resolution.md](references/conflict-resolution.md)** — Priority hierarchy when principles conflict
 - **[references/pattern-detection.md](references/pattern-detection.md)** — All detection commands + 80/20 framework

@@ -5,10 +5,16 @@ Post Tool Use hook that monitors handoff artifact creation and updates pipeline 
 """
 
 import json
+import shlex
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Any, Optional
+
+
+def utc_now_iso() -> str:
+    """Timezone-aware UTC timestamp in `...Z` form (utcnow() is deprecated)."""
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 # Map artifact type (no extension) to agent
 ARTIFACT_TO_AGENT: Dict[str, str] = {
@@ -114,8 +120,13 @@ def mark_validation_passed(tool_input: Dict[str, Any], tool_output: str):
 
     validation_failed = "validation failed" in tool_output
 
-    # Extract the artifact path from the command arguments
-    parts = command.split()
+    # Extract the artifact path from the command arguments.
+    # shlex keeps quoted paths with spaces intact; unparseable commands
+    # (unbalanced quotes, etc.) are skipped gracefully.
+    try:
+        parts = shlex.split(command)
+    except ValueError:
+        return
     artifact_path = None
     for i, part in enumerate(parts):
         if part.endswith("validate-handoff.py") and i + 1 < len(parts):
@@ -159,7 +170,7 @@ CLAUDE_SHELL_TOOLS = {"Bash"}
 CODEX_SHELL_TOOLS = {"local_shell", "shell", "shell_command", "exec_command"}
 SHELL_TOOLS = CLAUDE_SHELL_TOOLS | CODEX_SHELL_TOOLS
 
-CLAUDE_WRITE_TOOLS = {"Write"}
+CLAUDE_WRITE_TOOLS = {"Write", "Edit", "MultiEdit"}
 CODEX_WRITE_TOOLS: set = set()  # Codex apply_patch payload differs; tracking deferred to skill-side inline state updates
 WRITE_TOOLS = CLAUDE_WRITE_TOOLS | CODEX_WRITE_TOOLS
 
@@ -221,7 +232,7 @@ def update_pipeline_state(tool_name: str, tool_input: Dict[str, Any], tool_outpu
         state = {
             "pipeline_type": None,
             "feature_name": None,
-            "started_at": datetime.utcnow().isoformat() + "Z",
+            "started_at": utc_now_iso(),
             "completed_at": None,
             "status": "in_progress",
             "current_stage": None,
@@ -241,11 +252,21 @@ def update_pipeline_state(tool_name: str, tool_input: Dict[str, Any], tool_outpu
             existing_step = step
             break
 
-    # Count artifact lines
+    # Count artifact lines. Edit/MultiEdit payloads carry `file_path` but no
+    # full `content` (only old_string/new_string or an edits list), so fall
+    # back to counting the file on disk; 0 if unreadable.
     content = tool_input.get("content", "")
-    artifact_size_lines = len(content.split('\n')) if content else 0
+    if content:
+        artifact_size_lines = len(content.split('\n'))
+    else:
+        try:
+            artifact_size_lines = len(
+                Path(file_path).read_text(encoding='utf-8').split('\n')
+            )
+        except Exception:
+            artifact_size_lines = 0
 
-    now = datetime.utcnow().isoformat() + "Z"
+    now = utc_now_iso()
 
     if existing_step:
         existing_step["completed_at"] = now

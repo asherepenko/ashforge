@@ -2,13 +2,15 @@
 name: aet-check
 description: "Use when analyzing pattern consistency in an Android codebase — state management, dependency injection, testing, architecture, security, performance, or accessibility. Runs detection sweeps and applies the 80/20 decision matrix. Trigger on 'check patterns', 'which DI is used', 'state management consistency', 'audit Compose patterns', 'aet check'."
 argument-hint: "[state | di | testing | architecture | security | performance | accessibility | all] [--fresh]"
+metadata:
+  short-description: "Detect Android codebase pattern consistency with the 80/20 matrix"
 ---
 
 # Android Expert Pattern Check
 
-Run pattern detection from `references/pattern-detection.md` against the current codebase. Reports consistency percentages and applies the 80/20 decision matrix.
+Run pattern detection from `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` against the current codebase. Reports consistency percentages and applies the 80/20 decision matrix.
 
-> **Platform notes:** Pure read-only — uses Grep, Glob, Read, and shell. No subagent dispatch, no interactive prompts. Works identically on Claude and Codex. See `references/codex-tools.md` only if you need to substitute the shell tool name.
+> **Platform notes:** Pure read-only — uses Grep, Glob, Read, and shell. No subagent dispatch, no interactive prompts. Works identically on Claude and Codex. See `${CLAUDE_PLUGIN_ROOT}/references/codex-tools.md` only if you need to substitute the shell tool name.
 
 ## Pre-flight Context
 
@@ -28,7 +30,7 @@ Use the output to:
 
 ## Invocation
 
-Claude: `Skill(skill="aet-check", args="di")` or auto-trigger on natural-language prompts. Codex: state intent naturally.
+Claude: `/aet-check di` or auto-trigger on natural-language prompts. Codex: state intent naturally.
 
 Examples:
 ```
@@ -65,57 +67,23 @@ Before running detection, check for a valid cache at `.artifacts/aet/cache/detec
    - If both match: **cache hit** — use cached patterns, skip to Step 4 (Report Results)
    - If either differs: **cache stale** — proceed to Step 2
 
-After detection completes (Step 3), write results to `.artifacts/aet/cache/detected-patterns.json` following the schema in `references/pattern-detection.md` § Pattern Detection Cache.
+After detection completes (Step 3), write results to `.artifacts/aet/cache/detected-patterns.json` following the schema in `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` § Pattern Detection Cache.
 
 ### 2. Run Detection
 
-For each category (or all), use the Grep tool to count pattern occurrences:
+For each category (or all), use the Grep tool to count pattern occurrences. Summary of what each category sweeps:
 
-**State Management** (`state`):
-- Count `LiveData<` in `*.kt` and `*.java` files
-- Count `StateFlow<` in `*.kt` files
-- Count `MutableLiveData<` in `*.kt` and `*.java` files
-- Count `Flow<` in `*.kt` files
-- Count RxJava markers (`Single<`, `Observable<`, `Completable`) in `*.kt` and `*.java` files
+| Category | Patterns counted (summary) |
+|----------|---------------------------|
+| `state` | StateFlow vs LiveData/MutableLiveData vs Flow vs RxJava markers |
+| `di` | Hilt vs Koin vs Dagger vs manual DI (`ViewModelProvider.Factory`) markers |
+| `testing` | Mockito vs MockK vs test doubles (`Test*`/`Fake*`) vs Turbine usage |
+| `architecture` | ViewModels, `@Composable` vs XML layouts, Repository and UseCase classes |
+| `security` | network security config, certificate pinning, encrypted storage, hardcoded secrets, ProGuard/R8 config |
+| `performance` | Baseline Profiles, missing `remember`, Lazy lists without stable `key`, `GlobalScope`, `stateIn` sharing policy |
+| `accessibility` | `contentDescription` coverage, `Modifier.semantics`, touch target sizes, `mergeDescendants` |
 
-**Dependency Injection** (`di`):
-- Count Hilt markers (`@HiltAndroidApp`, `@HiltViewModel`, `@Inject`) in `*.kt` files
-- Count Koin markers (`koinViewModel`, `by inject()`, `startKoin`) in `*.kt` files
-- Count Dagger markers (`@Component`, `@Module`, `@Provides`) in `*.kt` and `*.java` files
-- Count Manual DI (`ViewModelProvider.Factory`) in `*.kt` files
-
-**Testing** (`testing`):
-- Count Mockito (`@Mock`, `mock(`) in `*.kt` and `*.java` files
-- Count MockK (`mockk<`, `every `) in `*.kt` files
-- Count Test Doubles (`class Test.*Repository`, `class Fake`) in `*.kt` files
-- Count Turbine (`.test {`) in `*.kt` files
-
-**Architecture** (`architecture`):
-- Count ViewModels (`ViewModel()`) in `*.kt` files
-- Count Composables (`@Composable`) in `*.kt` files
-- Count XML layouts in `*/res/layout/*.xml`
-- Count Repository interfaces/classes in `*.kt` files
-- Count UseCase classes in `*.kt` files
-
-**Security** (`security`):
-- Check `network_security_config.xml` presence in `*/res/xml/`
-- Count `CertificatePinner` usage in `*.kt` and `*.java` files
-- Count `EncryptedSharedPreferences` or `EncryptedFile` usage in `*.kt` files
-- Detect hardcoded secrets: strings matching API key patterns (`[A-Za-z0-9]{32,}` in string literals) in `*.kt` files
-- Check ProGuard/R8 configuration: `proguard-rules.pro` or `consumer-rules.pro` presence
-
-**Performance** (`performance`):
-- Check Baseline Profile configuration: `baseline-prof.txt` or `BaselineProfileGenerator` in `*.kt` files
-- Detect `@Composable` functions without `remember` for expensive calculations in `*.kt` files
-- Detect `LazyColumn`/`LazyRow` without stable `key` parameter in `*.kt` files
-- Count `GlobalScope` usage (anti-pattern) in `*.kt` files
-- Detect `stateIn` without `SharingStarted.WhileSubscribed` in ViewModel files
-
-**Accessibility** (`accessibility`):
-- Count `contentDescription` presence on `Icon` and `Image` composables in `*.kt` files
-- Count `Modifier.semantics` usage in `*.kt` files
-- Detect touch target sizes: `Modifier.size` with values < 48.dp near clickable modifiers
-- Count `mergeDescendants` usage in `*.kt` files
+Canonical sweep definitions (exact grep patterns, file globs, and counting rules): `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` — read it before running detection; do not improvise patterns from this table.
 
 ### 3. Calculate Consistency
 
@@ -167,4 +135,4 @@ End with an overall summary:
 - Categories checked
 - Patterns with conflicts
 - Recommended actions
-- Reference to `references/pattern-detection.md` for full decision framework
+- Reference to `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` for full decision framework

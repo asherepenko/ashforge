@@ -108,9 +108,11 @@ class TestAgentReferences:
     def test_no_broken_template_refs(self, agent_file):
         content = agent_file.read_text(encoding='utf-8')
         # Check for template variable patterns that weren't filled in
+        # ${CLAUDE_PLUGIN_ROOT} is substituted inline by the runtime in agent
+        # content (docs: plugins-reference#environment-variables) — not a broken ref.
         template_patterns = [
             r'\{\{[^}]+\}\}',  # {{variable}}
-            r'\$\{[^}]+\}',   # ${variable} (but not in code blocks)
+            r'\$\{(?!CLAUDE_PLUGIN_ROOT\}|PLUGIN_ROOT\})[^}]+\}',   # ${variable} (but not in code blocks)
         ]
         body = get_body_after_frontmatter(content)
         # Skip code blocks

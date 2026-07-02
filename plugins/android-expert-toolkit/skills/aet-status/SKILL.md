@@ -1,14 +1,15 @@
 ---
 name: aet-status
 description: "Use when checking on an Android Expert Toolkit pipeline run — show progress, completed stages, generated artifacts, timing, and recovery options. Trigger on 'pipeline status', 'aet status', 'what's running', 'where are we in the pipeline', 'show pipeline progress'."
-argument-hint: "(no arguments)"
+metadata:
+  short-description: "Show Android pipeline progress, artifacts, and recovery options"
 ---
 
 # Android Expert Pipeline Status
 
 Read `.artifacts/aet/state.json` and display the current pipeline status with actionable options.
 
-> **Platform notes:** This skill references `AskUserQuestion` for the action menu — on Codex, print the options as plain text and parse the user's reply. See `references/codex-tools.md`. The state file is normally updated inline by `aet-pipeline` (the `track-progress.py` hook is a write-through cache that fires on Claude always and on Codex only when `[features] hooks = true, plugin_hooks = true` and the user has trusted the hook). When `state.json` is stale or missing — e.g. hooks disabled on Codex, or stage written before inline update — fall back to deriving stage progress from the handoff directory.
+> **Platform notes:** This skill references `AskUserQuestion` for the action menu — on Codex, print the options as plain text and parse the user's reply. See `${CLAUDE_PLUGIN_ROOT}/references/codex-tools.md`. The state file is normally updated inline by `aet-pipeline` (the `track-progress.py` hook is a write-through cache that fires on Claude always and on Codex only when `[features] hooks = true, plugin_hooks = true` and the user has trusted the hook). When `state.json` is stale or missing — e.g. hooks disabled on Codex, or stage written before inline update — fall back to deriving stage progress from the handoff directory.
 
 ## Pre-flight Context
 
@@ -193,7 +194,7 @@ Question (header: "Recovery"):
 
 ### 6. Feature History
 
-Always display this section — even when no active pipeline exists.
+Display this section whenever past runs exist — including when no active pipeline exists. If the handoffs directory is missing or empty, skip it silently (see below).
 
 Scan `.artifacts/aet/handoffs/` for feature directories:
 
@@ -228,5 +229,6 @@ Based on user's choice:
 - **Continue/Resume**: Read state, dispatch next agent in sequence (invoke the `aet-pipeline` skill with `resume`)
 - **View artifact**: Ask which artifact, then read and display it
 - **Re-run stage**: Re-dispatch the specified agent
-- **Abort/Clean up**: Delete `.artifacts/aet/state.json`
+- **Abort**: Set `status` to `"aborted"` in `.artifacts/aet/state.json` — do NOT delete the file (the recovery flow in Step 5 and `aet-pipeline resume` branch on it)
+- **Clean up**: Delete `.artifacts/aet/state.json` (only offered for completed pipelines)
 - **Start new**: Delete state file, prompt for new pipeline parameters

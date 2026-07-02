@@ -101,15 +101,11 @@ def check_git_state():
         pass  # git not available
 
 
-def check_project_structure():
-    """Validate minimal Android project structure."""
+def is_gradle_project() -> bool:
+    """True when cwd has any Gradle marker (settings.gradle[.kts] / build.gradle[.kts])."""
     cwd = Path.cwd()
-    has_build = (cwd / "build.gradle.kts").exists() or (cwd / "build.gradle").exists()
-    has_settings = (cwd / "settings.gradle.kts").exists() or (cwd / "settings.gradle").exists()
-
-    if not has_build and not has_settings:
-        print("  Warning: No build.gradle.kts or settings.gradle.kts found")
-        print("    Pipeline commands require an Android project structure")
+    markers = ("settings.gradle", "settings.gradle.kts", "build.gradle", "build.gradle.kts")
+    return any((cwd / m).exists() for m in markers)
 
 
 def check_artifact_existence():
@@ -184,10 +180,13 @@ def check_interrupted_pipeline():
 
 
 def main():
+    # Non-Android project: exit silently — no banner, no warnings.
+    if not is_gradle_project():
+        sys.exit(0)
+
     print("Android Expert Toolkit loaded")
     check_settings()
     check_git_state()
-    check_project_structure()
     check_artifact_existence()
     check_interrupted_pipeline()
     sys.exit(0)

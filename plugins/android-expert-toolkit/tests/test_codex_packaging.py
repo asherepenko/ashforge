@@ -15,12 +15,12 @@ def read_json(path: Path) -> dict:
 def test_codex_manifest_declares_codex_hooks_manifest():
     manifest = read_json(PROJECT_ROOT / ".codex-plugin" / "plugin.json")
 
-    assert manifest["hooks"] == "./.codex-plugin/hooks.json"
+    assert manifest["hooks"] == "./hooks/hooks-codex.json"
     assert manifest["hooks"] != "./hooks/hooks.json"
 
 
 def test_codex_hooks_use_codex_root_and_matchers():
-    hooks_path = PROJECT_ROOT / ".codex-plugin" / "hooks.json"
+    hooks_path = PROJECT_ROOT / "hooks" / "hooks-codex.json"
     hooks_text = hooks_path.read_text(encoding="utf-8")
     hooks = json.loads(hooks_text)
 

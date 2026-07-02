@@ -2,11 +2,11 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Write",
+        "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/track-progress.py\"",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/track-progress.sh\"",
             "timeout": 10
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/track-progress.py\"",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/track-progress.sh\"",
             "timeout": 10
           }
         ]
@@ -24,6 +24,7 @@
     ],
     "SessionStart": [
       {
+        "matcher": "startup|resume|clear",
         "hooks": [
           {
             "type": "command",

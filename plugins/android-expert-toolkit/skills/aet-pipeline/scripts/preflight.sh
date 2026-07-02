@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 # Pre-flight context for the aet-pipeline skill.
-# Output is labeled with `== section ==` headers. All probes parallelize.
+# Output is labeled with `== section ==` headers. Probes run in parallel,
+# each captured to its own temp file, then printed serially so section
+# blocks never interleave on shared stdout.
 # Use the output to skip the project-discovery phase and pass values to
 # dispatched agents (architect, gradle-build-engineer) so they don't re-scan.
 set -uo pipefail
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
 
 (
   echo "== Settings file =="
@@ -14,21 +19,21 @@ set -uo pipefail
   else
     echo "NO_SETTINGS_GRADLE"
   fi
-) &
+) > "$tmp/01" 2>&1 &
 
 (
   echo "== Module count =="
   find . -maxdepth 4 -name 'build.gradle.kts' \
     -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null \
     | wc -l | tr -d ' '
-) &
+) > "$tmp/02" 2>&1 &
 
 (
   echo "== Top-level modules =="
   find . -maxdepth 3 -name 'build.gradle.kts' \
     -not -path '*/build/*' -not -path '*/.gradle/*' 2>/dev/null \
     | head -30
-) &
+) > "$tmp/03" 2>&1 &
 
 (
   echo "== Existing pipeline state =="
@@ -37,12 +42,12 @@ set -uo pipefail
   else
     echo "NO_ACTIVE_PIPELINE"
   fi
-) &
+) > "$tmp/04" 2>&1 &
 
 (
   echo "== Active branch =="
   git branch --show-current 2>/dev/null || echo "NOT_A_REPO"
-) &
+) > "$tmp/05" 2>&1 &
 
 (
   echo "== Per-project settings =="
@@ -51,7 +56,7 @@ set -uo pipefail
   else
     echo "NO_LOCAL_SETTINGS"
   fi
-) &
+) > "$tmp/06" 2>&1 &
 
 (
   echo "== Codex multi_agent capability =="
@@ -73,6 +78,7 @@ set -uo pipefail
   else
     echo "NO_CONFIG"
   fi
-) &
+) > "$tmp/07" 2>&1 &
 
 wait
+cat "$tmp"/*

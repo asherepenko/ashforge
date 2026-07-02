@@ -15,6 +15,8 @@ Written by: [AGENT NAME]
 Timestamp: [ISO 8601 - e.g., 2026-02-13T10:30:00Z]
 ```
 
+<!-- Keep the completed handoff ≤200 lines; include sections marked "optional" only when relevant. -->
+
 ## Pipeline Context
 
 <!-- Copy verbatim from architecture-blueprint.md Pipeline Context section -->
@@ -48,8 +50,6 @@ data class [Feature]Route(val id: String)
 
 // Location: [file path]
 ```
-
-## Screen Implementations
 
 **Main Screen:**
 ```kotlin
@@ -92,6 +92,8 @@ private fun [Feature]Content(
 ```
 
 ## State Management
+
+<!-- optional -->
 
 **UI State Handling:**
 ```kotlin
@@ -147,6 +149,8 @@ fun [Component]Name(
 
 ## Styling and Theming
 
+<!-- optional -->
+
 **Theme Usage:**
 ```kotlin
 // Using Material 3 theme tokens
@@ -167,6 +171,8 @@ fun CustomStyledComponent() {
 ```
 
 ## Navigation Integration
+
+<!-- optional -->
 
 **Navigation Graph:**
 ```kotlin
@@ -198,6 +204,8 @@ deepLinks = listOf(
 
 ## Accessibility
 
+<!-- optional -->
+
 **Content Descriptions:**
 ```kotlin
 // Accessibility semantics applied
@@ -225,6 +233,8 @@ Button(
 
 ## Performance Optimizations
 
+<!-- optional -->
+
 **Compose Best Practices Applied:**
 - [ ] `remember` used for expensive computations
 - [ ] `derivedStateOf` for derived state
@@ -249,6 +259,8 @@ fun OptimizedList(items: List<Item>) {
 ```
 
 ## Testing Support
+
+<!-- optional -->
 
 **Preview Functions:**
 ```kotlin
@@ -279,6 +291,8 @@ fun [Feature]Screen(
 ```
 
 ## Known Issues and Limitations
+
+<!-- optional -->
 
 **UI Limitations:**
 - [List any UI limitations or edge cases]
