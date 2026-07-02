@@ -6,6 +6,7 @@
   "plugins": [
     {
       "name": "android-expert-toolkit",
+      "description": "Expert Android engineering agents, interactive multi-agent pipelines, and 80/20 pattern detection for modern Kotlin/Compose/Gradle development",
       "source": {
         "source": "local",
         "path": "./plugins/android-expert-toolkit"
@@ -18,6 +19,7 @@
     },
     {
       "name": "avengers-council",
+      "description": "Engineering advisory board (8 core members + Captain America orchestrator) for reviewing plans, code, and architecture through structured 3-round debate with domain scoring and security veto",
       "source": {
         "source": "local",
         "path": "./plugins/avengers-council"

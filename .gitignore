@@ -1,1 +1,6 @@
-*/*/.claude/plans
+**/.claude/plans/
+**/.claude/settings.local.json
+**/.artifacts/
+**/__pycache__/
+**/.pytest_cache/
+.DS_Store
