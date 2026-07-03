@@ -185,6 +185,10 @@ def main():
         sys.exit(0)
 
     print("Android Expert Toolkit loaded")
+    print("  Android project detected — for Android/Kotlin/Compose work in this session")
+    print("  (patterns, architecture, code review, implementation), invoke the")
+    print("  `android-expert` skill FIRST instead of answering inline.")
+    print("  End-to-end feature builds / migrations / module reviews -> `aet-pipeline` skill.")
     check_settings()
     check_git_state()
     check_artifact_existence()
