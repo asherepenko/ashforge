@@ -11,9 +11,9 @@ Canonical version of the cross-runtime scaffolding shared by `council-plan-revie
 
 ## Platform Notes
 
-Tool names in the skill bodies use Claude Code primitives (`Agent`, `TeamCreate`, `SendMessage`, `TaskCreate`, `AskUserQuestion`). The Claude execution path is unchanged from earlier versions. For Codex CLI / Codex App, substitute per `${CLAUDE_PLUGIN_ROOT}/references/codex-tools.md`:
+Tool names in the skill bodies use Claude Code primitives (`Agent`, `SendMessage`, `TaskCreate`, `AskUserQuestion`). For Codex CLI / Codex App, substitute per `${CLAUDE_PLUGIN_ROOT}/references/codex-tools.md`:
 
-- `TeamCreate` is skipped (no team primitive).
+- Team setup is skipped on both runtimes — Claude's session team is implicit, Codex has no team primitive.
 - `SendMessage` is replaced by hub-mediated context propagation — Captain consolidates each round's verdicts and re-spawns members for the next round.
 - Codex requires `multi_agent = true` in `~/.codex/config.toml` for parallel `spawn_agent` dispatch.
 
@@ -23,7 +23,7 @@ The preflight's `== Codex multi_agent capability ==` section emits one of:
 
 | Value | Action |
 |---|---|
-| `NOT_CODEX` | Ignore — Claude `TeamCreate`/`Agent` not gated by a flag. Proceed with full debate. |
+| `NOT_CODEX` | Ignore — Claude `Agent` spawning is not gated by a flag. Proceed with full debate. |
 | `ENABLED` | Proceed with full hub-mediated debate (3 rounds × N members). |
 | `DISABLED` or `NO_CONFIG` | **Read `${CLAUDE_PLUGIN_ROOT}/references/codex-fallback.md`** and run single-orchestrator persona walk instead. Do NOT attempt `spawn_agent` — it will fail at the tool layer. |
 

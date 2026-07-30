@@ -38,6 +38,8 @@ The toolkit used to ship slash commands (`/aet-pipeline`, `/aet-status`, `/aet-c
 
 Skill bodies reference Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). On Codex, substitute per `references/codex-tools.md` (`Agent` → `spawn_agent`, `TaskCreate` → `update_plan`, `AskUserQuestion` → plain prompt + free-form reply parsing). Codex App in a sandboxed worktree also needs the read-only-environment handling documented there.
 
+The pipeline is plain subagent fan-out — no agent-team primitives. `Agent` spawns pass `subagent_type` + `name` and never `team_name` (deprecated and ignored); `TeamCreate` / `TeamDelete` no longer exist in the harness.
+
 ## Pipeline Decision Points
 
 Interactive pipeline has 4 user-gated decisions:

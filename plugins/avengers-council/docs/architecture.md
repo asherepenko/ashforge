@@ -31,7 +31,7 @@
 │  └─ Flag obvious violations → PRE-FLIGHT CHECK                  │
 │                                                                 │
 │  PHASE 3: ASSEMBLE COUNCIL                                      │
-│  ├─ TeamCreate("avengers-council")                              │
+│  ├─ Session team is implicit (lead = team-lead)                 │
 │  ├─ Spawn core + optional teammates with context                │
 │  │   (standards, codebase audit, shared principles, red lines)  │
 │  └─ Each agent self-starts Round 1 immediately                  │
@@ -242,7 +242,7 @@ START: council-plan-review @proposal.md
   ├─ Captain determines roster (core + matching optional members)
   ├─ Captain validates: Does plan include AC? (Yes/No)
   │
-  ├─ TeamCreate("avengers-council")
+  ├─ Session team is implicit (lead = team-lead)
   ├─ Spawn N teammates with context (standards, audit, principles, red lines)
   │
   ├─ ROUND 1: Agents self-start assessment
@@ -286,7 +286,7 @@ START: council-code-review --pr 123
   │  ├─ Test coverage baseline (Yes/No)
   │  └─ Security-sensitive code? (Yes → Black Widow mandatory)
   │
-  ├─ TeamCreate("avengers-council")
+  ├─ Session team is implicit (lead = team-lead)
   ├─ Spawn N teammates with context (diff, standards, audit, principles, red lines)
   │
   ├─ ROUND 1: Agents self-start assessment

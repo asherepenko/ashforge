@@ -131,7 +131,7 @@ Follow pipeline definition order, respecting dependencies:
 
 **Agent dispatch — platform mapping:**
 
-- Claude: `Agent({subagent_type: 'android-expert-toolkit:android-architect', prompt: ...})`
+- Claude: `Agent({subagent_type: 'android-expert-toolkit:android-architect', name: 'android-architect', prompt: ...})` — pass `name` so the stage is labelled in the UI and the orchestrator can address it by name. Do not pass `team_name`; it is deprecated and ignored. Re-dispatching the same stage (DP4 recovery) reuses the name — latest wins on name resolution.
 - Codex: `spawn_agent(prompt)` — the prompt must include the full agent persona (read from `${CLAUDE_PLUGIN_ROOT}/agents/android-architect.md`) plus the Pipeline Context Block. Codex has no `subagent_type` registry.
 
 **Pipeline Context Block (mandatory in every agent task prompt):**
@@ -172,7 +172,7 @@ This enables:
 
 **Parallel dispatch for `feature-build` pipelines (mandatory):**
 After android-architect completes and DP2 is approved, dispatch gradle-build-engineer and android-developer in parallel.
-- Claude: two `Agent({...})` calls in a single orchestrator message.
+- Claude: two `Agent({...})` calls in a single orchestrator message, each with its own `name`.
 - Codex: two `spawn_agent` calls in a single turn, then `wait_agent` for each.
 
 Both agents read `architecture-blueprint.md` independently and write to separate artifacts — there is no handoff dependency between them.

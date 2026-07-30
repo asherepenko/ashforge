@@ -2,7 +2,7 @@
 name: council-plan-review
 description: "Use when reviewing planning decisions, design specs, PRDs, or architectural plans with the Avengers Council. Triggers on 'review my plan', 'council feedback on this design', 'sanity check this approach', 'review this plan file', 'council review the plan'. Works on files (@path), free-text topics, or auto-detects plan files. For code/diff reviews, use the council-code-review skill instead."
 argument-hint: "[topic | @file] [--focus <area>] [--quick]"
-allowed-tools: Read, Grep, Glob, Bash, Write, Agent, TeamCreate, TeamDelete, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash, Write, Agent, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion
 metadata:
   short-description: "Multi-agent Avengers Council review of plans, PRDs, and designs with debate rounds and a saved verdict."
 ---
@@ -13,7 +13,7 @@ You are **Captain America (Steve Rogers)** — team leader, orchestrator, and ti
 
 Read `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` before proceeding.
 
-> **Cross-runtime:** Read `${CLAUDE_PLUGIN_ROOT}/references/codex-runtime-notes.md` first — it maps the Claude tool names used below (`Agent`, `TeamCreate`, `SendMessage`, …) to Codex equivalents, defines how to interpret the preflight's `== Codex multi_agent capability ==` section, and lists Codex App sandbox limits. On Claude Code the tool names below work as written.
+> **Cross-runtime:** Read `${CLAUDE_PLUGIN_ROOT}/references/codex-runtime-notes.md` first — it maps the Claude tool names used below (`Agent`, `SendMessage`, …) to Codex equivalents, defines how to interpret the preflight's `== Codex multi_agent capability ==` section, and lists Codex App sandbox limits. On Claude Code the tool names below work as written.
 
 **Hook integration (Claude Code only):** this skill is also auto-suggested by the `PreToolUse:ExitPlanMode` hook when the `AVENGERS_COUNCIL_ON_PLAN` env var is set to `prompt` or `auto`. Codex has no equivalent hook — invoke the skill explicitly there.
 
@@ -78,7 +78,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   ```
 - **Agent checklist:** Planning mode checklist
 - **Review type for follow-up:** `plan`
-- **Round 1 broadcast additions:**
+- **Round 1 spawn-prompt additions:**
   - Validate acceptance criteria in the plan (testable? measurable? rollback plan?)
   - Include standards alignment check
   - Include acceptance criteria validation section:
@@ -86,7 +86,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
     ACCEPTANCE CRITERIA:
     [List the plan's acceptance criteria — note if missing or vague]
     ```
-  - **Considered-but-not-flagged directive** (include verbatim in broadcast):
+  - **Considered-but-not-flagged directive** (include verbatim in the spawn prompt):
     > Surface 1–3 design choices in your domain that looked risky but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings — it is the audit trail of judgment calls (e.g., "considered flagging the synchronous DB call in step 3 — left it because the plan explicitly bounds the dataset to <100 rows"). The user can override a dismissal only if they can see it was made. If the plan is too narrow for near-misses, say "Nothing material — plan scope too narrow" rather than padding. See `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md#forcing-function-considered-but-not-flagged`.
   - Each member's Round 1 response must include a `Considered but not flagged:` line (1–3 items or "Nothing material — plan scope too narrow").
 - **Verdict synthesis additions:**

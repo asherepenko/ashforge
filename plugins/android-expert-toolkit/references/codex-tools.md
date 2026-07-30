@@ -8,11 +8,11 @@ This file is platform-glue. Claude Code reads the original tool names natively; 
 
 | Skill references | Claude Code | Codex equivalent |
 |---|---|---|
-| Spawn a subagent | `Agent({subagent_type, prompt})` | `spawn_agent(prompt)` — embed the agent persona text into the prompt (no `subagent_type` registry exists on Codex) |
+| Spawn a subagent | `Agent({subagent_type, name, prompt})` — `name` makes the agent addressable and labels it in the UI | `spawn_agent(prompt)` — embed the agent persona text into the prompt (no `subagent_type` registry exists on Codex) |
 | Spawn multiple subagents in parallel | Multiple `Agent({...})` calls in one message | Multiple `spawn_agent` calls in one turn |
 | Read subagent result | Tool result returned inline | `wait_agent(agent_id)` returns the result; `close_agent(agent_id)` frees the slot |
-| Register a team | `TeamCreate({team_name})` | **No equivalent.** Skip the step. Codex has no team primitive — parallel `spawn_agent` calls are the entire concurrency model. |
-| Peer-to-peer comms between subagents | `SendMessage({to, content})` | **No equivalent.** Adapt the skill to a hub-and-spoke pattern where the orchestrator carries context between rounds via the next `spawn_agent` prompt. |
+| Team setup | **Nothing to do.** The session has one implicit team and spawned agents join it automatically. `TeamCreate` / `TeamDelete` no longer exist and `Agent`'s `team_name` is deprecated and ignored. | Same — skip. Codex has no team primitive; parallel `spawn_agent` calls are the entire concurrency model. |
+| Message a subagent | `SendMessage({to: '<agent name>', summary, message})` — orchestrator-side only; it resumes a named agent from its transcript. AET agents have no `SendMessage` in their frontmatter and never message back — every stage returns its report as the tool result plus its handoff artifact. | **No equivalent.** Adapt the skill to a hub-and-spoke pattern where the orchestrator carries context between rounds via the next `spawn_agent` prompt. |
 | Persist task state across the session | `TaskCreate` / `TaskUpdate` | `update_plan` |
 | Ask the user a structured multiple-choice question | `AskUserQuestion({questions: [{options: [...]}]})` | Print the question and options as plain text and wait for the user's reply. Parse free-form answer. |
 | Invoke another skill | `Skill({skill, args})` | Skills auto-load on description match — just follow the instructions inline or restate them |

@@ -6,19 +6,21 @@ Shared flow for all council skills. Each skill handles context gathering indepen
 > Recommend Quick Mode (3 members) for non-critical reviews.
 > Full mode is justified for: security-sensitive changes, architectural decisions, pre-release reviews.
 
-> **Platform branch:** Steps below are written for Claude Code's agent-team primitives (`TeamCreate`, parallel `Agent`, peer-to-peer `SendMessage`). The Claude execution path is unchanged. For Codex CLI / Codex App, follow the `Codex:` annotation at each tool callsite — debate becomes hub-mediated context propagation through the orchestrator. See @references/codex-tools.md for the full mapping and the cost/fidelity trade-off.
+> **Platform branch:** Steps below are written for Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`). For Codex CLI / Codex App, follow the `Codex:` annotation at each tool callsite — debate becomes hub-mediated context propagation through the orchestrator. See @references/codex-tools.md for the full mapping and the cost/fidelity trade-off.
+
+> **Lead identity (Claude):** the orchestrating session's persona is **Captain America**, but its wire name on the team channel is `team-lead` — that name is owned by the harness and is not configurable. Every `SendMessage` a teammate addresses to the lead MUST use `to: "team-lead"`; `captain-america` is not a registered teammate name and such a send goes nowhere. Personas in prose stay Captain America.
 
 ## Table of Contents
 
 - [Standards Detection](#standards-detection-shared-across-all-commands) — project conventions discovery
 - [Codebase Audit](#codebase-audit-shared-across-all-commands) — project structure, naming, architecture grounding
-- [Phase 1 — Assemble the Council](#phase-1--assemble-the-council-full-mode) — team creation, agent spawning, quorum rules
+- [Phase 1 — Assemble the Council](#phase-1--assemble-the-council-full-mode) — roster, agent spawning, quorum rules
 - [Phase 2 — Round 1](#phase-2--round-1-collect-initial-assessments) — initial assessments
 - [Phase 3 — Rounds 2 & 3](#phase-3--rounds-2--3-challenge-and-final-position) — challenge and final position
 - [Phase 4 — Synthesize Verdict](#phase-4--synthesize-verdict) — voting, consensus rules, Black Widow VETO
 - [Phase 5 — Save Verdict](#phase-5--save-verdict) — write to `.artifacts/reviews/`
 - [Phase 6 — Interactive Follow-up](#phase-6--interactive-follow-up) — post-verdict actions
-- [Phase 7 — Cleanup](#phase-7--cleanup) — shutdown and team deletion
+- [Phase 7 — Cleanup](#phase-7--cleanup) — teammate shutdown
 - [Quick Mode](#quick-mode-3-member-quorum) — 3-member quorum, member selection tables, abbreviated flow
 
 ## Standards Detection (shared across all commands)
@@ -62,19 +64,19 @@ Read @references/member-registry.md to build the active roster:
    - **Minimum quorum** = floor(N * 0.625) (rounds down; e.g., 9→5, 10→6, 11→6)
    - **Timeout threshold** = floor(N * 0.75) (rounds down; e.g., 9→6, 10→7, 11→8)
 
-### Step 2: Create Team
+### Step 2: Team Scope
 
-**Claude:** Call `TeamCreate` with:
-- `team_name`: "avengers-council"
-- `description`: "Reviewing: [topic summary from calling skill]"
+**Claude:** Nothing to create. The session has a single implicit team; spawned agents join it automatically and the lead is always `team-lead`. Do not call `TeamCreate` and do not pass `team_name` to `Agent` — the parameter is deprecated and ignored. Announce the roster to the user instead of creating a named team.
 
-**Codex:** Skip this step entirely — no team primitive exists. Concurrency is just parallel `spawn_agent` calls in one turn. Track the active roster in a local variable instead.
+**Codex:** Same — no team primitive exists. Concurrency is just parallel `spawn_agent` calls in one turn. Track the active roster in a local variable.
 
 ### Step 3: Spawn Teammates
 
 Spawn all active roster members in parallel. Launch ALL in a SINGLE turn for parallel startup.
 
-Each spawn call embeds the FULL review context and Round 1 instructions so agents self-start immediately (teammates only receive their spawn prompt + CLAUDE.md — they do NOT get the lead's conversation history):
+Each spawn call embeds the FULL review context and Round 1 instructions so agents self-start immediately (teammates only receive their spawn prompt + CLAUDE.md — they do NOT get the lead's conversation history).
+
+Substitute per spawn: `[agent-name]` = this member, and `[roster names, excluding this agent]` = the active roster minus this member (agents have no other way to learn teammate names — there is no team config to read).
 
 **Claude:**
 
@@ -82,7 +84,6 @@ Each spawn call embeds the FULL review context and Round 1 instructions so agent
 Agent({
   name: "[agent-name]",
   subagent_type: "avengers-council:[agent-name]",
-  team_name: "avengers-council",
   prompt: "You are [agent-name] on the Avengers Council reviewing: [topic summary]
 
 REVIEW CONTEXT:
@@ -111,7 +112,8 @@ Check for red line violations (references/red-lines.md) in your domain.
 
 ROUND 1 INSTRUCTIONS:
 Review this from your specialty lens using your [planning|code review] checklist.
-Send your assessment to captain-america using the Round-1 format from
+Send your assessment via SendMessage to `team-lead` (that is Captain America, the orchestrating
+session — `captain-america` is NOT a valid recipient name) using the Round-1 format from
 references/debate-protocol.md#round-1--initial-assessment (canonical — do not improvise fields):
 - Verdict: APPROVE / CONCERNS / REJECT
 - Domain Score: X/10 (your domain)
@@ -120,15 +122,16 @@ references/debate-protocol.md#round-1--initial-assessment (canonical — do not 
 - Considered but not flagged: 1-3 near-misses with reasoning (or 'Nothing material — scope too narrow')
 - Recommendation: 1-2 sentences
 
-Then broadcast your key findings to all teammates.
+Then share your key findings with every other teammate: one SendMessage per teammate name, all in
+one turn. Your teammates are: [roster names, excluding this agent]. There is no broadcast recipient.
 
-After Round 1, wait for captain-america to signal Round 2 (challenge) and Round 3 (final position).
+After Round 1, wait for `team-lead` to signal Round 2 (challenge) and Round 3 (final position).
 Follow the debate protocol from your agent definition for all rounds.",
   description: "[Agent Name] reviewing [topic]"
 })
 ```
 
-**Codex:** Same prompt template, but use `spawn_agent(prompt)` per member with the persona text from `agents/<name>.md` pasted verbatim above the `REVIEW CONTEXT` block (Codex has no `subagent_type` registry). Drop the trailing line about "wait for captain-america to signal Round 2 and Round 3" — Codex workers terminate after returning; Captain re-spawns them for each round with the next round's context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
+**Codex:** Same prompt template, but use `spawn_agent(prompt)` per member with the persona text from `agents/<name>.md` pasted verbatim above the `REVIEW CONTEXT` block (Codex has no `subagent_type` registry). Drop the trailing lines about sharing findings with teammates and waiting for `team-lead` to signal Round 2 and Round 3 — Codex workers terminate after returning; Captain re-spawns them for each round with the next round's context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
 
 **Core agent roster** (always spawned):
 
@@ -179,7 +182,7 @@ After collecting Round 1 responses:
 
 2. **Trigger Round 2 + Round 3.**
 
-   **Claude:** Send ONE broadcast via `SendMessage` (type: broadcast) to all stay-alive teammates. Agents DM each other to challenge in Round 2, then send final position to captain-america.
+   **Claude:** `SendMessage` has no broadcast recipient — send the block below to each stay-alive teammate by name, all calls in ONE turn. Agents DM each other to challenge in Round 2, then send their final position to `team-lead`.
 
    ```
    ROUND 1 COMPLETE.
@@ -191,7 +194,7 @@ After collecting Round 1 responses:
    Review your teammates' findings above. DM teammates you disagree with to challenge their position. Support findings you agree with.
 
    ROUND 3 — FINAL POSITION:
-   After your challenges, send your final position to captain-america with:
+   After your challenges, send your final position to `team-lead` with:
    - Verdict: APPROVE / CONCERNS / REJECT
    - Final Domain Score: X/10 (your domain)
    - Confidence: HIGH / MEDIUM / LOW
@@ -240,7 +243,7 @@ After collecting Round 1 responses:
    Cost: 2 additional `spawn_agent` fan-outs for full debate (3 rounds × N members = 3N total spawns vs Claude's N stay-alive). Fidelity is preserved — every cross-agent finding flows through the orchestrator's prompt instead of through SendMessage.
 
 3. **Completion gate:**
-   - **Claude:** Wait until all active members send their final position to captain-america.
+   - **Claude:** Wait until all active members send their final position to `team-lead`.
    - **Codex:** Wait for all Round-3 `spawn_agent` calls to return via `wait_agent`.
    Apply same timeout policy — if members don't return, proceed after receiving results from the quorum.
 4. Mark task as completed
@@ -301,7 +304,7 @@ Follow @references/post-verdict-actions.md:
 **Claude:**
 1. Send `shutdown_request` (type: "shutdown_request") to each teammate by name
 2. Wait for shutdown confirmations
-3. Call `TeamDelete` to remove team and task list
+3. No team to delete — the session team is implicit and torn down with the session. Do not call `TeamDelete`.
 
 **Codex:**
 1. Workers are already terminated after their final `wait_agent`. If any are still in-flight at the timeout boundary, call `close_agent` on each to free slots.
@@ -319,15 +322,15 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
 
 ### Quick Flow
 
-1. **Claude:** `TeamCreate` + spawn the 2 selected members via `Agent`.
-   **Codex:** Skip `TeamCreate`; spawn the 2 selected members via parallel `spawn_agent`.
+1. **Claude:** Spawn the 2 selected members via parallel `Agent` calls (no team setup needed).
+   **Codex:** Spawn the 2 selected members via parallel `spawn_agent`.
 2. Single assessment round (no challenge/final rounds):
    ```
    QUICK REVIEW — Single Round
 
    [Review context]
 
-   Review from your specialty lens. Send assessment with:
+   Review from your specialty lens. Send your assessment via SendMessage to `team-lead` with:
    - Verdict: APPROVE / CONCERNS / REJECT
    - Key Findings: max 3
    - Recommendation: 1-2 sentences

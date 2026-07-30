@@ -60,7 +60,7 @@ resolve_base() {
 
 (
   echo "== Codex multi_agent capability =="
-  # Skip on Claude — TeamCreate/Agent are not gated by a feature flag
+  # Skip on Claude — Agent spawning is not gated by a feature flag
   if [ -z "${CODEX_HOME:-}" ] && [ ! -d "$HOME/.codex" ]; then
     echo "NOT_CODEX"
   elif [ -f "${CODEX_HOME:-$HOME/.codex}/config.toml" ]; then

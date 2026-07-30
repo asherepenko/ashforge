@@ -4,7 +4,7 @@
 
 - **Skills** (Skill tool / natural-language invocation): `council-code-review`, `council-plan-review` — orchestrate council sessions on both Claude Code and Codex.
 - **Agents** (Agent tool on Claude / `spawn_agent` on Codex): `hulk`, `iron-man`, `thor`, `scarlet-witch`, `black-widow`, `hawkeye`, `vision`, `doctor-strange` — spawned by the skills during orchestration.
-- `captain-america` — reference only, never spawned. The orchestrating session plays this role on both platforms.
+- `captain-america` — reference only, never spawned. The orchestrating session plays this role on both platforms. On Claude Code its wire name on the team channel is `team-lead` (harness-owned, not configurable) — teammates must address the lead as `to: "team-lead"`; `captain-america` is not a routable recipient.
 - Never spawn a skill as an agent `subagent_type`.
 
 The slash-command form (`/avengers-council:plan-review`, `/avengers-council:code-review`) was retired in version 3.0.0. Skills are now the only entry point — same as android-expert-toolkit.
@@ -36,11 +36,11 @@ tests/                     — Hook integration tests
 
 ## Cross-Platform Tool Mapping
 
-The council was built around Claude Code's agent-team primitives (`TeamCreate`, parallel `Agent`, peer-to-peer `SendMessage`). The Claude execution path is unchanged in 3.0.0. For Codex CLI / Codex App, the dual-annotated `references/orchestration-protocol.md` and `references/debate-protocol.md` describe the substitutions:
+The council was built around Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`). For Codex CLI / Codex App, the dual-annotated `references/orchestration-protocol.md` and `references/debate-protocol.md` describe the substitutions:
 
-- `TeamCreate` → skip (no team primitive)
-- `Agent({subagent_type, team_name})` → `spawn_agent(prompt)` with persona inlined from `agents/<name>.md`
-- `SendMessage` (broadcast + DM) → hub-mediated context propagation (Captain consolidates each round's verdicts and re-spawns members for the next round with the consolidated context inlined)
+- Team setup → skip on both runtimes (Claude's session team is implicit; `team_name` is deprecated and ignored, `TeamCreate`/`TeamDelete` no longer exist)
+- `Agent({subagent_type, name})` → `spawn_agent(prompt)` with persona inlined from `agents/<name>.md`
+- `SendMessage` (per-teammate DMs, lead addressed as `team-lead`) → hub-mediated context propagation (Captain consolidates each round's verdicts and re-spawns members for the next round with the consolidated context inlined)
 - `TaskCreate` / `TaskUpdate` → `update_plan`
 - `AskUserQuestion` → plain prompt with numbered options + free-form reply parsing
 - `PreToolUse:ExitPlanMode` hook → no Codex equivalent (Claude-only feature)
@@ -83,7 +83,7 @@ Python tests for the `PreToolUse:ExitPlanMode` hook under `tests/`. Run:
 pytest tests/
 ```
 
-All 6 tests must pass.
+All 9 tests must pass.
 
 ## Versioning
 

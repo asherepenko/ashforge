@@ -2,7 +2,7 @@
 name: council-code-review
 description: "Use when reviewing code changes, diffs, pull requests, or specific files with the Avengers Council. Triggers on 'council code review', 'review my changes before merge', 'review this PR'. For plan/architecture reviews, use the council-plan-review skill instead."
 argument-hint: "[--pr <n> | --diff | --files <paths>] [--focus <area>] [--quick]"
-allowed-tools: Read, Grep, Glob, Bash, Write, Agent, TeamCreate, TeamDelete, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash, Write, Agent, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion
 metadata:
   short-description: "Multi-agent Avengers Council review of diffs, PRs, or files with debate rounds and a saved verdict."
 ---
@@ -13,7 +13,7 @@ You are **Captain America (Steve Rogers)** — team leader, orchestrator, and ti
 
 Read `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` before proceeding.
 
-> **Cross-runtime:** Read `${CLAUDE_PLUGIN_ROOT}/references/codex-runtime-notes.md` first — it maps the Claude tool names used below (`Agent`, `TeamCreate`, `SendMessage`, …) to Codex equivalents, defines how to interpret the preflight's `== Codex multi_agent capability ==` section, and lists Codex App sandbox limits. On Claude Code the tool names below work as written.
+> **Cross-runtime:** Read `${CLAUDE_PLUGIN_ROOT}/references/codex-runtime-notes.md` first — it maps the Claude tool names used below (`Agent`, `SendMessage`, …) to Codex equivalents, defines how to interpret the preflight's `== Codex multi_agent capability ==` section, and lists Codex App sandbox limits. On Claude Code the tool names below work as written.
 
 ## Pre-flight Context
 
@@ -85,14 +85,14 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
 - **Review context:** The diff, PR info, commit message, affected file areas from Step 1
 - **Agent checklist:** Code review checklist
 - **Review type for follow-up:** `code-review`
-- **Round 1 broadcast additions:**
+- **Round 1 spawn-prompt additions:**
   - Include the actual diff content
   - Include commit message format check against project standards
   - Require file:line references for all findings
-  - **Grading rubric**: Read `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md` and include its 5 criteria in the broadcast. Each council member grades findings using STRONG/ADEQUATE/WEAK per criterion. Only report WEAK findings.
-  - **Anti-leniency directive** (include verbatim in broadcast):
+  - **Grading rubric**: Read `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md` and include its 5 criteria in the spawn prompt. Each council member grades findings using STRONG/ADEQUATE/WEAK per criterion. Only report WEAK findings.
+  - **Anti-leniency directive** (include verbatim in the spawn prompt):
     > Your job is to find problems, not to be encouraging. If you identify an issue, report it — do not rationalize it away or soften it. LLM evaluators have a documented tendency to praise LLM-generated work even when quality is mediocre. Resist this. When in doubt, flag it. The user decides what's acceptable, not you.
-  - **Considered-but-not-flagged directive** (include verbatim in broadcast):
+  - **Considered-but-not-flagged directive** (include verbatim in the spawn prompt):
     > Surface 1–3 patterns in your domain that looked wrong but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings (those go in Key Findings) — it is the audit trail of judgment calls so the user can override a dismissal only if they can see it was made. If the diff is genuinely too narrow for near-misses, say "Nothing material — diff too narrow" rather than padding. See `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md#forcing-function-considered-but-not-flagged`.
   - Require suggested fixes where applicable:
     ```

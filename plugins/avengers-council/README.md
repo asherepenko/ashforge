@@ -106,7 +106,7 @@ Captain America never spawns as a subagent — the orchestrating session plays t
 Seven phases per review:
 
 1. **Standards Detection** — Read `CLAUDE.md`, `CONTRIBUTING.md`, audit codebase.
-2. **Assemble** — Claude: `TeamCreate` + parallel `Agent` spawns the 8 core members (plus topic-matched specialists). Codex: parallel `spawn_agent` (no team primitive).
+2. **Assemble** — Claude: parallel `Agent` calls spawn the 8 core members (plus topic-matched specialists) into the session team. Codex: parallel `spawn_agent` (no team primitive).
 3. **Round 1 — Assessment** — Each member delivers verdict (APPROVE/CONCERNS/REJECT), domain score, and up to 5 findings with severity.
 4. **Round 2 — Challenge** — Claude: members DM challenges to each other via `SendMessage`. Codex: Captain consolidates Round-1 findings and re-spawns each member with a per-recipient challenge prompt.
 5. **Round 3 — Final Position** — Final verdict, updated score, confidence, unresolved disagreements. Claude: same agents stay alive. Codex: fresh `spawn_agent` fan-out with the consolidated Round-2 context.

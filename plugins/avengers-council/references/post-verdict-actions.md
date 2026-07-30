@@ -94,7 +94,7 @@ Second question: "Would you like to update the plan based on findings?"
 
 ### "Re-review after changes"
 1. **Clean up the current council first** —
-   - **Claude:** send `shutdown_request` to all teammates, then `TeamDelete`
+   - **Claude:** send `shutdown_request` to all teammates (nothing else to tear down — the session team is implicit)
    - **Codex:** workers already terminated after their final `wait_agent`; nothing to tear down
 2. Tell the user to make their changes
 3. Wait for user confirmation that changes are ready

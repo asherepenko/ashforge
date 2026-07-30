@@ -2,7 +2,7 @@
 
 Read this when the `council-plan-review` or `council-code-review` skill's preflight reports `== Codex multi_agent capability ==` value of `DISABLED` or `NO_CONFIG`. The Codex `multi_agent` feature flag is off, so `spawn_agent` / `wait_agent` / `close_agent` are unavailable. Do NOT attempt parallel agent dispatch — the tool calls will fail at the runtime layer.
 
-This file documents the single-orchestrator fallback. Claude users never hit this path (Claude's `TeamCreate` / `Agent` are not gated). Codex users with `multi_agent = true` use the normal hub-mediated flow in `references/orchestration-protocol.md`.
+This file documents the single-orchestrator fallback. Claude users never hit this path (Claude's `Agent` spawning is not gated). Codex users with `multi_agent = true` use the normal hub-mediated flow in `references/orchestration-protocol.md`.
 
 ## Contents
 
