@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/track-progress.sh\"",
+            "command": "if [ -f \"${CLAUDE_PLUGIN_ROOT}/hooks/track-progress.sh\" ]; then bash \"${CLAUDE_PLUGIN_ROOT}/hooks/track-progress.sh\"; fi",
             "timeout": 10
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/track-progress.sh\"",
+            "command": "if [ -f \"${CLAUDE_PLUGIN_ROOT}/hooks/track-progress.sh\" ]; then bash \"${CLAUDE_PLUGIN_ROOT}/hooks/track-progress.sh\"; fi",
             "timeout": 10
           }
         ]
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"",
+            "command": "if [ -f \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\" ]; then python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py\"; fi",
             "timeout": 30
           }
         ]

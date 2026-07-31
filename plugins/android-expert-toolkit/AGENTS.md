@@ -120,7 +120,9 @@ Example path: `.artifacts/aet/handoffs/social-feed/2026-02-18-143022-architectur
 Two parallel manifests register the same Python scripts:
 
 - `hooks/hooks.json` — Claude Code. Uses `${CLAUDE_PLUGIN_ROOT}` and Claude tool matchers (`Write|Edit|MultiEdit`, `Bash`), routed through `hooks/track-progress.sh` — a cost guard that no-ops fast unless `.artifacts/aet` exists in cwd.
-- `hooks/hooks-codex.json` — Codex CLI / App. Uses `${PLUGIN_ROOT}` and Codex tool matchers (`apply_patch`, `local_shell|shell|shell_command|exec_command`), same `track-progress.sh` guard.
+- `hooks/hooks-codex.json` — Codex CLI / App. Uses `${PLUGIN_ROOT}` and Codex tool matchers (`apply_patch`, `local_shell|shell|shell_command|exec_command`), same `track-progress.sh` guard. Declared via `.codex-plugin/plugin.json` → `"hooks"`.
+
+**Codex loads both manifests.** It honors the declared `hooks-codex.json` *and* auto-discovers the legacy `hooks/hooks.json` from the plugin cache. In the Claude manifest `${CLAUDE_PLUGIN_ROOT}` expands to an empty string there, so every command in it is wrapped in `if [ -f "${CLAUDE_PLUGIN_ROOT}/…" ]; then … fi`: on Claude the file resolves and the hook runs as before, on Codex the guard fails and the manifest no-ops instead of failing with `can't open file '/hooks/session-start.py'`. Keep that wrapper on any command added to `hooks/hooks.json` — `tests/test_codex_packaging.py` enforces it.
 
 | Hook | Trigger (Claude → Codex) | Purpose |
 |------|---------|---------|

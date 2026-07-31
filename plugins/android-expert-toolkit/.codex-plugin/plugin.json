@@ -1,6 +1,6 @@
 {
   "name": "android-expert-toolkit",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "Expert Android engineering agents, interactive multi-agent pipelines, and 80/20 pattern detection for modern Kotlin/Compose/Gradle development",
   "author": {
     "name": "Andrew Sherepenko",

@@ -64,7 +64,7 @@ Codex hooks use the same JSON schema as Claude Code's, with three concrete diffe
 
 | | Claude | Codex |
 |---|---|---|
-| Manifest path | `hooks/hooks.json` (auto-discovered) | `.codex-plugin/hooks.json` |
+| Manifest path | `hooks/hooks.json` (auto-discovered; the manifest `hooks` field is for *additional* files only) | `hooks/hooks-codex.json`, declared via `.codex-plugin/plugin.json` → `"hooks"`. **Codex also auto-discovers the legacy `hooks/hooks.json`, so both manifests load.** Every command in `hooks/hooks.json` is wrapped in `if [ -f "${CLAUDE_PLUGIN_ROOT}/…" ]; then … fi` — on Codex that variable expands to empty, the guard fails, and the Claude manifest no-ops instead of erroring with `can't open file '/hooks/session-start.py'`. |
 | Env var for plugin root | `${CLAUDE_PLUGIN_ROOT}` | `${PLUGIN_ROOT}` |
 | `PreToolUse` / `PostToolUse` matchers | Tool names: `Write`, `Edit`, `Bash`, etc. | Tool names: `apply_patch` (for Write/Edit), `local_shell\|shell\|shell_command\|exec_command` (for Bash). Pipe-separated alternation works as a regex matcher. |
 | Events available | `PreToolUse`, `PostToolUse`, `SessionStart`, `PreCompact`, `UserPromptSubmit`, `Stop` (and more) | Same set — PascalCase in the JSON, snake_case (`pre_tool_use`, `post_tool_use`, etc.) in `~/.codex/config.toml` trust state |

@@ -39,3 +39,26 @@ def test_claude_hooks_remain_claude_specific():
     assert "${CLAUDE_PLUGIN_ROOT}" in hooks_text
     assert "Write" in hooks_text
     assert "Bash" in hooks_text
+
+
+def test_claude_hooks_no_op_when_plugin_root_is_unset():
+    """Codex auto-discovers the legacy hooks/hooks.json alongside its own manifest.
+
+    There, ${CLAUDE_PLUGIN_ROOT} expands to an empty string, so an unguarded
+    command becomes `python3 "/hooks/session-start.py"` and the hook fails. Every
+    command must therefore test the resolved path before running anything.
+    """
+    hooks = read_json(PROJECT_ROOT / "hooks" / "hooks.json")
+
+    commands = [
+        hook["command"]
+        for entries in hooks["hooks"].values()
+        for entry in entries
+        for hook in entry["hooks"]
+    ]
+    assert commands, "no hook commands found"
+
+    for command in commands:
+        assert command.startswith('if [ -f "${CLAUDE_PLUGIN_ROOT}/'), (
+            f"hook command must guard on the resolved plugin root: {command}"
+        )
