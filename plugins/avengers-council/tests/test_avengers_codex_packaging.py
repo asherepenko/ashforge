@@ -34,3 +34,31 @@ def test_claude_exit_plan_hook_remains_claude_specific():
 
     assert "ExitPlanMode" in hooks_text
     assert "${CLAUDE_PLUGIN_ROOT}" in hooks_text
+
+
+def test_claude_hooks_no_op_when_plugin_root_is_unset():
+    """Codex auto-discovers the legacy hooks/hooks.json alongside its own manifest.
+
+    There, ${CLAUDE_PLUGIN_ROOT} expands to an empty string. The ExitPlanMode
+    matcher never fires on Codex today, but any command in this manifest must
+    still guard on the resolved path so it no-ops instead of running `bash
+    "/hooks/..."` if a matcher ever does match.
+    """
+    hooks = read_json(PROJECT_ROOT / "hooks" / "hooks.json")
+
+    commands = [
+        hook["command"]
+        for entries in hooks["hooks"].values()
+        for entry in entries
+        for hook in entry["hooks"]
+    ]
+    assert commands, "no hook commands found"
+
+    for command in commands:
+        assert command.startswith('if [ -f "${CLAUDE_PLUGIN_ROOT}/'), (
+            f"hook command must guard on the resolved plugin root: {command}"
+        )
+        assert "${PLUGIN_ROOT" not in command, (
+            "Codex's PLUGIN_ROOT must not leak into the Claude manifest — a "
+            f"PLUGIN_ROOT set in the environment would pick the wrong root: {command}"
+        )

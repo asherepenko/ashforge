@@ -73,7 +73,9 @@ Persona body content (specialty lens, planning/code-review checklists, debate be
 
 `hooks/hooks.json` registers `PreToolUse:ExitPlanMode` → `hooks/council-plan-hook.sh`. The hook fires when the user exits Claude plan mode and offers a council review based on the `AVENGERS_COUNCIL_ON_PLAN` env var (off | prompt | auto).
 
-There is no `.codex-plugin/hooks.json` — Codex has no `ExitPlanMode` tool to hook into. On Codex, users invoke the `council-plan-review` skill explicitly when they want a council review.
+`.codex-plugin/plugin.json` declares `hooks/hooks-codex.json`, which is deliberately empty (`{"hooks": {}}`) — Codex has no `ExitPlanMode` tool to hook into. On Codex, users invoke the `council-plan-review` skill explicitly when they want a council review.
+
+Codex nevertheless auto-discovers the legacy `hooks/hooks.json` from the plugin cache, where `${CLAUDE_PLUGIN_ROOT}` expands to an empty string. Every command in that manifest is therefore wrapped in `if [ -f "${CLAUDE_PLUGIN_ROOT}/…" ]; then … fi` so it no-ops there instead of running `bash "/hooks/…"`. Keep the wrapper on anything added to `hooks/hooks.json`, and don't reach for Codex's `${PLUGIN_ROOT}` in it — a `PLUGIN_ROOT` set in the environment would resolve the wrong plugin root on Claude. `tests/test_avengers_codex_packaging.py` enforces both.
 
 ## Tests
 
@@ -83,7 +85,7 @@ Python tests for the `PreToolUse:ExitPlanMode` hook under `tests/`. Run:
 pytest tests/
 ```
 
-All 9 tests must pass.
+All 10 tests must pass.
 
 ## Versioning
 

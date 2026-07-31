@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/council-plan-hook.sh\"",
+            "command": "if [ -f \"${CLAUDE_PLUGIN_ROOT}/hooks/council-plan-hook.sh\" ]; then bash \"${CLAUDE_PLUGIN_ROOT}/hooks/council-plan-hook.sh\"; fi",
             "timeout": 10
           }
         ]
