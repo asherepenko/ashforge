@@ -15,7 +15,7 @@ android-expert-toolkit/
 │   ├── aet-status/               # SKILL.md — pipeline status & recovery
 │   └── aet-check/                # SKILL.md — pattern detection (80/20)
 ├── hooks/                        # Shared Python scripts + hooks.json (Claude) + hooks-codex.json (Codex)
-├── references/                   # Deep-dive references (read on demand) + codex-tools.md
+├── references/                   # Deep-dive references (read on demand) + runtime-adapters.md
 ├── templates/                    # Handoff artifact scaffolds
 ├── examples/                     # End-to-end example pipeline output
 └── tests/                        # Hook validation tests
@@ -36,7 +36,7 @@ The toolkit used to ship slash commands (`/aet-pipeline`, `/aet-status`, `/aet-c
 
 ## Cross-Platform Tool Mapping
 
-Skill bodies reference Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). On Codex, substitute per `references/codex-tools.md` (`Agent` → `spawn_agent`, `TaskCreate` → `update_plan`, `AskUserQuestion` → plain prompt + free-form reply parsing). Codex App in a sandboxed worktree also needs the read-only-environment handling documented there.
+Skill bodies reference Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). Other runtimes map onto the capability axes in `references/runtime-adapters.md` (SPAWN / PROGRESS / ASK / ROOT_ENV / HOOKS / SANDBOX): Codex (`spawn_agent` / `update_plan` / plain-text prompts), Zcode (`Agent(subagent_type)` with result-returning spawns / `TodoWrite`), pi (no native subagent tool — sequential fallback unless a subagent skill is installed), Antigravity (confirm spawn shape). Sandbox worktrees also need the read-only-environment handling documented there.
 
 The pipeline is plain subagent fan-out — no agent-team primitives. `Agent` spawns pass `subagent_type` + `name` and never `team_name` (deprecated and ignored); `TeamCreate` / `TeamDelete` no longer exist in the harness.
 
@@ -96,7 +96,7 @@ Deep-dive references under `references/`. Each starts with `## When to use` so a
 - **Compose-facing**: `compose-patterns.md`, `rubric-compose-ui.md`
 - **Gradle-facing**: `gradle-patterns.md`
 - **Testing-facing**: `testing-patterns.md`, `testing-patterns-detail.md`
-- **Cross-cutting**: `conflict-resolution.md`, `performance-targets.md`, `pragmatic-examples.md`, `agent-routing.md`, `pipeline-error-scenarios.md`, `codex-tools.md`, `handoff-protocol.md`
+- **Cross-cutting**: `conflict-resolution.md`, `performance-targets.md`, `pragmatic-examples.md`, `agent-routing.md`, `pipeline-error-scenarios.md`, `runtime-adapters.md`, `runtime-fallback.md`, `handoff-protocol.md`
 
 The **80/20 rule** (in `pattern-detection.md`) is the core decision framework: if a pattern has ≥80% prevalence in the codebase, match it; below 80%, propose a modern alternative. This keeps agents consistent with existing code instead of imposing ideal-world patterns.
 
@@ -137,7 +137,7 @@ Two parallel manifests register the same Python scripts:
 2. Per-command user trust — Codex prompts once for each hook command and stores the `trusted_hash` in `[hooks.state."<manifest>:<event>:<idx>:<sub>"]`
 3. `PreToolUse` on Codex is **deny-only** — no input modification, no `additionalContext` injection. Use `PostToolUse` or `SessionStart` for context injection. ([openai/codex#18491](https://github.com/openai/codex/issues/18491))
 
-Full mapping in `references/codex-tools.md`.
+Full mapping in `references/runtime-adapters.md`.
 
 ## State
 

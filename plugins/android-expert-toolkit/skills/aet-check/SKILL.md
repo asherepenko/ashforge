@@ -10,7 +10,7 @@ metadata:
 
 Run pattern detection from `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` against the current codebase. Reports consistency percentages and applies the 80/20 decision matrix.
 
-> **Platform notes:** Pure read-only — uses Grep, Glob, Read, and shell. No subagent dispatch, no interactive prompts. Works identically on Claude and Codex. See `${CLAUDE_PLUGIN_ROOT}/references/codex-tools.md` only if you need to substitute the shell tool name.
+> **Platform notes:** Pure read-only — uses Grep, Glob, Read, and shell. No subagent dispatch, no interactive prompts. Works identically on every runtime (Claude Code, Codex, Zcode, pi, Antigravity). See `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md` only if you need to substitute the shell tool name.
 
 ## Pre-flight Context
 
@@ -30,7 +30,7 @@ Use the output to:
 
 ## Invocation
 
-Claude: `/aet-check di` or auto-trigger on natural-language prompts. Codex: state intent naturally.
+Claude: `/aet-check di` or auto-trigger on natural-language prompts. Other runtimes: state intent naturally.
 
 Examples:
 ```

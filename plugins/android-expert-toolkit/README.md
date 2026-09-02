@@ -51,7 +51,11 @@ sandbox_mode = "workspace-write"
 
 On first run Codex will prompt to trust each plugin hook command — accept to record the `trusted_hash` entries. Without trust, hooks register but never execute.
 
-Plugin assets land under `~/.codex/plugins/cache/`. Hooks use `${PLUGIN_ROOT}` (not `${CLAUDE_PLUGIN_ROOT}`). The Codex manifest lives at `.codex-plugin/plugin.json`; hooks at `.codex-plugin/hooks.json`. See [`references/codex-tools.md`](references/codex-tools.md) for the full Claude → Codex tool mapping and the PreToolUse deny-only caveat.
+### Zcode / pi / Antigravity
+
+Skills install into the runtime's skills directory (copy or symlink `skills/*` from this plugin; pi users also need a subagent skill/extension for agent dispatch). The `aet-pipeline` preflight detects the runtime and emits a capability profile — where no subagent spawning exists it falls back to sequential single-orchestrator dispatch per `references/runtime-fallback.md` (state.json records `dispatch_mode`). Unattended runs resolve decision points autonomously with safe defaults; DP2 architecture approval always pauses.
+
+Plugin assets land under `~/.codex/plugins/cache/`. Hooks use `${PLUGIN_ROOT}` (not `${CLAUDE_PLUGIN_ROOT}`). The Codex manifest lives at `.codex-plugin/plugin.json`; hooks at `.codex-plugin/hooks.json`. See [`references/runtime-adapters.md`](references/runtime-adapters.md) for the full capability mapping and the PreToolUse deny-only caveat.
 
 ### Project-Level Setup (both runtimes)
 
@@ -89,7 +93,7 @@ android-expert "ViewModel StateFlow pattern"   # Ad-hoc Android question
 
 Claude: the Skill tool auto-triggers on description match, or invoke explicitly with `Skill(skill="aet-pipeline", args="feature-build Social Feed")`. Codex: state the intent in natural language — the multi-agent feature must be enabled (`multi_agent = true` in `~/.codex/config.toml`) for parallel agent dispatch.
 
-See [QUICK_START.md](QUICK_START.md) for guided examples and scenarios, and [codex-tools](references/codex-tools.md) for the Claude → Codex tool mapping used inside the skills.
+See [QUICK_START.md](QUICK_START.md) for guided examples and scenarios, and [runtime-adapters](references/runtime-adapters.md) for the per-runtime capability mapping (Claude Code, Codex, Zcode, pi, Antigravity) used inside the skills.
 
 ## Agents
 
@@ -120,7 +124,7 @@ android-expert-toolkit/
 │   ├── aet-status/               # Pipeline status & recovery
 │   └── aet-check/                # Pattern detection (80/20)
 ├── hooks/                        # Shared Python scripts — registered by both .claude-plugin and .codex-plugin manifests
-├── references/                   # Deep-dive references with "When to use" + codex-tools.md mapping
+├── references/                   # Deep-dive references with "When to use" + runtime-adapters.md capability mapping
 ├── templates/                    # Handoff artifact scaffolds + project settings
 ├── examples/                     # Example pipeline outputs
 └── tests/                        # Hook validation tests

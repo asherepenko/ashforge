@@ -10,14 +10,32 @@ metadata:
 
 Automated multi-agent workflows with validation checkpoints and handoff artifacts.
 
-> **Platform notes:** Tool names in this skill use Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). For Codex CLI / Codex App, substitute per `${CLAUDE_PLUGIN_ROOT}/references/codex-tools.md` — `Agent` → `spawn_agent`, `TaskCreate` → `update_plan`, `AskUserQuestion` → prompt the user as plain text and parse the free-form reply. Codex requires `multi_agent = true` in `~/.codex/config.toml` for parallel dispatch.
+> **Platform notes:** Tool names in this skill use Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). Every other runtime maps onto the capability axes in `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md` — dispatch per the preflight's `== Runtime capability ==` profile (Codex, Zcode, pi, Antigravity). On Claude Code the tool names below work as written.
 
 ## Pre-flight Context
 
 Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-${ZCODE_PLUGIN_ROOT:-}}}"
+if [ -z "$PLUGIN_ROOT" ]; then
+  # Runtimes without a plugin-root env var install into a versioned cache —
+  # resolve the newest cached copy (see references/runtime-adapters.md).
+  for base in \
+    "$HOME/.zcode/cli/plugins/cache"/*/android-expert-toolkit \
+    "$HOME/.claude/plugins/cache"/*/android-expert-toolkit \
+    "$HOME/.claude/plugins/cache/android-expert-toolkit" \
+    "$HOME/.codex/plugins/cache"/*/android-expert-toolkit \
+    "$HOME/.codex/plugins/cache/android-expert-toolkit"; do
+    [ -d "$base" ] || continue
+    latest="$(ls -1 "$base" 2>/dev/null | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
+    [ -n "$latest" ] && PLUGIN_ROOT="$base/$latest" && break
+  done
+fi
+if [ -z "$PLUGIN_ROOT" ]; then
+  echo "ERROR: cannot locate the android-expert-toolkit plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, ZCODE_PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
+  exit 1
+fi
 bash "$PLUGIN_ROOT/skills/aet-pipeline/scripts/preflight.sh"
 ```
 
@@ -25,15 +43,15 @@ The script collects: settings file, module count, top-level modules, existing pi
 
 Use the output to skip the project-discovery phase and pass values through to dispatched agents (architect, gradle-build-engineer) so they don't re-scan. If the `Settings file` section reports `NO_SETTINGS_GRADLE`, abort early — pipeline requires a Gradle project.
 
-## Multi-Agent Capability Check (Codex only)
+## Multi-Agent Capability Check
 
-The preflight's `== Codex multi_agent capability ==` section emits one of:
+The preflight's `== Runtime capability ==` section emits a profile (RUNTIME / SPAWN / TRANSPORT / NOTES — interpret per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`):
 
-| Value | Action |
-|---|---|
-| `NOT_CODEX` | Ignore — Claude doesn't gate `Agent` dispatch behind a flag. Proceed with full flow. |
-| `ENABLED` | Proceed with full flow. |
-| `DISABLED` or `NO_CONFIG` | **Read `${CLAUDE_PLUGIN_ROOT}/references/codex-fallback.md`** and run sequential single-orchestrator dispatch instead. Do NOT attempt `spawn_agent` — it will fail at the tool layer. |
+| Profile | Action |
+|---------|--------|
+| `SPAWN=registry` or `SPAWN=prompt-embed` | Proceed with the full flow — dispatch per the SPAWN axis (`Agent(subagent_type)` on registry runtimes, `spawn_agent` with the persona embedded on prompt-embed runtimes). |
+| `SPAWN=none` | **Read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md`** and run sequential single-orchestrator dispatch instead. Do NOT attempt any spawn — it fails at the tool layer. |
+| `SPAWN=unknown` | Ask the user whether a subagent tool exists before proceeding. |
 
 The fallback produces the same pipeline artifacts (`architecture-blueprint.md`, `module-setup.md`, etc.) via sequential persona dispatch by the orchestrating model. Slower (no parallel gradle+developer stage) and lower-fidelity (no peer cross-review), but functional. The state.json records `dispatch_mode: "single-orchestrator-fallback"` so downstream tooling knows what produced the artifacts.
 
@@ -61,7 +79,7 @@ Parse the arguments string:
 1. Split into tokens. First token = pipeline type, remaining tokens = feature name (joined).
 2. If first token is `resume` → jump to Step 0 (Resume Check).
 3. If first token is not a valid pipeline type → error: "Unknown pipeline type. Valid: feature-build, architecture-review, migration, ui-redesign, build-optimization, test, code-review"
-4. If pipeline type requires a feature name (feature-build, migration, ui-redesign, test, code-review) and none given → prompt the user: "What feature/module should this pipeline target?" (Claude: `AskUserQuestion`. Codex: plain prompt.)
+4. If pipeline type requires a feature name (feature-build, migration, ui-redesign, test, code-review) and none given → prompt the user: "What feature/module should this pipeline target?" (structured-ask runtimes: `AskUserQuestion`; plain-text runtimes: print the question and parse the reply)
 5. Extract flags: `--verbose` enables detailed logging.
 
 ## Execution Protocol
@@ -131,8 +149,8 @@ Follow pipeline definition order, respecting dependencies:
 
 **Agent dispatch — platform mapping:**
 
-- Claude: `Agent({subagent_type: 'android-expert-toolkit:android-architect', name: 'android-architect', prompt: ...})` — pass `name` so the stage is labelled in the UI and the orchestrator can address it by name. Do not pass `team_name`; it is deprecated and ignored. Re-dispatching the same stage (DP4 recovery) reuses the name — latest wins on name resolution.
-- Codex: `spawn_agent(prompt)` — the prompt must include the full agent persona (read from `${CLAUDE_PLUGIN_ROOT}/agents/android-architect.md`) plus the Pipeline Context Block. Codex has no `subagent_type` registry.
+- Registry runtimes (Claude Code, Zcode): `Agent({subagent_type: 'android-expert-toolkit:android-architect', name: 'android-architect', prompt: ...})` — pass `name` so the stage is labelled in the UI and the orchestrator can address it by name. Do not pass `team_name`; it is deprecated and ignored. Re-dispatching the same stage (DP4 recovery) reuses the name — latest wins on name resolution.
+- Prompt-embed runtimes (Codex): `spawn_agent(prompt)` — the prompt must include the full agent persona (read from `${CLAUDE_PLUGIN_ROOT}/agents/android-architect.md`, with `${CLAUDE_PLUGIN_ROOT}` rewritten to the resolved root) plus the Pipeline Context Block. There is no `subagent_type` registry.
 
 **Pipeline Context Block (mandatory in every agent task prompt):**
 
@@ -172,8 +190,8 @@ This enables:
 
 **Parallel dispatch for `feature-build` pipelines (mandatory):**
 After android-architect completes and DP2 is approved, dispatch gradle-build-engineer and android-developer in parallel.
-- Claude: two `Agent({...})` calls in a single orchestrator message, each with its own `name`.
-- Codex: two `spawn_agent` calls in a single turn, then `wait_agent` for each.
+- Registry runtimes (Claude Code, Zcode): two `Agent({...})` calls in a single orchestrator message, each with its own `name`.
+- Prompt-embed runtimes (Codex): two `spawn_agent` calls in a single turn, then `wait_agent` for each.
 
 Both agents read `architecture-blueprint.md` independently and write to separate artifacts — there is no handoff dependency between them.
 
@@ -267,7 +285,9 @@ After pipeline completes, generate a summary report, store completion metrics in
 
 ## Interactive Decision Points
 
-The pipeline includes 4 interactive decision points (DPs) that involve the user at critical moments. On Claude these use `AskUserQuestion`; on Codex, print the question and options as plain text and wait for the user's reply.
+The pipeline includes 4 interactive decision points (DPs) that involve the user at critical moments. Structured-ask runtimes use `AskUserQuestion`; plain-text runtimes print the question and options as plain text and parse the free-form reply (see `references/runtime-adapters.md` ASK axis).
+
+**Unattended runs (user unavailable):** DP1 takes auto-detect/cached defaults, DP3 matches the majority pattern, DP4 auto-fixes (max 2 retries) then pauses — and DP2 always pauses for approval (never auto-approved). Never choose Abort or Skip-validation autonomously. Record every autonomous choice in `state.json`.
 
 ### DP1 — Pipeline Configuration (before agent dispatch)
 
@@ -430,7 +450,7 @@ See `${CLAUDE_PLUGIN_ROOT}/references/pipeline-error-scenarios.md` for detailed 
 ## Common Rationalizations
 
 | Rationalization | Reality |
-|---|---|
+|-----------------|---------|
 | "Validation is slowing the pipeline, skip it" | Validation catches issues when they're cheap to fix. Skipping it pushes problems downstream where they cost 3x more to debug. |
 | "The handoff artifact is close enough" | "Close enough" handoffs produce ambiguous downstream work. 5 minutes fixing the artifact saves an hour re-running the agent. |
 | "I'll run the agents sequentially, it's simpler" | Parallel dispatch (gradle + developer) is mandatory for feature-build. Sequential dispatch wastes time and the user's context budget. |

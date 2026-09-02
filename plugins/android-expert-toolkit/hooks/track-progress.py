@@ -192,7 +192,7 @@ def update_pipeline_state(tool_name: str, tool_input: Dict[str, Any], tool_outpu
     # Only track write tool for handoff artifacts.
     # On Codex, apply_patch payloads do not expose `file_path`/`content` the same way —
     # the aet-pipeline skill is required to update state.json inline, so the hook
-    # silently no-ops there. See references/codex-tools.md.
+    # silently no-ops there. See references/runtime-adapters.md.
     if tool_name not in WRITE_TOOLS:
         return
 

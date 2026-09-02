@@ -9,7 +9,7 @@ metadata:
 
 Read `.artifacts/aet/state.json` and display the current pipeline status with actionable options.
 
-> **Platform notes:** This skill references `AskUserQuestion` for the action menu — on Codex, print the options as plain text and parse the user's reply. See `${CLAUDE_PLUGIN_ROOT}/references/codex-tools.md`. The state file is normally updated inline by `aet-pipeline` (the `track-progress.py` hook is a write-through cache that fires on Claude always and on Codex only when `[features] hooks = true, plugin_hooks = true` and the user has trusted the hook). When `state.json` is stale or missing — e.g. hooks disabled on Codex, or stage written before inline update — fall back to deriving stage progress from the handoff directory.
+> **Platform notes:** This skill references `AskUserQuestion` for the action menu — on plain-text runtimes, print the options as plain text and parse the user's reply. See `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`. The state file is normally updated inline by `aet-pipeline` (the `track-progress.py` hook is a write-through cache that fires on Claude always and on Codex only when `[features] hooks = true, plugin_hooks = true` and the user has trusted the hook). When `state.json` is stale or missing — e.g. hooks disabled or unverified on the runtime, or stage written before inline update — fall back to deriving stage progress from the handoff directory.
 
 ## Pre-flight Context
 
@@ -34,7 +34,7 @@ Read `.artifacts/aet/state.json` from the project root.
 
 **If file exists**: Continue with Step 2.
 
-### 1b. Filesystem Fallback (Codex-safe)
+### 1b. Filesystem Fallback (runtime-safe)
 
 If `state.json` is missing or older than the most recent handoff artifact, derive stage status from the filesystem:
 
@@ -147,7 +147,7 @@ If these fields are not present (older state files or filesystem-derived state),
 
 ### 5. Offer Actions
 
-After displaying status, offer context-appropriate actions (Claude: `AskUserQuestion`; Codex: print options and parse free-form reply):
+After displaying status, offer context-appropriate actions (structured-ask runtimes: `AskUserQuestion`; plain-text runtimes: print options and parse free-form reply):
 
 **If status is `in_progress`**:
 

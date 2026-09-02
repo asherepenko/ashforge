@@ -39,7 +39,7 @@ The toolkit ships as skills — invoke by intent. On Claude Code, the Skill tool
 | `aet-check [category]` | You want pattern detection only (DI, state, UI, etc.) — no code changes |
 | `android-expert` | Ad-hoc Android Q&A outside any pipeline |
 
-Codex requires `multi_agent = true` in `~/.codex/config.toml` to run `aet-pipeline`'s parallel agent dispatch. See [`references/codex-tools.md`](references/codex-tools.md) for the Claude → Codex primitive mapping the skills use internally.
+Codex requires `multi_agent = true` in `~/.codex/config.toml` to run `aet-pipeline`'s parallel agent dispatch. On runtimes without subagent spawning (or with it unverified), the pipeline falls back to sequential single-orchestrator dispatch automatically. See [`references/runtime-adapters.md`](references/runtime-adapters.md) for the per-runtime capability mapping the skills use internally.
 
 ---
 
