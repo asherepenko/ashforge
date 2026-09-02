@@ -1,6 +1,6 @@
 # ashforge
 
-Multi-agent engineering plugins for [Claude Code](https://docs.claude.com/en/docs/claude-code/plugins) and [Codex](https://openai.com/codex) (CLI / App).
+Multi-agent engineering plugins for [Claude Code](https://docs.claude.com/en/docs/claude-code/plugins), [Codex](https://openai.com/codex) (CLI / App), and — via capability-profile adaptation — Zcode, pi, and Antigravity.
 
 A personal plugin marketplace by [Andrew Sherepenko](https://github.com/asherepenko).
 
@@ -12,6 +12,16 @@ A personal plugin marketplace by [Andrew Sherepenko](https://github.com/asherepe
 | [`avengers-council`](./plugins/avengers-council) | 8-member engineering advisory board (+ Captain America orchestrator) for plan and code review through structured 3-round debate with domain scoring and security veto |
 
 Both plugins ship dual manifests: `.claude-plugin/plugin.json` for Claude Code, `.codex-plugin/plugin.json` for Codex. Skills are the only entry point — slash commands (`/aet-pipeline`, `/avengers-council:plan-review`) were retired in 3.0.0.
+
+## Runtime support
+
+Beyond the two first-class runtimes, both plugins detect the running harness at preflight and adapt via capability profiles (spawn model, transport, progress tool, ask style, plugin-root env) — see each plugin's `references/runtime-adapters.md`:
+
+- **Zcode** — plugin agents register by `subagent_type`; spawns are result-returning, so the council runs hub-mediated debate and the aet-pipeline dispatches per stage.
+- **pi** — no native subagent tool: install the skills into pi's skills directory; without a subagent skill/extension both plugins degrade to single-orchestrator mode.
+- **Antigravity** — supports the Claude Agent Skills standard; confirm its subagent spawn shape before multi-agent dispatch.
+
+On runtimes where no subagent spawning exists, plugins fall back to single-orchestrator mode (`references/runtime-fallback.md`) instead of failing. The Avengers Council protocol may also autonomously downgrade non-critical unattended reviews from full council to Quick Mode (3-member quorum) — always stated openly in the verdict.
 
 ## Installation
 
@@ -89,7 +99,7 @@ Each plugin documents its own usage, Codex compatibility, and configuration:
 
 - [android-expert-toolkit/README.md](./plugins/android-expert-toolkit/README.md) and [QUICK_START.md](./plugins/android-expert-toolkit/QUICK_START.md)
 - [avengers-council/README.md](./plugins/avengers-council/README.md)
-- Cross-platform tool mapping (Claude → Codex): each plugin's `references/codex-tools.md`
+- Cross-runtime capability mapping (Claude Code, Codex, Zcode, pi, Antigravity): each plugin's `references/runtime-adapters.md`
 
 ## Layout
 
