@@ -52,24 +52,59 @@ trap 'rm -rf "$tmp"' EXIT
 ) > "$tmp/07" 2>&1 &
 
 (
-  echo "== Codex multi_agent capability =="
-  # Skip on Claude — Agent spawning is not gated by a feature flag
-  if [ -z "${CODEX_HOME:-}" ] && [ ! -d "$HOME/.codex" ]; then
-    echo "NOT_CODEX"
-  elif [ -f "${CODEX_HOME:-$HOME/.codex}/config.toml" ]; then
-    if awk '
+  echo "== Runtime capability =="
+  runtime="unknown"; spawn="unknown"; transport="unknown"; notes=""
+  # Definitive env markers of the RUNNING runtime first; install-dir
+  # heuristics (~/.codex etc.) only when nothing else matched — a directory
+  # proves installation, not the current runtime.
+  if [ -n "${CODEX_HOME:-}" ]; then
+    runtime="codex"; transport="hub"
+    cfg="${CODEX_HOME:-$HOME/.codex}/config.toml"
+    if [ -f "$cfg" ] && awk '
       /^\[features\]/ { in_features = 1; next }
       /^\[/           { in_features = 0 }
       in_features && /^[[:space:]]*multi_agent[[:space:]]*=[[:space:]]*true/ { found = 1; exit }
       END { exit !found }
-    ' "${CODEX_HOME:-$HOME/.codex}/config.toml" 2>/dev/null; then
-      echo "ENABLED"
+    ' "$cfg" 2>/dev/null; then
+      spawn="prompt-embed"
     else
-      echo "DISABLED"
+      spawn="none"
+      if [ -f "$cfg" ]; then
+        notes="multi_agent is off — single-orchestrator fallback (references/runtime-fallback.md)"
+      else
+        notes="no config.toml — treat multi_agent as off; single-orchestrator fallback (references/runtime-fallback.md)"
+      fi
     fi
-  else
-    echo "NO_CONFIG"
+  elif [ -n "${ZCODE_APP_VERSION:-}" ]; then
+    runtime="zcode"; spawn="registry"; transport="hub"
+    notes="result-returning Agent spawns; SendMessage resume available; TaskCreate -> TodoWrite"
+  elif [ -n "${CLAUDECODE:-}" ] || [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+    runtime="claude-code"; spawn="registry"; transport="stay-alive"
+  elif [ -d "$HOME/.antigravity" ]; then
+    runtime="antigravity"; transport="hub"
+    notes="custom subagents exist — confirm spawn shape conversationally (references/runtime-adapters.md)"
+  elif [ -d "$HOME/.pi" ]; then
+    runtime="pi"; spawn="none"; transport="hub"
+    notes="no native subagent tool — SPAWN=none unless a subagent skill/extension is installed; confirm conversationally"
+  elif [ -d "$HOME/.codex" ]; then
+    runtime="codex"; transport="hub"
+    cfg="$HOME/.codex/config.toml"
+    if [ -f "$cfg" ] && awk '
+      /^\[features\]/ { in_features = 1; next }
+      /^\[/           { in_features = 0 }
+      in_features && /^[[:space:]]*multi_agent[[:space:]]*=[[:space:]]*true/ { found = 1; exit }
+      END { exit !found }
+    ' "$cfg" 2>/dev/null; then
+      spawn="prompt-embed"
+    else
+      spawn="none"
+      notes="~/.codex heuristic (CODEX_HOME unset); multi_agent off or unconfirmed — single-orchestrator fallback (references/runtime-fallback.md)"
+    fi
   fi
+  echo "RUNTIME=$runtime"
+  echo "SPAWN=$spawn"
+  echo "TRANSPORT=$transport"
+  echo "NOTES=${notes:-none}"
 ) > "$tmp/08" 2>&1 &
 
 wait

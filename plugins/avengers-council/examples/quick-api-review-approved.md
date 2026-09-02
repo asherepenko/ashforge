@@ -1,6 +1,6 @@
 # Avengers Council Verdict — Quick Code Review: /api/users Pagination (Approved)
 
-> **Runtime:** This walkthrough describes behavior on Claude Code (agent team + `SendMessage` debate). On Codex, the same scenario runs via hub-mediated `spawn_agent` rounds — see `references/codex-tools.md` for the primitive mapping and `references/codex-fallback.md` for the single-orchestrator path when `multi_agent` is disabled. Verdict format, decision points, and saved-artifact paths under `.artifacts/reviews/` are identical across runtimes.
+> **Runtime:** This walkthrough describes behavior on Claude Code (agent team + `SendMessage` debate). On hub-transport runtimes (Codex, Zcode, pi, Antigravity), the same scenario runs via hub-mediated spawn rounds — see `references/runtime-adapters.md` for the capability mapping and `references/runtime-fallback.md` for the single-orchestrator path when no subagent spawning is available. Verdict format, decision points, and saved-artifact paths under `.artifacts/reviews/` are identical across runtimes.
 
 **Review Date:** 2026-02-14
 **Review Type:** Code Review (Pull Request #234)

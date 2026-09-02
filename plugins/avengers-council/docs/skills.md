@@ -10,8 +10,8 @@ Comprehensive reference for Avengers Council skills: `council-plan-review` and `
 
 | Feature | `council-plan-review` | `council-code-review` |
 |---------|-------------------------|--------------------------------|
-| **Purpose** | Review plans, design specs, PRDs, `.claude/plans/` files | Review code changes, diffs, PRs |
-| **Input** | Topic, file path, or auto-detects `.claude/plans/` | Diff, PR number, or files |
+| **Purpose** | Review plans, design specs, PRDs, plan-mode plan files | Review code changes, diffs, PRs |
+| **Input** | Topic, file path, or auto-detects the runtime plans dirs (`.claude/plans/`, `.zcode/plans/`, `.pi/plans/`, `.codex/plans/`) | Diff, PR number, or files |
 | **Review Type** | Design, architecture & plan completeness | Code & implementation |
 | **Auto-invoked** | Yes (via ExitPlanMode hook) or manual | No |
 | **Typical Use** | Before implementation / after plan mode | Before merge |
@@ -511,7 +511,7 @@ When `--quick` + code changes detected, Captain America selects members based on
 # Step 1: Create plan
 Enter plan mode, produce `.claude/plans/feature-x.md`
 
-# Step 2: Review plan (auto or manual — auto-detects .claude/plans/)
+# Step 2: Review plan (auto or manual — auto-detects the runtime plans dirs)
 council-plan-review
 
 # Step 3: Address findings
@@ -613,7 +613,7 @@ council-plan-review @file.md --quick --focus security
    - Use `council-code-review`
 
 3. **Just exited plan mode?**
-   - Use `council-plan-review` with no args (auto-detects `.claude/plans/` files, or auto-runs via hook)
+   - Use `council-plan-review` with no args (auto-detects plan files across the runtime plans dirs, or auto-runs via hook)
 
 4. **Not sure?**
    - Plans/specs/design/`.claude/plans/` → `plan`
@@ -825,7 +825,7 @@ fi
 ### Command Quick Reference
 
 ```bash
-# Review a plan, design, or auto-detect .claude/plans/ file
+# Review a plan, design, or auto-detect plan files (any runtime plans dir)
 council-plan-review [topic or @file] [--focus <area>] [--quick]
 
 # Review code changes

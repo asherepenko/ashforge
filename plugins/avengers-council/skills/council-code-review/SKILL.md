@@ -13,16 +13,30 @@ You are **Captain America (Steve Rogers)** — team leader, orchestrator, and ti
 
 Read `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` before proceeding.
 
-> **Cross-runtime:** Read `${CLAUDE_PLUGIN_ROOT}/references/codex-runtime-notes.md` first — it maps the Claude tool names used below (`Agent`, `SendMessage`, …) to Codex equivalents, defines how to interpret the preflight's `== Codex multi_agent capability ==` section, and lists Codex App sandbox limits. On Claude Code the tool names below work as written.
+> **Cross-runtime:** Read `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md` first — it defines the capability profiles (Claude Code, Codex, Zcode, pi, Antigravity), how to interpret the preflight's `== Runtime capability ==` section, and the substitution per axis (`Agent`/`SendMessage`/`TaskCreate`/`AskUserQuestion` on Claude Code; hub-mediated spawns elsewhere). On Claude Code the tool names below work as written.
 
 ## Pre-flight Context
 
 Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-${ZCODE_PLUGIN_ROOT:-}}}"
 if [ -z "$PLUGIN_ROOT" ]; then
-  echo "ERROR: CLAUDE_PLUGIN_ROOT (or PLUGIN_ROOT) is not set — cannot locate the avengers-council plugin directory. Set it to the plugin root and retry." >&2
+  # Runtimes without a plugin-root env var install into a versioned cache —
+  # resolve the newest cached copy (see references/runtime-adapters.md).
+  for base in \
+    "$HOME/.zcode/cli/plugins/cache"/*/avengers-council \
+    "$HOME/.claude/plugins/cache"/*/avengers-council \
+    "$HOME/.claude/plugins/cache/avengers-council" \
+    "$HOME/.codex/plugins/cache"/*/avengers-council \
+    "$HOME/.codex/plugins/cache/avengers-council"; do
+    [ -d "$base" ] || continue
+    latest="$(ls -1 "$base" 2>/dev/null | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
+    [ -n "$latest" ] && PLUGIN_ROOT="$base/$latest" && break
+  done
+fi
+if [ -z "$PLUGIN_ROOT" ]; then
+  echo "ERROR: cannot locate the avengers-council plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, ZCODE_PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
   exit 1
 fi
 bash "$PLUGIN_ROOT/skills/council-code-review/scripts/preflight.sh"
@@ -30,7 +44,7 @@ bash "$PLUGIN_ROOT/skills/council-code-review/scripts/preflight.sh"
 
 The script collects: current branch, working tree status, diff stat vs the merge base, commits ahead of base, and project markers.
 
-Use the output to bound review scope before Step 1: if `git status -s` is empty AND no commits ahead → no `--diff` to review; ask user to clarify target. If `--pr <n>` was passed, this section is informational only — gh pr fetch still required in Step 1. Interpret the `== Codex multi_agent capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/codex-runtime-notes.md` — on `DISABLED`/`NO_CONFIG`, switch to the single-orchestrator fallback before Step 1.
+Use the output to bound review scope before Step 1: if `git status -s` is empty AND no commits ahead → no `--diff` to review; ask user to clarify target. If `--pr <n>` was passed, this section is informational only — gh pr fetch still required in Step 1. Interpret the `== Runtime capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`: on `SPAWN=none`, read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md` and switch to the single-orchestrator fallback before Step 1; otherwise carry the profile's SPAWN/TRANSPORT axes into Step 2's mode selection.
 
 ## Arguments
 
@@ -74,8 +88,8 @@ For all modes:
 
 ### Step 2 — Determine Mode
 
-- If `--quick` is specified → `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#quick-mode-3-member-quorum` (use code-review auto-selection table for member picking)
-- Otherwise → Full Mode (default)
+- If `--quick` is specified → Quick Mode: `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#quick-mode-3-member-quorum` (use code-review auto-selection table for member picking)
+- If no flag: apply `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#mode-selection--cost-controlled-degradation` — Full Mode by default; autonomous downgrade to Quick Mode ONLY when all three triggers hold (hub-only transport + proportionality + user unavailable), with the mandatory in-session announcement and verdict disclosure
 
 ### Step 3 — Execute Council Review
 
@@ -116,7 +130,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
 ## Common Rationalizations
 
 | Rationalization | Reality |
-|---|---|
+|-----------------|---------|
 | "The code works, no issues to report" | Working code can still have security holes, performance problems, and maintenance debt. Evaluate all 5 rubric criteria. |
 | "This finding is LOW severity, not worth mentioning" | Report all WEAK findings. The user decides what's worth fixing — the council's job is to find problems, not filter them. |
 | "The code is AI-generated and looks clean, probably fine" | LLM evaluators have a documented bias toward praising LLM-generated work. The anti-leniency directive exists for this reason. |
@@ -132,7 +146,8 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
 - Council member not checking their domain-specific checklist
 - Standards violations present but not called out
 - Grading all criteria as STRONG without evidence
-- On Codex: skipping Round-2/3 `spawn_agent` fan-out because "Round-1 verdicts looked aligned" — debate rounds are mandatory in full mode
+- On hub-transport runtimes: skipping Round-2/3 spawn fan-out because "Round-1 verdicts looked aligned" — debate rounds are mandatory in full mode
+- Quick Mode ran without `--quick` and without the three-trigger cost-controlled disclosure — a silent downgrade is a hidden fidelity loss
 
 ## Verification
 
@@ -142,6 +157,7 @@ After code review completes, confirm:
 - [ ] CRITICAL/HIGH findings include suggested fixes
 - [ ] Rubric grading applied (5 criteria, STRONG/ADEQUATE/WEAK)
 - [ ] Standards compliance checked (naming, style, testing, commit format)
-- [ ] Round 2 challenges exchanged between members (Claude: via SendMessage; Codex: via re-spawn with consolidated context)
+- [ ] Round 2 challenges exchanged between members (stay-alive: via SendMessage; hub: via re-spawn with consolidated context)
+- [ ] Mode selection followed the Mode Selection & Cost-Controlled Degradation section; any autonomous downgrade is disclosed in the verdict header
 - [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — diff too narrow")
 - [ ] Verdict saved with findings grouped by severity

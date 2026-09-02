@@ -10,6 +10,11 @@ For full consensus rules and severity guidelines, see @references/verdict-rules.
 ## Topic
 [What was reviewed]
 
+## Run Mode
+[Full Council | Quick Mode (--quick) | Quick Mode — cost-controlled degradation from Full Council | Single-orchestrator fallback]
+
+[When not Full Council: one line stating why + the fidelity trade — e.g. "hub-only transport (24-spawn full mode) disproportionate; facts adversarially verified in triage; user unavailable. No cross-member debate rounds."]
+
 ## Consensus: [APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED]
 **Vote**: X Approve / X Concerns / X Reject (N voters)
 **Average Domain Score**: X.X/10

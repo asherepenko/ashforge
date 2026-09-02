@@ -16,7 +16,7 @@ The slash-command form (`/avengers-council:plan-review`, `/avengers-council:code
 .codex-plugin/plugin.json  — Codex CLI / Codex App manifest (points at skills/)
 agents/                    — 8 core members + captain-america (ref only) + optional members
 skills/                    — council-plan-review, council-code-review (each with SKILL.md + scripts/preflight.sh)
-references/                — Protocols, templates, shared docs (incl. codex-tools.md)
+references/                — Protocols, templates, shared docs (incl. runtime-adapters.md)
 hooks/                     — PreToolUse:ExitPlanMode hook (Claude-only — no Codex equivalent)
 docs/                      — Detailed documentation
 tests/                     — Hook integration tests
@@ -31,23 +31,23 @@ tests/                     — Hook integration tests
 | Red lines (non-negotiables) | `references/red-lines.md` |
 | Member roster & extensibility | `references/member-registry.md` |
 | Orchestration flow | `references/orchestration-protocol.md` |
-| Debate transport (Claude SendMessage / Codex hub-mediated) | `references/debate-protocol.md` |
-| Cross-platform tool mapping | `references/codex-tools.md` |
+| Debate transport (stay-alive SendMessage / hub-mediated) | `references/debate-protocol.md` |
+| Cross-runtime capability mapping | `references/runtime-adapters.md` |
 
-## Cross-Platform Tool Mapping
+## Cross-Runtime Capability Mapping
 
-The council was built around Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`). For Codex CLI / Codex App, the dual-annotated `references/orchestration-protocol.md` and `references/debate-protocol.md` describe the substitutions:
+The council was built around Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`). Other runtimes map onto capability axes — SPAWN (registry / prompt-embed / none) and TRANSPORT (stay-alive / hub) — owned by `references/runtime-adapters.md`; the dual-annotated `references/orchestration-protocol.md` and `references/debate-protocol.md` describe the stay-alive and hub substitutions:
 
-- Team setup → skip on both runtimes (Claude's session team is implicit; `team_name` is deprecated and ignored, `TeamCreate`/`TeamDelete` no longer exist)
-- `Agent({subagent_type, name})` → `spawn_agent(prompt)` with persona inlined from `agents/<name>.md`
-- `SendMessage` (per-teammate DMs, lead addressed as `team-lead`) → hub-mediated context propagation (Captain consolidates each round's verdicts and re-spawns members for the next round with the consolidated context inlined)
-- `TaskCreate` / `TaskUpdate` → `update_plan`
-- `AskUserQuestion` → plain prompt with numbered options + free-form reply parsing
-- `PreToolUse:ExitPlanMode` hook → no Codex equivalent (Claude-only feature)
+- Team setup → skip on every runtime (Claude's session team is implicit; `team_name` is deprecated and ignored, `TeamCreate`/`TeamDelete` no longer exist)
+- `Agent({subagent_type, name})` → `spawn_agent(prompt)` with persona inlined from `agents/<name>.md` on prompt-embed runtimes (rewrite `${CLAUDE_PLUGIN_ROOT}` in the persona to the resolved root); Zcode keeps `Agent(subagent_type)` but collects results per spawn
+- `SendMessage` (per-teammate DMs, lead addressed as `team-lead`) → hub-mediated context propagation on hub runtimes (Captain consolidates each round's verdicts and re-spawns members for the next round with the consolidated context inlined)
+- `TaskCreate` / `TaskUpdate` → `update_plan` (Codex) or `TodoWrite` (Zcode)
+- `AskUserQuestion` → plain prompt with numbered options + free-form reply parsing on plain-text runtimes
+- `PreToolUse:ExitPlanMode` hook → Claude-only until another runtime's hook parity is verified
 
-Codex full-mode cost: ~3× the spawns of Claude (3 rounds × N members vs N stay-alive). `--quick` mode collapses to a single fan-out on both platforms. Debate fidelity is preserved because every cross-agent finding flows through the orchestrator's next-round prompt.
+Hub full-mode cost: ~3× the spawns of a stay-alive roster (3 rounds × N members vs N stay-alive). `--quick` mode collapses to a single fan-out everywhere. The orchestration protocol's Mode Selection section may autonomously downgrade hub runs to Quick Mode when its three triggers hold (capability + proportionality + user unavailable), with mandatory disclosure in the verdict.
 
-Codex requires `[features] multi_agent = true` in `~/.codex/config.toml` for parallel `spawn_agent` dispatch. Without it, fall back to single-orchestrator-perspective review and warn the user.
+Codex requires `[features] multi_agent = true` in `~/.codex/config.toml` for `spawn_agent` dispatch. Without it — and on any runtime where SPAWN=none — fall back to single-orchestrator review per `references/runtime-fallback.md` and warn the user.
 
 ## Key Conventions
 

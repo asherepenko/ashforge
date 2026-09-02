@@ -2,18 +2,19 @@
 
 Shared flow for all council skills. Each skill handles context gathering independently, then delegates to this protocol for team orchestration.
 
-> **Cost note:** Full mode spawns 8 core teammates + any matching optional members (~8-10x single-session cost on Claude; ~24-30x on Codex because each of the 3 rounds is a separate parallel fan-out).
-> Recommend Quick Mode (3 members) for non-critical reviews.
+> **Cost note:** Full mode spawns 8 core teammates + any matching optional members (~8-10x single-session cost on stay-alive runtimes; ~24-30x on hub-transport runtimes because each of the 3 rounds is a separate parallel fan-out).
 > Full mode is justified for: security-sensitive changes, architectural decisions, pre-release reviews.
+> For everything else, prefer Quick Mode (3 members) — explicitly via `--quick`, or autonomously per [Mode Selection & Cost-Controlled Degradation](#mode-selection--cost-controlled-degradation) when its three triggers hold.
 
-> **Platform branch:** Steps below are written for Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`). For Codex CLI / Codex App, follow the `Codex:` annotation at each tool callsite — debate becomes hub-mediated context propagation through the orchestrator. See @references/codex-tools.md for the full mapping and the cost/fidelity trade-off.
+> **Capability profile:** Steps below are written for Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`). Every other runtime maps onto two axes — SPAWN (how members are dispatched) and TRANSPORT (how findings move). Where the text says **stay-alive**, follow the `TRANSPORT=stay-alive` row; where it says **hub**, follow the `TRANSPORT=hub` row (Codex, Zcode, subagent-equipped pi, Antigravity). @references/runtime-adapters.md owns the full mapping, the per-runtime profiles, and the cost/fidelity trade-off; @references/runtime-fallback.md owns the SPAWN=none path.
 
-> **Lead identity (Claude):** the orchestrating session's persona is **Captain America**, but its wire name on the team channel is `team-lead` — that name is owned by the harness and is not configurable. Every `SendMessage` a teammate addresses to the lead MUST use `to: "team-lead"`; `captain-america` is not a registered teammate name and such a send goes nowhere. Personas in prose stay Captain America.
+> **Lead identity (stay-alive runtimes):** the orchestrating session's persona is **Captain America**, but its wire name on the team channel is `team-lead` — that name is owned by the harness and is not configurable. Every `SendMessage` a teammate addresses to the lead MUST use `to: "team-lead"`; `captain-america` is not a registered teammate name and such a send goes nowhere. Personas in prose stay Captain America. Hub runtimes have no wire name at all.
 
 ## Table of Contents
 
 - [Standards Detection](#standards-detection-shared-across-all-commands) — project conventions discovery
 - [Codebase Audit](#codebase-audit-shared-across-all-commands) — project structure, naming, architecture grounding
+- [Mode Selection](#mode-selection--cost-controlled-degradation) — full vs quick, autonomous cost-controlled degradation
 - [Phase 1 — Assemble the Council](#phase-1--assemble-the-council-full-mode) — roster, agent spawning, quorum rules
 - [Phase 2 — Round 1](#phase-2--round-1-collect-initial-assessments) — initial assessments
 - [Phase 3 — Rounds 2 & 3](#phase-3--rounds-2--3-challenge-and-final-position) — challenge and final position
@@ -47,6 +48,39 @@ After standards detection, Captain America performs a codebase audit to ground t
 
 This audit ensures agents evaluate proposals against the codebase as it actually exists, not as they imagine it. Agents should flag any proposed changes that deviate from the established structure, naming, or patterns.
 
+## Mode Selection & Cost-Controlled Degradation
+
+Select the mode once, after the preflight profile and before Phase 1. Three routes:
+
+1. **Explicit Quick Mode** — the user passed `--quick`. No further checks.
+2. **Full Mode (default)** — every default run.
+3. **Cost-Controlled Quick Mode (autonomous downgrade)** — drop to Quick Mode WITHOUT a user flag only when ALL three triggers hold:
+
+   - **Capability trigger:** the runtime profile is `TRANSPORT=hub` (no stay-alive teammates), so full mode costs 3 fan-out rounds × N members (≥ 24 heavy spawns at the 8-member core) instead of N stay-alive agents.
+   - **Proportionality trigger:** the review subject is NOT in full mode's justified set (security-sensitive change, architectural decision, pre-release review), AND the factual base of the subject was already adversarially verified upstream in this session (e.g., a triage pass stress-tested the plan's claims), so the 3-round debate's marginal value is challenge-discovery, not fact-checking.
+   - **Availability trigger:** the user is not available to approve the spend — explicitly away, an unattended/scheduled run, or autonomous mode. If the user IS available, ask instead (one structured question: full council vs Quick Mode, per the cost note).
+
+   If ANY trigger fails, run Full Mode. Never downgrade because the subject "looks simple" — simplicity alone is the rationalization this path exists to prevent.
+
+### Degraded-run mechanics
+
+- **Roster:** Quick Mode rules (@references/member-registry.md#quick-mode-member-selection) — 2 members by topic analysis + Captain. Prefer a pairing that keeps an independent-instance security voice in the room (e.g., black-widow + hulk when the risks are security/testing-shaped) so Black Widow's veto survives the downgrade.
+- **Flow:** single assessment round, no debate rounds (Quick Flow below).
+- **Unattended follow-up:** skip Phase 6's interactive menu; take the non-blocking action — save the verdict and write follow-up TODOs — and say so in the output.
+
+### Mandatory disclosure
+
+Announce the downgrade in-session BEFORE spawning (the transcript must carry it even if the verdict file is never read), and mark the verdict header in these exact shapes:
+
+```
+> Run mode: Quick Mode — cost-controlled degradation from Full Council
+> Reason: hub-only transport (24-spawn full mode) disproportionate; facts
+> adversarially verified in triage; user unavailable.
+> Fidelity trade: no cross-member debate rounds; security + testing lenses only.
+```
+
+A degraded run that hides its mode is a silent fidelity loss — treat that as a red flag.
+
 ## Phase 1 — Assemble the Council (Full Mode)
 
 YOU are Captain America — the session model running the command.
@@ -66,9 +100,9 @@ Read @references/member-registry.md to build the active roster:
 
 ### Step 2: Team Scope
 
-**Claude:** Nothing to create. The session has a single implicit team; spawned agents join it automatically and the lead is always `team-lead`. Do not call `TeamCreate` and do not pass `team_name` to `Agent` — the parameter is deprecated and ignored. Announce the roster to the user instead of creating a named team.
+**Stay-alive (Claude Code):** Nothing to create. The session has a single implicit team; spawned agents join it automatically and the lead is always `team-lead`. Do not call `TeamCreate` and do not pass `team_name` to `Agent` — the parameter is deprecated and ignored. Announce the roster to the user instead of creating a named team.
 
-**Codex:** Same — no team primitive exists. Concurrency is just parallel `spawn_agent` calls in one turn. Track the active roster in a local variable.
+**Hub (Codex, Zcode, pi, Antigravity):** Same — no team primitive. Concurrency is just parallel spawn calls in one turn (`spawn_agent` on prompt-embed runtimes, `Agent(subagent_type)` on registry runtimes). Track the active roster in a local variable.
 
 ### Step 3: Spawn Teammates
 
@@ -78,7 +112,7 @@ Each spawn call embeds the FULL review context and Round 1 instructions so agent
 
 Substitute per spawn: `[agent-name]` = this member, and `[roster names, excluding this agent]` = the active roster minus this member (agents have no other way to learn teammate names — there is no team config to read).
 
-**Claude:**
+**Stay-alive (Claude Code):**
 
 ```
 Agent({
@@ -131,12 +165,12 @@ Follow the debate protocol from your agent definition for all rounds.",
 })
 ```
 
-**Codex:** Same prompt template, but use `spawn_agent(prompt)` per member with the persona text from `agents/<name>.md` pasted verbatim above the `REVIEW CONTEXT` block (Codex has no `subagent_type` registry). Drop the trailing lines about sharing findings with teammates and waiting for `team-lead` to signal Round 2 and Round 3 — Codex workers terminate after returning; Captain re-spawns them for each round with the next round's context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
+**Hub (result-returning spawns — Codex `spawn_agent`, Zcode `Agent(subagent_type)`, prompt-embed pi/Antigravity):** Same prompt template, dispatched per the SPAWN axis in @references/runtime-adapters.md — `prompt-embed` runtimes paste the persona text from `agents/<name>.md` (with `${CLAUDE_PLUGIN_ROOT}` rewritten to the resolved root) above the `REVIEW CONTEXT` block; `registry` runtimes pass `subagent_type`. Drop the trailing lines about sharing findings with teammates and waiting for `team-lead` to signal Round 2 and Round 3 — hub workers terminate after returning; Captain re-spawns them for each round with the next round's context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
 
 **Core agent roster** (always spawned):
 
 | Name | subagent_type |
-|------|--------------|
+|------|---------------|
 | iron-man | avengers-council:iron-man |
 | thor | avengers-council:thor |
 | scarlet-witch | avengers-council:scarlet-witch |
@@ -159,8 +193,8 @@ Never paste entire large diffs into agent prompts — this wastes context and re
 
 ### Step 4: Timeout and Quorum
 
-- **Claude:** Wait for teammate responses. Messages from teammates are delivered automatically via the team channel.
-- **Codex:** Call `wait_agent(agent_id)` on each spawned worker; collect the returned verdicts. `close_agent(agent_id)` after each to free slots.
+- **Stay-alive:** Wait for teammate responses. Messages from teammates are delivered automatically via the team channel.
+- **Hub:** Collect returned results (`wait_agent(agent_id)` per worker on Codex; tool results on registry runtimes). `close_agent(agent_id)` after each on Codex to free slots.
 - **Timeout policy:** If fewer than the timeout threshold (Step 1) respond, proceed with available responses. Note which members were silent in the verdict.
 - **Minimum quorum:** At least the minimum quorum (Step 1) responses required. If fewer respond, report the issue to the user and ask whether to proceed with available responses or retry.
 
@@ -168,8 +202,7 @@ Never paste entire large diffs into agent prompts — this wastes context and re
 
 Agents self-start Round 1 immediately from their spawn prompt — no broadcast needed.
 
-1. **Claude:** Create task: "Round 1 — Initial Assessment" via `TaskCreate` (optional — for progress tracking), mark in_progress.
-   **Codex:** Use `update_plan` with the same step name for visibility.
+1. Track the phase per the PROGRESS axis in @references/runtime-adapters.md — `TaskCreate` (Claude Code), `TodoWrite` (Zcode), `update_plan` (Codex) — with the step name "Round 1 — Initial Assessment"; optional but recommended.
 2. Collect responses (apply timeout policy from Phase 1 Step 4)
 3. Mark Round 1 task as completed
 
@@ -177,12 +210,11 @@ Agents self-start Round 1 immediately from their spawn prompt — no broadcast n
 
 After collecting Round 1 responses:
 
-1. **Claude:** Create task "Rounds 2 & 3 — Challenge and Final Position" via `TaskCreate`, mark in_progress.
-   **Codex:** Use `update_plan` with the same step name.
+1. Track the phase per the PROGRESS axis (same tools as Phase 2) with the step name "Rounds 2 & 3 — Challenge and Final Position".
 
 2. **Trigger Round 2 + Round 3.**
 
-   **Claude:** `SendMessage` has no broadcast recipient — send the block below to each stay-alive teammate by name, all calls in ONE turn. Agents DM each other to challenge in Round 2, then send their final position to `team-lead`.
+   **Stay-alive:** `SendMessage` has no broadcast recipient — send the block below to each stay-alive teammate by name, all calls in ONE turn. Agents DM each other to challenge in Round 2, then send their final position to `team-lead`.
 
    ```
    ROUND 1 COMPLETE.
@@ -202,7 +234,7 @@ After collecting Round 1 responses:
    - Key Condition: what must change for CONCERNS to become APPROVE
    ```
 
-   **Codex:** Workers from Round 1 are terminated. Fan out Round 2 as a fresh parallel `spawn_agent` × N call. Each prompt embeds the persona + REVIEW CONTEXT + the consolidated Round-1 findings block + a Round-2 instruction block:
+   **Hub:** Workers from Round 1 are terminated (Zcode: agents returned their results — resume via `SendMessage` by agent id where supported, otherwise spawn fresh). Fan out Round 2 as a fresh parallel spawn × N call. Each prompt embeds the persona + REVIEW CONTEXT + the consolidated Round-1 findings block + a Round-2 instruction block:
 
    ```
    ROUND 2 — CHALLENGE (you are [agent-name]):
@@ -224,7 +256,7 @@ After collecting Round 1 responses:
    Return CHALLENGES and SUPPORTS as the result of this spawn. Do not request your final verdict yet — that's Round 3.
    ```
 
-   After `wait_agent` collects all Round-2 results, consolidate the cross-member challenges/supports into a Round-3 context block. Fan out again as a fresh parallel `spawn_agent` × N for Round 3:
+   After all Round-2 results are collected (`wait_agent` per call on Codex), consolidate the cross-member challenges/supports into a Round-3 context block. Fan out again as a fresh parallel spawn × N for Round 3:
 
    ```
    ROUND 3 — FINAL POSITION (you are [agent-name]):
@@ -240,11 +272,11 @@ After collecting Round 1 responses:
    - Key Condition: what must change for CONCERNS to become APPROVE
    ```
 
-   Cost: 2 additional `spawn_agent` fan-outs for full debate (3 rounds × N members = 3N total spawns vs Claude's N stay-alive). Fidelity is preserved — every cross-agent finding flows through the orchestrator's prompt instead of through SendMessage.
+   Cost: 2 additional spawn fan-outs for full debate (3 rounds × N members = 3N total spawns vs a stay-alive roster's N). Fidelity is preserved — every cross-agent finding flows through the orchestrator's prompt instead of through SendMessage. This 3N cost is what the Mode Selection section's capability trigger measures.
 
 3. **Completion gate:**
-   - **Claude:** Wait until all active members send their final position to `team-lead`.
-   - **Codex:** Wait for all Round-3 `spawn_agent` calls to return via `wait_agent`.
+   - **Stay-alive:** Wait until all active members send their final position to `team-lead`.
+   - **Hub:** Wait for all Round-3 spawn results to return (`wait_agent` per call on Codex).
    Apply same timeout policy — if members don't return, proceed after receiving results from the quorum.
 4. Mark task as completed
 
@@ -294,27 +326,28 @@ Write verdict to permanent record:
 ## Phase 6 — Interactive Follow-up
 
 Follow @references/post-verdict-actions.md:
-1. **Claude:** Present `AskUserQuestion` based on verdict and review type.
-   **Codex:** Print the question with numbered options as plain text; wait for and parse the user's free-form reply.
+1. **Structured-ask runtimes:** Present `AskUserQuestion` based on verdict and review type.
+   **Plain-text runtimes:** Print the question with numbered options as plain text; wait for and parse the user's free-form reply.
+   **Cost-controlled degraded runs:** skip the interactive menu — take the non-blocking action (save verdict + write follow-up TODOs) and say so.
 2. Execute chosen action
 3. Only proceed to cleanup after action completes
 
 ## Phase 7 — Cleanup
 
-**Claude:**
+**Stay-alive:**
 1. Send `shutdown_request` (type: "shutdown_request") to each teammate by name
 2. Wait for shutdown confirmations
 3. No team to delete — the session team is implicit and torn down with the session. Do not call `TeamDelete`.
 
-**Codex:**
-1. Workers are already terminated after their final `wait_agent`. If any are still in-flight at the timeout boundary, call `close_agent` on each to free slots.
+**Hub:**
+1. Workers are already terminated after returning their final result. If any are still in-flight at the timeout boundary, call `close_agent` on each to free slots (Codex).
 2. No team to delete.
 
 ---
 
 ## Quick Mode (3-member quorum)
 
-For `--quick` flag, use abbreviated flow:
+For `--quick` flag, use abbreviated flow. This section is also the landing path for the autonomous cost-controlled downgrade (see [Mode Selection & Cost-Controlled Degradation](#mode-selection--cost-controlled-degradation)) — when invoked that way, additionally apply the degraded-run mechanics and mandatory disclosure from that section.
 
 ### Member Selection
 
@@ -322,8 +355,7 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
 
 ### Quick Flow
 
-1. **Claude:** Spawn the 2 selected members via parallel `Agent` calls (no team setup needed).
-   **Codex:** Spawn the 2 selected members via parallel `spawn_agent`.
+1. Spawn the 2 selected members in parallel, per the SPAWN axis (@references/runtime-adapters.md): `Agent` calls on registry runtimes, `spawn_agent` on prompt-embed runtimes — no team setup needed on any runtime.
 2. Single assessment round (no challenge/final rounds):
    ```
    QUICK REVIEW — Single Round
@@ -335,7 +367,7 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
    - Key Findings: max 3
    - Recommendation: 1-2 sentences
    ```
-3. Collect 2 positions + add your own = 3 votes (Claude: messages arrive automatically; Codex: `wait_agent` on each)
+3. Collect 2 positions + add your own = 3 votes (stay-alive: messages arrive automatically; hub: results return per spawn — `wait_agent` on each, Codex)
 4. Quick consensus per @references/verdict-rules.md Quick Mode section
 5. Format abbreviated verdict (3 positions only)
 6. Save verdict (same Phase 5)

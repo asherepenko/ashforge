@@ -9,11 +9,11 @@ Engineering advisory board (8 core members + Captain America orchestrator) for r
 - **Domain Scoring** — Each member scores 1–10 in their specialty. Aggregate average < 5.0 forces NEEDS REVISION.
 - **Black Widow VETO** — Unmitigated CRITICAL security issues trigger automatic BLOCKED verdict (cannot be overridden).
 - **Verdict Archive** — Every review saved to `.artifacts/reviews/{plans,code}/council/YYYY-MM-DD/HHMMSS-review-{verdict}.md`.
-- **Quick Mode** — 3-member quorum with `--quick --focus <area>` when full council is overkill.
+- **Quick Mode** — 3-member quorum with `--quick --focus <area>` when full council is overkill; also the documented autonomous cost-control path on hub-only runtimes (orchestration protocol → Mode Selection).
 
 ## Installation
 
-The plugin ships in the [ashforge](https://github.com/asherepenko/ashforge) marketplace and works on both Claude Code and Codex (CLI / App).
+The plugin ships in the [ashforge](https://github.com/asherepenko/ashforge) marketplace. First-class support: Claude Code and Codex (CLI / App). Capability-profile support (same skills, per-runtime substitutions): Zcode, pi, Antigravity — see [`references/runtime-adapters.md`](references/runtime-adapters.md).
 
 ### Claude Code
 
@@ -47,9 +47,13 @@ multi_agent = true      # REQUIRED — spawn_agent/wait_agent/close_agent for th
 sandbox_mode = "workspace-write"
 ```
 
-The council uses `spawn_agent` for each debate round; `multi_agent = true` is required. Without it, skills detect the gap via preflight and fall back to single-orchestrator mode per `references/codex-fallback.md`.
+The council uses `spawn_agent` for each debate round; `multi_agent = true` is required. Without it, skills detect the gap via preflight and fall back to single-orchestrator mode per `references/runtime-fallback.md`.
 
-The plugin does not ship Codex-side hooks (the `ExitPlanMode` hook is Claude-only — Codex has no equivalent tool). See [`references/codex-tools.md`](references/codex-tools.md) for the full Claude → Codex primitive mapping including the hub-mediated debate trade-off.
+The plugin does not ship Codex-side hooks (the `ExitPlanMode` hook is Claude-only — no other runtime's hook parity is verified yet). See [`references/runtime-adapters.md`](references/runtime-adapters.md) for the full capability mapping (Claude Code, Codex, Zcode, pi, Antigravity) including the hub-mediated debate trade-off.
+
+### Zcode / pi / Antigravity
+
+Skills install into the runtime's skills directory (copy or symlink `skills/*` from this plugin; pi users also need a subagent skill/extension for member dispatch). The preflight detects the runtime and emits a capability profile — on runtimes where no subagent spawning exists, the council falls back to single-orchestrator mode; on hub-transport runtimes (result-returning spawns, e.g. Zcode), full debate runs as hub-mediated fan-outs, and the protocol's Mode Selection section may autonomously downgrade non-critical unattended reviews to Quick Mode (3-member quorum) with the degradation stated openly in the verdict.
 
 ### Project-Level Setup (both runtimes)
 
@@ -71,12 +75,12 @@ If you keep verdicts versioned but want to exclude any cached / temporary counci
 The toolkit ships as **skills** — invoke by intent on Claude Code or Codex CLI/App. The slash-command form (`/avengers-council:plan-review`) was retired in version 3.0.0.
 
 ```
-council-plan-review @.claude/plans/my-plan.md     # Review a plan file
-council-plan-review "Migrate REST to GraphQL"     # Review a topic
-council-code-review                               # Review unstaged diff
-council-code-review --pr 123                      # Review a GitHub PR
-council-code-review --files src/auth.ts,src/db.ts # Review specific files
-council-code-review --pr 456 --quick --focus mobile # 3-member quick review
+council-plan-review @.claude/plans/my-plan.md         # Review a plan file
+council-plan-review "Migrate REST to GraphQL"         # Review a topic
+council-code-review                                   # Review unstaged diff
+council-code-review --pr 123                          # Review a GitHub PR
+council-code-review --files src/auth.ts,src/db.ts     # Review specific files
+council-code-review --pr 456 --quick --focus mobile   # 3-member quick review
 ```
 
 Claude: the Skill tool auto-triggers on description match, or invoke explicitly with `Skill(skill="council-plan-review", args="@my-plan.md")`. Codex: state the intent in natural language.
@@ -115,7 +119,7 @@ Seven phases per review:
 
 Verdicts: **APPROVED**, **APPROVED WITH CONDITIONS**, **NEEDS REVISION**, **BLOCKED**.
 
-Debate fidelity is preserved on both platforms — every cross-member finding flows either through `SendMessage` (Claude) or through the orchestrator's next-round spawn prompt (Codex). Codex full mode costs ~3× the spawns of Claude (3 rounds × N members vs N stay-alive agents); `--quick` mode collapses to a single fan-out on both platforms.
+Debate fidelity is preserved on every platform — every cross-member finding flows either through `SendMessage` (stay-alive runtimes) or through the orchestrator's next-round spawn prompt (hub runtimes). Hub full mode costs ~3× the spawns of a stay-alive roster (3 rounds × N members vs N stay-alive agents); `--quick` mode collapses to a single fan-out everywhere. Other runtimes (Zcode, pi, Antigravity) follow the capability profiles in [`references/runtime-adapters.md`](references/runtime-adapters.md).
 
 ## Hook Configuration
 
@@ -148,7 +152,7 @@ avengers-council/
 ├── .codex-plugin/plugin.json     # Codex CLI / Codex App manifest (points at skills/)
 ├── agents/                       # 8 core members + captain-america (ref) + optional members
 ├── skills/                       # council-plan-review, council-code-review (replaces the retired commands/)
-├── references/                   # Verdict rules, red lines, debate protocol, member registry, codex-tools
+├── references/                   # Verdict rules, red lines, debate protocol, member registry, runtime-adapters
 ├── hooks/                        # PreToolUse:ExitPlanMode hook (Claude-only)
 ├── docs/                         # Detailed skill + hook + architecture docs
 └── tests/                        # Hook integration tests
@@ -159,7 +163,7 @@ avengers-council/
 | Doc | Purpose |
 |-----|---------|
 | [docs/skills.md](docs/skills.md) | Full skill reference with all flags |
-| [references/codex-tools.md](references/codex-tools.md) | Claude → Codex tool mapping and hub-mediated debate notes |
+| [references/runtime-adapters.md](references/runtime-adapters.md) | Capability profiles per runtime (Claude Code, Codex, Zcode, pi, Antigravity) and hub-mediated debate notes |
 | [docs/examples.md](docs/examples.md) | End-to-end walkthroughs (architecture plan, security PR, quick mobile) |
 | [docs/hooks.md](docs/hooks.md) | Hook configuration deep-dive |
 | [docs/architecture.md](docs/architecture.md) | System architecture and data flow |
