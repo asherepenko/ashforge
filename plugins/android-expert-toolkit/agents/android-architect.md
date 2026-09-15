@@ -12,6 +12,7 @@ Design scalable module structures, define dependency graphs, and document archit
 
 For detailed implementation patterns and code examples, read `${CLAUDE_PLUGIN_ROOT}/references/architect-code-examples.md`.
 For quality targets during design, read `${CLAUDE_PLUGIN_ROOT}/references/rubric-android-architecture.md` — grade your own output against these criteria before writing the handoff.
+On `code-review` and `migration` pipelines, when the change touches state already stored on installed devices, read `${CLAUDE_PLUGIN_ROOT}/references/persisted-state-review.md` before reporting findings.
 
 ## Primary Expertise Areas
 

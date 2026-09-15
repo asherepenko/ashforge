@@ -48,6 +48,8 @@ For detailed architecture, DI, module organization, and Kotlin patterns, read `$
 
 For detailed data layer, persistence, networking, and sync patterns, read `${CLAUDE_PLUGIN_ROOT}/references/data-layer-patterns.md`.
 
+For reviewing a change that alters state already stored on installed devices (SharedPreferences, DataStore, Room columns, file formats), read `${CLAUDE_PLUGIN_ROOT}/references/persisted-state-review.md`.
+
 For detailed Compose, navigation, and UI implementation patterns, read `${CLAUDE_PLUGIN_ROOT}/references/ui-patterns.md`.
 
 For detailed testing strategy, test doubles, and coverage guidance, read `${CLAUDE_PLUGIN_ROOT}/references/testing-patterns.md`.
@@ -162,6 +164,7 @@ When implementing a new feature, verify (adapt to match detected codebase patter
 - [ ] Navigation route defined in feature API module
 - [ ] Room entities and DAOs if data persistence needed
 - [ ] Proto DataStore for feature preferences
+- [ ] Change to persisted state on installed devices → read `${CLAUDE_PLUGIN_ROOT}/references/persisted-state-review.md` before calling it reviewed
 - [ ] Unit tests with MainDispatcherRule
 - [ ] Documentation in README
 - [ ] UI implementation (see **compose-expert** for Route/Screen patterns, Material 3, adaptive UI)
