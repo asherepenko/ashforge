@@ -2,6 +2,7 @@
 """Tests for runtime-generic packaging (capability profiles + fallback path)."""
 
 import json
+import re
 from pathlib import Path
 
 
@@ -62,5 +63,24 @@ def test_manifest_versions_match():
     claude = (PROJECT_ROOT / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")
     codex = (PROJECT_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
 
-    assert json.loads(claude)["version"] == json.loads(codex)["version"]
-    assert json.loads(claude)["version"] == "3.3.1"
+    version = json.loads(claude)["version"]
+
+    assert version == json.loads(codex)["version"]
+    assert re.fullmatch(r"\d+\.\d+\.\d+", version), f"not semver: {version}"
+
+
+def test_manifest_version_has_changelog_entry():
+    """The released version is the newest CHANGELOG heading.
+
+    Replaces a hardcoded version literal, which broke on every bump. This
+    still catches a manifest bumped without a changelog entry.
+    """
+    version = json.loads(
+        (PROJECT_ROOT / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")
+    )["version"]
+    headings = re.findall(r"^## \[(\d+\.\d+\.\d+)\]", read("CHANGELOG.md"), re.MULTILINE)
+
+    assert headings, "CHANGELOG.md has no version headings"
+    assert headings[0] == version, (
+        f"manifest is {version}, newest CHANGELOG entry is {headings[0]}"
+    )
