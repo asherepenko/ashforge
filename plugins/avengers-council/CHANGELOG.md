@@ -4,6 +4,12 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [3.3.1] - 2026-09-16
+
+### Fixed
+
+- README and AGENTS.md described `agents/` as holding "8 core members + captain-america (ref) + optional members" — the directory holds only the 8 core member personas. Captain America's orchestrator persona lives in `references/captain-america-orchestrator.md` and optional members in `references/member-registry.md`; both docs now say so.
+
 ## [3.3.0] - 2026-09-15
 
 ### Added

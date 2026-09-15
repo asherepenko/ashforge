@@ -14,7 +14,7 @@ The slash-command form (`/avengers-council:plan-review`, `/avengers-council:code
 ```
 .claude-plugin/plugin.json — Claude Code manifest
 .codex-plugin/plugin.json  — Codex CLI / Codex App manifest (points at skills/)
-agents/                    — 8 core members + captain-america (ref only) + optional members
+agents/                    — 8 core member personas (Captain America: references/captain-america-orchestrator.md; optional members: references/member-registry.md)
 skills/                    — council-plan-review, council-code-review (each with SKILL.md + scripts/preflight.sh)
 references/                — Protocols, templates, shared docs (incl. runtime-adapters.md)
 hooks/                     — PreToolUse:ExitPlanMode hook (Claude-only — no Codex equivalent)

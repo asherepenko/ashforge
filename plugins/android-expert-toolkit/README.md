@@ -109,6 +109,17 @@ See [QUICK_START.md](QUICK_START.md) for guided examples and scenarios, and [run
 
 Agents hand off through markdown artifacts under `.artifacts/aet/handoffs/{feature_slug}/` — each agent reads its predecessor's report and writes its own before the next agent starts.
 
+## When to Use
+
+| You want | Reach for |
+|----------|-----------|
+| An end-to-end multi-agent workflow — build a feature, migrate an API, redesign UI, backfill tests, review a module | `aet-pipeline <type>` |
+| Progress, artifacts, or recovery options for an in-flight pipeline | `aet-status` |
+| Pattern detection only — which DI/state/testing conventions the codebase actually uses, with the 80/20 verdict | `aet-check [category]` |
+| An ad-hoc Android question, pattern guidance, or a quick code look — no pipeline | `android-expert` |
+
+**Skip the toolkit** for backend/server Kotlin, plain Gradle JVM builds, and non-Android questions — the skills are scoped to Android app work.
+
 ## Plugin Structure
 
 ```

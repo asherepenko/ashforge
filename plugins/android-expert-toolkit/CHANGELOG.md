@@ -4,6 +4,17 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [3.3.2] - 2026-09-16
+
+### Fixed
+
+- `QUICK_START.md` Scenario 4 used `aet-check ui`, which is not a valid detection category — the Compose-vs-XML sweep lives under `architecture`. Corrected to `aet-check architecture`.
+- `skills/android-expert/SKILL.md` referenced companion skills in the retired slash-command form (`/aet-pipeline`, `/aet-status`, `/aet-check`); normalized to plain skill names.
+
+### Added
+
+- README "When to Use" section: a routing table mapping intents to the four skills, plus an explicit out-of-scope note (backend Kotlin, plain Gradle JVM), matching the avengers-council README structure.
+
 ## [3.3.1] - 2026-09-16
 
 ### Added

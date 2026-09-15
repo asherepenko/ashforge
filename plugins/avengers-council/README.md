@@ -150,7 +150,7 @@ Add to `~/.zshrc` / `~/.bashrc` to persist. On Codex, invoke the `council-plan-r
 avengers-council/
 ├── .claude-plugin/plugin.json    # Claude Code manifest
 ├── .codex-plugin/plugin.json     # Codex CLI / Codex App manifest (points at skills/)
-├── agents/                       # 8 core members + captain-america (ref) + optional members
+├── agents/                       # 8 core member personas (Captain America + optional members: see references/)
 ├── skills/                       # council-plan-review, council-code-review (replaces the retired commands/)
 ├── references/                   # Verdict rules, red lines, debate protocol, member registry, runtime-adapters
 ├── hooks/                        # PreToolUse:ExitPlanMode hook (Claude-only)

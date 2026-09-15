@@ -183,7 +183,7 @@ When implementing a new feature, verify (adapt to match detected codebase patter
 
 ### Pipeline Work
 
-Multi-agent pipeline work → `/aet-pipeline` (pipeline types, execution protocol, parallel dispatch rules, error recovery; the handoff contract is enforced by its validator — do not hand-maintain section lists here). Companions: `/aet-status` (progress + recovery), `/aet-check` (pattern detection).
+Multi-agent pipeline work → the `aet-pipeline` skill (pipeline types, execution protocol, parallel dispatch rules, error recovery; the handoff contract is enforced by its validator — do not hand-maintain section lists here). Companions: `aet-status` (progress + recovery), `aet-check` (pattern detection).
 
 ## Common Rationalizations
 

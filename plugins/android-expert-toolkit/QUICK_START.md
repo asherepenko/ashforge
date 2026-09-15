@@ -117,10 +117,10 @@ You get a report in `.artifacts/aet/handoffs/` with pattern detection, module st
 Goal: Quick check without running a full pipeline.
 
 ```
-aet-check di          # Hilt vs Koin vs manual
-aet-check state       # LiveData vs StateFlow
-aet-check ui          # Compose vs XML
-aet-check             # All categories
+aet-check di            # Hilt vs Koin vs manual
+aet-check state         # LiveData vs StateFlow
+aet-check architecture  # Compose vs XML, ViewModels
+aet-check               # All categories
 ```
 
 Reports consistency percentages and applies the 80/20 rule to recommend matching existing patterns or proposing alternatives.
