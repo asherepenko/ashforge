@@ -63,4 +63,4 @@ def test_manifest_versions_match():
     codex = (PROJECT_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
 
     assert json.loads(claude)["version"] == json.loads(codex)["version"]
-    assert json.loads(claude)["version"] == "3.3.0"
+    assert json.loads(claude)["version"] == "3.3.1"
