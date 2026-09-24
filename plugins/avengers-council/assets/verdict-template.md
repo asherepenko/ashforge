@@ -134,7 +134,7 @@ For full consensus rules and severity guidelines, see @references/verdict-rules.
 
 [Include this section ONLY when the spawn brief carried a `DOMAIN MODEL` block. Otherwise omit entirely.]
 
-- **Glossary contradictions**: terms used in the plan that conflict with `CONTEXT.md` (cite term + glossary line)
+- **Glossary contradictions**: terms used in the plan that conflict with `DOMAIN.md` (cite term + glossary line)
 - **ADR contradictions**: plan claims that contradict accepted ADRs (cite ADR-NNNN + contradicting plan line)
 - **Acknowledged supersession**: ADRs the plan explicitly proposes to supersede (with rationale)
 

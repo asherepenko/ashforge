@@ -33,12 +33,12 @@ Check for: `CONTRIBUTING.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `docs/standard
 
 Domain artifacts are not standards documents — they're *bindings* between the plan's vocabulary and the project's existing concept model. A plan that contradicts an accepted ADR is a real failure mode that has nothing to do with code style.
 
-> **Opt-in by file presence.** Domain alignment is *enabled* by the existence of `CONTEXT.md` (or `CONTEXT-MAP.md`) and/or `docs/adr/`. Absence is not a warning — it's an explicit signal that the repo doesn't use this pattern (greenfield, operational, infra-only, etc.). When neither is present, every reference to domain alignment downstream (Phase 3 checklist item, Phase 5 rule #4, red-lines.md ADR row, agent ADR-consistency criteria, verdict-template Domain Alignment section, spawn-brief `DOMAIN MODEL` block) is silently skipped. No warnings to Andrew. No "missing domain model" messages. The council operates exactly as it did pre-domain-awareness for these repos.
+> **Opt-in by file presence.** Domain alignment is *enabled* by the existence of `DOMAIN.md` (or `DOMAIN-MAP.md`; legacy `CONTEXT.md`/`CONTEXT-MAP.md` still count) and/or `docs/adr/`. Absence is not a warning — it's an explicit signal that the repo doesn't use this pattern (greenfield, operational, infra-only, etc.). When neither is present, every reference to domain alignment downstream (Phase 3 checklist item, Phase 5 rule #4, red-lines.md ADR row, agent ADR-consistency criteria, verdict-template Domain Alignment section, spawn-brief `DOMAIN MODEL` block) is silently skipped. No warnings to Andrew. No "missing domain model" messages. The council operates exactly as it did pre-domain-awareness for these repos.
 
 Check for, in this order:
 
-1. **Domain glossary**: `CONTEXT-MAP.md` (multi-context repos) → if absent, `CONTEXT.md` (single-context repos) at the repo root
-2. **Architecture Decision Records**: `docs/adr/*.md` (and any per-context `<context>/docs/adr/*.md` if `CONTEXT-MAP.md` exists)
+1. **Domain glossary**: `DOMAIN-MAP.md` (multi-context repos) → if absent, `DOMAIN.md` (single-context repos) at the repo root → if both absent, the legacy names `CONTEXT-MAP.md` → `CONTEXT.md`. A legacy hit is read as-is; the council never renames files, but notes in the verdict that the project can `git mv` it to the `DOMAIN*` name
+2. **Architecture Decision Records**: `docs/adr/*.md` (and any per-context `<context>/docs/adr/*.md` if `DOMAIN-MAP.md` exists)
 
 When found, capture for downstream phases:
 
@@ -95,7 +95,7 @@ Performance optimization tips, architecture patterns, code comment density, refa
 - [ ] Testing strategy meets project baseline
 - [ ] Security/compliance review required?
 - [ ] Performance SLAs stated and achievable?
-- [ ] **Domain alignment**: plan terminology matches `CONTEXT.md` glossary (when present); plan does not contradict any accepted ADR in `docs/adr/` without explicitly proposing to supersede it
+- [ ] **Domain alignment**: plan terminology matches `DOMAIN.md` glossary (when present); plan does not contradict any accepted ADR in `docs/adr/` without explicitly proposing to supersede it
 
 ### For Code
 

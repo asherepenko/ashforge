@@ -44,11 +44,11 @@ fi
 bash "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.sh"
 ```
 
-The script collects: local plans dir listing, global plans dir, artifact specs (PRDs), recent reviews, domain glossary presence (CONTEXT-MAP.md / CONTEXT.md), and the 20 most-recent ADRs under `docs/adr/`.
+The script collects: local plans dir listing, global plans dir, artifact specs (PRDs), recent reviews, domain glossary presence (DOMAIN-MAP.md / DOMAIN.md), and the 20 most-recent ADRs under `docs/adr/`.
 
 Use the output to short-circuit Step 1 auto-detection: when no `@file` argument is provided, the most recent plan file listed by the preflight (any runtime plans dir) is the auto-detect target — read it directly with the Read tool. If all four plan/PRD/review sections show no matches AND no topic argument, prompt the user (don't guess). Interpret the `== Runtime capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`: on `SPAWN=none`, read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md` and switch to the single-orchestrator fallback before Step 1; otherwise carry the profile's SPAWN/TRANSPORT axes into Step 2's mode selection.
 
-**Domain artifacts** (CONTEXT.md / docs/adr/) feed Step 1's Domain Model loading and Step 3's per-agent spawn brief. They are NOT part of plan-detection — they're independent context every reviewer must see.
+**Domain artifacts** (DOMAIN.md / docs/adr/) feed Step 1's Domain Model loading and Step 3's per-agent spawn brief. They are NOT part of plan-detection — they're independent context every reviewer must see.
 
 ## Arguments
 
@@ -69,7 +69,7 @@ Parse the arguments:
    - Found → read it, set `plan_mode_source = true`
    - Not found → ask the user what to review (suggest running plan mode first or providing a file path)
 4. **Detect project standards** per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#standards-detection-shared-across-all-commands`
-5. **Locate domain artifacts** per `${CLAUDE_PLUGIN_ROOT}/references/standards-protocol.md#locate-domain-artifacts`. **If the preflight surfaced `NONE` for BOTH `Domain glossary` AND `ADRs`, skip this step entirely** — domain alignment is opt-in by file presence; absent artifacts mean greenfield, operational, or otherwise non-domain-aware repos. Otherwise read whichever artifact(s) the preflight surfaced (CONTEXT.md or CONTEXT-MAP.md, ADR titles + headers from `docs/adr/`). These feed the per-agent spawn brief in Step 3.
+5. **Locate domain artifacts** per `${CLAUDE_PLUGIN_ROOT}/references/standards-protocol.md#locate-domain-artifacts`. **If the preflight surfaced `NONE` for BOTH `Domain glossary` AND `ADRs`, skip this step entirely** — domain alignment is opt-in by file presence; absent artifacts mean greenfield, operational, or otherwise non-domain-aware repos. Otherwise read whichever artifact(s) the preflight surfaced (DOMAIN.md or DOMAIN-MAP.md, ADR titles + headers from `docs/adr/`). These feed the per-agent spawn brief in Step 3.
 6. Prepare a context summary for the council, including which standards apply AND a `DOMAIN MODEL` block ONLY when artifacts are present. When absent, the spawn brief omits the `DOMAIN MODEL` section entirely (no warning, no placeholder).
 
 ### Step 2 — Determine Mode

@@ -4,6 +4,12 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [3.3.2] - 2026-09-25
+
+### Changed
+
+- Domain glossary is now `DOMAIN.md` / `DOMAIN-MAP.md`, matching the harness `/domain-model` convention. Legacy `CONTEXT.md` / `CONTEXT-MAP.md` are still detected as a fallback (checked after the `DOMAIN*` names) and read as-is; the council never renames them. Touches `preflight.sh`, `standards-protocol.md`, `orchestration-protocol.md`, `verdict-template.md`, `scarlet-witch.md`, and the `council-plan-review` skill.
+
 ## [3.3.1] - 2026-09-16
 
 ### Fixed

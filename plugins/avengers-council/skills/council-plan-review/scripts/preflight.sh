@@ -4,7 +4,7 @@
 # each captured to its own temp file, then printed serially so section
 # blocks never interleave on shared stdout.
 # Use the output to short-circuit Step 1 plan auto-detection and to surface
-# domain artifacts (CONTEXT.md / docs/adr/) that feed every reviewer's brief.
+# domain artifacts (DOMAIN.md / docs/adr/) that feed every reviewer's brief.
 set -uo pipefail
 
 tmp="$(mktemp -d)"
@@ -32,7 +32,7 @@ trap 'rm -rf "$tmp"' EXIT
 
 (
   echo "== Domain glossary =="
-  for f in CONTEXT-MAP.md CONTEXT.md; do
+  for f in DOMAIN-MAP.md DOMAIN.md CONTEXT-MAP.md CONTEXT.md; do
     if [ -f "$f" ]; then
       echo "$f"
       exit 0
