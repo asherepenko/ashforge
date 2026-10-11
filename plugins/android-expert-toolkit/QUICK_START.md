@@ -39,7 +39,7 @@ The toolkit ships as skills — invoke by intent. On Claude Code, the Skill tool
 | `aet-check [category]` | You want pattern detection only (DI, state, UI, etc.) — no code changes |
 | `android-expert` | Ad-hoc Android Q&A outside any pipeline |
 
-Codex requires `multi_agent = true` in `~/.codex/config.toml` to run `aet-pipeline`'s parallel agent dispatch. On runtimes without subagent spawning (or with it unverified), the pipeline falls back to sequential single-orchestrator dispatch automatically. See [`references/runtime-adapters.md`](references/runtime-adapters.md) for the per-runtime capability mapping the skills use internally.
+Current Codex defaults `agents.enabled` to true; older versions support `features.multi_agent`. Inspect the exposed spawn/continuation tools and available slots before dispatch; they override configuration hints. Only when tool discovery confirms no spawning support does the pipeline use sequential single-orchestrator dispatch. See [`references/runtime-adapters.md`](references/runtime-adapters.md) for the per-runtime capability mapping the skills use internally.
 
 ---
 
@@ -173,7 +173,7 @@ This reads `.artifacts/aet/state.json` and shows:
 
 **"Skill 'aet-pipeline' not loading"**
 
-Plugin isn't installed or active. On Claude Code, run `/plugin marketplace list` (should show `ashforge`) and `/plugin` to confirm `android-expert-toolkit` is installed and enabled. Run `/reload-plugins` or restart. On Codex CLI, confirm the plugin appears in `~/.codex/plugins/` and that `multi_agent = true` is set in `~/.codex/config.toml`.
+Plugin isn't installed or active. On Claude Code, run `/plugin marketplace list` (should show `ashforge`) and `/plugin` to confirm `android-expert-toolkit` is installed and enabled. Run `/reload-plugins` or restart. On Codex CLI, confirm the plugin appears in `~/.codex/plugins/` and inspect the actual exposed spawn tools. Check `[agents] enabled` on current Codex (default true), or `[features] multi_agent` on older CLI versions; no spawn tool after discovery means sequential fallback.
 
 **"Agent keeps producing wrong patterns for my codebase"**
 

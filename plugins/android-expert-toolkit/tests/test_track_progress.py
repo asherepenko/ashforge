@@ -9,6 +9,8 @@ import io
 import sys
 import tempfile
 import shutil
+import subprocess
+import time
 from pathlib import Path
 from unittest.mock import patch
 
@@ -20,6 +22,65 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "hooks"))
 from importlib import import_module
 track_progress = import_module("track-progress")
+
+
+def test_unavailable_lock_backend_leaves_authoritative_state_unchanged(temp_project, monkeypatch):
+    state_path = temp_project / ".artifacts" / "aet" / "state.json"
+    before = state_path.read_bytes()
+    monkeypatch.setattr(track_progress, "fcntl", None)
+    monkeypatch.setattr(track_progress, "get_state_file_path", lambda: state_path)
+    track_progress.update_pipeline_state("Write", {
+        "file_path": ".artifacts/aet/handoffs/test-feature/module-setup.md",
+        "content": "# Report\ncontent\n"
+    }, "")
+    assert state_path.read_bytes() == before
+
+
+@pytest.mark.skipif(track_progress.fcntl is None, reason="optional hook cache needs a POSIX lock backend")
+def test_concurrent_hook_processes_retain_both_handoffs(temp_project):
+    """Exercise the real update transaction with overlapping process reads."""
+    marker = temp_project / "first-loaded"
+    worker = r'''
+import importlib.util, json, pathlib, sys, time
+spec = importlib.util.spec_from_file_location("progress", sys.argv[1])
+progress = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(progress)
+if sys.argv[2] == "first":
+    original_load = progress.load_state
+    def delayed_load():
+        state = original_load()
+        pathlib.Path("first-loaded").touch()
+        time.sleep(0.4)
+        return state
+    progress.load_state = delayed_load
+artifact = sys.argv[3]
+progress.update_pipeline_state("Write", {
+    "file_path": ".artifacts/aet/handoffs/test-feature/" + artifact + ".md",
+    "content": "# report\ncontent\n"
+}, "")
+'''
+    command = [sys.executable, "-c", worker, str(PROJECT_ROOT / "hooks" / "track-progress.py")]
+    first = subprocess.Popen(command + ["first", "module-setup"], cwd=temp_project,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        deadline = time.monotonic() + 5
+        while not marker.exists() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert marker.exists(), "first hook did not reach its state read"
+        second = subprocess.run(command + ["second", "implementation-report"],
+                                cwd=temp_project, capture_output=True, text=True, timeout=5)
+        first_output = first.communicate(timeout=5)
+        assert first.returncode == 0, first_output
+        assert second.returncode == 0, second.stderr
+        state = json.loads((temp_project / ".artifacts" / "aet" / "state.json").read_text())
+        assert {stage["agent"] for stage in state["completed_stages"]} == {
+            "gradle-build-engineer", "android-developer"
+        }
+        assert set(state["artifacts"]) == {"module-setup", "implementation-report"}
+    finally:
+        if first.poll() is None:
+            first.kill()
+            first.communicate()
 
 
 @pytest.fixture

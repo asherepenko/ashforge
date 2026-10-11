@@ -5,11 +5,19 @@ Post Tool Use hook that monitors handoff artifact creation and updates pipeline 
 """
 
 import json
+import os
 import shlex
 import sys
+import tempfile
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Any, Optional
+
+try:
+    import fcntl
+except ImportError:  # Windows Python: optional cache must not break the pipeline.
+    fcntl = None
 
 
 def utc_now_iso() -> str:
@@ -97,11 +105,36 @@ def save_state(state: Dict[str, Any]):
     # Ensure .artifacts/aet directory exists
     state_file.parent.mkdir(parents=True, exist_ok=True)
 
+    pending_path = None
     try:
-        with open(state_file, 'w', encoding='utf-8') as f:
+        # Replace only a complete serialized document; readers never see a
+        # truncated state. The surrounding transaction owns the sibling lock.
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8',
+                                         dir=state_file.parent, delete=False) as f:
+            pending_path = Path(f.name)
             json.dump(state, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(pending_path, state_file)
     except Exception as e:
         print(f"Warning: Could not save pipeline state: {e}", file=sys.stderr)
+    finally:
+        if pending_path is not None:
+            pending_path.unlink(missing_ok=True)
+
+
+@contextmanager
+def state_transaction():
+    """Serialize the complete read/modify/write operation across hook processes."""
+    state_file = get_state_file_path()
+    state_file.parent.mkdir(parents=True, exist_ok=True)
+    # Lock a stable sibling: replacing state.json changes its inode.
+    with open(state_file.with_suffix('.lock'), 'a', encoding='utf-8') as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
 
 def detect_pipeline_type(state: Optional[Dict[str, Any]]) -> Optional[str]:
@@ -177,6 +210,24 @@ WRITE_TOOLS = CLAUDE_WRITE_TOOLS | CODEX_WRITE_TOOLS
 
 def update_pipeline_state(tool_name: str, tool_input: Dict[str, Any], tool_output: str):
     """Update pipeline state after a tool use."""
+
+    file_path = tool_input.get("file_path", "").replace("\\", "/")
+    command = next((tool_input[key] for key in ("command", "command_string", "input", "cmd")
+                    if key in tool_input), "")
+    tracks_write = tool_name in WRITE_TOOLS and ".artifacts/aet/handoffs/" in file_path
+    tracks_validation = tool_name in SHELL_TOOLS and "validate-handoff.py" in command
+    if not (tracks_write or tracks_validation):
+        return
+    if fcntl is None:
+        # Never perform an unlocked read/modify/write. The orchestrator owns
+        # authoritative updates at stage barriers on unsupported platforms.
+        return
+    with state_transaction():
+        _update_pipeline_state(tool_name, tool_input, tool_output)
+
+
+def _update_pipeline_state(tool_name: str, tool_input: Dict[str, Any], tool_output: str):
+    """Update state while the caller holds the transaction lock."""
 
     # Track shell calls for validation results (validate-handoff.py invocation)
     if tool_name in SHELL_TOOLS:

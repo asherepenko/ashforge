@@ -220,7 +220,7 @@ class OfflineFirstFeedRepository @Inject constructor(
 4. Configure api module dependencies: navigation only
 5. Configure impl module dependencies: Compose, Hilt, Paging, Room access
 
-**Can run in parallel with android-developer** (developer doesn't need build files to start designing interfaces)
+**Complete and validate new module setup before android-developer starts.** Parallel implementation is permitted only when target modules and required build/source files already exist with no setup handoff dependency.
 
 ### For android-developer
 1. Implement `FeedRepository` interface with offline-first pattern

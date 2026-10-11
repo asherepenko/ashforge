@@ -45,15 +45,15 @@ Use the output to skip the project-discovery phase and pass values through to di
 
 ## Multi-Agent Capability Check
 
-The preflight's `== Runtime capability ==` section emits a profile (RUNTIME / SPAWN / TRANSPORT / NOTES — interpret per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`):
+Inspect the actual exposed spawn/continuation tools and schemas first; they override preflight/config hints. The preflight's `== Runtime capability ==` section emits an advisory profile (RUNTIME / SPAWN / TRANSPORT / NOTES — interpret per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`):
 
 | Profile | Action |
 |---------|--------|
 | `SPAWN=registry` or `SPAWN=prompt-embed` | Proceed with the full flow — dispatch per the SPAWN axis (`Agent(subagent_type)` on registry runtimes, `spawn_agent` with the persona embedded on prompt-embed runtimes). |
-| `SPAWN=none` | **Read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md`** and run sequential single-orchestrator dispatch instead. Do NOT attempt any spawn — it fails at the tool layer. |
-| `SPAWN=unknown` | Ask the user whether a subagent tool exists before proceeding. |
+| `SPAWN=none` | **After tool discovery confirms no spawn tool**, read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md` and run sequential single-orchestrator dispatch. An exposed working spawn tool overrides this hint. |
+| `SPAWN=unknown` | Discover tools and resolve the spawn shape from their schemas; choose fallback only when spawning is unavailable. |
 
-The fallback produces the same pipeline artifacts (`architecture-blueprint.md`, `module-setup.md`, etc.) via sequential persona dispatch by the orchestrating model. Slower (no parallel gradle+developer stage) and lower-fidelity (no peer cross-review), but functional. The state.json records `dispatch_mode: "single-orchestrator-fallback"` so downstream tooling knows what produced the artifacts.
+The fallback produces the same pipeline artifacts (`architecture-blueprint.md`, `module-setup.md`, etc.) via sequential persona dispatch by the orchestrating model. Stages run sequentially without independent worker cross-review. The state.json records `dispatch_mode: "single-orchestrator-fallback"` so downstream tooling knows what produced the artifacts.
 
 ## Available Pipelines
 
@@ -136,7 +136,7 @@ This isolates all pipeline changes from the main working branch. Store the origi
 
 `original_prompt`: stored at pipeline start from user's input. `pipeline_context`: populated after android-architect completes — the full Pipeline Context Block (business purpose, key constraints) extracted from the blueprint. Used on resume to reconstruct agent task prompts without re-reading the blueprint.
 
-**State file maintenance:** Update `state.json` inline at each stage transition. The `PostToolUse:Write` hook (`track-progress.py`) is the fast path on Claude and is also wired into Codex via `.codex-plugin/hooks.json`, but it only fires on Codex when `[features] hooks = true, plugin_hooks = true` and the user has trusted the hook command. Treat inline updates as the source of truth and the hook as a write-through cache.
+**State file maintenance:** Update `state.json` inline at each stage transition. The `PostToolUse:Write` hook (`track-progress.py`) is the fast path on Claude and is also wired into Codex via `hooks/hooks-codex.json`, but it only fires on Codex when `[features] hooks = true, plugin_hooks = true` and the user has trusted the hook command. Treat inline updates as the source of truth and the hook as a write-through cache. Hook transactions lock `state.lock` and atomically replace state. Inline orchestrator writes must happen before dispatch or after the entire active batch finishes and all worker tool calls/hooks have completed; do not overwrite state while workers/hooks are still running. On platforms without `fcntl` (including Windows Python), the optional progress cache safely no-ops and inline barrier updates remain required. Read the latest state and preserve fields from every completed stage.
 
 ### Step 4: Execute Agent Sequence
 Follow pipeline definition order, respecting dependencies:
@@ -149,8 +149,8 @@ Follow pipeline definition order, respecting dependencies:
 
 **Agent dispatch — platform mapping:**
 
-- Registry runtimes (Claude Code, Zcode): `Agent({subagent_type: 'android-expert-toolkit:android-architect', name: 'android-architect', prompt: ...})` — pass `name` so the stage is labelled in the UI and the orchestrator can address it by name. Do not pass `team_name`; it is deprecated and ignored. Re-dispatching the same stage (DP4 recovery) reuses the name — latest wins on name resolution.
-- Prompt-embed runtimes (Codex): `spawn_agent(prompt)` — the prompt must include the full agent persona (read from `${CLAUDE_PLUGIN_ROOT}/agents/android-architect.md`, with `${CLAUDE_PLUGIN_ROOT}` rewritten to the resolved root) plus the Pipeline Context Block. There is no `subagent_type` registry.
+- Registry runtimes (Claude Code, Zcode): `Agent({subagent_type: 'android-expert-toolkit:android-architect', name: 'android-architect', prompt: ...})` — inspect the exposed schema, retain the returned agent ID, and use a unique invocation name when supported. Resume by recorded ID through the available continuation tool; do not assume a reused name reaches the intended agent. With Claude teams enabled, named launches may be teammates and final answers arrive through idle notifications rather than the initial spawn result. No explicit team creation is needed; AET keeps all handoffs through the orchestrator.
+- Prompt-embed runtimes (Codex): `spawn_agent(prompt)` — the prompt must include the full agent persona (read from `${CLAUDE_PLUGIN_ROOT}/agents/android-architect.md`, with `${CLAUDE_PLUGIN_ROOT}` rewritten to the resolved root) plus the Pipeline Context Block. There is no `subagent_type` registry. Use the exposed collaboration or CLI namespace and argument schema; collect final notifications/results, run bounded batches and reuse workers when no close tool exists, as specified in runtime-adapters.md.
 
 **Pipeline Context Block (mandatory in every agent task prompt):**
 
@@ -188,33 +188,31 @@ This enables:
 
 **Codex App sandbox:** If commits are blocked, stage changes with `git add -A` and record the intended commit message in `.artifacts/aet/log.md` instead.
 
-**Parallel dispatch for `feature-build` pipelines (mandatory):**
-After android-architect completes and DP2 is approved, dispatch gradle-build-engineer and android-developer in parallel.
-- Registry runtimes (Claude Code, Zcode): two `Agent({...})` calls in a single orchestrator message, each with its own `name`.
-- Prompt-embed runtimes (Codex): two `spawn_agent` calls in a single turn, then `wait_agent` for each.
+**Dispatch for `feature-build` pipelines:**
+After android-architect completes and DP2 is approved, inspect the target modules and required build/source files identified in the blueprint.
 
-Both agents read `architecture-blueprint.md` independently and write to separate artifacts — there is no handoff dependency between them.
+- **Existing modules and no setup handoff dependency:** Gradle and developer may run in parallel when their owned files are independent. Dispatch both calls in one orchestrator turn if worker slots permit; follow runtime-adapters.md for completion delivery.
+- **New modules, missing required files, or setup handoff dependency:** dispatch gradle-build-engineer first, wait for its final answer, validate `module-setup.md`, then dispatch android-developer with that handoff. Never ask the developer to guess module scaffolding or wait on a live peer.
 
-Wait for both dispatches to complete before proceeding to compose-expert.
+Wait for both stages and validate both handoffs before proceeding to compose-expert. Record the chosen ordering and prerequisite evidence in state.
 
 #### Stage Dependency Graph (feature-build)
 
 ```
-android-architect
-    ├──→ gradle-build-engineer  ──┐
-    └──→ android-developer      ──┤ (parallel, both read architecture-blueprint.md)
-                                  ↓
-                     ┌── compose-expert (reads implementation-report.md + blueprint)
-                     └── android-testing-specialist [unit tests] (reads implementation-report.md)
-                                  ↓
-                     android-testing-specialist [UI tests] (waits for ui-report.md)
+android-architect → DP2
+    ├─ new/missing setup: gradle-build-engineer → android-developer
+    └─ existing, independent: gradle-build-engineer + android-developer
+                                  ↓ both handoffs validated
+                     compose-expert + testing-specialist [unit tests]
+                                  ↓ ui-report validated
+                     testing-specialist [UI tests]
 ```
 
 **Rules:**
-- gradle-build-engineer + android-developer: always parallel (no mutual dependency)
-- compose-expert + testing-specialist (unit tests): parallel after developer completes — unit tests depend on implementation-report, not ui-report
-- testing-specialist UI tests: sequential after compose-expert (needs ui-report.md)
-- compose-expert MUST wait for android-developer (reads implementation-report.md)
+- Gradle/developer parallelism requires existing target modules, required files, and no setup handoff dependency; sequential setup is required otherwise.
+- compose-expert + testing-specialist (unit tests): parallel after implementation and build setup complete, if available worker slots permit.
+- testing-specialist UI tests: sequential after compose-expert (needs ui-report.md).
+- Collect final answers and validate handoffs before dispatching any dependent stage; an idle status alone is insufficient.
 
 #### Agent Budget (tool calls)
 
@@ -453,7 +451,7 @@ See `${CLAUDE_PLUGIN_ROOT}/references/pipeline-error-scenarios.md` for detailed 
 |-----------------|---------|
 | "Validation is slowing the pipeline, skip it" | Validation catches issues when they're cheap to fix. Skipping it pushes problems downstream where they cost 3x more to debug. |
 | "The handoff artifact is close enough" | "Close enough" handoffs produce ambiguous downstream work. 5 minutes fixing the artifact saves an hour re-running the agent. |
-| "I'll run the agents sequentially, it's simpler" | Parallel dispatch (gradle + developer) is mandatory for feature-build. Sequential dispatch wastes time and the user's context budget. |
+| "I'll run the agents sequentially, it's simpler" | Parallel dispatch is valid only for existing modules with independent files and no setup prerequisite. New module setup must finish before implementation; worker limits can also require sequential dispatch. |
 | "The architect's blueprint needs adjustments, I'll tweak it in the developer stage" | Scope violation. Developers implement the blueprint — they don't redesign it. Escalate to the architect. |
 | "Auto-fix failed twice, but one more try should work" | Max 2 retries. After that, escalate to user (DP4). Infinite retry loops waste tokens and mask root causes. |
 | "This is a simple feature, skip DP2 architecture approval" | DP2 always requires user input. Simple features still have surprising architectural implications. |
@@ -462,7 +460,7 @@ See `${CLAUDE_PLUGIN_ROOT}/references/pipeline-error-scenarios.md` for detailed 
 
 - Dispatching agents without Pipeline Context Block in the task prompt
 - Skipping handoff validation between stages
-- Running gradle-build-engineer and android-developer sequentially instead of in parallel
+- Dispatching android-developer before required module setup is available and validated
 - Agent exceeding 35 tool calls without producing a handoff artifact (stalled)
 - Proceeding after validation failure without DP4 recovery decision
 - Not creating git checkpoints after each stage (Codex App sandbox exempt — see notes above)
@@ -473,7 +471,7 @@ See `${CLAUDE_PLUGIN_ROOT}/references/pipeline-error-scenarios.md` for detailed 
 After pipeline completion, confirm:
 
 - [ ] Every stage produced a validated handoff artifact
-- [ ] All parallel stages dispatched correctly (not sequential)
+- [ ] Dispatch ordering respected prerequisites and available worker slots
 - [ ] Git checkpoints exist for each completed stage (or sandbox-handoff note if Codex App)
 - [ ] Pipeline summary generated with metrics
 - [ ] No scope violations (each agent stayed within boundaries)

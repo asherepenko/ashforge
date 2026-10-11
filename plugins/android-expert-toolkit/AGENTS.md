@@ -26,7 +26,7 @@ android-expert-toolkit/
 | Skill | Purpose | Codex-safe |
 |-------|---------|------------|
 | `android-expert` | Ad-hoc Android/Kotlin questions, pattern guidance | Yes |
-| `aet-pipeline <type> "<name>"` | Multi-agent pipeline execution | Yes (requires `multi_agent = true` in `~/.codex/config.toml`) |
+| `aet-pipeline <type> "<name>"` | Multi-agent pipeline execution | Yes (uses exposed spawn/continuation tools; sequential fallback when unavailable) |
 | `aet-status` | Read `.artifacts/aet/state.json` (with filesystem fallback), show progress | Yes |
 | `aet-check [category]` | Run pattern detection (80/20 matrix) | Yes |
 
@@ -36,9 +36,9 @@ The toolkit used to ship slash commands (`/aet-pipeline`, `/aet-status`, `/aet-c
 
 ## Cross-Platform Tool Mapping
 
-Skill bodies reference Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). Other runtimes map onto the capability axes in `references/runtime-adapters.md` (SPAWN / PROGRESS / ASK / ROOT_ENV / HOOKS / SANDBOX): Codex (`spawn_agent` / `update_plan` / plain-text prompts), Zcode (`Agent(subagent_type)` with result-returning spawns / `TodoWrite`), pi (no native subagent tool — sequential fallback unless a subagent skill is installed), Antigravity (confirm spawn shape). Sandbox worktrees also need the read-only-environment handling documented there.
+Skill bodies reference Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). Other runtimes map onto the capability axes in `references/runtime-adapters.md` (SPAWN / PROGRESS / ASK / ROOT_ENV / HOOKS / SANDBOX): Codex (exposed collaboration or CLI spawn/continuation tools / available task tool or state file / plain-text prompts), Zcode (`Agent(subagent_type)` with result-returning spawns / `TodoWrite`), pi (no native subagent tool — sequential fallback unless a subagent skill is installed), Antigravity (discover tools and inspect spawn shape). Sandbox worktrees also need the read-only-environment handling documented there.
 
-The pipeline is plain subagent fan-out — no agent-team primitives. `Agent` spawns pass `subagent_type` + `name` and never `team_name` (deprecated and ignored); `TeamCreate` / `TeamDelete` no longer exist in the harness.
+The pipeline uses hub-oriented dispatch: specialists return final answers and validated artifacts to the orchestrator. Inspect actual tool schemas and retain agent IDs. With Claude teams enabled, named `Agent` launches may become teammates and report final answers through idle notifications; AET still does not require peer messaging or explicit team creation. Codex uses its exposed collaboration or CLI tools, bounded batches, and worker reuse when no close tool exists. Gradle/developer parallelism requires existing target modules and required files with no setup handoff dependency; new module setup runs first.
 
 ## Pipeline Decision Points
 
@@ -127,7 +127,7 @@ Two parallel manifests register the same Python scripts:
 | Hook | Trigger (Claude → Codex) | Purpose |
 |------|---------|---------|
 | `session-start.py` | SessionStart (`startup\|resume\|clear`) → SessionStart | Plugin banner and interrupted-pipeline state; exits silently when no Gradle markers in cwd, so non-Android projects get zero output |
-| `track-progress.py` (via `track-progress.sh`) | PostToolUse (Write/Edit/MultiEdit, Bash) → PostToolUse (apply_patch, shell-family) | Updates `.artifacts/aet/state.json`. On Codex the `apply_patch` branch silently no-ops (payload doesn't expose `file_path`); the shell branch still records validate-handoff results. The `aet-pipeline` skill is required to update state inline regardless — the hook is a write-through cache, not the source of truth. |
+| `track-progress.py` (via `track-progress.sh`) | PostToolUse (Write/Edit/MultiEdit, Bash) → PostToolUse (apply_patch, shell-family) | Updates `.artifacts/aet/state.json` under a POSIX transaction lock with atomic replacement; safely no-ops without `fcntl`. Inline state updates occur only before dispatch or after all worker tool calls/hooks finish. On Codex the `apply_patch` branch silently no-ops (payload doesn't expose `file_path`); the shell branch still records validate-handoff results. The `aet-pipeline` skill is required to update state inline regardless — the hook is a write-through cache, not the source of truth. |
 | `validate-handoff.py` | (invoked by agents) | Validates handoff artifact schema before downstream agent consumes it |
 | `validate-dependencies.py` | (invoked by agents) | Validates module dependency graph for circularity |
 

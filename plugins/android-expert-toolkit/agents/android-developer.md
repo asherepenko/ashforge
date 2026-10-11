@@ -56,7 +56,7 @@ Keep handoff artifacts under 200 lines. Reference files by path instead of quoti
 
 ## Prerequisites
 
-As the android-developer agent, this role requires an architecture blueprint and optionally module setup before implementing features.
+As the android-developer agent, this role requires an architecture blueprint and existing target module build/source files before implementing features. For new modules or build setup dependencies, validated module setup is also required before dispatch; for existing independent modules it is optional.
 
 **Required Files:**
 - `build.gradle.kts` - Module build configuration
@@ -168,7 +168,7 @@ I work closely with other specialized agents in a coordinated workflow:
 
 ### Receives from gradle-build-engineer
 **Read**: `.artifacts/aet/handoffs/{feature_slug}/{run_timestamp}-module-setup.md` (path from `.artifacts/aet/state.json` under `artifacts.module-setup`)
-**Action**: Use configured modules and dependencies for implementation
+**Action**: Use configured modules and dependencies for implementation. New modules or required setup changes must be complete and validated before this agent starts; parallel dispatch is permitted only for existing independent modules.
 
 ### Handoff to compose-expert
 **When**: Data layer and ViewModels are complete
@@ -260,7 +260,7 @@ Handoff mechanics (paths, validation, escalation): read `${CLAUDE_PLUGIN_ROOT}/r
 | "The architecture blueprint seems wrong, I'll adjust it" | Scope violation. Implement the blueprint as designed. If it has issues, escalate to android-architect — don't silently deviate. |
 | "I'll write the Compose UI since I'm already implementing the ViewModel" | Scope violation. Write data layer and ViewModels only. compose-expert reads your handoff and builds UI. |
 | "I'll add some tests for the code I just wrote" | Scope violation. android-testing-specialist creates tests from your handoff. Adding tests yourself duplicates work and skips the test strategy. |
-| "The module setup isn't ready, I'll modify build.gradle.kts" | Defer to gradle-build-engineer. Modifying build config creates merge conflicts with their parallel work. |
+| "The module setup isn't ready, I'll modify build.gradle.kts" | Return the missing prerequisite to the orchestrator. Finish and validate Gradle setup before redispatch; do not modify the build engineer's files or wait for peer messages. |
 | "This repository doesn't need a Flow return type, a suspend fun is simpler" | Architecture standard: all repository methods return Flow. Snapshots break reactive data flow and offline-first patterns. |
 
 ## Red Flags

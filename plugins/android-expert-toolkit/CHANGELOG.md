@@ -4,6 +4,19 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [3.3.3] - 2026-10-11
+
+### Fixed
+
+- Feature builds wait for Gradle setup when target modules or required build files do not exist. Gradle and implementation run in parallel only when their prerequisites are independent.
+- Concurrent progress hooks lock the complete state update and replace JSON atomically, preserving reports from parallel stages. Platforms without the locking backend use the orchestrator's inline state updates.
+- Runtime detection recognizes current Codex `agents.enabled` settings and legacy `features.multi_agent` settings. The running session's tools determine whether subagent dispatch is available.
+- Dispatch instructions handle Claude teammate idle notifications, retain agent IDs for recovery, and use bounded worker batches with continuation when no close tool is available.
+
+### Changed
+
+- Runtime adapters, agent handoffs, routing examples, and setup documentation describe the same prerequisite and completion rules.
+
 ## [3.3.2] - 2026-09-16
 
 ### Fixed

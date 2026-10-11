@@ -40,7 +40,9 @@ enabled = true
 [features]
 hooks = true            # enable hooks at all
 plugin_hooks = true     # enable plugin-bundled hooks (gated separately while in beta)
-multi_agent = true      # required for aet-pipeline parallel agent dispatch
+
+[agents]
+enabled = true          # default on current Codex; actual exposed tools decide spawning
 ```
 
 **Sandbox mode**: Codex must run with `sandbox_mode = "workspace-write"` (or `danger-full-access`) for the plugin to function. `read-only` mode blocks hook writes to `.artifacts/aet/state.json`, handoff artifact creation, and pipeline branch operations. Check your `~/.codex/config.toml`:
@@ -91,7 +93,7 @@ aet-check                                      # Run all pattern checks
 android-expert "ViewModel StateFlow pattern"   # Ad-hoc Android question
 ```
 
-Claude: the Skill tool auto-triggers on description match, or invoke explicitly with `Skill(skill="aet-pipeline", args="feature-build Social Feed")`. Codex: state the intent in natural language — the multi-agent feature must be enabled (`multi_agent = true` in `~/.codex/config.toml`) for parallel agent dispatch.
+Claude: the Skill tool auto-triggers on description match, or invoke explicitly with `Skill(skill="aet-pipeline", args="feature-build Social Feed")`. Codex: state the intent in natural language — inspect the exposed spawn and continuation tools. Current Codex defaults `agents.enabled` to true; older CLI versions support `features.multi_agent`. Configuration hints do not override available tools.
 
 See [QUICK_START.md](QUICK_START.md) for guided examples and scenarios, and [runtime-adapters](references/runtime-adapters.md) for the per-runtime capability mapping (Claude Code, Codex, Zcode, pi, Antigravity) used inside the skills.
 
@@ -105,7 +107,7 @@ See [QUICK_START.md](QUICK_START.md) for guided examples and scenarios, and [run
 | gradle-build-engineer | Convention plugins, version catalogs | Sonnet | No |
 | android-testing-specialist | Test doubles, Turbine, coverage | Sonnet | No |
 
-**Default pipeline flow** (`feature-build`): architect → gradle-build-engineer + android-developer (parallel) → compose-expert → android-testing-specialist
+**Pipeline flow** (`feature-build`): architect → approved blueprint → Gradle setup → developer → UI/unit tests → UI tests. Gradle and developer may run in parallel only when target modules and required files already exist and there is no setup handoff dependency. Workers report through the orchestrator; Claude teams-enabled named agents may deliver final answers through idle notifications.
 
 Agents hand off through markdown artifacts under `.artifacts/aet/handoffs/{feature_slug}/` — each agent reads its predecessor's report and writes its own before the next agent starts.
 

@@ -7,6 +7,32 @@
 # dispatched agents (architect, gradle-build-engineer) so they don't re-scan.
 set -uo pipefail
 
+# Configuration is a hint: only the orchestrator can inspect exposed tools.
+codex_spawn_hint() {
+  local cfg="$1" enabled="true"
+  if [ -f "$cfg" ]; then
+    enabled="$(awk '
+      /^[[:space:]]*\[/ {
+        section = $0; sub(/[[:space:]]*#.*/, "", section)
+        gsub(/[[:space:]]/, "", section); next
+      }
+      section == "[agents]" && /^[[:space:]]*enabled[[:space:]]*=/ {
+        value = $0; sub(/^[^=]*=[[:space:]]*/, "", value)
+        sub(/[[:space:]]*#.*/, "", value); gsub(/[[:space:]]/, "", value)
+        if (value == "true" || value == "false") modern = value
+      }
+      section == "[features]" && /^[[:space:]]*multi_agent[[:space:]]*=/ {
+        value = $0; sub(/^[^=]*=[[:space:]]*/, "", value)
+        sub(/[[:space:]]*#.*/, "", value); gsub(/[[:space:]]/, "", value)
+        if (value == "true" || value == "false") legacy = value
+      }
+      END { print (modern != "" ? modern : (legacy != "" ? legacy : "true")) }
+    ' "$cfg")"
+  fi
+  if [ "$enabled" = "false" ]; then spawn="none"; else spawn="prompt-embed"; fi
+  notes="config hint only (agents.enabled defaults true; legacy features.multi_agent supported); actual exposed tools override SPAWN"
+}
+
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
@@ -67,47 +93,23 @@ trap 'rm -rf "$tmp"' EXIT
   if [ -n "${CODEX_HOME:-}" ]; then
     runtime="codex"; transport="hub"
     cfg="${CODEX_HOME:-$HOME/.codex}/config.toml"
-    # Find `multi_agent = true` under [features] (whitespace-tolerant, comment-safe)
-    if [ -f "$cfg" ] && awk '
-      /^\[features\]/ { in_features = 1; next }
-      /^\[/           { in_features = 0 }
-      in_features && /^[[:space:]]*multi_agent[[:space:]]*=[[:space:]]*true/ { found = 1; exit }
-      END { exit !found }
-    ' "$cfg" 2>/dev/null; then
-      spawn="prompt-embed"
-    else
-      spawn="none"
-      if [ -f "$cfg" ]; then
-        notes="multi_agent is off — sequential single-orchestrator fallback (references/runtime-fallback.md)"
-      else
-        notes="no config.toml — treat multi_agent as off; sequential single-orchestrator fallback (references/runtime-fallback.md)"
-      fi
-    fi
+    codex_spawn_hint "$cfg"
   elif [ -n "${ZCODE_APP_VERSION:-}" ]; then
     runtime="zcode"; spawn="registry"; transport="hub"
     notes="result-returning Agent spawns; TaskCreate -> TodoWrite"
   elif [ -n "${CLAUDECODE:-}" ] || [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
-    runtime="claude-code"; spawn="registry"; transport="stay-alive"
+    runtime="claude-code"; spawn="registry"; transport="hub"
+    notes="named Agent launches may report via teammate idle notifications when teams enabled; wait for final answer and validate artifact"
   elif [ -d "$HOME/.antigravity" ]; then
     runtime="antigravity"; transport="hub"
-    notes="custom subagents exist — confirm spawn shape conversationally (references/runtime-adapters.md)"
+    notes="spawn hint unknown — discover actual exposed tools and inspect their schemas (references/runtime-adapters.md)"
   elif [ -d "$HOME/.pi" ]; then
     runtime="pi"; spawn="none"; transport="hub"
-    notes="no native subagent tool — SPAWN=none unless a subagent skill/extension is installed; confirm conversationally"
+    notes="spawn hint none — discover actual exposed tools/extensions before selecting fallback"
   elif [ -d "$HOME/.codex" ]; then
     runtime="codex"; transport="hub"
     cfg="$HOME/.codex/config.toml"
-    if [ -f "$cfg" ] && awk '
-      /^\[features\]/ { in_features = 1; next }
-      /^\[/           { in_features = 0 }
-      in_features && /^[[:space:]]*multi_agent[[:space:]]*=[[:space:]]*true/ { found = 1; exit }
-      END { exit !found }
-    ' "$cfg" 2>/dev/null; then
-      spawn="prompt-embed"
-    else
-      spawn="none"
-      notes="~/.codex heuristic (CODEX_HOME unset); multi_agent off or unconfirmed — sequential single-orchestrator fallback (references/runtime-fallback.md)"
-    fi
+    codex_spawn_hint "$cfg"
   fi
   echo "RUNTIME=$runtime"
   echo "SPAWN=$spawn"

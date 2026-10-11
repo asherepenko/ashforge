@@ -256,7 +256,7 @@ Example: `.artifacts/aet/handoffs/social-feed/2026-02-18-143022-architecture-blu
    - Output: Module structure, data flow, UI state design, ADRs
    - Duration: 2-3 hours
 
-2. gradle-build-engineer (parallel with step 3 if no dependencies)
+2. gradle-build-engineer (parallel with step 3 only when target modules and required files already exist with no setup handoff dependency; otherwise finish and validate setup first)
    - Reads: {run_timestamp}-architecture-blueprint.md
    - Writes: {run_timestamp}-module-setup.md
    - Output: Modules created, convention plugins applied, dependencies configured
@@ -438,20 +438,19 @@ Agents can execute in parallel when:
 3. **Validation passes**: Previous validation checkpoints passed
 
 **Examples of parallel execution:**
-- `gradle-build-engineer` + `android-developer` (if module already exists)
+- `gradle-build-engineer` + `android-developer` (only when target modules and required build/source files already exist with no setup handoff dependency and independent file ownership)
 - `compose-expert` + `android-testing-specialist` (unit tests only — UI tests wait for compose-expert)
 - Multiple review agents in `architecture-review` pipeline
 
-**Parallel dependency graph for `feature-build`:**
+**Conditional dependency graph for `feature-build`:**
 ```
-android-architect
-    ├── gradle-build-engineer ──┐
-    └── android-developer ──────┤
-                                ├── compose-expert ──────────────┐
-                                └── android-testing-specialist   │
-                                    [unit tests]                 │
-                                         └── android-testing-specialist
-                                             [UI tests, after compose-expert]
+android-architect → DP2
+    ├─ new/setup-dependent: gradle-build-engineer → android-developer
+    └─ existing/independent: gradle-build-engineer + android-developer
+                               ↓ both validated
+                    compose-expert + testing-specialist [unit tests]
+                               ↓ ui-report validated
+                    testing-specialist [UI tests]
 ```
 
 **Sequential execution required when:**

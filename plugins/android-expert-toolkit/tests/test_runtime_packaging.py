@@ -2,11 +2,37 @@
 """Tests for runtime-generic packaging (capability profiles + fallback path)."""
 
 import json
+import os
 import re
+import subprocess
 from pathlib import Path
+
+import pytest
 
 
 PROJECT_ROOT = Path(__file__).parent.parent
+
+
+@pytest.mark.parametrize("config, expected", [
+    (None, "prompt-embed"),
+    ("[agents]\nenabled = true\n", "prompt-embed"),
+    ("[agents]\nenabled = false\n", "none"),
+    ("[features]\nmulti_agent = true # legacy\n", "prompt-embed"),
+    ("[features]\nmulti_agent = false\n", "none"),
+    ("[features]\nmulti_agent = false\n[agents]\nenabled = true\n", "prompt-embed"),
+])
+def test_preflight_codex_capability_config_hints(tmp_path, config, expected):
+    codex_home = tmp_path / "codex"
+    codex_home.mkdir()
+    if config is not None:
+        (codex_home / "config.toml").write_text(config)
+    env = {**os.environ, "HOME": str(tmp_path), "CODEX_HOME": str(codex_home)}
+    result = subprocess.run(["bash", str(PROJECT_ROOT / "skills/aet-pipeline/scripts/preflight.sh")],
+                            cwd=tmp_path, env=env, capture_output=True, text=True, timeout=10)
+    assert result.returncode == 0, result.stderr
+    assert "RUNTIME=codex" in result.stdout
+    assert f"SPAWN={expected}" in result.stdout
+    assert "actual exposed tools" in result.stdout
 
 
 def read(path: str) -> str:
@@ -28,6 +54,22 @@ def test_pipeline_skill_references_capability_profiles():
     assert "== Runtime capability ==" in text
     assert "Codex multi_agent capability" not in text
     assert "SPAWN=none" in text
+
+
+def test_feature_build_does_not_force_setup_dependent_agents_in_parallel():
+    text = read("skills/aet-pipeline/SKILL.md")
+    assert "always parallel (no mutual dependency)" not in text
+    assert "Parallel dispatch for `feature-build` pipelines (mandatory)" not in text
+    assert "target modules" in text and "setup handoff dependency" in text
+
+
+def test_runtime_contract_does_not_assume_blocking_results_or_reused_names():
+    text = read("references/runtime-adapters.md") + read("skills/aet-pipeline/SKILL.md")
+    assert "latest wins" not in text
+    assert "results return inline" not in text
+    assert "idle notifications" in text
+    assert "agent ID" in text and "followup_task" in text
+    assert "bounded" in text and "no close" in text
 
 
 def test_unattended_decision_point_rule():

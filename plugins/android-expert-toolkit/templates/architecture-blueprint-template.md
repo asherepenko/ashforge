@@ -136,7 +136,7 @@ User sees ← Composable ← ViewModel ← StateFlow ← Repository ← Flow ←
 
 ## Next Steps
 
-<!-- What downstream agents should do with this blueprint -->
+<!-- What downstream agents should do with this blueprint. Identify target modules, required build/source files, setup dependencies, and whether Gradle must finish before developer dispatch. Parallel is allowed only for existing independent modules with no setup handoff dependency. -->
 
 ### For gradle-build-engineer
 

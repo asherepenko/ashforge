@@ -1,17 +1,17 @@
 ## When to use
 
-Read this when the `aet-pipeline` skill's preflight reports `SPAWN=none` in the `== Runtime capability ==` section. No subagent dispatch is available on this runtime — `Agent` / `spawn_agent` / `wait_agent` / `close_agent` calls would fail at the tool layer. Do NOT attempt any spawn.
+Read this only after tool discovery confirms no subagent spawn tool is available. A preflight `SPAWN=none` hint alone is insufficient: actual exposed tools and schemas override configuration hints. Once spawning is confirmed unavailable, do not attempt it.
 
-Typical causes: Codex with `multi_agent = false` (or no `~/.codex/config.toml`), pi without a subagent skill/extension installed. Runtimes with working spawns never hit this file. Codex users with `multi_agent = true` use the normal flow in `skills/aet-pipeline/SKILL.md`.
+Typical causes: a runtime disables subagents or has no spawning extension. Current Codex defaults `agents.enabled` to true and supports legacy `features.multi_agent` configuration. Missing config is not evidence of unavailable spawning. Runtimes with working exposed spawn tools use the normal flow in `skills/aet-pipeline/SKILL.md`.
 
 ## Capability Decision Matrix
 
 | Profile | Mode | Source |
 |---------|------|--------|
 | `SPAWN=registry` | Full flow (parallel `Agent` dispatch) | Claude Code, Zcode |
-| `SPAWN=prompt-embed` | Full flow (parallel `spawn_agent` dispatch) | Codex with `multi_agent = true`; subagent-equipped pi |
-| `SPAWN=none` | This fallback | Codex `multi_agent` off/missing; pi without a subagent skill |
-| `SPAWN=unknown` | Resolve conversationally first (see runtime-adapters.md SPAWN axis) — only fall back if no subagent tool exists | undetected runtimes |
+| `SPAWN=prompt-embed` | Full flow (parallel `spawn_agent` dispatch) | Codex with exposed spawn tools; subagent-equipped pi |
+| `SPAWN=none` | This fallback | Tool discovery confirms no spawn tool |
+| `SPAWN=unknown` | Inspect tool inventory and schemas first (see runtime-adapters.md SPAWN axis) — only fall back if no subagent tool exists | undetected runtimes |
 
 ## Fallback Behavior
 
@@ -22,13 +22,13 @@ Tell the user explicitly at the start of execution:
 ```
 ⚠ No subagent spawning available on this runtime (SPAWN=none). Falling back to
   sequential single-orchestrator dispatch. Parallel agent fan-out is unavailable,
-  so this pipeline run will be slower than normal (no parallel gradle/developer
-  stage). Cross-validation between agents is also unavailable — each stage's
+  and independent agents cannot cross-review each stage. Each stage's
   output is consumed by the orchestrator and not cross-reviewed by peers.
 
   Remediation depends on the runtime — e.g. on Codex, add to ~/.codex/config.toml:
-      [features]
-      multi_agent = true
+      [agents]
+      enabled = true
+  (Current default; older CLI versions use [features] multi_agent = true.)
   then restart. On pi, install a subagent skill/extension.
 ```
 
@@ -44,7 +44,7 @@ Replace every spawn callsite from `skills/aet-pipeline/SKILL.md` with an inline 
    - Update `.artifacts/aet/state.json` inline (don't rely on the PostToolUse hook — it may not fire on this runtime)
    - Run `python3 "${PLUGIN_ROOT}/hooks/validate-handoff.py" <artifact>` to validate
 
-2. **No parallel dispatch.** The normal full mode dispatches gradle-build-engineer and android-developer in parallel after architect completes. In fallback mode, run them sequentially:
+2. **No parallel dispatch.** The full mode may dispatch independent stages in parallel when prerequisites exist and worker slots permit. In fallback mode, run them sequentially:
    - gradle-build-engineer → completes → handoff
    - android-developer → reads architecture-blueprint AND module-setup → completes → handoff
 

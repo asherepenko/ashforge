@@ -1,6 +1,6 @@
 ---
 name: gradle-build-engineer
-description: "Expert Gradle build engineer specializing in convention plugins, version catalogs, and build performance optimization. Reads architecture-blueprint.md handoffs to implement build configuration matching module structure and dependency graph. Writes module-setup.md handoffs documenting convention plugins applied, version catalog entries, and module templates created. Use when configuring build system, creating modules, or managing dependencies. <example>Use this agent in parallel with android-developer after android-architect defines the module structure, to create feature:feed:api and feature:feed:impl modules with convention plugins and version catalog entries.</example>"
+description: "Expert Gradle build engineer specializing in convention plugins, version catalogs, and build performance optimization. Reads architecture-blueprint.md handoffs to implement build configuration matching module structure and dependency graph. Writes module-setup.md handoffs documenting convention plugins applied, version catalog entries, and module templates created. Use when configuring build system, creating modules, or managing dependencies. <example>Use this agent before android-developer to create feature:feed:api and feature:feed:impl modules. Parallel work is permitted only when target modules and required files already exist with no setup handoff dependency.</example>"
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 color: cyan
