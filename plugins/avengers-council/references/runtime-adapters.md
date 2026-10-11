@@ -2,7 +2,7 @@
 
 Canonical cross-runtime scaffolding shared by `council-plan-review` and `council-code-review`. The council was built around Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`); every other runtime is supported by mapping the same **capability axes**, not by branching on runtime names.
 
-Read the preflight's `== Runtime capability ==` section, then resolve each axis below. If the profile reports `unknown` for an axis, resolve it conversationally with the user ("do you have a subagent tool? does it return results or stay alive?") before spawning anything.
+Read the preflight's `== Runtime capability ==` section, then resolve each axis below. Shell output is advisory. Discover the exposed tools and inspect session restrictions before spawning; tool availability overrides stale configuration hints. Resolve reversible internal transport choices conservatively without asking the user. If no spawn tool exists, use the disclosed fallback.
 
 ## Contents
 
@@ -23,16 +23,16 @@ Read the preflight's `== Runtime capability ==` section, then resolve each axis 
 | Value | Dispatch | Used by |
 |-------|----------|---------|
 | `registry` | `Agent({subagent_type: 'avengers-council:<name>', name: '<name>', prompt: ...})` — personas come from the agent registry; pass `name` so the stage is labelled. Never pass `team_name` (deprecated and ignored). | Claude Code, Zcode |
-| `prompt-embed` | `spawn_agent(prompt)` — read `agents/<name>.md` and paste the persona body verbatim above the `REVIEW CONTEXT` block (no `subagent_type` registry exists). **Rewrite every `${CLAUDE_PLUGIN_ROOT}` in the persona text to the resolved plugin root** — member bodies reference `${CLAUDE_PLUGIN_ROOT}/references/*.md`, and the var is not exported to spawned workers on these runtimes. Discard persona frontmatter (`tools:`, `model:` — Claude-only registry metadata). | Codex (`multi_agent = true`), pi (subagent skill/extension installed) |
-| `none` | No subagent dispatch available. **Read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md`** and run the single-orchestrator persona walk. Do NOT attempt any spawn — it fails at the tool layer. | Codex (`multi_agent` off), pi (no subagent skill) |
-| `unknown` | Ask the user whether a subagent tool exists before proceeding. | undetected runtimes |
+| `prompt-embed` | `spawn_agent(prompt)` — read `agents/<name>.md` and paste the persona body verbatim above the `REVIEW CONTEXT` block (no `subagent_type` registry exists). **Rewrite every `${CLAUDE_PLUGIN_ROOT}` in the persona text to the resolved plugin root** — member bodies reference `${CLAUDE_PLUGIN_ROOT}/references/*.md`, and the var is not exported to spawned workers on these runtimes. Discard persona frontmatter (`tools:`, `model:` — Claude-only registry metadata). | Codex (spawn tool exposed), pi (subagent skill/extension installed) |
+| `none` | No subagent dispatch available. **Read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md`** and run the single-orchestrator persona walk. Do NOT attempt any spawn — it fails at the tool layer. | Codex (no spawn tool exposed), pi (no subagent skill) |
+| `unknown` | Discover available tools; if absent use the disclosed fallback. | undetected runtimes |
 
 ### TRANSPORT — how findings move between members
 
 | Value | Mechanics |
 |-------|-----------|
-| `stay-alive` | Spawned teammates stay alive; messages are delivered automatically on the team channel. The lead's wire name is `team-lead` (harness-owned — `captain-america` is NOT a routable recipient). Round 1: each member sends its assessment to `team-lead`, then one `SendMessage` per teammate sharing findings (no broadcast recipient exists). Rounds 2–3: the lead DMs each teammate the debate block; members DM each other to challenge. Cleanup: `shutdown_request` per teammate; no team to delete (the session team is implicit — do not call `TeamCreate`/`TeamDelete`). |
-| `hub` | Spawns are result-returning: the worker terminates after returning. Round 1 verdicts arrive as tool results (`wait_agent(agent_id)` on Codex; `close_agent(agent_id)` frees slots). There is no peer messaging and no broadcast — the Captain consolidates each round's outputs and re-spawns members for the next round with the consolidated context inlined (see [Hub-Mediated Debate](#hub-mediated-debate)). Cleanup: workers are already terminated; `close_agent` any still in-flight at the timeout boundary. Zcode note: `Agent` results return as tool results; `SendMessage` may resume a completed agent by id for Round 2/3 — use it when available, otherwise re-spawn. |
+| `stay-alive` | Verified interactive Claude session with enabled agent teams only. Named teammates stay addressable; messages are delivered automatically on the team channel. The lead's wire name is `team-lead` (harness-owned — `captain-america` is NOT a routable recipient). Round 1: each member sends its assessment to `team-lead`, then one `SendMessage` per teammate sharing findings (no broadcast recipient exists). Round 2: collect all challenges, distribute them, collect all responses. Only after both barriers does the lead send the separate Round-3 final-vote trigger. Cleanup: `shutdown_request` per teammate; no team to delete (the session team is implicit — do not call `TeamCreate`/`TeamDelete`). |
+| `hub` | Orchestrator collects worker results and distributes consolidated context between rounds. Workers may be result-returning, resumable or continuable. Optional peer messaging can supplement this transport when exposed; it does not replace round-completion barriers. Ordinary Claude subagents address their caller as `main`; only actual teammates use `team-lead` and shutdown_request. See capacity-aware scheduling below. |
 
 ### PROGRESS — phase tracking
 
@@ -81,37 +81,59 @@ Advisory only — the preflight detection wins over this table.
 
 | Runtime | SPAWN | TRANSPORT | PROGRESS | ASK | Notes |
 |---------|-------|-----------|----------|-----|-------|
-| claude-code | `registry` | `stay-alive` | `task-list` | `structured` | Reference runtime; `CLAUDE_PLUGIN_ROOT` set. |
-| codex | `prompt-embed` | `hub` | `plan-tool` | `plain-text` | Requires `[features] multi_agent = true` in `~/.codex/config.toml`; without it SPAWN=`none`. Hooks gated + trust. |
+| claude-code | `registry` | `hub` / verified `stay-alive` | `task-list` | `structured` | Stay-alive requires enabled teams and verified interactive session; `-p`/SDK always hub. A tty alone is not proof. `AVENGERS_COUNCIL_INTERACTIVE=1` is an orchestrator hint, never automatic tty detection. |
+| codex | `prompt-embed` | `hub` | `plan-tool` | `plain-text` | `[agents] enabled` defaults true; `[features] multi_agent` is a legacy hint. Exposed tools and session restrictions decide dispatch, including when config says false. Hooks gated + trust. |
 | zcode | `registry` | `hub` | `todo` | `structured` | Result-returning `Agent` spawns; `SendMessage` resume of completed agents available; `ExitPlanMode` exists, hook parity unverified. |
 | pi | `none`* | `hub` | `none`/extension | `plain-text` | *No native subagent tool — SPAWN=`none` unless a subagent skill/extension is installed (then `prompt-embed`). Skills format is compatible; verify spawn availability conversationally. |
 | antigravity | `unknown` | `hub` | internal | interactive | Claude Agent Skills standard; custom subagents exist — confirm spawn shape conversationally before dispatch. |
 
+## Capacity-aware scheduling and exposed tool mapping
+
+Before each round, inspect the available tools and current worker inventory. Do not manufacture missing tools or treat returned workers as closed.
+
+| Operation | Codex CLI shape, when exposed | Collaboration namespace shape, when exposed |
+|---|---|---|
+| Spawn | `spawn_agent` | `collaboration.spawn_agent` |
+| Continue completed worker | `resume_agent` then `send_input`, following actual schema | `collaboration.followup_task` |
+| Send to running worker | `send_input` | `collaboration.send_message` |
+| Collect/status | `wait`, `list_agents` if exposed | `collaboration.wait_agent`, `collaboration.list_agents`; final notifications contain results |
+| Release thread | `close_agent` only if exposed | No assumed close equivalent |
+| Stop current turn | exposed interrupt/cancellation API | `collaboration.interrupt_agent` (does not prove thread release) |
+
+CLI names are examples, not a schema contract. Discover each tool and use its actual arguments. Native progress and question tools are likewise selected from what is exposed; use project progress artifacts if no plan tool exists.
+
+Determine available worker slots from runtime limits and the current inventory, accounting for unrelated workers. Codex `agents.max_concurrent_threads_per_session` counts spawned threads and excludes the primary thread; a runtime saying "4 total slots including primary" permits only three workers. Never subtract the primary twice. Unknown capacity: start with one worker, discover capacity from exposed metadata, and do not retry a capacity-denied spawn blindly.
+
+For **every round**, partition the complete roster into batches no larger than available capacity. Spawn an entire unblocked batch in one turn, collect every result, and close each worker only when close is exposed. Without close, retain a bounded worker pool and use continuation/followup to assign the next member with its full persona, identity and context; explicitly reset the prior assignment and do not claim this provides independent fresh contexts. Preserve each member's prior assessment in its later-round brief. Peer communication must use actual worker IDs/names, not persona names that have no corresponding live worker. Prefer orchestrator mediation while a pool rotates identities.
+
+Do not request Round 2 until every Round-1 batch is collected; do not request Round 3 until every Round-2 batch is collected and its challenges/responses consolidated. If continuation and close are both absent and the remaining roster cannot fit, disclose the incomplete council and apply quorum/fallback rules; never silently omit voters or promise a full council.
+
 ## Hub-Mediated Debate
 
-The 3-round flow stay-alive runtimes get from live teammates + `SendMessage` becomes 3 sequential parallel fan-outs on hub-transport runtimes:
+The 3-round flow stay-alive runtimes get from live teammates + `SendMessage` becomes 3 sequential rounds scheduled in capacity-bounded batches on hub-transport runtimes:
 
 ```
 Round 1 — Initial Assessment
     Captain assembles REVIEW CONTEXT (standards, codebase audit, domain model)
-    spawn × N in parallel, each with: persona + REVIEW CONTEXT + Round 1 instructions
+    dispatch all N using bounded batches or continued worker threads, each with: persona + REVIEW CONTEXT + Round 1 instructions
     collect × N → verdicts
     Captain aggregates Round-1 findings into "Round-2 Challenge Context"
 
 Round 2 — Challenge
-    spawn × N in parallel, each with: persona + REVIEW CONTEXT + Round-1 findings + Round 2 instructions
+    dispatch all N using bounded batches or continued worker threads, each with: persona + REVIEW CONTEXT + Round-1 findings + Round 2 instructions
     collect × N → challenges
-    Captain aggregates into "Round-3 Final Context"
+    Captain routes challenges to each recipient in a bounded Round-2 response pass
+    collect all responses → Captain aggregates completed debate into "Round-3 Final Context"
 
 Round 3 — Final Position
-    spawn × N in parallel, each with: persona + REVIEW CONTEXT + Round-2 challenges + Round 3 instructions
+    dispatch all N using bounded batches or continued worker threads, each with: persona + REVIEW CONTEXT + Round-2 challenges + Round 3 instructions
     collect × N → final verdicts
     Captain applies verdict-rules.md, surfaces verdict
 ```
 
-**Cost:** ~3× the spawn count vs a stay-alive roster (3 rounds × N members vs N stay-alive). **Fidelity:** preserved — every cross-agent finding flows through the orchestrator's next-round prompt instead of through `SendMessage`.
+**Dispatch count:** Four passes across three logical rounds require up to 4M spawns when every pass needs fresh workers, where M excludes Captain America (32 for the eight-member core); continuation can reuse a bounded pool. **Debate context:** The orchestrator passes collected assessments, challenges and responses into later briefs. Reused workers retain earlier assignments in their context, weakening independent-context isolation; disclose that trade-off rather than claiming universal fidelity preservation.
 
-This cost is exactly what the orchestration protocol's **Mode Selection & Cost-Controlled Degradation** section gates: on a hub-only runtime, a full-mode council spends 3N heavy spawns, and the protocol may autonomously drop to Quick Mode when its three triggers hold.
+The orchestration protocol's **Mode Selection & Cost-Controlled Degradation** section applies its capability trigger only after the actual tools require a fresh-worker schedule for all four passes. Hub transport with continuation does not by itself imply 4M spawns or satisfy that trigger. Autonomous Quick Mode still requires all three triggers and disclosure of the chosen schedule.
 
 **Persona embedding:** before each spawn on a `prompt-embed` runtime, Captain reads `agents/<member>.md` and pastes the full persona text into the spawn prompt (with `${CLAUDE_PLUGIN_ROOT}` rewritten to the resolved root — see SPAWN axis). Personas stay a single source of truth across runtimes. (Captain America is never spawned — the orchestrator role is defined in `references/captain-america-orchestrator.md`.)
 
@@ -186,5 +208,5 @@ When SPAWN=`none`, the single-orchestrator fallback skips debate rounds and caps
 - Domain-scoring math (1-10 per member, aggregate < 5.0 → NEEDS REVISION)
 - Black Widow's veto on unmitigated CRITICAL security findings
 - Optional-member auto-join based on topic-tag matching (decided pre-spawn by the orchestrator)
-- Captain America always played by the orchestrating model — never spawned (on stay-alive runtimes the orchestrator's wire name is `team-lead`; on hub runtimes there is no wire name at all)
+- Captain America always played by the orchestrating model — never spawned (on stay-alive runtimes the orchestrator's wire name is `team-lead`; ordinary Claude hub subagents use `main`; other hubs use exposed orchestrator IDs)
 - Verdict save path under `.artifacts/reviews/` and the Run Mode disclosure in `assets/verdict-template.md`

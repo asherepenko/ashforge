@@ -12,6 +12,19 @@ def read(path: str) -> str:
     return (PROJECT_ROOT / path).read_text(encoding="utf-8")
 
 
+def test_persona_debate_routes_by_transport_with_response_barrier():
+    protocol = read("references/debate-protocol.md")
+    rounds = protocol.split("## Round Structure", 1)[1].split("## Domain Scoring", 1)[0]
+    assert "**Claude:**" not in rounds and "**Codex:**" not in rounds
+    for section in rounds.split("### Round ")[1:]:
+        assert "**Stay-alive:**" in section and "**Hub:**" in section
+    challenge = rounds.split("### Round 2", 1)[1].split("### Round 3", 1)[0]
+    hub = challenge.split("**Hub:**", 1)[1]
+    assert "ROUND2_CHALLENGES_COMPLETE" in hub
+    assert "ROUND2_RESPONSES_COMPLETE" in hub
+    assert "separate Round-3 trigger" in hub
+
+
 def test_runtime_adapter_files_replaced_codex_files():
     assert (PROJECT_ROOT / "references" / "runtime-adapters.md").exists()
     assert (PROJECT_ROOT / "references" / "runtime-fallback.md").exists()

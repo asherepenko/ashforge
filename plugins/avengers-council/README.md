@@ -23,7 +23,7 @@ The plugin ships in the [ashforge](https://github.com/asherepenko/ashforge) mark
 /reload-plugins
 ```
 
-The `PreToolUse:ExitPlanMode` hook activates automatically.
+The `PreToolUse:ExitPlanMode` hook activates automatically (default mode: off). Live teammate debate requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` and an interactive Claude session; disabled teams and `-p`/SDK sessions use hub-mediated ordinary subagents. The preflight defaults conservatively to hub until the orchestrator verifies the session. In auto mode, a successful review receipt is bound to the current session and exact plan content; the hook saves its review and removes only the plugin denial, preserving normal human plan approval.
 
 ### Codex (CLI / App)
 
@@ -37,8 +37,8 @@ Then enable the plugin in `~/.codex/config.toml`:
 [plugins."avengers-council@ashforge"]
 enabled = true
 
-[features]
-multi_agent = true      # REQUIRED — spawn_agent/wait_agent/close_agent for the debate
+[agents]
+enabled = true         # Default; actual exposed spawn tools decide availability
 ```
 
 **Sandbox mode**: Codex must run with `sandbox_mode = "workspace-write"` (or `danger-full-access`) so the council can write verdicts under `.artifacts/reviews/`. `read-only` mode blocks the verdict save (Phase 5) and any post-verdict actions that edit files. Check your `~/.codex/config.toml`:
@@ -47,7 +47,7 @@ multi_agent = true      # REQUIRED — spawn_agent/wait_agent/close_agent for th
 sandbox_mode = "workspace-write"
 ```
 
-The council uses `spawn_agent` for each debate round; `multi_agent = true` is required. Without it, skills detect the gap via preflight and fall back to single-orchestrator mode per `references/runtime-fallback.md`.
+The council checks exposed spawn and continuation tools, then schedules the full roster in bounded batches. Modern Codex `[agents] enabled` defaults true; `[features] multi_agent` is a legacy configuration hint. Missing actual dispatch tools trigger the disclosed single-orchestrator fallback. A close tool is optional: continuing a bounded worker pool is supported, with its reduced context isolation disclosed.
 
 The plugin does not ship Codex-side hooks (the `ExitPlanMode` hook is Claude-only — no other runtime's hook parity is verified yet). See [`references/runtime-adapters.md`](references/runtime-adapters.md) for the full capability mapping (Claude Code, Codex, Zcode, pi, Antigravity) including the hub-mediated debate trade-off.
 
@@ -113,13 +113,13 @@ Seven phases per review:
 2. **Assemble** — Claude: parallel `Agent` calls spawn the 8 core members (plus topic-matched specialists) into the session team. Codex: parallel `spawn_agent` (no team primitive).
 3. **Round 1 — Assessment** — Each member delivers verdict (APPROVE/CONCERNS/REJECT), domain score, and up to 5 findings with severity.
 4. **Round 2 — Challenge** — Claude: members DM challenges to each other via `SendMessage`. Codex: Captain consolidates Round-1 findings and re-spawns each member with a per-recipient challenge prompt.
-5. **Round 3 — Final Position** — Final verdict, updated score, confidence, unresolved disagreements. Claude: same agents stay alive. Codex: fresh `spawn_agent` fan-out with the consolidated Round-2 context.
+5. **Round 3 — Final Position** — Final verdict, updated score, confidence, unresolved disagreements. Claude: same agents stay alive. Hub transport: bounded dispatch or continued workers receive the consolidated Round-2 context.
 6. **Verdict Synthesis** — Captain America tallies, checks red lines, applies veto, runs tiebreakers.
 7. **Save & Follow-up** — Verdict written to disk; interactive menu to address findings or save TODOs.
 
 Verdicts: **APPROVED**, **APPROVED WITH CONDITIONS**, **NEEDS REVISION**, **BLOCKED**.
 
-Debate fidelity is preserved on every platform — every cross-member finding flows either through `SendMessage` (stay-alive runtimes) or through the orchestrator's next-round spawn prompt (hub runtimes). Hub full mode costs ~3× the spawns of a stay-alive roster (3 rounds × N members vs N stay-alive agents); `--quick` mode collapses to a single fan-out everywhere. Other runtimes (Zcode, pi, Antigravity) follow the capability profiles in [`references/runtime-adapters.md`](references/runtime-adapters.md).
+Debate context is propagated on every supported platform — every cross-member finding flows either through `SendMessage` (stay-alive runtimes) or through the orchestrator's next-round spawn prompt (hub runtimes). Hub full mode may require up to 4N fresh spawns; continued worker pools reduce spawns but reuse contexts; `--quick` mode collapses to a single fan-out everywhere. Other runtimes (Zcode, pi, Antigravity) follow the capability profiles in [`references/runtime-adapters.md`](references/runtime-adapters.md).
 
 ## Hook Configuration
 

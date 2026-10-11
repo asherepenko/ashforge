@@ -64,49 +64,41 @@ resolve_base() {
   # Definitive env markers of the RUNNING runtime first; install-dir
   # heuristics (~/.codex etc.) only when nothing else matched — a directory
   # proves installation, not the current runtime.
-  if [ -n "${CODEX_HOME:-}" ]; then
-    runtime="codex"; transport="hub"
+  codex_profile() {
+    runtime="codex"; transport="hub"; spawn="prompt-embed"
     cfg="${CODEX_HOME:-$HOME/.codex}/config.toml"
+    # Modern agents.enabled defaults true. Config is only a hint: exposed
+    # spawn tools and session restrictions are authoritative in the skill.
     if [ -f "$cfg" ] && awk '
-      /^\[features\]/ { in_features = 1; next }
-      /^\[/           { in_features = 0 }
-      in_features && /^[[:space:]]*multi_agent[[:space:]]*=[[:space:]]*true/ { found = 1; exit }
-      END { exit !found }
-    ' "$cfg" 2>/dev/null; then
-      spawn="prompt-embed"
-    else
-      spawn="none"
-      if [ -f "$cfg" ]; then
-        notes="multi_agent is off — single-orchestrator fallback (references/runtime-fallback.md)"
-      else
-        notes="no config.toml — treat multi_agent as off; single-orchestrator fallback (references/runtime-fallback.md)"
-      fi
-    fi
-  elif [ -n "${ZCODE_APP_VERSION:-}" ]; then
+      /^\[agents\]/ { section="agents"; next }
+      /^\[features\]/ { section="features"; next }
+      /^\[/ { section="" }
+      section == "agents" && /^[[:space:]]*enabled[[:space:]]*=/ { modern=$0 }
+      section == "features" && /^[[:space:]]*multi_agent[[:space:]]*=/ { legacy=$0 }
+      END { selected=(modern != "" ? modern : legacy); exit !(selected ~ /=[[:space:]]*false([[:space:]]|$)/) }
+    ' "$cfg"; then spawn="none"; fi
+    notes="config hint only; discover actual spawn/continuation tools before dispatch; agents.enabled defaults true, features.multi_agent is legacy"
+  }
+  if [ -n "${ZCODE_APP_VERSION:-}" ]; then
     runtime="zcode"; spawn="registry"; transport="hub"
     notes="result-returning Agent spawns; SendMessage resume available; TaskCreate -> TodoWrite"
   elif [ -n "${CLAUDECODE:-}" ] || [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
-    runtime="claude-code"; spawn="registry"; transport="stay-alive"
+    runtime="claude-code"; spawn="registry"; transport="hub"
+    notes="ordinary subagents; only select stay-alive after verifying interactive session and enabled agent teams; main is ordinary-subagent lead"
+    if [ "${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-0}" = "1" ] && [ "${AVENGERS_COUNCIL_INTERACTIVE:-0}" = "1" ]; then
+      transport="stay-alive"
+      notes="interactive hint supplied by orchestrator; confirm actual teammate launch before using team-lead"
+    fi
+  elif [ -n "${CODEX_HOME:-}" ]; then
+    codex_profile
   elif [ -d "$HOME/.antigravity" ]; then
     runtime="antigravity"; transport="hub"
-    notes="custom subagents exist — confirm spawn shape conversationally (references/runtime-adapters.md)"
+    notes="discover actual spawn tools before dispatch"
   elif [ -d "$HOME/.pi" ]; then
     runtime="pi"; spawn="none"; transport="hub"
-    notes="no native subagent tool — SPAWN=none unless a subagent skill/extension is installed; confirm conversationally"
+    notes="no native subagent tool; discover installed subagent extension before dispatch"
   elif [ -d "$HOME/.codex" ]; then
-    runtime="codex"; transport="hub"
-    cfg="$HOME/.codex/config.toml"
-    if [ -f "$cfg" ] && awk '
-      /^\[features\]/ { in_features = 1; next }
-      /^\[/           { in_features = 0 }
-      in_features && /^[[:space:]]*multi_agent[[:space:]]*=[[:space:]]*true/ { found = 1; exit }
-      END { exit !found }
-    ' "$cfg" 2>/dev/null; then
-      spawn="prompt-embed"
-    else
-      spawn="none"
-      notes="~/.codex heuristic (CODEX_HOME unset); multi_agent off or unconfirmed — single-orchestrator fallback (references/runtime-fallback.md)"
-    fi
+    codex_profile
   fi
   echo "RUNTIME=$runtime"
   echo "SPAWN=$spawn"

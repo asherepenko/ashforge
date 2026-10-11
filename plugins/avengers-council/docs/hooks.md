@@ -4,6 +4,12 @@ The Avengers Council plugin includes a `PreToolUse:ExitPlanMode` hook that can s
 
 ---
 
+## Auto mode approval binding
+
+Auto mode receives Claude's injected `tool_input.plan` and `tool_input.planFilePath` plus `session_id`. The hook supplies a pending token and exact plan digest on denial. After synthesis, the plan-review skill emits the structured `COUNCIL_PLAN_REVIEW_RESULT` receipt as top-level assistant text, then retries ExitPlanMode. The hook verifies the same session, path, token and unchanged content against the session transcript; user/tool/sidechain text cannot provide a receipt. It saves the review under the dated `.artifacts/reviews/plans/council/` bucket while Claude remains in plan mode.
+
+APPROVED and APPROVED WITH CONDITIONS remove the plugin denial without auto-approving Andrew's plan. NEEDS REVISION and BLOCKED remain denied, including when they supersede an earlier approval. Changed plans, new sessions, missing transcript or malformed receipts do not reuse approval. This path requires Python 3; no shell recorder or review-artifact write from the plan-mode assistant is required.
+
 ## Hook Overview
 
 **Hook Type:** `PreToolUse:ExitPlanMode`

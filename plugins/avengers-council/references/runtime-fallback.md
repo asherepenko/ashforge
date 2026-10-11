@@ -1,8 +1,8 @@
 ## When to use
 
-Read this when the `council-plan-review` or `council-code-review` skill's preflight reports `SPAWN=none` in the `== Runtime capability ==` section. No subagent dispatch is available on this runtime — `Agent` / `spawn_agent` / `wait_agent` / `close_agent` calls would fail at the tool layer. Do NOT attempt any spawn.
+Read this after exposed tool discovery confirms no spawn capability and the `council-plan-review` or `council-code-review` skill's preflight reports `SPAWN=none` in the `== Runtime capability ==` section. No subagent dispatch is available on this runtime — `Agent` / `spawn_agent` / `wait_agent` / `close_agent` calls would fail at the tool layer. Do NOT attempt any spawn.
 
-Typical causes: Codex with `multi_agent = false` (or no `~/.codex/config.toml`), pi without a subagent skill/extension installed. Runtimes with working spawns never hit this file. Codex users with `multi_agent = true` use the normal hub-mediated flow in `references/orchestration-protocol.md`.
+Typical causes: session restrictions remove spawn tools, or pi lacks a subagent extension. Modern Codex `[agents] enabled` defaults true; legacy `features.multi_agent` and preflight config are hints, not proof. Exposed working spawn tools use the normal flow even if a stale hint reports none.
 
 ## Contents
 
@@ -15,10 +15,10 @@ Typical causes: Codex with `multi_agent = false` (or no `~/.codex/config.toml`),
 
 | Profile | Mode | Source |
 |---------|------|--------|
-| `SPAWN=registry` + `TRANSPORT=stay-alive` | Full flow (stay-alive path — agent team + SendMessage) | Claude Code; primitives always available |
-| `SPAWN=prompt-embed` + `TRANSPORT=hub` | Full flow (hub-mediated path — 3-round spawn fan-out) | Codex with `multi_agent = true`; subagent-equipped pi |
+| `SPAWN=registry` + `TRANSPORT=stay-alive` | Full flow (stay-alive path — agent team + SendMessage) | Claude Code with enabled teams in a verified interactive session |
+| `SPAWN=prompt-embed` + `TRANSPORT=hub` | Full flow (hub-mediated path — 3-round spawn fan-out) | Codex with exposed spawn tools; subagent-equipped pi |
 | `SPAWN=registry` + `TRANSPORT=hub` | Full flow (hub-mediated dispatch via `Agent(subagent_type)` — see runtime-adapters.md) | Zcode |
-| `SPAWN=none` | This fallback | Codex `multi_agent` off/missing; pi without a subagent skill |
+| `SPAWN=none` | This fallback | runtime with no exposed spawn tools; pi without a subagent skill |
 | `SPAWN=unknown` | Resolve conversationally first (see runtime-adapters.md SPAWN axis) — only fall back if no subagent tool exists | undetected runtimes |
 
 ## Fallback Behavior
@@ -37,8 +37,8 @@ Tell the user explicitly before any review work begins:
   groupthink-detection, and security-veto-by-independent-instance are NOT available.
 
   Remediation depends on the runtime — e.g. on Codex, add to ~/.codex/config.toml:
-      [features]
-      multi_agent = true
+      [agents]
+      enabled = true  # defaults true; confirm tools are exposed after restart
   then restart. On pi, install a subagent skill/extension.
 ```
 

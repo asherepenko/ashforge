@@ -4,6 +4,20 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [3.3.3] - 2026-10-11
+
+### Fixed
+
+- The optional auto-review hook releases its gate after an approved council review of the unchanged plan in the same session. Changed plans and blocking verdicts require another review; normal plan approval remains with the user.
+- Reviews performed in Claude plan mode emit a structured result in the conversation. The hook records that result and saves the verdict without requiring the reviewing model to write outside its plan file.
+- Claude transport selection checks teammate availability instead of assuming every session supports a live team. Ordinary subagents use reports passed through the orchestrator between rounds.
+- Final voting starts after Round 2 challenges and responses have been collected and distributed.
+- Codex dispatch respects available worker slots and reuses workers across rounds when no close tool is available. Capability detection recognizes current `agents.enabled` settings and legacy configuration hints.
+
+### Changed
+
+- Runtime adapters and setup documentation distinguish transport choices from the messaging tools a runtime exposes.
+
 ## [3.3.2] - 2026-09-25
 
 ### Changed

@@ -46,7 +46,7 @@ bash "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.sh"
 
 The script collects: local plans dir listing, global plans dir, artifact specs (PRDs), recent reviews, domain glossary presence (DOMAIN-MAP.md / DOMAIN.md), and the 20 most-recent ADRs under `docs/adr/`.
 
-Use the output to short-circuit Step 1 auto-detection: when no `@file` argument is provided, the most recent plan file listed by the preflight (any runtime plans dir) is the auto-detect target — read it directly with the Read tool. If all four plan/PRD/review sections show no matches AND no topic argument, prompt the user (don't guess). Interpret the `== Runtime capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`: on `SPAWN=none`, read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md` and switch to the single-orchestrator fallback before Step 1; otherwise carry the profile's SPAWN/TRANSPORT axes into Step 2's mode selection.
+Use the output to short-circuit Step 1 auto-detection: when no `@file` argument is provided, the most recent plan file listed by the preflight (any runtime plans dir) is the auto-detect target — read it directly with the Read tool. If all four plan/PRD/review sections show no matches AND no topic argument, prompt the user (don't guess). Interpret the `== Runtime capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`: first discover actual spawn/continuation tools and apply session restrictions (these override configuration hints); only when no permitted spawn tool is exposed, read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md` and switch to the single-orchestrator fallback before Step 1; otherwise carry the profile's SPAWN/TRANSPORT axes into Step 2's mode selection.
 
 **Domain artifacts** (DOMAIN.md / docs/adr/) feed Step 1's Domain Model loading and Step 3's per-agent spawn brief. They are NOT part of plan-detection — they're independent context every reviewer must see.
 
@@ -111,6 +111,18 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
     > Reviewing plan file: `[filename]`
     > Plan mode integration: This review was triggered [manually | by ExitPlanMode hook (Claude only)]
     ```
+
+### Hook-triggered reviews while Claude remains in plan mode
+
+The auto hook supplies a `COUNCIL_PLAN_REVIEW_RESULT` JSON template in its denial context, containing the current session, absolute plan path, SHA-256 digest and pending token. Review **that exact file/content**, not the newest plan from another session. Preserve these binding fields verbatim. If the plan changed during review, retry ExitPlanMode to obtain a new binding and review the updated plan.
+
+After Phase 4 synthesis, before any follow-up question, emit a standalone assistant-text line:
+
+```text
+COUNCIL_PLAN_REVIEW_RESULT {"session":"<from hook>","plan":"<from hook>","digest":"<from hook>","token":"<from hook>","verdict":"APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED","review":"<full synthesized review markdown, JSON escaped>"}
+```
+
+Choose one exact verdict value; include the full synthesized verdict markdown in `review`. Do not place the receipt in a tool result, quoted user text, subagent response or code block. Retry ExitPlanMode after emitting it. The hook reads only this session's top-level assistant text and persists the review under `.artifacts/reviews/plans/council/YYYY-MM-DD/`; no Bash recorder or out-of-plan write is required while plan mode restricts writes. This hook-side save replaces Phase 5's direct write only for hook-triggered plan-mode reviews. Successful review removes the plugin denial and preserves Andrew's normal plan approval prompt; NEEDS REVISION/BLOCKED continue to deny. Ordinary manual reviews use Phase 5's normal save. Never claim a receipt alone has been persisted: the next hook invocation performs that write.
 
 ## Common Rationalizations
 

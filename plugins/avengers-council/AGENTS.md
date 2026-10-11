@@ -40,14 +40,14 @@ The council was built around Claude Code's agent-team primitives (parallel `Agen
 
 - Team setup → skip on every runtime (Claude's session team is implicit; `team_name` is deprecated and ignored, `TeamCreate`/`TeamDelete` no longer exist)
 - `Agent({subagent_type, name})` → `spawn_agent(prompt)` with persona inlined from `agents/<name>.md` on prompt-embed runtimes (rewrite `${CLAUDE_PLUGIN_ROOT}` in the persona to the resolved root); Zcode keeps `Agent(subagent_type)` but collects results per spawn
-- `SendMessage` (per-teammate DMs, lead addressed as `team-lead`) → hub-mediated context propagation on hub runtimes (Captain consolidates each round's verdicts and re-spawns members for the next round with the consolidated context inlined)
+- `SendMessage` (per-teammate DMs, lead addressed as `team-lead`) → hub-mediated context propagation on hub runtimes (Captain consolidates each round's verdicts and dispatches bounded batches or continued workers for the next round with the consolidated context inlined)
 - `TaskCreate` / `TaskUpdate` → `update_plan` (Codex) or `TodoWrite` (Zcode)
 - `AskUserQuestion` → plain prompt with numbered options + free-form reply parsing on plain-text runtimes
 - `PreToolUse:ExitPlanMode` hook → Claude-only until another runtime's hook parity is verified
 
-Hub full-mode cost: ~3× the spawns of a stay-alive roster (3 rounds × N members vs N stay-alive). `--quick` mode collapses to a single fan-out everywhere. The orchestration protocol's Mode Selection section may autonomously downgrade hub runs to Quick Mode when its three triggers hold (capability + proportionality + user unavailable), with mandatory disclosure in the verdict.
+All rounds respect available worker capacity. Hub full-mode cost: up to 4N fresh spawns, or a continued bounded pool with reduced context isolation disclosed. `--quick` mode collapses to a single fan-out everywhere. The orchestration protocol's Mode Selection section may autonomously downgrade hub runs to Quick Mode when its three triggers hold (capability + proportionality + user unavailable), with mandatory disclosure in the verdict.
 
-Codex requires `[features] multi_agent = true` in `~/.codex/config.toml` for `spawn_agent` dispatch. Without it — and on any runtime where SPAWN=none — fall back to single-orchestrator review per `references/runtime-fallback.md` and warn the user.
+Exposed tools are authoritative. Modern Codex `[agents] enabled` defaults true; `[features] multi_agent` is legacy. Claude stay-alive requires enabled agent teams and a verified interactive session; ordinary subagents use hub transport and address `main`. Without actual spawn tools — on any runtime where SPAWN=none — fall back to single-orchestrator review per `references/runtime-fallback.md` and warn the user.
 
 ## Key Conventions
 
@@ -61,7 +61,7 @@ Codex requires `[features] multi_agent = true` in `~/.codex/config.toml` for `sp
 Each `agents/<name>.md` declares frontmatter like:
 
 ```yaml
-tools: All tools
+tools: Read, Grep, Glob, Bash, SendMessage
 model: sonnet
 ```
 
@@ -85,7 +85,7 @@ Python tests for the `PreToolUse:ExitPlanMode` hook under `tests/`. Run:
 pytest tests/
 ```
 
-All 10 tests must pass.
+All collected tests must pass.
 
 ## Versioning
 

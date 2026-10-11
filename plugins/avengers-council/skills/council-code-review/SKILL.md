@@ -44,7 +44,7 @@ bash "$PLUGIN_ROOT/skills/council-code-review/scripts/preflight.sh"
 
 The script collects: current branch, working tree status, diff stat vs the merge base, commits ahead of base, and project markers.
 
-Use the output to bound review scope before Step 1: if `git status -s` is empty AND no commits ahead → no `--diff` to review; ask user to clarify target. If `--pr <n>` was passed, this section is informational only — gh pr fetch still required in Step 1. Interpret the `== Runtime capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`: on `SPAWN=none`, read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md` and switch to the single-orchestrator fallback before Step 1; otherwise carry the profile's SPAWN/TRANSPORT axes into Step 2's mode selection.
+Use the output to bound review scope before Step 1: if `git status -s` is empty AND no commits ahead → no `--diff` to review; ask user to clarify target. If `--pr <n>` was passed, this section is informational only — gh pr fetch still required in Step 1. Interpret the `== Runtime capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`: first discover actual spawn/continuation tools and apply session restrictions (these override configuration hints); only when no permitted spawn tool is exposed, read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md` and switch to the single-orchestrator fallback before Step 1; otherwise carry the profile's SPAWN/TRANSPORT axes into Step 2's mode selection.
 
 ## Arguments
 

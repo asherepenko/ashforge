@@ -2,13 +2,13 @@
 
 Shared flow for all council skills. Each skill handles context gathering independently, then delegates to this protocol for team orchestration.
 
-> **Cost note:** Full mode spawns 8 core teammates + any matching optional members (~8-10x single-session cost on stay-alive runtimes; ~24-30x on hub-transport runtimes because each of the 3 rounds is a separate parallel fan-out).
+> **Cost note:** Full mode reviews through 8 core members + any matching optional members. Stay-alive transport retains the member roster. Hub transport uses four dispatch passes across three logical rounds: assessment, challenges, responses, and final positions. A schedule requiring fresh workers for every pass creates up to 4M workers, where M is the dispatched member count excluding Captain America (32 for the eight-member core); continuation can reuse a smaller bounded pool. Describe the chosen schedule and dispatch count; do not infer token-cost ratios from worker count.
 > Full mode is justified for: security-sensitive changes, architectural decisions, pre-release reviews.
 > For everything else, prefer Quick Mode (3 members) — explicitly via `--quick`, or autonomously per [Mode Selection & Cost-Controlled Degradation](#mode-selection--cost-controlled-degradation) when its three triggers hold.
 
 > **Capability profile:** Steps below are written for Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`). Every other runtime maps onto two axes — SPAWN (how members are dispatched) and TRANSPORT (how findings move). Where the text says **stay-alive**, follow the `TRANSPORT=stay-alive` row; where it says **hub**, follow the `TRANSPORT=hub` row (Codex, Zcode, subagent-equipped pi, Antigravity). @references/runtime-adapters.md owns the full mapping, the per-runtime profiles, and the cost/fidelity trade-off; @references/runtime-fallback.md owns the SPAWN=none path.
 
-> **Lead identity (stay-alive runtimes):** the orchestrating session's persona is **Captain America**, but its wire name on the team channel is `team-lead` — that name is owned by the harness and is not configurable. Every `SendMessage` a teammate addresses to the lead MUST use `to: "team-lead"`; `captain-america` is not a registered teammate name and such a send goes nowhere. Personas in prose stay Captain America. Hub runtimes have no wire name at all.
+> **Lead identity (stay-alive runtimes):** the orchestrating session's persona is **Captain America**, but its wire name on the team channel is `team-lead` — that name is owned by the harness and is not configurable. Every `SendMessage` a teammate addresses to the lead MUST use `to: "team-lead"`; `captain-america` is not a registered teammate name and such a send goes nowhere. Personas in prose stay Captain America. Ordinary Claude hub subagents address `main`; other hub runtimes use the actual orchestrator identity exposed by their tools.
 
 ## Table of Contents
 
@@ -56,7 +56,7 @@ Select the mode once, after the preflight profile and before Phase 1. Three rout
 2. **Full Mode (default)** — every default run.
 3. **Cost-Controlled Quick Mode (autonomous downgrade)** — drop to Quick Mode WITHOUT a user flag only when ALL three triggers hold:
 
-   - **Capability trigger:** the runtime profile is `TRANSPORT=hub` (no stay-alive teammates), so full mode costs 3 fan-out rounds × N members (≥ 24 heavy spawns at the 8-member core) instead of N stay-alive agents.
+   - **Capability trigger:** the runtime profile is `TRANSPORT=hub` and the verified tools require fresh workers for all four dispatch passes rather than continuation of a bounded pool. The chosen full-mode schedule creates up to 4M workers, where M is the dispatched member count excluding Captain America (32 for the eight-member core). Hub transport alone does not satisfy this trigger: inspect continuation capability and describe the actual schedule before estimating dispatch count.
    - **Proportionality trigger:** the review subject is NOT in full mode's justified set (security-sensitive change, architectural decision, pre-release review), AND the factual base of the subject was already adversarially verified upstream in this session (e.g., a triage pass stress-tested the plan's claims), so the 3-round debate's marginal value is challenge-discovery, not fact-checking.
    - **Availability trigger:** the user is not available to approve the spend — explicitly away, an unattended/scheduled run, or autonomous mode. If the user IS available, ask instead (one structured question: full council vs Quick Mode, per the cost note).
 
@@ -74,7 +74,7 @@ Announce the downgrade in-session BEFORE spawning (the transcript must carry it 
 
 ```
 > Run mode: Quick Mode — cost-controlled degradation from Full Council
-> Reason: hub-only transport (24-spawn full mode) disproportionate; facts
+> Reason: verified fresh-worker schedule (four passes, 32 spawns for eight members) disproportionate; facts
 > adversarially verified in triage; user unavailable.
 > Fidelity trade: no cross-member debate rounds; security + testing lenses only.
 ```
@@ -100,17 +100,17 @@ Read @references/member-registry.md to build the active roster:
 
 ### Step 2: Team Scope
 
-**Stay-alive (Claude Code):** Nothing to create. The session has a single implicit team; spawned agents join it automatically and the lead is always `team-lead`. Do not call `TeamCreate` and do not pass `team_name` to `Agent` — the parameter is deprecated and ignored. Announce the roster to the user instead of creating a named team.
+**Stay-alive (verified interactive Claude agent teams only):** Nothing to create. The session has a single implicit team; named teammates join it and the lead is `team-lead`. If teams are disabled or the session is noninteractive, use hub transport with ordinary subagents; their lead recipient is `main`, not `team-lead`. Do not call `TeamCreate` and do not pass `team_name` to `Agent` — the parameter is deprecated and ignored. Announce the roster to the user instead of creating a named team.
 
-**Hub (Codex, Zcode, pi, Antigravity):** Same — no team primitive. Concurrency is just parallel spawn calls in one turn (`spawn_agent` on prompt-embed runtimes, `Agent(subagent_type)` on registry runtimes). Track the active roster in a local variable.
+**Hub (ordinary Claude subagents, Codex, Zcode, pi, Antigravity):** Same — no team primitive. Concurrency is just parallel spawn calls in one turn (`spawn_agent` on prompt-embed runtimes, `Agent(subagent_type)` on registry runtimes). Track the active roster in a local variable.
 
 ### Step 3: Spawn Teammates
 
-Spawn all active roster members in parallel. Launch ALL in a SINGLE turn for parallel startup.
+Dispatch the full active roster using the capacity-aware scheduling section in runtime-adapters.md. Launch each unblocked batch in one turn, bounded by available worker slots; collect and release or reuse workers before the next batch. Never drop voters merely to fit capacity.
 
 Each spawn call embeds the FULL review context and Round 1 instructions so agents self-start immediately (teammates only receive their spawn prompt + CLAUDE.md — they do NOT get the lead's conversation history).
 
-Substitute per spawn: `[agent-name]` = this member, and `[roster names, excluding this agent]` = the active roster minus this member (agents have no other way to learn teammate names — there is no team config to read).
+Substitute per spawn: `[agent-name]` = this member, and `[roster names, excluding this agent]` = the active roster minus this member (the spawn brief supplies the roster without relying on runtime-specific team files).
 
 **Stay-alive (Claude Code):**
 
@@ -165,7 +165,7 @@ Follow the debate protocol from your agent definition for all rounds.",
 })
 ```
 
-**Hub (result-returning spawns — Codex `spawn_agent`, Zcode `Agent(subagent_type)`, prompt-embed pi/Antigravity):** Same prompt template, dispatched per the SPAWN axis in @references/runtime-adapters.md — `prompt-embed` runtimes paste the persona text from `agents/<name>.md` (with `${CLAUDE_PLUGIN_ROOT}` rewritten to the resolved root) above the `REVIEW CONTEXT` block; `registry` runtimes pass `subagent_type`. Drop the trailing lines about sharing findings with teammates and waiting for `team-lead` to signal Round 2 and Round 3 — hub workers terminate after returning; Captain re-spawns them for each round with the next round's context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
+**Hub (result-returning spawns — Codex `spawn_agent`, Zcode `Agent(subagent_type)`, prompt-embed pi/Antigravity):** Same prompt template, dispatched per the SPAWN axis in @references/runtime-adapters.md — `prompt-embed` runtimes paste the persona text from `agents/<name>.md` (with `${CLAUDE_PLUGIN_ROOT}` rewritten to the resolved root) above the `REVIEW CONTEXT` block; `registry` runtimes pass `subagent_type`. Drop the trailing lines about sharing findings with teammates and waiting for `team-lead` to signal Round 2 and Round 3 — hub workers return results; Captain closes and replaces them when close is exposed, or continues the bounded pool with the next pass's full persona and context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
 
 **Core agent roster** (always spawned):
 
@@ -194,7 +194,7 @@ Never paste entire large diffs into agent prompts — this wastes context and re
 ### Step 4: Timeout and Quorum
 
 - **Stay-alive:** Wait for teammate responses. Messages from teammates are delivered automatically via the team channel.
-- **Hub:** Collect returned results (`wait_agent(agent_id)` per worker on Codex; tool results on registry runtimes). `close_agent(agent_id)` after each on Codex to free slots.
+- **Hub:** Collect returned results (`wait_agent(agent_id)` per worker on Codex; tool results on registry runtimes). Release workers with the exposed close tool when available; otherwise continue/reuse existing worker threads as runtime-adapters.md specifies. Finishing or interrupting a turn does not prove that a thread slot was released.
 - **Timeout policy:** If fewer than the timeout threshold (Step 1) respond, proceed with available responses. Note which members were silent in the verdict.
 - **Minimum quorum:** At least the minimum quorum (Step 1) responses required. If fewer respond, report the issue to the user and ask whether to proceed with available responses or retry.
 
@@ -212,29 +212,31 @@ After collecting Round 1 responses:
 
 1. Track the phase per the PROGRESS axis (same tools as Phase 2) with the step name "Rounds 2 & 3 — Challenge and Final Position".
 
-2. **Trigger Round 2 + Round 3.**
+2. **Complete Round 2 before triggering Round 3.**
 
-   **Stay-alive:** `SendMessage` has no broadcast recipient — send the block below to each stay-alive teammate by name, all calls in ONE turn. Agents DM each other to challenge in Round 2, then send their final position to `team-lead`.
+   **Stay-alive:** Send only this Round-2 block to each teammate, one message per recipient in the same turn:
 
    ```
-   ROUND 1 COMPLETE.
-
-   Summary of Round 1 findings:
-   [Brief summary of each member's verdict and key findings]
-
-   ROUND 2 — CHALLENGE:
-   Review your teammates' findings above. DM teammates you disagree with to challenge their position. Support findings you agree with.
-
-   ROUND 3 — FINAL POSITION:
-   After your challenges, send your final position to `team-lead` with:
-   - Verdict: APPROVE / CONCERNS / REJECT
-   - Final Domain Score: X/10 (your domain)
-   - Confidence: HIGH / MEDIUM / LOW
-   - Unresolved Disagreements: reference specific teammate exchanges
-   - Key Condition: what must change for CONCERNS to become APPROVE
+   ROUND 2 — CHALLENGE ONLY
+   [Consolidated Round-1 assessments]
+   Send your challenges/supports to team-lead with named targets and evidence.
+   You may DM the targets too. Send ROUND2_CHALLENGES_COMPLETE to team-lead,
+   including an explicit "no challenges" if appropriate. Do not send a final vote.
    ```
 
-   **Hub:** Workers from Round 1 are terminated (Zcode: agents returned their results — resume via `SendMessage` by agent id where supported, otherwise spawn fresh). Fan out Round 2 as a fresh parallel spawn × N call. Each prompt embeds the persona + REVIEW CONTEXT + the consolidated Round-1 findings block + a Round-2 instruction block:
+   **Barrier A:** Collect ROUND2_CHALLENGES_COMPLETE from every participating reviewer (apply timeout/quorum policy and disclose omissions). Consolidate every challenge/support by recipient, then send each reviewer its received challenges and the full consolidated debate. Ask for responses to incoming challenges and ROUND2_RESPONSES_COMPLETE; members with no received challenges must explicitly acknowledge that. Do not request final positions yet.
+
+   **Barrier B:** Collect ROUND2_RESPONSES_COMPLETE from every participating reviewer. Consolidate the responses with the challenges. Only then send a separate Round-3 trigger to every reviewer:
+
+   ```
+   ROUND 3 — FINAL POSITION
+   [All Round-2 challenges, supports and responses, including disclosed omissions]
+   Reconsider your initial position using the completed debate. Send FINAL VERDICT,
+   FINAL DOMAIN SCORE, CONFIDENCE, UNRESOLVED DISAGREEMENTS and KEY CONDITION
+   to team-lead using debate-protocol.md's canonical final format.
+   ```
+
+   **Hub:** Round-1 workers have returned results; a completed turn does not prove thread release. Resume/continue by the actual tool schema when available, close then replace when close exists, or reuse the bounded pool as described in runtime-adapters.md. Dispatch Round 2 for the full roster using bounded batches or continued workers per runtime-adapters.md. Each prompt embeds the persona + REVIEW CONTEXT + the consolidated Round-1 findings block + a Round-2 instruction block:
 
    ```
    ROUND 2 — CHALLENGE (you are [agent-name]):
@@ -256,7 +258,7 @@ After collecting Round 1 responses:
    Return CHALLENGES and SUPPORTS as the result of this spawn. Do not request your final verdict yet — that's Round 3.
    ```
 
-   After all Round-2 results are collected (`wait_agent` per call on Codex), consolidate the cross-member challenges/supports into a Round-3 context block. Fan out again as a fresh parallel spawn × N for Round 3:
+   After all Round-2 challenge batches are collected, consolidate cross-member challenges/supports by recipient. Dispatch a bounded Round-2 RESPONSE pass to every participating member with all received challenges, asking for an evidence-backed response and explicit completion (or "no received challenges"). Collect every response batch before constructing the Round-3 context block containing all challenges, supports and responses. Do not request final votes during either Round-2 pass. Dispatch Round 3 for the full roster using the same bounded scheduling, with the completed debate:
 
    ```
    ROUND 3 — FINAL POSITION (you are [agent-name]):
@@ -272,7 +274,7 @@ After collecting Round 1 responses:
    - Key Condition: what must change for CONCERNS to become APPROVE
    ```
 
-   Cost: 2 additional spawn fan-outs for full debate (3 rounds × N members = 3N total spawns vs a stay-alive roster's N). Fidelity is preserved — every cross-agent finding flows through the orchestrator's prompt instead of through SendMessage. This 3N cost is what the Mode Selection section's capability trigger measures.
+   Cost: up to 4M fresh spawns, where M excludes Captain America, (assessment, challenges, responses, final positions), or bounded continued workers as capacity permits. Disclose when worker reuse reduces independent-context isolation. Debate context is preserved — every cross-agent finding flows through the orchestrator's prompt instead of through SendMessage. This maximum cost is what the Mode Selection section's capability trigger measures.
 
 3. **Completion gate:**
    - **Stay-alive:** Wait until all active members send their final position to `team-lead`.
@@ -308,7 +310,7 @@ After collecting Round 1 responses:
 
 ## Phase 5 — Save Verdict
 
-Write verdict to permanent record:
+Write verdict to permanent record. Hook-triggered Claude plan-mode reviews use the plan-review skill's transcript receipt and hook-side save instead of direct writes; emit the complete result before follow-up, then retry ExitPlanMode.
 
 1. Determine verdict slug: approved/revision/blocked
 2. Determine review type directory: plans or code (passed by calling command)
@@ -340,7 +342,7 @@ Follow @references/post-verdict-actions.md:
 3. No team to delete — the session team is implicit and torn down with the session. Do not call `TeamDelete`.
 
 **Hub:**
-1. Workers are already terminated after returning their final result. If any are still in-flight at the timeout boundary, call `close_agent` on each to free slots (Codex).
+1. Use the exposed close tool only if available. Without close, stop in-flight work with the exposed interrupt tool and retain reusable worker IDs; do not claim interruption releases thread capacity. Never use Claude shutdown_request for ordinary subagents or other runtimes.
 2. No team to delete.
 
 ---
@@ -355,14 +357,14 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
 
 ### Quick Flow
 
-1. Spawn the 2 selected members in parallel, per the SPAWN axis (@references/runtime-adapters.md): `Agent` calls on registry runtimes, `spawn_agent` on prompt-embed runtimes — no team setup needed on any runtime.
+1. Schedule the 2 selected members in capacity-bounded batches, per the SPAWN axis (@references/runtime-adapters.md): `Agent` calls on registry runtimes, `spawn_agent` on prompt-embed runtimes — no team setup needed on any runtime.
 2. Single assessment round (no challenge/final rounds):
    ```
    QUICK REVIEW — Single Round
 
    [Review context]
 
-   Review from your specialty lens. Send your assessment via SendMessage to `team-lead` with:
+   Review from your specialty lens. Stay-alive teammates send to `team-lead`; hub workers return their result to the orchestrator (ordinary Claude subagents may address `main`). Include:
    - Verdict: APPROVE / CONCERNS / REJECT
    - Key Findings: max 3
    - Recommendation: 1-2 sentences
