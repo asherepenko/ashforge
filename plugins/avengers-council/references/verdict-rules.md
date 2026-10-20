@@ -6,6 +6,7 @@ Canonical rules for determining council verdict outcomes. Referenced by assets/v
 
 - [Consensus Rules (N voters)](#consensus-rules-n-voters) — vote thresholds + severity-weighted consensus
 - [Domain Scoring](#domain-scoring) — per-member scores, aggregate, interpretation, override rule
+- [Pre-existing Findings](#pre-existing-findings) — code-review findings this change did not introduce; excluded from every rule below
 - [Severity Guidelines](#severity-guidelines) — CRITICAL / HIGH / MEDIUM / LOW definitions
 - [Quick Mode Consensus Rules (3 voters)](#quick-mode-consensus-rules-3-voters) — abbreviated quorum rules
 
@@ -20,6 +21,8 @@ Let **N** = total active voters (core members + optional members + Captain Ameri
 | 11 | 6 | 4 | 9 + 2 optional |
 
 ### Severity-Weighted Consensus
+
+In code reviews, every finding count and every "unmitigated CRITICAL" rule below counts only findings marked `Introduced here: yes`. See [Pre-existing Findings](#pre-existing-findings).
 
 **APPROVED:**
 - Majority APPROVE votes
@@ -40,7 +43,7 @@ Let **N** = total active voters (core members + optional members + Captain Ameri
 
 **BLOCKED:**
 - BLOCKED threshold or more REJECT votes
-- OR Black Widow VETO (unmitigated CRITICAL security issue -- cannot be overridden)
+- OR Black Widow VETO (unmitigated CRITICAL security issue introduced by this change -- cannot be overridden)
 - OR multiple mandatory standard violations
 - Cannot proceed until blocking issues resolved
 
@@ -79,6 +82,36 @@ Each council member provides a domain score from 1-10 reflecting how well the pr
 ### Score Override Rule
 
 If the vote tally yields APPROVED but the average domain score is below 5.0, Captain America downgrades the verdict to NEEDS REVISION with an explanation citing which domains scored lowest.
+
+## Pre-existing Findings
+
+Applies to code reviews. Each Round 1 finding carries `Introduced here: yes | pre-existing`.
+
+- **yes**: the change under review introduced the defect. This also covers a defect that already existed in unchanged code when the diff makes it reachable or makes it worse.
+- **pre-existing**: the defect is in code the diff does not change, and the diff does not make it reachable or worse.
+
+Pre-existing findings never count toward:
+
+- NEEDS REVISION
+- BLOCKED
+- the "unmitigated CRITICAL" rules in this file, in `standards-protocol.md#phase-5-determine-verdict-based-on-standards`, and in Phase 4 of `orchestration-protocol.md`
+- Black Widow's VETO
+
+They still keep their severity. Captain America lists them in the verdict's Pre-existing section as follow-ups, separate from Conditions for Approval.
+
+### Votes that rest on pre-existing findings
+
+Members base their vote and domain score on `yes` findings only. Captain America enforces this with the steps below, and changes a vote for no other reason. Domain scores are never changed.
+
+1. **Basis.** In a code review, every CONCERNS or REJECT vote states its `VOTE BASIS`: the findings it rests on. A member cites their own findings by number (`2`), a teammate's as `<member>#<n>` (`thor#2`), and a red line by name. APPROVE needs no basis.
+2. **Attribution.** Each basis finding is judged by its attribution after the debate. A finding still contested at synthesis counts as `yes` (see below).
+3. **The test.** A vote rests only on pre-existing findings when its basis names at least one finding and every finding it names is `pre-existing`. A basis with any `yes` finding, or with a red line the change introduces, leaves the vote as cast.
+4. **Missing basis.** Full Council: Captain America asks for it in that member's Round 3 trigger. Quick Mode and fallback runs: the member's own Round 1 findings are the basis.
+5. **Full Council.** For a vote that passes the test, Captain America's Round 3 trigger to that member names the pre-existing findings and asks the member to restate the vote on `yes` findings only. If the `FINAL VOTE BASIS` still passes the test, the vote is adjusted (step 7).
+6. **Quick Mode and fallback runs** have no Round 3, so a vote that passes the test is adjusted directly.
+7. **Adjusting.** An adjusted vote counts as APPROVE in the tally. The verdict's **Vote adjustments** line lists each one, for example `Thor: REJECT → APPROVE — basis thor#2, thor#4 are pre-existing`. The member's original vote, findings and domain score stay in the record unchanged.
+
+When members disagree on attribution, the debate rounds settle it. If it is still contested at synthesis, Captain America treats the finding as `yes` and records the disagreement.
 
 ## Severity Guidelines
 
@@ -123,6 +156,8 @@ If the vote tally yields APPROVED but the average domain score is below 5.0, Cap
 
 **BLOCKED:**
 - Any REJECT vote
-- OR Black Widow VETO (unmitigated CRITICAL security issue — cannot be overridden)
+- OR Black Widow VETO (unmitigated CRITICAL security issue introduced by this change — cannot be overridden)
+
+Pre-existing findings are excluded here too, per [Pre-existing Findings](#pre-existing-findings).
 
 No ties possible with 3 voters.

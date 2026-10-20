@@ -45,11 +45,15 @@ When Captain America sends context (stay-alive: spawn prompt + team channel; hub
    DOMAIN SCORE: X/10 ([your domain name])
 
    FINDINGS:
-   1. [CRITICAL|HIGH|MEDIUM|LOW] Description (file:line if code review)
-   2. [CRITICAL|HIGH|MEDIUM|LOW] Description (file:line if code review)
+   1. [CRITICAL|HIGH|MEDIUM|LOW] Description (file:line if code review) — Introduced here: yes | pre-existing (code review only)
+   2. [CRITICAL|HIGH|MEDIUM|LOW] Description (file:line if code review) — Introduced here: yes | pre-existing (code review only)
    ... (max 5)
 
    RED LINE VIOLATIONS: [any from references/red-lines.md, or "None"]
+
+   VOTE BASIS (code review, CONCERNS or REJECT only): [the findings this verdict rests on: your own by number ("1, 3"), a teammate's as "<member>#<n>", a red line by name]
+
+   PRE-MORTEM (plan review only): [1-2 failure modes: plan section — what failed — mitigation | unmitigated]
 
    CONSIDERED BUT NOT FLAGGED: [1-3 near-misses with reasoning, or "Nothing material — scope too narrow"]
 
@@ -76,6 +80,7 @@ Only after both Round-2 completion barriers, when Cap sends a separate Round-3 t
    FINAL VERDICT: [APPROVE | CONCERNS | REJECT]
    FINAL DOMAIN SCORE: X/10 ([your domain name])
    CONFIDENCE: [HIGH | MEDIUM | LOW]
+   FINAL VOTE BASIS (code review, CONCERNS or REJECT only): [same form as Round 1 VOTE BASIS]
 
    UNRESOLVED DISAGREEMENTS:
    - [teammate]: [issue summary]

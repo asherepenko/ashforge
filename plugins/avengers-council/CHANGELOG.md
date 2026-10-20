@@ -4,6 +4,24 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [3.4.0] - 2026-10-20
+
+### Added
+
+- Code review findings carry `Introduced here: yes | pre-existing`. `yes` also covers a defect the diff makes reachable or worse. Pre-existing findings are listed in a new Pre-existing section of the verdict as follow-ups. They never count toward NEEDS REVISION, BLOCKED, the unmitigated-CRITICAL rules, or Black Widow's VETO.
+- Code review CONCERNS and REJECT votes state a `VOTE BASIS` (the findings they rest on). A vote whose basis is only pre-existing findings is restated in Round 3, or counted as APPROVE in Quick Mode and fallback runs. Each changed vote is listed under **Vote adjustments** in the verdict. Domain scores are never changed.
+- Failure-first directive in the code review Round 1 prompt. Each member names up to 3 concrete ways the change fails in their domain, then reports each one as a finding with file:line or rules it out by citing the line, test, or guard that prevents it.
+- Class-of-bug directive. A finding that is a pattern lists every instance in the diff and touched files.
+- Root-cause directive. When a PR or commit says it fixes a bug, members check that the fix sits at the root cause and covers other paths to the same cause. A symptom-only fix is a finding.
+- Standards detection reads `REVIEW.md` at the repo root and in each parent directory of a changed file. It reads them from the base ref with `git show`, never from the change under review. Their text goes into member spawn prompts as a `REVIEW RULES` block. `REVIEW.md` never overrides red lines.
+- Pre-mortem directive in the plan review Round 1 prompt. Each member gives 1–2 failure modes tied to plan sections, with the plan's mitigation or `unmitigated`. An unmitigated failure mode in a member's primary domain is at least HIGH.
+- Risk Tier section in plan verdicts: `Risk tier: low | medium | high` and the recommended human review of the resulting code (automated checks only, one person, or two people). The tier is set by what the change touches, never by who writes it.
+
+### Changed
+
+- The canonical Round 1 format in `debate-protocol.md` adds the `Introduced here` field for code reviews and a `PRE-MORTEM` line for plan reviews.
+- `docs/skills.md` describes the new verdict sections and finding fields.
+
 ## [3.3.3] - 2026-10-11
 
 ### Fixed

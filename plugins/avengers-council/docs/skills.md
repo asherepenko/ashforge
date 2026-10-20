@@ -218,6 +218,10 @@ All verdicts follow this structure:
 ## Consensus: [APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED]
 Vote: X Approve / X Concerns / X Reject
 
+## Risk Tier
+Risk tier: [low | medium | high]
+Recommended human review of the resulting code: [automated checks only | one person | two people]
+
 ## Executive Summary
 [Captain America's 2-3 sentence overview]
 
@@ -245,6 +249,8 @@ Vote: X Approve / X Concerns / X Reject
 1. [Specific action with owner suggestion]
 2. [...]
 ```
+
+Plan verdicts include the Risk Tier section. The tier is set by what the change touches, never by who writes it: `low` for docs, copy, internal-only work, or additive behavior behind a flag; `medium` for an ordinary product change; `high` for auth, permissions, billing or payments, data migrations, CI/deploy/release, auto-update, secrets, or any other path that always needs two people. Each member also gives a 1–2 item pre-mortem in Round 1. An unmitigated failure mode in a member's primary domain is at least HIGH.
 
 ### Consensus Rules
 
@@ -447,7 +453,7 @@ council-code-review --files app/ProfileViewModel.kt,app/SettingsScreen.kt --quic
 
 ### Output Format
 
-Same structure as `council-plan-review`, with additional code-specific details:
+Same structure as `council-plan-review` without the Risk Tier section, with additional code-specific details:
 
 ```markdown
 ## Key Findings
@@ -455,6 +461,7 @@ Same structure as `council-plan-review`, with additional code-specific details:
 ### CRITICAL
 1. [Black Widow] SQL injection in UserRepository.findByEmail() (UserRepository.ts:45)
    - Issue: Unsanitized user input in SQL query
+   - Introduced here: yes
    - Suggested fix: Use parameterized queries or ORM
    - Reference: OWASP A03:2021 - Injection
 
@@ -466,10 +473,17 @@ Same structure as `council-plan-review`, with additional code-specific details:
 
 ### LOW
 [...]
+
+## Pre-existing
+- [MEDIUM] [Hulk] Retry loop has no backoff (HttpClient.ts:88) — follow-up
 ```
 
 **Enhancements:**
 - All findings include `file:line` references
+- Each finding states `Introduced here: yes | pre-existing`. `yes` also covers a defect the diff makes reachable or worse. Pre-existing findings are listed in their own section as follow-ups and never count toward NEEDS REVISION, BLOCKED, or Black Widow's VETO
+- A finding that is a pattern lists every instance in the diff and touched files
+- When the change says it fixes a bug, members check the fix sits at the root cause and covers other paths to the same cause
+- Members read the repo's `REVIEW.md` from the base branch, never from the change under review
 - Suggested fixes provided where applicable
 - Security findings reference OWASP or CVE standards
 - Performance findings include profiler or benchmark suggestions

@@ -86,6 +86,8 @@ Black Widow will VETO if a CRITICAL security issue remains unmitigated in the pr
 
 **CRITICAL**: Black Widow has VETO power on unmitigated CRITICAL security issues. If Black Widow marks a security risk as CRITICAL, it MUST be addressed before proceeding, regardless of other team votes or opinions. This authority exists because security vulnerabilities can compromise entire systems and user data.
 
+In code reviews, the VETO applies only to findings marked `Introduced here: yes`. A CRITICAL issue in code the diff does not change, and does not make reachable or worse, is reported as `pre-existing` and listed as a follow-up (`${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#pre-existing-findings`).
+
 ## Findings Output Format
 
 Every security finding MUST include a proof of concept. Findings require demonstrated evidence (PoC, reproducible trace) — speculation is not a finding.

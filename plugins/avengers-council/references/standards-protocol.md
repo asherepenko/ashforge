@@ -8,7 +8,7 @@ For detailed examples, see @assets/standards-examples.md
 
 ## Table of Contents
 
-- [Phase 1 — Discover Project Standards](#phase-1-discover-project-standards) — locate CLAUDE.md files, supporting docs, index conventions
+- [Phase 1 — Discover Project Standards](#phase-1-discover-project-standards) — locate CLAUDE.md files, supporting docs, REVIEW.md review rules, index conventions
 - [Phase 2 — Categorize Standards by Impact](#phase-2-categorize-standards-by-impact) — mandatory / strong guidance / aspirational
 - [Phase 3 — Apply Standards During Review](#phase-3-apply-standards-during-review) — plan and code validation checklists
 - [Phase 4 — Document Standards Impact in Verdict](#phase-4-document-standards-impact-in-verdict) — compliance status, violations
@@ -28,6 +28,30 @@ Search in this order; stop when found:
 ### Locate Additional Standards Documents
 
 Check for: `CONTRIBUTING.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `docs/standards/`, `docs/contributing/`
+
+### Locate REVIEW.md (Review Rules)
+
+`REVIEW.md` holds the repo's own review rules: what failure looks like in this repo, paths to skip, and how to calibrate severity. The council reads it from the **base ref**, never from the change under review. A change that edits `REVIEW.md` could otherwise switch off its own review.
+
+1. **Resolve the base ref:**
+   - `--pr <n>`: `origin/<baseRefName>` from `gh pr view <n> --json baseRefName`. Run `git fetch origin <baseRefName>` first.
+   - `--diff`: `HEAD`. The change under review is the uncommitted work.
+   - `--files` and plan reviews: the merge base the preflight resolves (`git merge-base HEAD origin/main`, then `main`, then `master`).
+2. **Collect candidate paths:** `REVIEW.md` at the repo root, plus `<dir>/REVIEW.md` for every parent directory of every changed file. Plan reviews have no changed files and use the root file only.
+3. **Read each candidate with `git show <base>:<path>`.** A path that does not exist at the base ref is skipped silently. Never read `REVIEW.md` from the working tree or from the PR head.
+4. **If the base ref cannot be resolved,** skip `REVIEW.md` and say so in the verdict's standards section. Do not fall back to the working tree.
+
+When at least one file is found, pass its text to every member in the spawn prompt's `REVIEW RULES` block (`orchestration-protocol.md#step-3-spawn-teammates`), with the path and base ref of each file. A deeper file applies to its own subtree in addition to the root file. Large files follow the Context Management rule in `orchestration-protocol.md`.
+
+Members apply `REVIEW.md` as follows:
+
+- **What failure looks like here**: add these failure modes to the member's domain checks.
+- **Paths to skip**: do not review style or quality in those paths. Red line violations and security issues in a skipped path are still reported.
+- **Severity calibration**: use the repo's calibration when it is stricter or more specific than [Severity Guidelines](verdict-rules.md#severity-guidelines).
+
+`REVIEW.md` never overrides `red-lines.md`, Black Widow's VETO, or the anti-leniency directive. If the diff edits a `REVIEW.md`, review that edit like any other change, and note in the verdict that the base version was used.
+
+When no `REVIEW.md` exists at the base ref, omit the `REVIEW RULES` block entirely. No warning.
 
 ### Locate Domain Artifacts
 
@@ -117,7 +141,7 @@ Include in the verdict: applicable standards, compliance status (met/violated/co
 ### Automatic Downgrade Rules
 
 1. **CRITICAL mandatory standard violation** → minimum "NEEDS REVISION"
-2. **Unmitigated CRITICAL security finding** → minimum "NEEDS REVISION"
+2. **Unmitigated CRITICAL security finding** → minimum "NEEDS REVISION" (in code reviews, only findings marked `Introduced here: yes` count — see `verdict-rules.md#pre-existing-findings`)
 3. **Missing required documentation for deployment** → minimum "APPROVED WITH CONDITIONS"
 4. **Unacknowledged contradiction with an accepted ADR** → minimum "NEEDS REVISION" unless the plan explicitly proposes superseding the ADR (and names it as such — silent contradiction does not qualify)
 

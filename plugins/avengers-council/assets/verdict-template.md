@@ -17,7 +17,18 @@ For full consensus rules and severity guidelines, see @references/verdict-rules.
 
 ## Consensus: [APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED]
 **Vote**: X Approve / X Concerns / X Reject (N voters)
+**Vote adjustments** (code reviews only): [none | one line per adjusted vote, e.g. `Thor: REJECT → APPROVE — basis thor#2, thor#4 are pre-existing`; see verdict-rules.md#votes-that-rest-on-pre-existing-findings]
 **Average Domain Score**: X.X/10
+
+## Risk Tier
+
+[Include this section ONLY for plan reviews. Omit it for code reviews.]
+
+**Risk tier**: [low | medium | high]
+**Recommended human review of the resulting code**: [automated checks only | one person | two people]
+**Basis**: [what the change touches that sets the tier — e.g. "adds a billing webhook handler"]
+
+Set the tier by what the change touches, never by who writes it. See `council-plan-review` SKILL.md for the tier definitions.
 
 ## Executive Summary
 [2-3 sentences from Captain America]
@@ -142,6 +153,14 @@ If any unacknowledged ADR contradiction exists → automatic verdict downgrade t
 
 ## Conditions for Approval
 [Items that must be addressed]
+
+## Pre-existing
+
+[Include this section ONLY for code reviews. Omit it for plan reviews. When no finding is pre-existing, write "None".]
+
+Findings marked `Introduced here: pre-existing`. They did not count toward the consensus, the unmitigated-CRITICAL rules, or Black Widow's VETO (see @references/verdict-rules.md#pre-existing-findings). Track them as follow-ups.
+
+- [SEVERITY] [Member] [Issue] (file:line) — suggested follow-up
 
 ## Action Items
 1. [Actionable item with owner suggestion]

@@ -102,10 +102,23 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - **Considered-but-not-flagged directive** (include verbatim in the spawn prompt):
     > Surface 1–3 design choices in your domain that looked risky but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings — it is the audit trail of judgment calls (e.g., "considered flagging the synchronous DB call in step 3 — left it because the plan explicitly bounds the dataset to <100 rows"). The user can override a dismissal only if they can see it was made. If the plan is too narrow for near-misses, say "Nothing material — plan scope too narrow" rather than padding. See `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md#forcing-function-considered-but-not-flagged`.
   - Each member's Round 1 response must include a `Considered but not flagged:` line (1–3 items or "Nothing material — plan scope too narrow").
+  - **Pre-mortem directive** (include verbatim in the spawn prompt):
+    > It is three months after this plan shipped and it failed in your domain. What happened? Give 1–2 failure modes. Tie each one to the plan section it comes from, and state the plan's mitigation for it, or `unmitigated`. An unmitigated failure mode in your primary domain is a finding of at least HIGH severity.
+  - Each member's Round 1 response must include a `Pre-mortem:` line with 1–2 failure modes in the shape `[plan section] — [what failed] — [mitigation | unmitigated]`.
 - **Verdict synthesis additions:**
   - Check if acceptance criteria are testable and measurable
   - If major criteria missing → downgrade to "NEEDS REVISION" minimum
   - Add Standards Compliance and Acceptance Criteria Validation sections to saved verdict
+  - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
+  - **Set the risk tier** in the verdict's Risk Tier section. Set it by what the change touches, never by who writes it. When a plan touches several tiers, the highest wins:
+
+    | Tier | The change touches | Recommended human review of the resulting code |
+    |------|--------------------|------------------------------------------------|
+    | `low` | Docs, copy, internal-only tooling, or additive behavior behind a flag | Automated checks only |
+    | `medium` | An ordinary product change | One person |
+    | `high` | Auth, permissions, billing or payments, data migrations, CI/deploy/release, auto-update, secrets, or any other path that always needs two people | Two people |
+
+    State the basis: name what the plan touches that sets the tier.
   - If `plan_mode_source` is true, include in verdict header:
     ```
     > Reviewing plan file: `[filename]`
@@ -133,6 +146,8 @@ Choose one exact verdict value; include the full synthesized verdict markdown in
 | "The acceptance criteria are implied, no need to list them" | Missing acceptance criteria → downgrade to NEEDS REVISION minimum. Implied criteria are untestable criteria. |
 | "This finding is minor, I'll soften it" | Report findings at their actual severity. LLM evaluators have a documented tendency to praise LLM-generated work. Resist. |
 | "I considered flagging this design choice but it's probably fine" | Silent dismissals are opaque. Record near-misses in the "Considered but not flagged" section with reasoning. The user decides whether your judgment was correct. |
+| "The plan is written by a senior engineer, so the risk tier is low" | The tier is set by what the change touches, never by who writes it. |
+| "The pre-mortem failure is unlikely, I'll leave it out" | Name it and state the plan's mitigation or `unmitigated`. An unmitigated failure mode in your primary domain is at least HIGH. |
 | "The debate round produced agreement, skip Round 2 challenges" | Agreement in Round 1 often means groupthink. Round 2 challenges are mandatory — they surface assumptions everyone shares but nobody questioned. On hub-transport runtimes this means a separate spawn fan-out with the consolidated Round-1 context, not a SendMessage exchange. |
 
 ## Red Flags
@@ -145,6 +160,8 @@ Choose one exact verdict value; include the full synthesized verdict markdown in
 - Council member deferring on their primary expertise area
 - On hub-transport runtimes: skipping the Round-2/3 spawn fan-out because "the Round-1 verdicts looked unanimous" — debate rounds are mandatory in full mode
 - Quick Mode ran without `--quick` and without the three-trigger cost-controlled disclosure — a silent downgrade is a hidden fidelity loss
+- Risk tier set from the author or the plan's size instead of what the change touches
+- An unmitigated pre-mortem failure mode in a member's primary domain reported below HIGH
 
 ## Verification
 
@@ -155,6 +172,8 @@ After council review completes, confirm:
 - [ ] Mode selection followed the Mode Selection & Cost-Controlled Degradation section; any autonomous downgrade is disclosed in the verdict header
 - [ ] Final verdict includes Standards Compliance section
 - [ ] Acceptance criteria validated as testable and measurable
+- [ ] Each Round 1 position includes a `Pre-mortem:` line with 1–2 failure modes tied to plan sections
+- [ ] Verdict states `Risk tier: low | medium | high`, its basis, and the recommended human review
 - [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — plan scope too narrow")
 - [ ] Verdict saved to `.artifacts/reviews/`
 - [ ] Post-verdict action taken per verdict routing (approved/conditions/revision/blocked)

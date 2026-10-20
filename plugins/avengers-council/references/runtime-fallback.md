@@ -56,7 +56,8 @@ Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1
      ```
      VERDICT: APPROVE / CONCERNS / REJECT
      DOMAIN SCORE: X/10 ([domain])
-     KEY FINDINGS: max 5, each with severity
+     KEY FINDINGS: max 5, each with severity (code review: plus Introduced here: yes | pre-existing)
+     VOTE BASIS (code review, CONCERNS or REJECT only): the findings the verdict rests on
      CONSIDERED BUT NOT FLAGGED: 1-3 near-misses
      RECOMMENDATION: 1-2 sentences
      ```

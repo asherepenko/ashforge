@@ -66,7 +66,7 @@ If no arguments are provided, default to `--diff` (uncommitted changes: staged +
 Depending on the argument:
 
 **`--pr <number>`:**
-1. Run `gh pr view <number>` to get PR metadata
+1. Run `gh pr view <number>` to get PR metadata, including `baseRefName`
 2. Run `gh pr diff <number>` to get the diff
 3. Read the PR description for context
 
@@ -82,7 +82,8 @@ Depending on the argument:
 3. Run `git log -5` on those files for recent history
 
 For all modes:
-- **Detect project standards** per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#standards-detection-shared-across-all-commands`
+- **Detect project standards** per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#standards-detection-shared-across-all-commands`. This includes the repo's `REVIEW.md` files, read from the base ref per `${CLAUDE_PLUGIN_ROOT}/references/standards-protocol.md#locate-reviewmd-review-rules` — never from the change under review
+- Note whether the PR description or commit messages say the change fixes a bug. If they do, pass that claim to members for the root-cause check in Step 3
 - Identify which areas of the codebase are affected (frontend, backend, mobile, etc.)
 - Note commit message format and whether it follows project standards
 
@@ -106,14 +107,22 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - **Grading rubric**: Read `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md` and include its 5 criteria in the spawn prompt. Each council member grades findings using STRONG/ADEQUATE/WEAK per criterion. Only report WEAK findings.
   - **Anti-leniency directive** (include verbatim in the spawn prompt):
     > Your job is to find problems, not to be encouraging. If you identify an issue, report it — do not rationalize it away or soften it. LLM evaluators have a documented tendency to praise LLM-generated work even when quality is mediocre. Resist this. When in doubt, flag it. The user decides what's acceptable, not you.
+  - **Failure-first directive** (include verbatim in the spawn prompt):
+    > Before you work through your checklist, name up to 3 concrete ways this change fails in your domain. For each one, state the triggering input or state and what the user or caller sees. Then settle each one: report it as a finding with file:line, or rule it out by citing the line, test, or guard that prevents it. A failure mode you cannot settle either way is a finding.
   - **Considered-but-not-flagged directive** (include verbatim in the spawn prompt):
     > Surface 1–3 patterns in your domain that looked wrong but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings (those go in Key Findings) — it is the audit trail of judgment calls so the user can override a dismissal only if they can see it was made. If the diff is genuinely too narrow for near-misses, say "Nothing material — diff too narrow" rather than padding. See `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md#forcing-function-considered-but-not-flagged`.
+  - **Class-of-bug directive** (include verbatim in the spawn prompt):
+    > When a finding is a pattern rather than a one-off, search the diff and every touched file for other instances of the same pattern. List every instance with file:line in that one finding. Do not file each instance as a separate finding.
+  - **Root-cause directive** (include verbatim in the spawn prompt when the PR description or a commit message says the change fixes a bug):
+    > This change claims to fix a bug. Check that the fix sits at the root cause, not only where the symptom showed. Check that other code paths that reach the same cause are also covered. A fix that only suppresses the symptom, or leaves another path to the same cause open, is a finding.
+  - **Pre-existing attribution**: each finding states whether this change introduced it. `yes` also covers a defect that already existed but that the diff makes reachable or makes worse. `pre-existing` means the defect is in code the diff does not change and the diff does not make it reachable or worse. Pre-existing findings are reported, but they do not drive the verdict. Members base their vote and domain score on `yes` findings only — see `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#pre-existing-findings`.
   - Require suggested fixes where applicable:
     ```
     Key Findings: max 5, each with:
     - Severity: CRITICAL / HIGH / MEDIUM / LOW
-    - File and line reference
+    - File and line reference (for a class-of-bug finding: every instance)
     - Specific issue description
+    - Introduced here: yes | pre-existing
     - Suggested fix (if applicable)
     - Standards alignment: any violations of project conventions?
 
@@ -122,6 +131,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
 - **Verdict synthesis additions:**
   - Check naming conventions, style/organization standards, testing coverage, commit message format
   - Group findings by severity (CRITICAL first)
+  - Move every `Introduced here: pre-existing` finding to the verdict's Pre-existing section. Exclude these findings from the consensus rules, the unmitigated-CRITICAL rules, and Black Widow's VETO
   - Include file:line references for each finding
   - Include suggested fixes where available
   - Highlight findings challenged and overturned during debate
@@ -137,6 +147,8 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
 | "I'm not the security/testing expert, I'll skip those checks" | Every member checks their own domain. Deferring on your primary expertise leaves a blind spot. Challenge when it's your area. |
 | "The diff is small, a quick review is sufficient" | Small diffs can contain critical issues (auth bypass, data exposure). Apply the full checklist regardless of diff size. |
 | "I considered flagging X but it's probably fine, no need to mention it" | Silent dismissals are opaque. Surface near-misses in the "Considered but not flagged" section with reasoning. The user decides whether your dismissal was correct. |
+| "This bug was already there, so I won't report it" | Report it with `Introduced here: pre-existing`. It goes to the Pre-existing section as a follow-up and does not count against this change. |
+| "The diff now calls the old buggy code, but the bug is pre-existing" | A defect the diff makes reachable or worse counts as `Introduced here: yes`. |
 
 ## Red Flags
 
@@ -148,12 +160,16 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
 - Grading all criteria as STRONG without evidence
 - On hub-transport runtimes: skipping Round-2/3 spawn fan-out because "Round-1 verdicts looked aligned" — debate rounds are mandatory in full mode
 - Quick Mode ran without `--quick` and without the three-trigger cost-controlled disclosure — a silent downgrade is a hidden fidelity loss
+- A pre-existing finding counted toward NEEDS REVISION, BLOCKED, an unmitigated-CRITICAL rule, or Black Widow's VETO
+- `REVIEW.md` read from the change under review instead of the base ref
 
 ## Verification
 
 After code review completes, confirm:
 
 - [ ] All findings have severity classification and file:line references
+- [ ] Every finding states `Introduced here: yes | pre-existing`; pre-existing findings appear only in the Pre-existing section and did not affect the consensus
+- [ ] Every CONCERNS or REJECT vote states a vote basis; every adjusted vote is listed under **Vote adjustments** per verdict-rules.md#votes-that-rest-on-pre-existing-findings
 - [ ] CRITICAL/HIGH findings include suggested fixes
 - [ ] Rubric grading applied (5 criteria, STRONG/ADEQUATE/WEAK)
 - [ ] Standards compliance checked (naming, style, testing, commit format)

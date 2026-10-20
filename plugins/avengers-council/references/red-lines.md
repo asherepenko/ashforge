@@ -4,6 +4,8 @@ Violations in any category trigger automatic escalation. Captain America checks 
 
 Black Widow retains VETO power on unmitigated CRITICAL security violations -- overrides to BLOCKED.
 
+In code reviews, only violations the change introduces trigger escalation. A violation marked `Introduced here: pre-existing` is reported as a follow-up per @references/verdict-rules.md#pre-existing-findings.
+
 ## Security (Black Widow -- VETO authority)
 
 - No SQL/NoSQL/command injection (parameterized queries only)

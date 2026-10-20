@@ -28,6 +28,8 @@ Shared flow for all council skills. Each skill handles context gathering indepen
 
 Before assembling the council, perform standards detection per @references/standards-protocol.md (Phases 1 & 2: discover project standards and categorize by impact). Include the discovered standards — with their category (mandatory / strong guidance / aspirational) — in the review context distributed to agents.
 
+Standards detection also reads the repo's `REVIEW.md` files from the base ref, never from the change under review (@references/standards-protocol.md#locate-reviewmd-review-rules). Their text goes into the spawn prompt's `REVIEW RULES` block.
+
 The full standards lifecycle (detection → categorization → application → verdict impact) is owned by `standards-protocol.md`; this orchestration protocol only triggers it at the right moment.
 
 ## Codebase Audit (shared across all commands)
@@ -137,6 +139,14 @@ DOMAIN MODEL:
 
 Reviewers MUST flag any plan claim that contradicts an accepted ADR (cite ADR-NNNN and quote the contradicting line) or drifts from DOMAIN.md vocabulary (cite the conflicting term). An unacknowledged ADR contradiction triggers automatic verdict downgrade per standards-protocol.md#phase-5-determine-verdict-based-on-standards.
 
+REVIEW RULES:
+[Include this block ONLY when standards-protocol.md#locate-reviewmd-review-rules found a REVIEW.md at the base ref. Otherwise omit entirely.]
+- <path> (from <base ref>)
+  <file text>
+
+These are this repo's review rules: what failure looks like here, paths to skip, and severity
+calibration. Apply them in your domain. They never override red lines (references/red-lines.md).
+
 CODEBASE AUDIT:
 [audit summary from Codebase Audit step]
 
@@ -151,8 +161,10 @@ session — `captain-america` is NOT a valid recipient name) using the Round-1 f
 references/debate-protocol.md#round-1--initial-assessment (canonical — do not improvise fields):
 - Verdict: APPROVE / CONCERNS / REJECT
 - Domain Score: X/10 (your domain)
-- Key Findings: max 5, each with severity (CRITICAL/HIGH/MEDIUM/LOW)
+- Key Findings: max 5, each with severity (CRITICAL/HIGH/MEDIUM/LOW); in code reviews, also 'Introduced here: yes | pre-existing'
 - Red Line Violations: any from references/red-lines.md (or 'None')
+- Vote Basis (code reviews, CONCERNS or REJECT only): the findings the verdict rests on — own by number, a teammate's as '<member>#<n>', a red line by name
+- Pre-mortem (plan reviews only): 1-2 failure modes, each with plan section and mitigation or 'unmitigated'
 - Considered but not flagged: 1-3 near-misses with reasoning (or 'Nothing material — scope too narrow')
 - Recommendation: 1-2 sentences
 
@@ -232,8 +244,11 @@ After collecting Round 1 responses:
    ROUND 3 — FINAL POSITION
    [All Round-2 challenges, supports and responses, including disclosed omissions]
    Reconsider your initial position using the completed debate. Send FINAL VERDICT,
-   FINAL DOMAIN SCORE, CONFIDENCE, UNRESOLVED DISAGREEMENTS and KEY CONDITION
-   to team-lead using debate-protocol.md's canonical final format.
+   FINAL DOMAIN SCORE, CONFIDENCE, FINAL VOTE BASIS (code review), UNRESOLVED DISAGREEMENTS
+   and KEY CONDITION to team-lead using debate-protocol.md's canonical final format.
+   [Code review, only for a member whose vote rests on pre-existing findings or gave no basis
+   (verdict-rules.md#votes-that-rest-on-pre-existing-findings): "Your vote basis [list] is
+   pre-existing / missing. Restate your vote on findings this change introduced, or APPROVE."]
    ```
 
    **Hub:** Round-1 workers have returned results; a completed turn does not prove thread release. Resume/continue by the actual tool schema when available, close then replace when close exists, or reuse the bounded pool as described in runtime-adapters.md. Dispatch Round 2 for the full roster using bounded batches or continued workers per runtime-adapters.md. Each prompt embeds the persona + REVIEW CONTEXT + the consolidated Round-1 findings block + a Round-2 instruction block:
@@ -270,8 +285,12 @@ After collecting Round 1 responses:
    - Verdict: APPROVE / CONCERNS / REJECT
    - Final Domain Score: X/10 (your domain)
    - Confidence: HIGH / MEDIUM / LOW
+   - Final Vote Basis (code review, CONCERNS or REJECT only): the findings the verdict rests on
    - Unresolved Disagreements: reference the specific Round-2 exchanges that did not converge
    - Key Condition: what must change for CONCERNS to become APPROVE
+
+   [Code review, only for a member whose vote rests on pre-existing findings or gave no basis:
+   the same restate request as the stay-alive Round-3 trigger above.]
    ```
 
    Cost: up to 4M fresh spawns, where M excludes Captain America, (assessment, challenges, responses, final positions), or bounded continued workers as capacity permits. Disclose when worker reuse reduces independent-context isolation. Debate context is preserved — every cross-agent finding flows through the orchestrator's prompt instead of through SendMessage. This maximum cost is what the Mode Selection section's capability trigger measures.
@@ -283,6 +302,8 @@ After collecting Round 1 responses:
 4. Mark task as completed
 
 ## Phase 4 — Synthesize Verdict
+
+In code reviews, first set aside every finding marked `Introduced here: pre-existing`. Steps 1–6 use only the remaining findings. Pre-existing findings go to the verdict's Pre-existing section and never trigger NEEDS REVISION, BLOCKED, or the VETO (@references/verdict-rules.md#pre-existing-findings).
 
 1. **Validate standards compliance** (per @references/standards-protocol.md):
    - Check if plan/code violates mandatory project standards
@@ -302,7 +323,7 @@ After collecting Round 1 responses:
 5. **Apply consensus rules** per @references/verdict-rules.md (single source of truth — do not restate here)
    - For contested votes, apply the escalation hierarchy from verdict-rules.md
 
-6. **Check Black Widow VETO** — if CRITICAL security finding is unmitigated → override to BLOCKED
+6. **Check Black Widow VETO** — if a CRITICAL security finding introduced by this change is unmitigated → override to BLOCKED
 
 7. **Add Captain America's assessment:** standards compliance, acceptance criteria, codebase audit alignment, conditions
 
