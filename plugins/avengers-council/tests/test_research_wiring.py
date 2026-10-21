@@ -85,3 +85,12 @@ def test_skills_allow_web_tools_and_verify_brief():
 
 def test_verdict_rules_do_not_mention_research():
     assert "research" not in VERDICT_RULES.lower()
+
+
+def test_spawn_block_repeats_registry_host_and_retry_limits():
+    block = spawn_block(ORCH)
+    assert "Never query a registry to decide" in block
+    assert "public `https` hosts only" in block
+    for host in ("credentials", "private IP ranges", "`localhost`", "internal hostnames", "redirects"):
+        assert host in block
+    assert "One retry per call" in block
