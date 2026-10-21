@@ -92,7 +92,7 @@ YOU are Captain America — the session model running the command.
 Read @references/member-registry.md to build the active roster:
 
 1. **Core members**: Always included — all 8 core members from the registry.
-2. **Optional members**: Scan the review topic against each optional member's `Invoke When` criteria and focus tags. If the topic matches, include that member.
+2. **Optional members**: Scan the review topic against each optional member's `Invoke When` criteria and focus tags. If the topic matches, include that member (for example Ant-Man, when the change adds or moves code; the invoke rule is in the Optional Members row of @references/member-registry.md).
 3. **Select researchers**: When `WEB=available` (runtime-adapters.md `### WEB`), apply `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md`. Code reviews: read the preflight section `== Dependency manifests changed ==` and take the owners from its path-match table. Plan reviews: read the plan text for named new or upgraded dependencies. `black-widow` researches on every review. With `WEB=none`, select no one and plan the Run Mode line `Research: skipped — no web tools`.
 4. **Announce**: If any optional members are joining, state which ones and why. Name the selected researchers too.
 5. **Calculate thresholds**:

@@ -105,6 +105,7 @@ Each member provides a score from 1-10 in their domain of expertise. Scores refl
 | Hawkeye | Mobile Platforms |
 | Vision | Data & Observability |
 | Doctor Strange | DevOps & Infrastructure |
+| Ant-Man (optional) | Reuse & Placement |
 
 Pick your score from the bands in @references/verdict-rules.md#domain-scoring. A score without a basis is sent back once, then reported as `n/a`.
 
