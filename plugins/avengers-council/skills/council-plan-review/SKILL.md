@@ -106,12 +106,14 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - **Pre-mortem directive** (include verbatim in the spawn prompt):
     > It is three months after this plan shipped and it failed in your domain. What happened? Give 1–2 failure modes. Tie each one to the plan section it comes from, and state the plan's mitigation for it, or `unmitigated`. An unmitigated failure mode in your primary domain is a finding of at least HIGH severity.
   - Each member's Round 1 response must include a `Pre-mortem:` line with 1–2 failure modes in the shape `[plan section] — [what failed] — [mitigation | unmitigated]`.
+  - Iron Man's Round 1 response must include an `ARCHITECTURE DIAGRAM:` field (mermaid or ASCII: components, data flow, dependencies, boundaries). Hulk's must include a `FLOW DIAGRAM:` field (user/state flow with happy, error and edge paths) and a `PATH → TEST:` list of `<path> → <planned test | unmapped>`. Each `unmapped` path is a Hulk finding. These fields go only in those members' prompts, per `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md#member-specific-fields-plan-review-only`; in Quick Mode and fallback they apply when the member is present.
   - Each member's `DOMAIN SCORE` line must carry a basis: `basis: <own finding numbers | weak: <slugs> | none>`. Pick the band per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#domain-scoring`. A score without a basis is sent back once, then reported as `n/a`.
 - **Verdict synthesis additions:**
   - Check if acceptance criteria are testable and measurable
   - If major criteria missing → downgrade to "NEEDS REVISION" minimum
   - Add Scope Check, Acceptance Criteria Validation and Standards Compliance sections to saved verdict
   - **Scope Check:** mark each Requested Scope item ✅ covered, ⚠️ partial, ❌ missing or ⏸ deferred. ❌ is one HIGH finding and ⚠️ is one MEDIUM finding; ⏸ is no finding, and only when the source itself defers the item (a plan that defers a source requirement on its own is ⚠️ partial). Count them before grading. One underlying gap counts once across Scope Check, AC Validation and member findings; the highest severity wins. The Scope Check row cites the finding it shares. An unreadable linked source is disclosed as `Source not readable: <path>`.
+  - Add a Diagrams section after Standards Compliance: Iron Man's architecture diagram, Hulk's flow diagram and `PATH → TEST:` list. A member not in the Quick roster reads `not drawn — <member> not in Quick roster`.
   - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
   - **Count missing major acceptance criteria as one HIGH finding.** Add it to the finding list before grading.
   - **Check each score:** run `score-check.sh` once per member, per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. An unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. A FLAG never changes the verdict.
@@ -151,6 +153,7 @@ Choose one exact verdict value; the receipt JSON keeps these fields and enum unc
 | "I considered flagging this design choice but it's probably fine" | Silent dismissals are opaque. Record near-misses in the "Considered but not flagged" section with reasoning. The user decides whether your judgment was correct. |
 | "The plan is written by a senior engineer, so the risk tier is low" | The tier is set by what the change touches, never by who writes it. |
 | "The findings are mild, I'll write the Quality letter myself" | Run `review-grade.sh` on the counts and paste its line. A hand-written letter is a second verdict. |
+| "The diagram is obvious from the plan text, skip it" | Draw it. A path you cannot map to a test shows up only when drawn. |
 | "The pre-mortem failure is unlikely, I'll leave it out" | Name it and state the plan's mitigation or `unmitigated`. An unmitigated failure mode in your primary domain is at least HIGH. |
 | "The debate round produced agreement, skip Round 2 challenges" | Agreement in Round 1 often means groupthink. Round 2 challenges are mandatory — they surface assumptions everyone shares but nobody questioned. On hub-transport runtimes this means a separate spawn fan-out with the consolidated Round-1 context, not a SendMessage exchange. |
 
@@ -167,6 +170,7 @@ Choose one exact verdict value; the receipt JSON keeps these fields and enum unc
 - Quick Mode ran without `--quick` and without the three-trigger cost-controlled disclosure — a silent downgrade is a hidden fidelity loss
 - Risk set from the author or the plan's size instead of what the change touches
 - An unmitigated pre-mortem failure mode in a member's primary domain reported below HIGH
+- Plan verdict without the architecture or flow diagram, or an `unmapped` path not raised as a Hulk finding
 - Writing the Quality letter by hand
 - A domain score with no basis, or a score-check FLAG neither fixed nor noted
 
@@ -181,6 +185,7 @@ After council review completes, confirm:
 - [ ] Final verdict includes a Scope Check table, with each ❌/⚠️ row counted once before grading
 - [ ] Acceptance criteria validated as testable and measurable
 - [ ] Each Round 1 position includes a `Pre-mortem:` line with 1–2 failure modes tied to plan sections
+- [ ] Iron Man's Round 1 position includes an `ARCHITECTURE DIAGRAM:` field; Hulk's includes `FLOW DIAGRAM:` and `PATH → TEST:` (or the Diagrams section reads `not drawn — <member> not in Quick roster`)
 - [ ] **Quality** row comes from `review-grade.sh` (or `not scored ({reason})`), never a hand-picked letter
 - [ ] **Risk** row starts with the tier emoji (🟢/🟡/🔴) and states the basis
 - [ ] Risk line states `low | medium | high` with its basis, and the Risk Tier section gives the recommended human review

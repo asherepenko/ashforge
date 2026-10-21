@@ -60,6 +60,20 @@ When Captain America sends context (stay-alive: spawn prompt + team channel; hub
 
    RECOMMENDATION: [1-2 sentences]
    ```
+#### Member-specific fields (plan review only)
+
+A member-specific field applies only to its named member. Every other member leaves it out. Add these fields after `PRE-MORTEM` in the member's plan-review assessment:
+
+```
+ARCHITECTURE DIAGRAM: [iron-man only — mermaid or ASCII — components, data flow, dependencies, boundaries]
+
+FLOW DIAGRAM: [hulk only — mermaid or ASCII — user/state flow with happy, error and edge paths]
+
+PATH → TEST: [hulk only — one line per path: <path> → <planned test | unmapped>]
+```
+
+Each `unmapped` path is a Hulk finding. Hulk sets its severity; an untested critical path is already a red line.
+
 3. **Stay-alive:** Send the assessment to Cap via `SendMessage({to: "team-lead"})`, then send your key findings to each teammate by name (one call per teammate, same turn).
    **Hub:** Return the assessment to the orchestrator through the actual worker mechanism. Ordinary Claude subagents may address `main`, never `team-lead`. Captain consolidates everyone's findings into the Round-2 brief; optional peer messaging does not replace this collection.
 

@@ -50,7 +50,7 @@ def test_dedup_sentence():
 
 
 def test_plan_only_wording():
-    assert TEMPLATE.count("Include this section ONLY for plan reviews.") == 2
+    assert TEMPLATE.count("Include this section ONLY for plan reviews.") == 3
     assert "Omit it for code reviews" not in TEMPLATE
 
 
