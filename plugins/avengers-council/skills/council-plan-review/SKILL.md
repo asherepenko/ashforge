@@ -113,7 +113,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
   - **Count missing major acceptance criteria as one HIGH finding.** Add it to the finding list before grading.
   - **Check each score:** run `score-check.sh` once per member, per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. An unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. A FLAG never changes the verdict.
-  - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Print its line as the verdict's `Quality:` line, then append ` · weak: <slugs>`: the union of every member's reported WEAK rubric criteria (`weak: <slug>`), deduplicated, in rubric order (correctness, simplicity, consistency, robustness, maintainability). Omit the suffix when no member reported a WEAK criterion (plan members often have no rubric, so it is usually omitted). On a script error print `Quality: not scored ({reason})`:
+  - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Print its line as the verdict's `Quality:` line, then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error print `Quality: not scored ({reason})`:
 
     ```bash
     bash "$PLUGIN_ROOT/scripts/review-grade.sh" --ladder severity \

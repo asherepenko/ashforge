@@ -69,5 +69,21 @@ def test_score_check_runs_before_round_3_in_both_trigger_blocks():
 
 
 def test_quality_line_weak_suffix_has_a_producer_in_rules_and_protocol():
-    for path in ("references/verdict-rules.md", "references/orchestration-protocol.md"):
-        assert "· weak:" in read(path), path
+    import re
+
+    rubric = read("references/rubric-code-quality.md")
+    slugs = re.findall(r"^## \d\. .*\((\w+)\)$", rubric, re.M)
+    assert len(slugs) == 5
+    rules = read("references/verdict-rules.md")
+    quality = rules.split("### Quality", 1)[1].split("### Risk", 1)[0]
+    assert "· weak:" in quality
+    assert "(" + ", ".join(slugs) + ")" in quality
+    assert "no suffix" in quality
+    for path in (
+        "references/orchestration-protocol.md",
+        "skills/council-code-review/SKILL.md",
+        "skills/council-plan-review/SKILL.md",
+    ):
+        text = read(path)
+        assert re.search(r"weak.{0,200}verdict-rules\.md#quality\b(?!-)", text), path
+    assert "· weak:" in read("assets/verdict-template.md")
