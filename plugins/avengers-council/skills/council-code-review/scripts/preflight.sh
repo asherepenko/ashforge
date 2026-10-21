@@ -17,6 +17,15 @@ resolve_base() {
     || echo ""
 }
 
+# One manifest list feeds both the manifest probe (include) and the
+# code-files probe (exclude): a dependency or CI change is never "code".
+manifest_names="package.json package-lock.json yarn.lock pnpm-lock.yaml pyproject.toml poetry.lock uv.lock
+requirements*.txt build.gradle build.gradle.kts libs.versions.toml Podfile Podfile.lock Package.resolved
+go.mod go.sum Cargo.toml Cargo.lock Gemfile Gemfile.lock Dockerfile"
+manifest_globs=()
+for name in $manifest_names; do manifest_globs+=("**/$name"); done
+manifest_globs+=(".github/workflows/**")
+
 (
   echo "== Current branch =="
   git branch --show-current 2>/dev/null || echo "NOT_A_REPO"
@@ -105,6 +114,54 @@ resolve_base() {
   echo "TRANSPORT=$transport"
   echo "NOTES=${notes:-none}"
 ) > "$tmp/07" 2>&1 &
+
+(
+  echo "== Dependency manifests changed =="
+  BASE="$(resolve_base)"
+  if [ -z "$BASE" ]; then
+    echo "UNKNOWN — no base"
+  else
+    found=0
+    specs=()
+    for g in "${manifest_globs[@]}"; do specs+=(":(glob)$g"); done
+    while IFS= read -r -d '' path; do
+      echo "$path"; found=1
+    done < <(git diff -z --name-only "$BASE"...HEAD -- "${specs[@]}" 2>/dev/null)
+    [ "$found" = 1 ] || echo "NONE"
+  fi
+) > "$tmp/08" 2>&1 &
+
+(
+  echo "== Code files added or moved =="
+  BASE="$(resolve_base)"
+  if [ -z "$BASE" ]; then
+    echo "UNKNOWN — no base"
+  else
+    # Docs and config/assets are not code.
+    code_specs=(. ':(exclude)docs' ':(exclude,glob)**/docs/**' ':(exclude,glob)**/.env*')
+    for g in "${manifest_globs[@]}"; do code_specs+=(":(exclude,glob)$g"); done
+    for ext in md json yaml yml toml ini lock png jpg jpeg gif svg webp ico; do
+      code_specs+=(":(exclude,glob)**/*.$ext")
+    done
+    paths=()
+    while IFS= read -r -d '' status; do
+      case "$status" in
+        R*) IFS= read -r -d '' _old; IFS= read -r -d '' path ;;
+        *) IFS= read -r -d '' path ;;
+      esac
+      paths+=("$path")
+    done < <(git diff -z --name-status -M --diff-filter=AR "$BASE"...HEAD -- "${code_specs[@]}" 2>/dev/null)
+    echo "COUNT=${#paths[@]}"
+    defs="$(git diff -U0 "$BASE"...HEAD -- "${code_specs[@]}" 2>/dev/null \
+      | grep -cE '^\+[[:space:]]*(def|fun|func|class|function|interface|struct|object) ')"
+    echo "ADDED_DEFS=${defs:-0}"
+    if [ "${#paths[@]}" -eq 0 ]; then
+      echo "NONE"
+    else
+      printf '%s\n' "${paths[@]:0:30}"
+    fi
+  fi
+) > "$tmp/09" 2>&1 &
 
 wait
 cat "$tmp"/*
