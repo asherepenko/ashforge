@@ -63,7 +63,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md`. Captain America or
 
 - **Round 1**: Collect VERDICT/FINDINGS/RECOMMENDATION from each teammate
 - **Round 2**: Facilitate cross-team challenges and support
-- **Round 3**: Collect FINAL VERDICT/CONFIDENCE/UNRESOLVED DISAGREEMENTS/KEY CONDITION from each teammate
+- **Round 3**: Collect FINAL VERDICT/CONFIDENCE/UNRESOLVED DISAGREEMENTS/KEY CONDITION and the optional CONCERN FOR THE USER from each teammate
 
 Severity levels: CRITICAL (blocks deploy), HIGH (must fix), MEDIUM (should fix), LOW (nice to have).
 

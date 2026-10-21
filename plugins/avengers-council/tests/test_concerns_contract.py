@@ -78,3 +78,14 @@ def test_skills_collect_concerns_before_grading():
         assert concern < synth.index("Grade quality") if skill == "council-plan-review" else concern < synth.index("Grade Quality")
         if "red line" in synth.split("Collect each member's `CONCERN", 1)[0].lower():
             raise AssertionError("red-line check precedes concern classification")
+
+
+def test_every_round_3_prompt_asks_for_the_concern():
+    protocol = read("references/orchestration-protocol.md")
+    prompts = protocol.split("ROUND 3 — FINAL POSITION")[1:]
+    assert len(prompts) == 2
+    for prompt in prompts:
+        assert "CONCERN FOR THE USER" in prompt.split("```", 1)[0]
+    captain = read("references/captain-america-orchestrator.md")
+    round3 = next(line for line in captain.splitlines() if line.startswith("- **Round 3**"))
+    assert "CONCERN FOR THE USER" in round3
