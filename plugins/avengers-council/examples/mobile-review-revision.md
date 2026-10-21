@@ -20,6 +20,8 @@
 | **Vote** | 3 approve · 4 concerns · 2 reject (9 voters) |
 | **Score** | 7.4/10 avg |
 
+Vote adjustments: none
+
 Quality and Risk are info rows. The verdict comes from votes and findings.
 
 ---
