@@ -21,6 +21,8 @@
 | **Vote** | 2 approve · 1 concerns · 0 reject (3 voters) |
 | **Score** | 7.5/10 avg |
 
+Vote adjustments: none
+
 Quality and Risk are info rows. The verdict comes from votes and findings. Captain America does not score, so the average covers the two specialists.
 
 ---

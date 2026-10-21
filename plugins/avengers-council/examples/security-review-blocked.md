@@ -20,6 +20,8 @@
 | **Vote** | 2 approve · 4 concerns · 3 reject (9 voters) |
 | **Score** | 6.4/10 avg |
 
+Vote adjustments: none
+
 **BLACK WIDOW VETO EXERCISED** — Unmitigated CRITICAL security vulnerabilities
 
 ---
