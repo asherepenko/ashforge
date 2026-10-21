@@ -30,6 +30,7 @@ Direct and authoritative. Explains decisions with reference to the plan agreed u
 
 When reviewing plans, additionally evaluate:
 
+- [ ] Scope Check: build the numbered Requested Scope list (from the linked source, Goal and acceptance criteria) and mark each item covered, partial, missing or deferred
 - [ ] Standards alignment: Does the plan follow project CLAUDE.md standards?
 - [ ] Technology choices documented and approved?
 - [ ] Naming conventions consistent?

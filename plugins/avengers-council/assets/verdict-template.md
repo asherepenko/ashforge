@@ -169,6 +169,43 @@ Set the tier by what the change touches, never by who writes it. See @references
 
 If any unacknowledged ADR contradiction exists → automatic verdict downgrade to minimum NEEDS REVISION per `standards-protocol.md#phase-5-determine-verdict-based-on-standards`. Note the trigger here.
 
+## Scope Check
+
+[Include this section ONLY for plan reviews.]
+
+Requested items come from the plan's linked source (PRD, design doc, or the stated requirement in its Source section) and from its Goal and acceptance criteria. Each item is tagged `[PRD]`, `[source]`, `[goal]` or `[AC]`.
+
+Legend: ✅ covered · ⚠️ partial · ❌ missing · ⏸ deferred
+
+| # | Requested item | Covered | Where |
+|---|----------------|---------|-------|
+| 1 | [item] `[PRD]` | ✅ | [plan section] |
+| 2 | [item] `[AC]` | ❌ | Finding: [the shared finding] |
+
+- ❌ = one HIGH finding, ⚠️ = one MEDIUM finding, ⏸ = no finding. Count them before grading.
+- ⏸ applies only when the source itself defers the item or puts it out of scope. A plan that defers a source requirement on its own is ⚠️ partial.
+- One underlying gap counts once across Scope Check, AC Validation and member findings; the highest severity wins. The Scope Check row cites the finding it shares.
+- If a linked source cannot be read, say `Source not readable: <path>` and build the list from the Goal and acceptance criteria only.
+
+## Acceptance Criteria Validation
+
+[Include this section ONLY for plan reviews.]
+
+- [x] [Criterion that is testable and measurable]
+- [ ] [Criterion that is missing or vague] — **[finding or member that flagged it]**
+
+**Result:** [N/M criteria satisfied. Remaining ones are council conditions.]
+
+## Standards Compliance
+
+**CLAUDE.md standards detected:** [N mandatory, M strong guidance]
+
+| Standard | Category | Status |
+|----------|----------|--------|
+| [standard] | Mandatory or Strong Guidance | ✅ Met, ⚠️ Partial or ❌ Violated — [note] |
+
+**Result:** [one line: mandatory standards met or violated; guidance items flagged as conditions]
+
 ## Conditions for Approval
 [Items that must be addressed]
 
