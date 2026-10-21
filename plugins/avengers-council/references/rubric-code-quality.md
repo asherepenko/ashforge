@@ -1,6 +1,6 @@
 # Code Quality Grading Rubric
 
-Evaluation criteria for code review. Each Council member grades through their specialty lens, but these five criteria provide shared grading language. Score each relevant criterion as STRONG / ADEQUATE / WEAK. Report WEAK findings; do not report STRONG or ADEQUATE unless asked. Report each WEAK criterion as `weak: <slug>` using the slug in its heading; WEAK criteria feed the basis of your domain score (see @references/verdict-rules.md#domain-scoring).
+Evaluation criteria for code review. Each Council member grades through their specialty lens, but these five criteria provide shared grading language. Score each relevant criterion as STRONG / ADEQUATE / WEAK. Report WEAK findings; do not report STRONG or ADEQUATE unless asked. Report each WEAK criterion as `weak: <slug>` using the slug in its heading; WEAK criteria feed the basis of your domain score (see @references/verdict-rules.md#domain-scoring). A weakness that rests only on pre-existing findings (`Introduced here: pre-existing`) is not WEAK.
 
 **Anti-leniency reminder**: If you identify an issue then find yourself explaining why it's probably fine, that is a signal to report it, not dismiss it. The decision about acceptability belongs to the user.
 

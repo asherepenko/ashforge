@@ -25,12 +25,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 - "Save as TODOs" skips the Concerns for the User section unless the user asks to include it.
 - Missing or partial Scope Check items become HIGH or MEDIUM findings. A gap counts once across Scope Check, AC Validation and member findings.
 - README, AGENTS.md and docs/skills.md cover Ant-Man and the research protocol. The architecture diagram shows Ant-Man.
-- In code reviews, a weakness that rests only on pre-existing findings is not WEAK: it adds no weak slug and does not cap the score.
+- In code reviews, a weakness that rests only on pre-existing findings is not WEAK: it adds no weak slug and does not cap the score. The code-quality rubric and the code-review spawn prompt say so too.
 
 ### Fixed
 
 - Quick Flow now runs `score-check.sh`, `review-grade.sh` and the Risk tier table, like Phase 4.
-- Fallback mode fills the Quality and Risk rows like Phase 4: no `Quality: ` prefix, the weak-slug suffix, and a Risk emoji.
+- Fallback mode and Captain America's synthesis duty fill the Quality and Risk rows like Phase 4: `review-grade.sh --ladder severity`, no `Quality: ` prefix, the weak-slug suffix, and a Risk emoji.
 - Captain America's Round 3 duty collects the final domain score with its basis.
 - The architecture doc example shows a HIGH finding as a condition to fix before merge, not as guidance.
 - The code-review examples show the `Vote adjustments` line under the Consensus table.
