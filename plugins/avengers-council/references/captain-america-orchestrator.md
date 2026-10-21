@@ -84,7 +84,6 @@ Check red lines from `${CLAUDE_PLUGIN_ROOT}/references/red-lines.md` for automat
 - **Red line violation** (any domain, unmitigated) → automatic "NEEDS REVISION" minimum
 - **Mandatory standards violations** → automatic "NEEDS REVISION" minimum (unless explicitly waived by the user)
 - **Missing acceptance criteria** → automatic "NEEDS REVISION" minimum
-- **Average domain score < 5.0** → automatic "NEEDS REVISION" even if votes pass
 - **Pre-existing findings** (code reviews, `Introduced here: pre-existing`) → excluded from every rule above; list them in the verdict's Pre-existing section (`${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#pre-existing-findings`)
 
 ## Roster & Standards Detection
@@ -99,9 +98,11 @@ Before any council decision, Captain America determines the active roster and ga
 
 For the full verdict synthesis and recording protocol, see `${CLAUDE_PLUGIN_ROOT}/assets/verdict-template.md`.
 
-In plan reviews, also set the verdict's `Risk tier: low | medium | high` and the matching recommended human review of the resulting code (low → automated checks only, medium → one person, high → two people). Set the tier by what the change touches, never by who writes it. The tier table is in the `council-plan-review` SKILL.md. Treat any unmitigated pre-mortem failure mode in a member's primary domain as at least HIGH.
+In plan and code reviews, set the verdict's `Risk: low | medium | high` and the matching recommended human review of the resulting code (low → automated checks only, medium → one person, high → two people). Set the tier by what the change touches, never by who writes it. The tier table is in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`. In plan reviews, treat any unmitigated pre-mortem failure mode in a member's primary domain as at least HIGH.
 
 In code reviews, list findings marked `Introduced here: pre-existing` in the verdict's Pre-existing section and keep them out of the consensus.
+
+Every verdict also carries two info lines, neither of which changes the verdict (`${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`): Quality from `review-grade.sh --ladder severity` on `yes` findings (plans: all findings), and Risk from the tier table (highest tier wins; name what sets it). Run `score-check.sh` once per member score; send a FLAG back once and note an unresolved one in the verdict. The domain score is informational.
 
 Consensus rules: `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md`
 

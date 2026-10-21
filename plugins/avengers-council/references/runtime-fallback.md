@@ -55,7 +55,7 @@ Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1
    - Produce a single-member assessment block in that persona's voice with the same Round-1 schema:
      ```
      VERDICT: APPROVE / CONCERNS / REJECT
-     DOMAIN SCORE: X/10 ([domain])
+     DOMAIN SCORE: X/10 ([domain]) — basis: <own finding numbers | weak: <slugs> | none>
      KEY FINDINGS: max 5, each with severity (code review: plus Introduced here: yes | pre-existing)
      VOTE BASIS (code review, CONCERNS or REJECT only): the findings the verdict rests on
      CONSIDERED BUT NOT FLAGGED: 1-3 near-misses
@@ -67,7 +67,9 @@ Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1
 
 4. **Aggregate the per-member blocks** using the same logic as the full mode (`references/verdict-rules.md`):
    - Tally votes
-   - Compute aggregate domain score (average < 5.0 → NEEDS REVISION)
+   - Compute the average domain score (informational; never changes the verdict)
+   - Run `score-check.sh` per member and note any FLAG in the verdict (no Round 3 in fallback)
+   - Run `review-grade.sh` on `yes` counts and set Risk from the tier table (`references/verdict-rules.md#quality-and-risk`)
    - Check red lines (per `references/red-lines.md`)
    - Apply Black Widow veto on unmitigated CRITICAL security findings
 

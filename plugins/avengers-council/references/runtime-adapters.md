@@ -205,7 +205,7 @@ When SPAWN=`none`, the single-orchestrator fallback skips debate rounds and caps
 
 - All persona files in `agents/`
 - `references/verdict-rules.md`, `shared-principles.md`, `red-lines.md`, `member-registry.md`, `standards-protocol.md`, and `assets/verdict-template.md`
-- Domain-scoring math (1-10 per member, aggregate < 5.0 → NEEDS REVISION)
+- Domain-scoring math (1-10 per member with a basis, informational only — never changes the verdict)
 - Black Widow's veto on unmitigated CRITICAL security findings
 - Optional-member auto-join based on topic-tag matching (decided pre-spawn by the orchestrator)
 - Captain America always played by the orchestrating model — never spawned (on stay-alive runtimes the orchestrator's wire name is `team-lead`; ordinary Claude hub subagents use `main`; other hubs use exposed orchestrator IDs)

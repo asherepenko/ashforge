@@ -160,7 +160,7 @@ Send your assessment via SendMessage to `team-lead` (that is Captain America, th
 session — `captain-america` is NOT a valid recipient name) using the Round-1 format from
 references/debate-protocol.md#round-1--initial-assessment (canonical — do not improvise fields):
 - Verdict: APPROVE / CONCERNS / REJECT
-- Domain Score: X/10 (your domain)
+- DOMAIN SCORE: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none> (pick the band from your own findings and WEAK criteria; see references/verdict-rules.md#domain-scoring)
 - Key Findings: max 5, each with severity (CRITICAL/HIGH/MEDIUM/LOW); in code reviews, also 'Introduced here: yes | pre-existing'
 - Red Line Violations: any from references/red-lines.md (or 'None')
 - Vote Basis (code reviews, CONCERNS or REJECT only): the findings the verdict rests on — own by number, a teammate's as '<member>#<n>', a red line by name
@@ -244,7 +244,7 @@ After collecting Round 1 responses:
    ROUND 3 — FINAL POSITION
    [All Round-2 challenges, supports and responses, including disclosed omissions]
    Reconsider your initial position using the completed debate. Send FINAL VERDICT,
-   FINAL DOMAIN SCORE, CONFIDENCE, FINAL VOTE BASIS (code review), UNRESOLVED DISAGREEMENTS
+   FINAL DOMAIN SCORE with its basis, CONFIDENCE, FINAL VOTE BASIS (code review), UNRESOLVED DISAGREEMENTS
    and KEY CONDITION to team-lead using debate-protocol.md's canonical final format.
    [Code review, only for a member whose vote rests on pre-existing findings or gave no basis
    (verdict-rules.md#votes-that-rest-on-pre-existing-findings): "Your vote basis [list] is
@@ -283,7 +283,7 @@ After collecting Round 1 responses:
 
    Reach your final position. Return:
    - Verdict: APPROVE / CONCERNS / REJECT
-   - Final Domain Score: X/10 (your domain)
+   - Final Domain Score: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none>
    - Confidence: HIGH / MEDIUM / LOW
    - Final Vote Basis (code review, CONCERNS or REJECT only): the findings the verdict rests on
    - Unresolved Disagreements: reference the specific Round-2 exchanges that did not converge
@@ -317,8 +317,20 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
 
 4. **Compute aggregate domain score:**
    - Collect final domain scores from all responding members
-   - Calculate average per @references/verdict-rules.md#domain-scoring
-   - If average < 5.0 and vote tally yields APPROVED → downgrade to NEEDS REVISION
+   - Calculate average per @references/verdict-rules.md#domain-scoring (informational — never changes the verdict)
+   - A score with no basis is asked for once; if still missing, report `n/a` and leave it out of the average
+
+   **Check each score:** run `score-check.sh` once per member with their own counts. Exit 1 is a FLAG: in Full mode send it back to that member in Round 3 to fix the score or the labels; in Quick and fallback modes note it in the verdict. A FLAG never changes the verdict.
+
+   ```bash
+   bash "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
+   ```
+
+   **Grade quality and set risk:** run `review-grade.sh` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). On a script error print `Quality: not scored ({reason})`. Both are info only (@references/verdict-rules.md#quality-and-risk).
+
+   ```bash
+   bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N
+   ```
 
 5. **Apply consensus rules** per @references/verdict-rules.md (single source of truth — do not restate here)
    - For contested votes, apply the escalation hierarchy from verdict-rules.md
@@ -387,7 +399,8 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
 
    Review from your specialty lens. Stay-alive teammates send to `team-lead`; hub workers return their result to the orchestrator (ordinary Claude subagents may address `main`). Include:
    - Verdict: APPROVE / CONCERNS / REJECT
-   - Key Findings: max 3
+   - Key Findings: max 3, each with severity (CRITICAL/HIGH/MEDIUM/LOW); in code reviews, also 'Introduced here: yes | pre-existing'
+   - DOMAIN SCORE: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none>
    - Recommendation: 1-2 sentences
    ```
 3. Collect 2 positions + add your own = 3 votes (stay-alive: messages arrive automatically; hub: results return per spawn — `wait_agent` on each, Codex)
