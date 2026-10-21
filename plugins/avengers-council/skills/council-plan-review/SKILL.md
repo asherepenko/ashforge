@@ -105,20 +105,21 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - **Pre-mortem directive** (include verbatim in the spawn prompt):
     > It is three months after this plan shipped and it failed in your domain. What happened? Give 1–2 failure modes. Tie each one to the plan section it comes from, and state the plan's mitigation for it, or `unmitigated`. An unmitigated failure mode in your primary domain is a finding of at least HIGH severity.
   - Each member's Round 1 response must include a `Pre-mortem:` line with 1–2 failure modes in the shape `[plan section] — [what failed] — [mitigation | unmitigated]`.
+  - Each member's `DOMAIN SCORE` line must carry a basis: `basis: <own finding numbers | weak: <slugs> | none>`. Pick the band per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#domain-scoring`. A score without a basis is sent back once, then reported as `n/a`.
 - **Verdict synthesis additions:**
   - Check if acceptance criteria are testable and measurable
   - If major criteria missing → downgrade to "NEEDS REVISION" minimum
   - Add Standards Compliance and Acceptance Criteria Validation sections to saved verdict
   - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
-  - **Set the risk tier** in the verdict's Risk Tier section. Set it by what the change touches, never by who writes it. When a plan touches several tiers, the highest wins:
+  - **Count missing major acceptance criteria as one HIGH finding.** Add it to the finding list before grading.
+  - **Check each score:** run `score-check.sh` once per member, per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4. Exit 1 is a FLAG: send it back to that member in Round 3, or note it in the verdict. A FLAG never changes the verdict.
+  - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Print its line as the verdict's `Quality:` line. On a script error print `Quality: not scored ({reason})`:
 
-    | Tier | The change touches | Recommended human review of the resulting code |
-    |------|--------------------|------------------------------------------------|
-    | `low` | Docs, copy, internal-only tooling, or additive behavior behind a flag | Automated checks only |
-    | `medium` | An ordinary product change | One person |
-    | `high` | Auth, permissions, billing or payments, data migrations, CI/deploy/release, auto-update, secrets, or any other path that always needs two people | Two people |
-
-    State the basis: name what the plan touches that sets the tier.
+    ```bash
+    bash "$PLUGIN_ROOT/scripts/review-grade.sh" --ladder severity \
+      --critical N --high N --medium N --low N
+    ```
+  - **Set the risk tier** from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk` and print it as the verdict's `Risk:` line. State the basis: name what the plan touches that sets the tier. Highest tier wins. Quality and Risk are info only; neither changes the verdict.
   - If `plan_mode_source` is true, include in verdict header:
     ```
     > Reviewing plan file: `[filename]`
@@ -135,7 +136,7 @@ After Phase 4 synthesis, before any follow-up question, emit a standalone assist
 COUNCIL_PLAN_REVIEW_RESULT {"session":"<from hook>","plan":"<from hook>","digest":"<from hook>","token":"<from hook>","verdict":"APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED","review":"<full synthesized review markdown, JSON escaped>"}
 ```
 
-Choose one exact verdict value; include the full synthesized verdict markdown in `review`. Do not place the receipt in a tool result, quoted user text, subagent response or code block. Retry ExitPlanMode after emitting it. The hook reads only this session's top-level assistant text and persists the review under `.artifacts/reviews/plans/council/YYYY-MM-DD/`; no Bash recorder or out-of-plan write is required while plan mode restricts writes. This hook-side save replaces Phase 5's direct write only for hook-triggered plan-mode reviews. Successful review removes the plugin denial and preserves Andrew's normal plan approval prompt; NEEDS REVISION/BLOCKED continue to deny. Ordinary manual reviews use Phase 5's normal save. Never claim a receipt alone has been persisted: the next hook invocation performs that write.
+Choose one exact verdict value; the receipt JSON keeps these fields and enum unchanged. The `review` field carries the full verdict block (Verdict, Quality, Risk, Vote, Score) as synthesized. Do not place the receipt in a tool result, quoted user text, subagent response or code block. Retry ExitPlanMode after emitting it. The hook reads only this session's top-level assistant text and persists the review under `.artifacts/reviews/plans/council/YYYY-MM-DD/`; no Bash recorder or out-of-plan write is required while plan mode restricts writes. This hook-side save replaces Phase 5's direct write only for hook-triggered plan-mode reviews. Successful review removes the plugin denial and preserves Andrew's normal plan approval prompt; NEEDS REVISION/BLOCKED continue to deny. Ordinary manual reviews use Phase 5's normal save. Never claim a receipt alone has been persisted: the next hook invocation performs that write.
 
 ## Common Rationalizations
 
@@ -147,6 +148,7 @@ Choose one exact verdict value; include the full synthesized verdict markdown in
 | "This finding is minor, I'll soften it" | Report findings at their actual severity. LLM evaluators have a documented tendency to praise LLM-generated work. Resist. |
 | "I considered flagging this design choice but it's probably fine" | Silent dismissals are opaque. Record near-misses in the "Considered but not flagged" section with reasoning. The user decides whether your judgment was correct. |
 | "The plan is written by a senior engineer, so the risk tier is low" | The tier is set by what the change touches, never by who writes it. |
+| "The findings are mild, I'll write the Quality letter myself" | Run `review-grade.sh` on the counts and paste its line. A hand-written letter is a second verdict. |
 | "The pre-mortem failure is unlikely, I'll leave it out" | Name it and state the plan's mitigation or `unmitigated`. An unmitigated failure mode in your primary domain is at least HIGH. |
 | "The debate round produced agreement, skip Round 2 challenges" | Agreement in Round 1 often means groupthink. Round 2 challenges are mandatory — they surface assumptions everyone shares but nobody questioned. On hub-transport runtimes this means a separate spawn fan-out with the consolidated Round-1 context, not a SendMessage exchange. |
 
@@ -160,8 +162,10 @@ Choose one exact verdict value; include the full synthesized verdict markdown in
 - Council member deferring on their primary expertise area
 - On hub-transport runtimes: skipping the Round-2/3 spawn fan-out because "the Round-1 verdicts looked unanimous" — debate rounds are mandatory in full mode
 - Quick Mode ran without `--quick` and without the three-trigger cost-controlled disclosure — a silent downgrade is a hidden fidelity loss
-- Risk tier set from the author or the plan's size instead of what the change touches
+- Risk set from the author or the plan's size instead of what the change touches
 - An unmitigated pre-mortem failure mode in a member's primary domain reported below HIGH
+- Writing the Quality letter by hand
+- A domain score with no basis, or a score-check FLAG neither fixed nor noted
 
 ## Verification
 
@@ -173,7 +177,9 @@ After council review completes, confirm:
 - [ ] Final verdict includes Standards Compliance section
 - [ ] Acceptance criteria validated as testable and measurable
 - [ ] Each Round 1 position includes a `Pre-mortem:` line with 1–2 failure modes tied to plan sections
-- [ ] Verdict states `Risk tier: low | medium | high`, its basis, and the recommended human review
+- [ ] Quality line comes from `review-grade.sh` (or `Quality: not scored ({reason})`), never a hand-picked letter
+- [ ] Risk line states `low | medium | high` with its basis, and the Risk Tier section gives the recommended human review
+- [ ] Every score has a basis and passed `score-check.sh`, or carries a flag
 - [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — plan scope too narrow")
 - [ ] Verdict saved to `.artifacts/reviews/`
 - [ ] Post-verdict action taken per verdict routing (approved/conditions/revision/blocked)
