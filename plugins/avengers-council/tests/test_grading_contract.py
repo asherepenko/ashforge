@@ -148,6 +148,7 @@ PRODUCER_DOCS = [
     "skills/council-plan-review/SKILL.md",
     "references/orchestration-protocol.md",
     "references/runtime-fallback.md",
+    "references/captain-america-orchestrator.md",
 ]
 
 
@@ -175,9 +176,11 @@ def test_quick_flow_names_grading_steps():
 
 
 def test_fallback_and_protocol_fill_rows_the_same_way():
-    for path in ["references/orchestration-protocol.md", "references/runtime-fallback.md"]:
+    for path in ["references/orchestration-protocol.md", "references/runtime-fallback.md",
+                 "references/captain-america-orchestrator.md"]:
         text = read(path)
         assert "leading `Quality: `" in text, path
+        assert "--ladder severity" in text, path
         assert "verdict-rules.md#quality" in text, path
         assert "`<emoji> <level> — <basis>`" in text, path
 
@@ -193,3 +196,26 @@ def test_weak_criterion_resting_only_on_pre_existing_findings_does_not_count():
     weak = rules.split("WEAK criteria come from the member's rubric", 1)[1].split("\n\n", 1)[0]
     assert "pre-existing" in weak
     assert "weak slug" in weak and "score" in weak
+
+
+def test_architecture_doc_shows_high_as_a_condition():
+    text = read("docs/architecture.md")
+    assert "Strong guidance, not blocking" not in text
+    high = text[text.index("🟡 HIGH"):].split("━", 1)[0]
+    assert "fix before merge" in high
+
+
+def test_code_review_examples_carry_vote_adjustments_line():
+    code_reviews = [p for p in sorted((PROJECT_ROOT / "examples").glob("*.md"))
+                    if "**Review Type:** Code Review" in p.read_text(encoding="utf-8")]
+    assert len(code_reviews) >= 3
+    for path in code_reviews:
+        consensus = path.read_text(encoding="utf-8").split("## Consensus", 1)[1].split("\n---", 1)[0]
+        assert "\nVote adjustments: " in consensus, path.name
+
+
+def test_rubric_prompts_exclude_pre_existing_weakness():
+    skill = next(l for l in read("skills/council-code-review/SKILL.md").splitlines() if "**Grading rubric**" in l)
+    rubric = read("references/rubric-code-quality.md").split("\n\n", 2)[1]
+    for text in (skill, rubric):
+        assert "pre-existing" in text
