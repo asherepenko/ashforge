@@ -128,7 +128,7 @@ Set the tier by what the change touches, never by who writes it. See @references
 - [Near-miss with reasoning]
 
 <!-- If optional members participated, add their positions here using the same shape -->
-### [Optional Member Name] ([Domain]) — [VERDICT] | Score: X/10 — basis: …
+### Ant-Man (Reuse & Placement) — [VERDICT] | Score: X/10 — basis: …
 **Findings:**
 - [Finding 1]
 
@@ -148,7 +148,8 @@ Set the tier by what the change touches, never by who writes it. See @references
 | Hawkeye | Mobile Platforms | X/10 |
 | Vision | Data & Observability | X/10 |
 | Doctor Strange | DevOps & Infrastructure | X/10 |
-| *[Optional members — add rows if active]* | | |
+| Ant-Man (optional) | Reuse & Placement | X/10 |
+| *[Other optional members — add rows if active]* | | |
 
 **Average: X.X/10** | **Voters: N** | (info — never changes the verdict)
 
