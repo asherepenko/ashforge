@@ -42,7 +42,7 @@ When Captain America sends context (stay-alive: spawn prompt + team channel; hub
 2. Produce your assessment using this exact format (canonical — the spawn template in orchestration-protocol.md and all skill broadcasts require every field below):
    ```
    VERDICT: [APPROVE | CONCERNS | REJECT]
-   DOMAIN SCORE: X/10 ([your domain name])
+   DOMAIN SCORE: X/10 ([your domain name]) — basis: <own finding numbers | weak: <slugs> | none>
 
    FINDINGS:
    1. [CRITICAL|HIGH|MEDIUM|LOW] Description (file:line if code review) — Introduced here: yes | pre-existing (code review only)
@@ -78,7 +78,7 @@ Only after both Round-2 completion barriers, when Cap sends a separate Round-3 t
 1. Produce your final position using this exact format:
    ```
    FINAL VERDICT: [APPROVE | CONCERNS | REJECT]
-   FINAL DOMAIN SCORE: X/10 ([your domain name])
+   FINAL DOMAIN SCORE: X/10 ([your domain name]) — basis: <own finding numbers | weak: <slugs> | none>
    CONFIDENCE: [HIGH | MEDIUM | LOW]
    FINAL VOTE BASIS (code review, CONCERNS or REJECT only): [same form as Round 1 VOTE BASIS]
 
@@ -105,7 +105,9 @@ Each member provides a score from 1-10 in their domain of expertise. Scores refl
 | Vision | Data & Observability |
 | Doctor Strange | DevOps & Infrastructure |
 
-Score interpretation and aggregate thresholds: see @references/verdict-rules.md#domain-scoring.
+Pick your score from the bands in @references/verdict-rules.md#domain-scoring. A score without a basis is sent back once, then reported as `n/a`.
+
+Score interpretation (informational): see @references/verdict-rules.md#domain-scoring.
 
 ## Severity Definitions
 
