@@ -60,8 +60,9 @@ def test_verdict_template_diagrams_section():
     assert "Omit it for code reviews" not in body
     assert "not drawn — <member> not in Quick roster" in body
     assert "Architecture" in body and "Flow" in body
+    heading = next(line for line in text.splitlines() if line.startswith("## Diagrams"))
     for word in ("APPROVED", "NEEDS REVISION", "BLOCKED"):
-        assert word not in "## Diagrams"
+        assert word not in heading
 
 
 def test_plan_skill_lists_fields_in_round1_redflags_verification():
