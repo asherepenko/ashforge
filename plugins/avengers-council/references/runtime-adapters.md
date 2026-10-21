@@ -6,7 +6,7 @@ Read the preflight's `== Runtime capability ==` section, then resolve each axis 
 
 ## Contents
 
-- [Capability Axes](#capability-axes) — spawn / transport / progress / ask / root env / hooks / sandbox
+- [Capability Axes](#capability-axes) — spawn / transport / progress / ask / root env / hooks / sandbox / web
 - [Known Runtime Profiles](#known-runtime-profiles) — advisory table; detection wins
 - [Hub-Mediated Debate](#hub-mediated-debate) — the 3-round fan-out for result-returning runtimes
 - [`update_plan` example](#update_plan-example) — plan-tool runtimes
@@ -75,17 +75,26 @@ The `if [ -f "${CLAUDE_PLUGIN_ROOT}/…" ]` wrapper on every command in `hooks/h
 
 Managed/sandboxed worktrees (Codex App and any runtime that blocks branch creation, commits, or pushes): the review still produces its verdict — writes under `.artifacts/reviews/` work in any sandbox. What is NOT available: post-verdict actions that commit or push ("Apply suggested fixes", "Address findings now" when it would commit), re-reviews needing branch creation, and possibly `gh pr view`/`gh pr diff` without authenticated `gh` + network. Surface the limit explicitly and direct the user to the runtime's native branch-creation / hand-off-to-local controls.
 
+### WEB — web research tools
+
+| Value | Meaning |
+|-------|---------|
+| `available` | The session exposes `WebSearch` and `WebFetch`, or the runtime's equivalent search and fetch tools. Research runs per `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md`. |
+| `none` | No such tools are exposed. Skip research and add one line under Run Mode: `Research: skipped — no web tools`. Disclosure only: it never caps or changes the verdict. |
+
+Discover `WEB` from the tools actually exposed, as with SPAWN. Exposed tools are authoritative; a profile row or config hint never overrides them.
+
 ## Known Runtime Profiles
 
-Advisory only — the preflight detection wins over this table.
+Advisory only — the preflight detection wins over this table. The WEB column is a default; resolve it from the exposed tools.
 
-| Runtime | SPAWN | TRANSPORT | PROGRESS | ASK | Notes |
-|---------|-------|-----------|----------|-----|-------|
-| claude-code | `registry` | `hub` / verified `stay-alive` | `task-list` | `structured` | Stay-alive requires enabled teams and verified interactive session; `-p`/SDK always hub. A tty alone is not proof. `AVENGERS_COUNCIL_INTERACTIVE=1` is an orchestrator hint, never automatic tty detection. |
-| codex | `prompt-embed` | `hub` | `plan-tool` | `plain-text` | `[agents] enabled` defaults true; `[features] multi_agent` is a legacy hint. Exposed tools and session restrictions decide dispatch, including when config says false. Hooks gated + trust. |
-| zcode | `registry` | `hub` | `todo` | `structured` | Result-returning `Agent` spawns; `SendMessage` resume of completed agents available; `ExitPlanMode` exists, hook parity unverified. |
-| pi | `none`* | `hub` | `none`/extension | `plain-text` | *No native subagent tool — SPAWN=`none` unless a subagent skill/extension is installed (then `prompt-embed`). Skills format is compatible; verify spawn availability conversationally. |
-| antigravity | `unknown` | `hub` | internal | interactive | Claude Agent Skills standard; custom subagents exist — confirm spawn shape conversationally before dispatch. |
+| Runtime | SPAWN | TRANSPORT | PROGRESS | ASK | WEB | Notes |
+|---------|-------|-----------|----------|-----|-----|-------|
+| claude-code | `registry` | `hub` / verified `stay-alive` | `task-list` | `structured` | `available` | Stay-alive requires enabled teams and verified interactive session; `-p`/SDK always hub. A tty alone is not proof. `AVENGERS_COUNCIL_INTERACTIVE=1` is an orchestrator hint, never automatic tty detection. |
+| codex | `prompt-embed` | `hub` | `plan-tool` | `plain-text` | `available` / `none` | `[agents] enabled` defaults true; `[features] multi_agent` is a legacy hint. Exposed tools and session restrictions decide dispatch, including when config says false. Hooks gated + trust. |
+| zcode | `registry` | `hub` | `todo` | `structured` | `available` / `none` | Result-returning `Agent` spawns; `SendMessage` resume of completed agents available; `ExitPlanMode` exists, hook parity unverified. |
+| pi | `none`* | `hub` | `none`/extension | `plain-text` | `available` / `none` | *No native subagent tool — SPAWN=`none` unless a subagent skill/extension is installed (then `prompt-embed`). Skills format is compatible; verify spawn availability conversationally. |
+| antigravity | `unknown` | `hub` | internal | interactive | `available` / `none` | Claude Agent Skills standard; custom subagents exist — confirm spawn shape conversationally before dispatch. |
 
 ## Capacity-aware scheduling and exposed tool mapping
 
