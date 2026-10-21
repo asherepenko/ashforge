@@ -440,7 +440,7 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
    - Recommendation: 1-2 sentences
    ```
 3. Collect 2 positions + add your own = 3 votes (stay-alive: messages arrive automatically; hub: results return per spawn — `wait_agent` on each, Codex)
-4. Quick consensus per @references/verdict-rules.md Quick Mode section
+4. Quick consensus per @references/verdict-rules.md Quick Mode section. Then grade, as in Phase 4 step 4: run `score-check.sh` per member (any FLAG becomes `Score flag:` in the verdict; Quick has no Round 3), run `review-grade.sh --ladder severity` on the `yes` findings (plans: all findings) for the **Quality** row, and set the **Risk** row from the tier table (@references/verdict-rules.md#quality-and-risk). Fill both rows as Phase 4 describes
 5. Format abbreviated verdict (3 positions only)
 6. Save verdict (same Phase 5)
 7. Interactive follow-up (Phase 6)
