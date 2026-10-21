@@ -182,6 +182,9 @@ references/debate-protocol.md#round-1--initial-assessment (canonical — do not 
 - Red Line Violations: any from references/red-lines.md (or 'None')
 - Vote Basis (code reviews, CONCERNS or REJECT only): the findings the verdict rests on — own by number, a teammate's as '<member>#<n>', a red line by name
 - Pre-mortem (plan reviews only): 1-2 failure modes, each with plan section and mitigation or 'unmitigated'
+- ARCHITECTURE DIAGRAM (plan reviews only; include only in iron-man's prompt): mermaid or ASCII of components, data flow, dependencies, boundaries
+- FLOW DIAGRAM (plan reviews only; include only in hulk's prompt): mermaid or ASCII of the user/state flow with happy, error and edge paths
+- PATH → TEST (plan reviews only; include only in hulk's prompt): one line per path, `<path> → <planned test | unmapped>`; each `unmapped` path is a Hulk finding
 - Considered but not flagged: 1-3 near-misses with reasoning (or 'Nothing material — scope too narrow')
 - Recommendation: 1-2 sentences
 
@@ -429,6 +432,7 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
    - Verdict: APPROVE / CONCERNS / REJECT
    - Key Findings: max 3, each with severity (CRITICAL/HIGH/MEDIUM/LOW); in code reviews, also 'Introduced here: yes | pre-existing'
    - DOMAIN SCORE: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none>
+   - ARCHITECTURE DIAGRAM / FLOW DIAGRAM + PATH → TEST (plan reviews only): iron-man adds ARCHITECTURE DIAGRAM and hulk adds FLOW DIAGRAM and PATH → TEST, each only when that member is in the roster
    - Recommendation: 1-2 sentences
    ```
 3. Collect 2 positions + add your own = 3 votes (stay-alive: messages arrive automatically; hub: results return per spawn — `wait_agent` on each, Codex)

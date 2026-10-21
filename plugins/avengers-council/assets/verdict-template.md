@@ -206,6 +206,20 @@ Legend: ✅ covered · ⚠️ partial · ❌ missing · ⏸ deferred
 
 **Result:** [one line: mandatory standards met or violated; guidance items flagged as conditions]
 
+## Diagrams
+
+[Include this section ONLY for plan reviews.]
+
+**Architecture** (Iron Man):
+[mermaid or ASCII diagram, or `not drawn — iron-man not in Quick roster`]
+
+**Flow** (Hulk):
+[mermaid or ASCII diagram, or `not drawn — hulk not in Quick roster`]
+
+**Path → test:** [one line per path: `<path> → <planned test | unmapped>`; each `unmapped` path is a Hulk finding]
+
+When a member is not in the Quick roster, its slot reads `not drawn — <member> not in Quick roster`.
+
 ## Conditions for Approval
 [Items that must be addressed]
 

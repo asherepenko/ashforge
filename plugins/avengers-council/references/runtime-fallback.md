@@ -59,9 +59,12 @@ Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1
      DOMAIN SCORE: X/10 ([domain]) — basis: <own finding numbers | weak: <slugs> | none>
      KEY FINDINGS: max 5, each with severity (code review: plus Introduced here: yes | pre-existing)
      VOTE BASIS (code review, CONCERNS or REJECT only): the findings the verdict rests on
+     ARCHITECTURE DIAGRAM (plan review, iron-man only): mermaid or ASCII
+     FLOW DIAGRAM + PATH → TEST (plan review, hulk only): mermaid or ASCII; <path> → <planned test | unmapped>
      CONSIDERED BUT NOT FLAGGED: 1-3 near-misses
      RECOMMENDATION: 1-2 sentences
      ```
+   - The diagram fields apply when the member is present in the roster; skip them for any other persona.
    - Move to the next member
 
 3. **Skip Rounds 2 and 3.** Without parallel instances, there is no debate dynamic — Captain America cannot challenge themselves while wearing a different persona hat and produce trustworthy disagreement. Document this explicitly in the verdict header.
