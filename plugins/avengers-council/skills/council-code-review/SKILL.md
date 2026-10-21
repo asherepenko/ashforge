@@ -104,7 +104,8 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - Include the actual diff content
   - Include commit message format check against project standards
   - Require file:line references for all findings
-  - **Grading rubric**: Read `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md` and include its 5 criteria in the spawn prompt. Each council member grades findings using STRONG/ADEQUATE/WEAK per criterion. Only report WEAK findings.
+  - **Grading rubric**: Read `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md` and include its 5 criteria in the spawn prompt. Each council member grades findings using STRONG/ADEQUATE/WEAK per criterion. Only report WEAK findings, each as `weak: <slug>` (`correctness`, `simplicity`, `consistency`, `robustness`, `maintainability`).
+  - **Score basis**: every `DOMAIN SCORE` line carries `basis: <own finding numbers | weak: <slugs> | none>`, with the score picked from the anchored bands in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#domain-scoring`. Only the member's own `Introduced here: yes` findings count. A bare score is sent back once, then reported as `n/a`. The score is informational and never changes the verdict.
   - **Anti-leniency directive** (include verbatim in the spawn prompt):
     > Your job is to find problems, not to be encouraging. If you identify an issue, report it — do not rationalize it away or soften it. LLM evaluators have a documented tendency to praise LLM-generated work even when quality is mediocre. Resist this. When in doubt, flag it. The user decides what's acceptable, not you.
   - **Failure-first directive** (include verbatim in the spawn prompt):
@@ -132,6 +133,16 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - Check naming conventions, style/organization standards, testing coverage, commit message format
   - Group findings by severity (CRITICAL first)
   - Move every `Introduced here: pre-existing` finding to the verdict's Pre-existing section. Exclude these findings from the consensus rules, the unmitigated-CRITICAL rules, and Black Widow's VETO
+  - Run `score-check.sh` once per member score with that member's own counts (`yes` findings only), per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#checking-the-score`. Exit 1 is a FLAG: in Full mode send it back to that member in Round 3; otherwise print `Score flag:` under the member. A FLAG never changes the verdict:
+    ```bash
+    bash "$PLUGIN_ROOT/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
+    ```
+  - Grade Quality: count the `yes` findings by severity (pre-existing excluded) and run the script. Print its line as `Quality:`. On a script error print `Quality: not scored ({reason})`. Never write the letter by hand:
+    ```bash
+    bash "$PLUGIN_ROOT/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N
+    ```
+  - Set Risk from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`, applied to the diff's touched paths. Highest tier wins. Print `Risk:` with the tier and name the paths that set it
+  - Quality, Risk and the average domain score are informational. The verdict comes from the consensus rules
   - Include file:line references for each finding
   - Include suggested fixes where available
   - Highlight findings challenged and overturned during debate
@@ -162,6 +173,8 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
 - Quick Mode ran without `--quick` and without the three-trigger cost-controlled disclosure — a silent downgrade is a hidden fidelity loss
 - A pre-existing finding counted toward NEEDS REVISION, BLOCKED, an unmitigated-CRITICAL rule, or Black Widow's VETO
 - `REVIEW.md` read from the change under review instead of the base ref
+- Writing the Quality letter by hand instead of running `review-grade.sh`
+- A domain score without a `basis:`, or a score treated as able to override or re-open the verdict
 
 ## Verification
 
@@ -171,7 +184,10 @@ After code review completes, confirm:
 - [ ] Every finding states `Introduced here: yes | pre-existing`; pre-existing findings appear only in the Pre-existing section and did not affect the consensus
 - [ ] Every CONCERNS or REJECT vote states a vote basis; every adjusted vote is listed under **Vote adjustments** per verdict-rules.md#votes-that-rest-on-pre-existing-findings
 - [ ] CRITICAL/HIGH findings include suggested fixes
-- [ ] Rubric grading applied (5 criteria, STRONG/ADEQUATE/WEAK)
+- [ ] Rubric grading applied (5 criteria, STRONG/ADEQUATE/WEAK); WEAK criteria reported as slugs
+- [ ] `Quality:` line is the `review-grade.sh` output on the `yes` finding counts (or `not scored ({reason})`)
+- [ ] `Risk:` line names the tier and the touched paths that set it
+- [ ] Every domain score has a `basis:` and passed `score-check.sh`, or carries a `Score flag:`
 - [ ] Standards compliance checked (naming, style, testing, commit format)
 - [ ] Round 2 challenges exchanged between members (stay-alive: via SendMessage; hub: via re-spawn with consolidated context)
 - [ ] Mode selection followed the Mode Selection & Cost-Controlled Degradation section; any autonomous downgrade is disclosed in the verdict header
