@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests for the review-grading contract across verdict template, rules, and actions."""
 
+import re
 from pathlib import Path
 
 
@@ -11,20 +12,31 @@ def read(path: str) -> str:
     return (PROJECT_ROOT / path).read_text(encoding="utf-8")
 
 
-def test_verdict_template_consensus_block_has_five_lines_in_order():
+def test_verdict_template_consensus_block_has_headline_and_table_in_order():
     template = read("assets/verdict-template.md")
     block = template.split("## Consensus\n", 1)[1].split("## Risk", 1)[0]
     markers = [
-        "**Verdict**:",
-        "**Quality**:",
-        "**Risk**:",
-        "**Vote**:",
-        "**Score**:",
+        "### ",
+        "| **Quality** |",
+        "| **Risk** |",
+        "| **Vote** |",
+        "| **Score** |",
     ]
     positions = [block.find(marker) for marker in markers]
     assert all(pos >= 0 for pos in positions), positions
     assert positions == sorted(positions)
-    assert "**Vote adjustments**" in block
+    assert "Vote adjustments" in block
+    score_row = next(line for line in block.splitlines() if line.startswith("| **Score** |"))
+    assert "(info)" not in score_row
+
+
+def test_examples_use_table_consensus_block():
+    for path in sorted((PROJECT_ROOT / "examples").glob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        if "## Consensus" not in text:
+            continue
+        assert "| **Quality** |" in text, path.name
+        assert "**Verdict**:" not in text, path.name
 
 
 def test_verdict_template_risk_section_covers_code_reviews():
@@ -87,3 +99,11 @@ def test_quality_line_weak_suffix_has_a_producer_in_rules_and_protocol():
         text = read(path)
         assert re.search(r"weak.{0,200}verdict-rules\.md#quality\b(?!-)", text), path
     assert "· weak:" in read("assets/verdict-template.md")
+
+
+def test_consensus_table_rows_have_two_columns():
+    for path in ["assets/verdict-template.md", "docs/skills.md"]:
+        rows = [l for l in read(path).splitlines() if re.match(r"^\| \*\*(Quality|Risk|Vote|Score)\*\* \|", l)]
+        assert rows, path
+        for row in rows:
+            assert row.count("|") == 3, (path, row)

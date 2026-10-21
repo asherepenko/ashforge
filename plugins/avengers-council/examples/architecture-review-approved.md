@@ -11,13 +11,16 @@
 
 ## Consensus
 
-**Verdict**: APPROVED WITH CONDITIONS
-**Quality**: D — 0 critical, 3 high, 4 medium, 0 low
-**Risk**: high — splits one service into several, adds service-to-service auth, and migrates data between stores
-**Vote**: 7 Approve / 2 Concerns / 0 Reject (9 voters)
-**Score**: 6.0/10 avg (info)
+### ✅ APPROVED WITH CONDITIONS
 
-Quality and Risk are info lines. The verdict comes from votes and findings: no CRITICAL, and every HIGH is a condition below.
+| | |
+|---|---|
+| **Quality** | D — 0 critical, 3 high, 4 medium, 0 low |
+| **Risk** | 🔴 high — splits one service into several, adds service-to-service auth, and migrates data between stores |
+| **Vote** | 7 approve · 2 concerns · 0 reject (9 voters) |
+| **Score** | 6.0/10 avg |
+
+Quality and Risk are info rows. The verdict comes from votes and findings: no CRITICAL, and every HIGH is a condition below.
 
 ---
 

@@ -12,13 +12,16 @@
 
 ## Consensus
 
-**Verdict**: APPROVED WITH CONDITIONS
-**Quality**: C — 0 critical, 0 high, 4 medium, 2 low
-**Risk**: medium — ordinary product change to an existing read endpoint; backward compatible
-**Vote**: 2 Approve / 1 Concerns / 0 Reject (3 voters)
-**Score**: 7.5/10 avg (info)
+### ✅ APPROVED WITH CONDITIONS
 
-Quality and Risk are info lines. The verdict comes from votes and findings. Captain America does not score, so the average covers the two specialists.
+| | |
+|---|---|
+| **Quality** | C — 0 critical, 0 high, 4 medium, 2 low |
+| **Risk** | 🟡 medium — ordinary product change to an existing read endpoint; backward compatible |
+| **Vote** | 2 approve · 1 concerns · 0 reject (3 voters) |
+| **Score** | 7.5/10 avg |
+
+Quality and Risk are info rows. The verdict comes from votes and findings. Captain America does not score, so the average covers the two specialists.
 
 ---
 

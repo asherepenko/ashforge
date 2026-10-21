@@ -11,11 +11,14 @@
 
 ## Consensus
 
-**Verdict**: BLOCKED
-**Quality**: F — 2 critical, 5 high, 9 medium, 5 low
-**Risk**: high — new authentication, password storage and session handling
-**Vote**: 2 Approve / 4 Concerns / 3 Reject (9 voters)
-**Score**: 6.4/10 avg (info)
+### ⛔ BLOCKED
+
+| | |
+|---|---|
+| **Quality** | F — 2 critical, 5 high, 9 medium, 5 low |
+| **Risk** | 🔴 high — new authentication, password storage and session handling |
+| **Vote** | 2 approve · 4 concerns · 3 reject (9 voters) |
+| **Score** | 6.4/10 avg |
 
 **BLACK WIDOW VETO EXERCISED** — Unmitigated CRITICAL security vulnerabilities
 

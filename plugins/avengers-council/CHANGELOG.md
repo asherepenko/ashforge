@@ -4,6 +4,17 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.0.1] - 2026-10-21
+
+### Changed
+
+- The verdict `## Consensus` block is now a headline with a status emoji (✅, ⚠️, ⛔) followed by a Quality/Risk/Vote/Score table. The Risk row carries a 🟢/🟡/🔴 marker. `Vote adjustments` stays a plain line under the table.
+- The Score row no longer says "(info)".
+
+### Fixed
+
+- The weak-slug rule lives once in `references/verdict-rules.md`; the other files point to it. `not scored` carries no weak suffix. The contract test covers every copy.
+
 ## [4.0.0] - 2026-10-21
 
 ### Breaking

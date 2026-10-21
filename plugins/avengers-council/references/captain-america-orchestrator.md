@@ -102,7 +102,7 @@ In plan and code reviews, set the verdict's `Risk: low | medium | high` and the 
 
 In code reviews, list findings marked `Introduced here: pre-existing` in the verdict's Pre-existing section and keep them out of the consensus.
 
-Every verdict also carries two info lines, neither of which changes the verdict (`${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`): Quality from `review-grade.sh --ladder severity` on `yes` findings (plans: all findings), and Risk from the tier table (highest tier wins; name what sets it). Run `score-check.sh` once per member score; Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again in synthesis, and an unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. The domain score is informational.
+Every verdict also carries two info rows, neither of which changes the verdict (`${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`): Quality from `review-grade.sh --ladder severity` on `yes` findings (plans: all findings), and Risk from the tier table (highest tier wins; name what sets it). Run `score-check.sh` once per member score; Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again in synthesis, and an unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. The domain score is informational.
 
 Consensus rules: `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md`
 

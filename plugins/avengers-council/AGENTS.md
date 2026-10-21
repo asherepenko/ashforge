@@ -54,7 +54,7 @@ Exposed tools are authoritative. Modern Codex `[agents] enabled` defaults true; 
 
 - Skills use explicit `Read @references/...` — not bare `@references/` lines.
 - Agents include a domain score (1-10) with a `basis:` in every assessment. The score is informational: it never changes the verdict. `scripts/score-check.sh` flags scores that contradict the member's own findings.
-- Every verdict shows **Quality** (A-F, from `scripts/review-grade.sh`) and **Risk** (low | medium | high). Both are info lines; votes and findings decide the verdict.
+- Every verdict shows **Quality** (A-F, from `scripts/review-grade.sh`) and **Risk** (low | medium | high). Both are info rows; votes and findings decide the verdict.
 - APPROVED WITH CONDITIONS means no CRITICAL and every HIGH is a condition. Merge only after every condition is fixed; the post-verdict menu offers "Override — record why" if the user merges anyway.
 - Optional members auto-join based on topic matching. Add new ones via `member-registry.md`. The roster decision happens before any spawn — platform-agnostic.
 - Black Widow retains VETO power on unmitigated CRITICAL security issues — platform-agnostic.

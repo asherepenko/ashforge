@@ -17,14 +17,18 @@ For full consensus rules and severity guidelines, see @references/verdict-rules.
 
 ## Consensus
 
-**Verdict**: [APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED]
-**Quality**: [X — N critical, N high, N medium, N low · weak: slugs | not scored ({reason})]
-**Risk**: [low | medium | high] — [basis: what the change touches that sets the level]
-**Vote**: X Approve / X Concerns / X Reject (N voters)
-**Score**: X.X/10 avg (info)
+### [✅ | ⚠️ | ⛔] [APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED]
+
+| | |
+|---|---|
+| **Quality** | [X — N critical, N high, N medium, N low · weak: slugs, or not scored ({reason})] |
+| **Risk** | [🟢 low / 🟡 medium / 🔴 high] — [basis: what the change touches that sets the level] |
+| **Vote** | [N approve · N concerns · N reject (N voters)] |
+| **Score** | [X.X/10 avg] |
+
 **Vote adjustments** (code reviews only): [none | one line per adjusted vote, e.g. `Thor: REJECT → APPROVE — basis thor#2, thor#4 are pre-existing`; see verdict-rules.md#votes-that-rest-on-pre-existing-findings]
 
-Quality and Risk are info lines computed after the debate; neither changes the verdict. See @references/verdict-rules.md#quality-and-risk
+Headline emoji: ✅ APPROVED and APPROVED WITH CONDITIONS, ⚠️ NEEDS REVISION, ⛔ BLOCKED. Quality and Risk are info rows computed after the debate; neither changes the verdict. See @references/verdict-rules.md#quality-and-risk
 
 ## Risk Tier
 

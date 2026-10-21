@@ -95,11 +95,14 @@ Phase 1: Authentication System Plan
 
 ## Consensus
 
-**Verdict**: APPROVED WITH CONDITIONS
-**Quality**: D — 0 critical, 2 high, 3 medium, 1 low
-**Risk**: high — adds authentication and session handling
-**Vote**: 6 Approve / 2 Concerns / 0 Reject (8 voters)
-**Score**: 7.1/10 avg (info)
+### ✅ APPROVED WITH CONDITIONS
+
+| | |
+|---|---|
+| **Quality** | D — 0 critical, 2 high, 3 medium, 1 low |
+| **Risk** | 🔴 high — adds authentication and session handling |
+| **Vote** | 6 approve · 2 concerns · 0 reject (8 voters) |
+| **Score** | 7.1/10 avg |
 
 ## Executive Summary
 The authentication plan is solid with industry-standard patterns (OAuth2, JWT, RBAC).
@@ -154,11 +157,14 @@ council-plan-review @docs/api-design.md --quick --focus security
 ```
 ## Consensus
 
-**Verdict**: NEEDS REVISION
-**Quality**: F — 3 critical, 0 high, 0 medium, 0 low
-**Risk**: high — API authentication and session handling
-**Vote**: 0 Approve / 1 Concerns / 2 Reject (3 voters)
-**Score**: 3.5/10 avg (info)
+### ⚠️ NEEDS REVISION
+
+| | |
+|---|---|
+| **Quality** | F — 3 critical, 0 high, 0 medium, 0 low |
+| **Risk** | 🔴 high — API authentication and session handling |
+| **Vote** | 0 approve · 1 concerns · 2 reject (3 voters) |
+| **Score** | 3.5/10 avg |
 
 ## Key Findings (CRITICAL)
 - API exposes internal database IDs (enumeration vulnerability)
@@ -227,11 +233,15 @@ All verdicts follow this structure:
 
 ## Consensus
 
-**Verdict**: [APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED]
-**Quality**: [X — N critical, N high, N medium, N low · weak: slugs | not scored ({reason})]
-**Risk**: [low | medium | high] — [basis: what the change touches]
-**Vote**: X Approve / X Concerns / X Reject (N voters)
-**Score**: X.X/10 avg (info)
+### [✅ | ⚠️ | ⛔] [APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED]
+
+| | |
+|---|---|
+| **Quality** | [X — N critical, N high, N medium, N low · weak: slugs, or not scored ({reason})] |
+| **Risk** | [🟢 low / 🟡 medium / 🔴 high] — [basis: what the change touches] |
+| **Vote** | [N approve · N concerns · N reject (N voters)] |
+| **Score** | [X.X/10 avg] |
+
 **Vote adjustments** (code reviews only): [none | one line per adjusted vote]
 
 ## Risk Tier
@@ -266,7 +276,7 @@ Recommended human review of the resulting code: [automated checks only | one per
 2. [...]
 ```
 
-The block under `## Consensus` is computed after the debate. The verdict comes from votes and findings alone. **Quality** is a grade A–F from the finding counts (`scripts/review-grade.sh`: any CRITICAL is F, any HIGH is D, 3+ MEDIUM is C, 1–2 MEDIUM or more than 3 LOW is B, otherwise A). **Risk** is the tier with its basis. **Score** is the average of the members' domain scores, for information only: it never raises or lowers the verdict. Each member's score sits in a band set by their own findings and carries a `basis:`; `scripts/score-check.sh` flags a score that contradicts the member's own findings.
+The block under `## Consensus` is a headline with a status emoji (✅ approved, ⚠️ needs revision, ⛔ blocked) and a Quality/Risk/Vote/Score table. It is computed after the debate. The verdict comes from votes and findings alone. **Quality** is a grade A–F from the finding counts (`scripts/review-grade.sh`: any CRITICAL is F, any HIGH is D, 3+ MEDIUM is C, 1–2 MEDIUM or more than 3 LOW is B, otherwise A). **Risk** is the tier with its basis. **Score** is the average of the members' domain scores, for information only: it never raises or lowers the verdict. Each member's score sits in a band set by their own findings and carries a `basis:`; `scripts/score-check.sh` flags a score that contradicts the member's own findings.
 
 Plan and code verdicts both include the Risk Tier section. The tier is set by what the change touches, never by who writes it: `low` for docs, copy, internal-only work, or additive behavior behind a flag; `medium` for an ordinary product change; `high` for auth, permissions, billing or payments, data migrations, CI/deploy/release, auto-update, secrets, or any other path that always needs two people. Each member also gives a 1–2 item pre-mortem in Round 1. An unmitigated failure mode in a member's primary domain is at least HIGH.
 
@@ -376,11 +386,14 @@ PR #789: Add user authentication with OAuth2
 
 ## Consensus
 
-**Verdict**: APPROVED WITH CONDITIONS
-**Quality**: D — 0 critical, 2 high, 1 medium, 0 low
-**Risk**: high — adds authentication and token handling
-**Vote**: 7 Approve / 2 Concerns / 0 Reject (9 voters)
-**Score**: 7.4/10 avg (info)
+### ✅ APPROVED WITH CONDITIONS
+
+| | |
+|---|---|
+| **Quality** | D — 0 critical, 2 high, 1 medium, 0 low |
+| **Risk** | 🔴 high — adds authentication and token handling |
+| **Vote** | 7 approve · 2 concerns · 0 reject (9 voters) |
+| **Score** | 7.4/10 avg |
 
 ## Key Findings
 
