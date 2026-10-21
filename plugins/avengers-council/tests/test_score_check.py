@@ -44,3 +44,29 @@ def test_low_findings_never_flag():
 
 def test_bad_input_is_usage_error():
     assert check(11).returncode == 2
+
+
+def run_raw(*args):
+    return subprocess.run(["bash", str(SCRIPT), *args], capture_output=True, text=True)
+
+
+def test_high_finding_flags_seven():
+    r = check(7, high=1)
+    assert r.returncode == 1
+    assert r.stdout.startswith("FLAG: ")
+
+
+def test_three_medium_allow_six():
+    assert check(6, medium=3).returncode == 0
+
+
+def test_non_integer_count_is_usage_error():
+    assert run_raw("--score", "5", "--high", "x").returncode == 2
+
+
+def test_score_zero_is_usage_error():
+    assert check(0).returncode == 2
+
+
+def test_missing_score_is_usage_error():
+    assert run_raw("--high", "1").returncode == 2
