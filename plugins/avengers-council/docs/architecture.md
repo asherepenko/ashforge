@@ -190,7 +190,7 @@ Consensus rules applied during verdict synthesis: see @references/verdict-rules.
 │                                                                 │
 │ 🟡 HIGH                                                         │
 │  • Hulk: Test coverage at 85%, target 90%                       │
-│    → Strong guidance, not blocking                              │
+│    → Condition: fix before merge                                │
 │                                                                 │
 │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ │
 │ CONDITIONS FOR APPROVAL                                         │
