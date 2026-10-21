@@ -36,6 +36,11 @@ In code reviews, only violations the change introduces trigger escalation. A vio
 - No single points of failure for critical paths
 - No unacknowledged contradiction with an accepted ADR — *triggers only when the spawn brief's `DOMAIN MODEL` block lists ADRs* (i.e., `docs/adr/` exists and was loaded). Cite ADR-NNNN. Allowed only if the plan explicitly proposes superseding the ADR — silent contradiction is a red line. Repos without ADRs have no possible violation in this row.
 
+## Reuse & Placement (Ant-Man)
+
+- No reimplementing an existing helper the change could call
+- No code in a module or layer that doesn't own the concept
+
 ## Backend & API (Thor)
 
 - No N+1 queries in production code

@@ -44,7 +44,7 @@ Template for optional agent frontmatter:
 ---
 name: member-name
 description: One-line expertise summary
-tools: Read, Glob, Grep
+tools: Read, Glob, Grep, SendMessage
 model: sonnet
 optional: true
 invoke_when: "Short description of when to invoke this member"
@@ -53,7 +53,7 @@ invoke_when: "Short description of when to invoke this member"
 
 | Name | subagent_type | Domain | Invoke When | Focus Tags |
 |------|--------------|--------|-------------|------------|
-| *(none yet)* | — | — | — | — |
+| ant-man | avengers-council:ant-man | Reuse & Placement | Code review: `== Code files added or moved ==` has `COUNT` > 0 or `ADDED_DEFS` > 0; `UNKNOWN` means Captain reads the diff to decide. Plan review: the File Structure Map has Create rows for code, or the plan adds or moves functions or modules. Never triggered by docs-only or config-only changes. | reuse, duplication, placement, ownership, abstraction |
 
 ## Quick Mode Member Selection
 
@@ -92,7 +92,7 @@ Quick Mode picks 2 relevant core members + Captain America = 3 voters. Optional 
    ---
    name: member-name
    description: "One-line expertise summary"
-   tools: Read, Glob, Grep
+   tools: Read, Glob, Grep, SendMessage
    model: sonnet
    optional: true
    invoke_when: "When the topic involves X, Y, or Z"
@@ -102,6 +102,7 @@ Quick Mode picks 2 relevant core members + Captain America = 3 voters. Optional 
 2. **Write the agent body** following the existing agent pattern:
    - Core Identity section (character, philosophy, signature phrase)
    - Expertise list
+   - `## Research Focus` (optional for members without web tools)
    - Planning Mode Checklist
    - Code Review Checklist
    - Debate Protocol (copy the standard 3-round block from any core member)
