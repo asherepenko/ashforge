@@ -186,3 +186,10 @@ def test_captain_round_3_collects_final_score_with_basis():
     line = next(l for l in read("references/captain-america-orchestrator.md").splitlines() if l.startswith("- **Round 3**:"))
     assert "FINAL DOMAIN SCORE (with basis)" in line
     assert "CONCERN FOR THE USER" in line
+
+
+def test_weak_criterion_resting_only_on_pre_existing_findings_does_not_count():
+    rules = read("references/verdict-rules.md")
+    weak = rules.split("WEAK criteria come from the member's rubric", 1)[1].split("\n\n", 1)[0]
+    assert "pre-existing" in weak
+    assert "weak slug" in weak and "score" in weak
