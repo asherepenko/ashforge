@@ -331,6 +331,8 @@ After collecting Round 1 responses:
 
 In code reviews, first set aside every finding marked `Introduced here: pre-existing`. Steps 1–6 use only the remaining findings. Pre-existing findings go to the verdict's Pre-existing section and never trigger NEEDS REVISION, BLOCKED, or the VETO (@references/verdict-rules.md#pre-existing-findings).
 
+**Classify concerns (before step 1):** check each `CONCERN FOR THE USER` against the severity guidelines (@references/verdict-rules.md#severity-guidelines) and the red lines (@references/red-lines.md). A concern that meets a severity definition or a red line is a finding, not a concern. Move it into the findings before grading and count it once, at its severity. Only a residual trade-off stays in the verdict's Concerns for the User section. That section is advisory: never a condition, not counted in Quality, never changes the verdict.
+
 1. **Validate standards compliance** (per @references/standards-protocol.md):
    - Check if plan/code violates mandatory project standards
    - If CRITICAL standard violation → automatic "NEEDS REVISION" minimum
@@ -359,8 +361,6 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    ```bash
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N
    ```
-
-   **Classify concerns:** check each `CONCERN FOR THE USER` against the severity guidelines (@references/verdict-rules.md#severity-guidelines) and the red lines (@references/red-lines.md). A concern that meets a severity definition or a red line is a finding, not a concern. Move it into the findings before grading and count it once, at its severity. Only a residual trade-off stays in the verdict's Concerns for the User section. That section is advisory: never a condition, not counted in Quality, never changes the verdict.
 
 5. **Apply consensus rules** per @references/verdict-rules.md (single source of truth — do not restate here)
    - For contested votes, apply the escalation hierarchy from verdict-rules.md

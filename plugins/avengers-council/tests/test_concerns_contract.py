@@ -59,3 +59,22 @@ def test_skills_docs_mirror_template_section():
     docs = read("docs/skills.md")
     assert "## Concerns for the User" in docs
     assert docs.index("## Concerns for the User") > docs.index("## Conditions for Approval")
+
+
+def test_phase_4_classifies_concerns_before_red_lines_and_grading():
+    protocol = read("references/orchestration-protocol.md")
+    phase4 = protocol.split("## Phase 4", 1)[1].split("## Phase 5", 1)[0]
+    classify = phase4.index("Classify concerns")
+    assert classify < phase4.index("Validate standards compliance")
+    assert classify < phase4.index("Check red lines")
+    assert classify < phase4.index("Grade quality")
+
+
+def test_skills_collect_concerns_before_grading():
+    for skill in ("council-plan-review", "council-code-review"):
+        text = read(f"skills/{skill}/SKILL.md")
+        synth = text.split("**Verdict synthesis additions:**", 1)[1]
+        concern = synth.index("Collect each member's `CONCERN FOR THE USER`")
+        assert concern < synth.index("Grade quality") if skill == "council-plan-review" else concern < synth.index("Grade Quality")
+        if "red line" in synth.split("Collect each member's `CONCERN", 1)[0].lower():
+            raise AssertionError("red-line check precedes concern classification")
