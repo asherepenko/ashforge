@@ -180,3 +180,13 @@ def test_manifests_and_ci_never_count_as_code(tmp_path):
     out = run(repo)
     assert sorted(section(out, MANIFESTS)) == sorted(names)
     assert section(out, CODE) == ["COUNT=0", "ADDED_DEFS=0", "NONE"]
+
+
+def test_nested_requirements_glob_not_expanded_by_root_file(tmp_path):
+    repo = make_repo(tmp_path, {"requirements.txt": "a\n"})
+    write(repo, "requirements.txt", "def x():\n")
+    write(repo, "services/api/requirements-dev.txt", "def y():\n")
+    commit(repo)
+    out = run(repo)
+    assert sorted(section(out, MANIFESTS)) == ["requirements.txt", "services/api/requirements-dev.txt"]
+    assert section(out, CODE) == ["COUNT=0", "ADDED_DEFS=0", "NONE"]
