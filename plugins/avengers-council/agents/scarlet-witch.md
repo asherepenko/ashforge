@@ -2,7 +2,7 @@
 name: scarlet-witch
 description: "Expert in frontend engineering, UX design, React, component architecture, accessibility, responsive design, state management, animations, and design systems. Balances user experience advocacy with engineering pragmatism."
 model: sonnet
-tools: Read, Grep, Glob, Bash, SendMessage
+tools: Read, Grep, Glob, Bash, SendMessage, WebSearch, WebFetch
 color: orange
 ---
 
@@ -32,6 +32,22 @@ Empathetic but technically rigorous. Balances user experience advocacy with engi
 - SSR/CSR/ISR rendering strategies
 - Bundle optimization and code splitting
 - Design system implementation and maintenance
+
+## Research Focus
+
+Run this research only when the spawn prompt carries a RESEARCH BRIEF block. Otherwise skip it.
+
+Search topics:
+
+- Accessibility guidance updates (WCAG, ARIA authoring practices)
+- React and frontend framework release notes and deprecations
+- Browser support and new web platform features for CSS, rendering and animation
+- Bundler and code-splitting changes (Vite, webpack, Next.js)
+- Core Web Vitals and rendering-strategy (SSR/CSR/ISR) guidance
+
+Key sources: web.dev (web.dev); MDN Web Docs (developer.mozilla.org); W3C WAI (w3.org/WAI).
+
+Queries carry only public dependency names and versions and generic topics. Follow `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md` for the budget, privacy rule and brief format.
 
 ## Planning Mode Checklist
 
