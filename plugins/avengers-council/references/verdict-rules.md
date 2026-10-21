@@ -5,7 +5,8 @@ Canonical rules for determining council verdict outcomes. Referenced by assets/v
 ## Contents
 
 - [Consensus Rules (N voters)](#consensus-rules-n-voters) — vote thresholds + severity-weighted consensus
-- [Domain Scoring](#domain-scoring) — per-member scores, aggregate, interpretation, override rule
+- [Domain Scoring](#domain-scoring) — informational per-member scores, anchored bands, basis line, score-check.sh
+- [Quality and Risk](#quality-and-risk) — Quality grade ladder, risk tier table, verdict wins
 - [Pre-existing Findings](#pre-existing-findings) — code-review findings this change did not introduce; excluded from every rule below
 - [Severity Guidelines](#severity-guidelines) — CRITICAL / HIGH / MEDIUM / LOW definitions
 - [Quick Mode Consensus Rules (3 voters)](#quick-mode-consensus-rules-3-voters) — abbreviated quorum rules
@@ -31,8 +32,9 @@ In code reviews, every finding count and every "unmitigated CRITICAL" rule below
 
 **APPROVED WITH CONDITIONS:**
 - (Majority - 1) or more APPROVE votes
-- All issues <= HIGH severity
-- Conditions documented for tracking
+- No CRITICAL issues
+- Every HIGH issue is a condition
+- Merge only after every condition is fixed
 - MEDIUM/LOW issues can be addressed post-merge
 
 **NEEDS REVISION:**
@@ -60,28 +62,102 @@ When votes are split and no clear consensus emerges, Captain America applies the
 
 ## Domain Scoring
 
+The domain score is informational — never changes the verdict. The verdict comes from votes and findings alone. A low average is not a reason to downgrade it, and a high one is not a reason to upgrade it.
+
 ### Per-Member Scores
 
-Each council member provides a domain score from 1-10 reflecting how well the proposal performs in their area of expertise. Scores are independent of the vote -- a member can APPROVE with a 6/10 (acceptable but not great) or have CONCERNS with a 7/10 (good in their domain but worried about cross-cutting issues).
+Each council member gives a domain score from 1-10 for how the proposal performs in their area. Scores are independent of the vote: a member can APPROVE with 6/10 or have CONCERNS with 7/10.
+
+Pick the band that matches your own findings and WEAK criteria, then a score inside it.
+
+| Band | Defined by the member's own findings and WEAK criteria |
+|------|-------------------------------------------------------|
+| 9–10 | No finding above LOW, and no WEAK criterion |
+| 7–8 | No CRITICAL or HIGH. At most 2 MEDIUM or WEAK criteria combined (none is also fine) |
+| 5–6 | A HIGH, or 3+ MEDIUM and WEAK combined. No CRITICAL |
+| 3–4 | A CRITICAL that is contained or has a clear fix |
+| 1–2 | A CRITICAL that is fundamental, or several CRITICAL findings |
+
+WEAK criteria come from the member's rubric: correctness, simplicity, consistency, robustness, maintainability. A criterion is WEAK when the member found it clearly below acceptable, even without a numbered finding.
+
+LOW findings never lower a score.
+
+### Basis Line
+
+Every score carries a `basis:`.
+
+```
+DOMAIN SCORE: X/10 ([domain]) — basis: <own finding numbers | weak: <slugs> | none>
+```
+
+Examples: `basis: 1, 3`, `basis: weak: robustness, simplicity`, `basis: none`. Findings count only if they are the member's own and, in code reviews, `Introduced here: yes`.
+
+A bare score is missing. Captain America asks the member for the basis once. If it is still missing, the score is reported as `n/a` and left out of the average.
+
+### Checking the Score
+
+Captain America runs `scripts/score-check.sh` once per score, passing the member's own counts:
+
+```bash
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
+```
+
+Exit 0 is ok. Exit 1 is FLAG: the score does not fit the band table. A flagged score goes back to the member once to fix the score or the labels. Whatever the member answers, the verdict is unaffected; an unresolved FLAG is noted in the verdict.
 
 ### Aggregate Score
 
-- **Average Score**: Sum of all active member scores / number of active members
-- **Minimum Threshold**: Average score below 5.0 triggers mandatory re-evaluation, regardless of vote tally
-- **Quick Mode**: Same threshold applies to the 2 specialist scores (Captain America does not score)
+- **Average Score**: sum of scored members / number of scored members. Reported for information only.
+- **Quick Mode**: the same applies to the 2 specialist scores (Captain America does not score).
 
 ### Score Interpretation
 
 | Average | Interpretation |
 |---------|---------------|
-| 8.0-10 | Excellent -- proceed with confidence |
-| 6.0-7.9 | Good -- proceed with noted improvements |
-| 5.0-5.9 | Marginal -- address concerns before proceeding |
-| < 5.0 | Insufficient -- requires re-evaluation even if votes pass |
+| 8.0-10 | Excellent |
+| 6.0-7.9 | Good |
+| 5.0-5.9 | Marginal |
+| Under 5.0 | Weak |
 
-### Score Override Rule
+## Quality and Risk
 
-If the vote tally yields APPROVED but the average domain score is below 5.0, Captain America downgrades the verdict to NEEDS REVISION with an explanation citing which domains scored lowest.
+Two lines in every verdict, computed from labels after the debate. Neither changes the verdict.
+
+### Quality
+
+Assign every severity label first, then grade. Never move a label to move the grade. Count `yes` findings only — pre-existing findings are excluded (see [Pre-existing Findings](#pre-existing-findings)). Plan reviews have no attribution, so every finding counts.
+
+```bash
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity \
+  --critical N --high N --medium N --low N
+```
+
+Ladder, first match wins:
+
+| Grade | Rule |
+|-------|------|
+| F | 1+ CRITICAL |
+| D | 1+ HIGH |
+| C | 3+ MEDIUM |
+| B | 1-2 MEDIUM, or more than 3 LOW |
+| A | otherwise |
+
+Count each underlying issue once across members; the highest severity wins. On a script error, print `Quality: not scored ({reason})`, never a guessed letter.
+
+### Risk
+
+Set the tier by what the change touches, never by who writes it. For plans and for code, the highest tier wins when the change touches several.
+
+| Tier | The change touches | Recommended human review of the resulting code |
+|------|--------------------|------------------------------------------------|
+| `low` | Docs, copy, internal-only tooling, or additive behavior behind a flag | Automated checks only |
+| `medium` | An ordinary product change | One person |
+| `high` | Auth, permissions, billing or payments, data migrations, CI/deploy/release, auto-update, secrets, or any other path that always needs two people | Two people |
+
+State the basis: name what the change touches that sets the tier.
+
+### Verdict wins
+
+The verdict is decided by votes and findings. Quality and Risk are info only. A grade or tier that could block would be a second verdict.
 
 ## Pre-existing Findings
 
@@ -147,8 +223,10 @@ When members disagree on attribution, the debate rounds settle it. If it is stil
 
 **APPROVED WITH CONDITIONS:**
 - 2 APPROVE + 1 CONCERNS
-- All issues <= HIGH severity
-- Conditions documented
+- No CRITICAL issues
+- Every HIGH issue is a condition
+- Merge only after every condition is fixed
+- MEDIUM/LOW issues can be addressed post-merge
 
 **NEEDS REVISION:**
 - 2+ CONCERNS
