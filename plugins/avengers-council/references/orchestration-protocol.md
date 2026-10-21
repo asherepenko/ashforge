@@ -265,8 +265,8 @@ After collecting Round 1 responses:
    ROUND 3 — FINAL POSITION
    [All Round-2 challenges, supports and responses, including disclosed omissions]
    Reconsider your initial position using the completed debate. Send FINAL VERDICT,
-   FINAL DOMAIN SCORE with its basis, CONFIDENCE, FINAL VOTE BASIS (code review), UNRESOLVED DISAGREEMENTS
-   and KEY CONDITION to team-lead using debate-protocol.md's canonical final format.
+   FINAL DOMAIN SCORE with its basis, CONFIDENCE, FINAL VOTE BASIS (code review), UNRESOLVED DISAGREEMENTS,
+   KEY CONDITION and CONCERN FOR THE USER (optional) to team-lead using debate-protocol.md's canonical final format.
    [Code review, only for a member whose vote rests on pre-existing findings or gave no basis
    (verdict-rules.md#votes-that-rest-on-pre-existing-findings): "Your vote basis [list] is
    pre-existing / missing. Restate your vote on findings this change introduced, or APPROVE."]
@@ -312,6 +312,7 @@ After collecting Round 1 responses:
    - Final Vote Basis (code review, CONCERNS or REJECT only): the findings the verdict rests on
    - Unresolved Disagreements: reference the specific Round-2 exchanges that did not converge
    - Key Condition: what must change for CONCERNS to become APPROVE
+   - CONCERN FOR THE USER (optional): a risk the change knowingly takes on, or a judgment call for the user — not a finding
 
    [Code review, only for a member whose vote rests on pre-existing findings or gave no basis:
    the same restate request as the stay-alive Round-3 trigger above.]
