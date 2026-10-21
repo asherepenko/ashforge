@@ -9,9 +9,13 @@
 
 ---
 
-## Consensus: BLOCKED
+## Consensus
 
-**Vote:** 2 Approve / 4 Concerns / 3 Reject
+**Verdict**: BLOCKED
+**Quality**: F — 2 critical, 5 high, 9 medium, 5 low
+**Risk**: high — new authentication, password storage and session handling
+**Vote**: 2 Approve / 4 Concerns / 3 Reject (9 voters)
+**Score**: 6.4/10 avg (info)
 
 **BLACK WIDOW VETO EXERCISED** — Unmitigated CRITICAL security vulnerabilities
 
@@ -50,7 +54,7 @@ The authentication implementation contains multiple CRITICAL security vulnerabil
 
 ## Council Positions
 
-### Black Widow (Security & Privacy) — REJECT + VETO
+### Black Widow (Security & Privacy) — REJECT + VETO | Score: 2/10 — basis: 1, 2, 3, 4, 5
 
 **Confidence:** HIGH
 
@@ -92,7 +96,7 @@ data class UserEntity(
 
 ---
 
-### Thor (Backend & APIs) — REJECT
+### Thor (Backend & APIs) — REJECT | Score: 5/10 — basis: 1, 2
 
 **Confidence:** HIGH
 
@@ -104,7 +108,7 @@ data class UserEntity(
 
 ---
 
-### Iron Man (Architecture & Scalability) — REJECT
+### Iron Man (Architecture & Scalability) — REJECT | Score: 5/10 — basis: 1, 2, 3
 
 **Confidence:** HIGH
 
@@ -116,7 +120,7 @@ data class UserEntity(
 
 ---
 
-### Hulk (Testing & QA) — CONCERNS
+### Hulk (Testing & QA) — CONCERNS | Score: 7/10 — basis: 1, 2
 
 **Confidence:** MEDIUM
 
@@ -128,7 +132,7 @@ data class UserEntity(
 
 ---
 
-### Vision (Data & Observability) — CONCERNS
+### Vision (Data & Observability) — CONCERNS | Score: 7/10 — basis: 1, 2
 
 **Confidence:** MEDIUM
 
@@ -140,7 +144,7 @@ data class UserEntity(
 
 ---
 
-### Scarlet Witch (Frontend & UX) — APPROVE
+### Scarlet Witch (Frontend & UX) — APPROVE | Score: 9/10 — basis: none
 
 **Confidence:** LOW
 
@@ -151,7 +155,7 @@ data class UserEntity(
 
 ---
 
-### Hawkeye (Mobile Platforms) — APPROVE
+### Hawkeye (Mobile Platforms) — APPROVE | Score: 9/10 — basis: none
 
 **Confidence:** MEDIUM
 
@@ -162,7 +166,7 @@ data class UserEntity(
 
 ---
 
-### Doctor Strange (DevOps & CI/CD) — CONCERNS
+### Doctor Strange (DevOps & CI/CD) — CONCERNS | Score: 7/10 — basis: 1, 2
 
 **Confidence:** MEDIUM
 

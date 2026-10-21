@@ -93,8 +93,13 @@ council-plan-review @.claude/plans/phase-1-auth.md
 ## Topic
 Phase 1: Authentication System Plan
 
-## Consensus: APPROVED WITH CONDITIONS
-Vote: 6 Approve / 2 Concerns / 0 Reject
+## Consensus
+
+**Verdict**: APPROVED WITH CONDITIONS
+**Quality**: D — 0 critical, 2 high, 3 medium, 1 low
+**Risk**: high — adds authentication and session handling
+**Vote**: 6 Approve / 2 Concerns / 0 Reject (8 voters)
+**Score**: 7.1/10 avg (info)
 
 ## Executive Summary
 The authentication plan is solid with industry-standard patterns (OAuth2, JWT, RBAC).
@@ -147,8 +152,13 @@ council-plan-review @docs/api-design.md --quick --focus security
 
 **Typical output:**
 ```
-## Consensus: NEEDS REVISION
-Vote: 0 Approve / 1 Concerns / 2 Reject
+## Consensus
+
+**Verdict**: NEEDS REVISION
+**Quality**: F — 3 critical, 0 high, 0 medium, 0 low
+**Risk**: high — API authentication and session handling
+**Vote**: 0 Approve / 1 Concerns / 2 Reject (3 voters)
+**Score**: 3.5/10 avg (info)
 
 ## Key Findings (CRITICAL)
 - API exposes internal database IDs (enumeration vulnerability)
@@ -215,8 +225,14 @@ All verdicts follow this structure:
 ## Topic
 [What was reviewed]
 
-## Consensus: [APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED]
-Vote: X Approve / X Concerns / X Reject
+## Consensus
+
+**Verdict**: [APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED]
+**Quality**: [X — N critical, N high, N medium, N low · weak: slugs | not scored ({reason})]
+**Risk**: [low | medium | high] — [basis: what the change touches]
+**Vote**: X Approve / X Concerns / X Reject (N voters)
+**Score**: X.X/10 avg (info)
+**Vote adjustments** (code reviews only): [none | one line per adjusted vote]
 
 ## Risk Tier
 Risk tier: [low | medium | high]
@@ -227,11 +243,11 @@ Recommended human review of the resulting code: [automated checks only | one per
 
 ## Council Positions
 
-### Iron Man (Architecture & Scalability) — [VERDICT]
+### Iron Man (Architecture & Scalability) — [VERDICT] | Score: X/10 — basis: …
 - [Finding 1 with severity]
 - [Finding 2 with severity]
 
-### Thor (Backend & API) — [VERDICT]
+### Thor (Backend & API) — [VERDICT] | Score: X/10 — basis: …
 [...]
 
 [... all council members ...]
@@ -249,6 +265,8 @@ Recommended human review of the resulting code: [automated checks only | one per
 1. [Specific action with owner suggestion]
 2. [...]
 ```
+
+The block under `## Consensus` is computed after the debate. The verdict comes from votes and findings alone. **Quality** is a grade A–F from the finding counts (`scripts/review-grade.sh`: any CRITICAL is F, any HIGH is D, 3+ MEDIUM is C, 1–2 MEDIUM or more than 3 LOW is B, otherwise A). **Risk** is the tier with its basis. **Score** is the average of the members' domain scores, for information only: it never raises or lowers the verdict. Each member's score sits in a band set by their own findings and carries a `basis:`; `scripts/score-check.sh` flags a score that contradicts the member's own findings.
 
 Plan verdicts include the Risk Tier section. The tier is set by what the change touches, never by who writes it: `low` for docs, copy, internal-only work, or additive behavior behind a flag; `medium` for an ordinary product change; `high` for auth, permissions, billing or payments, data migrations, CI/deploy/release, auto-update, secrets, or any other path that always needs two people. Each member also gives a 1–2 item pre-mortem in Round 1. An unmitigated failure mode in a member's primary domain is at least HIGH.
 
@@ -269,6 +287,7 @@ Full consensus rules and severity guidelines: see @references/verdict-rules.md
 - **Model usage:** 2x Sonnet (selected members) + 1x Captain America (session model)
 - **Token cost:** Low (single round, focused review)
 - **Best for:** Focused reviews, time-sensitive decisions, smaller scope
+- **Output:** the two specialists report severities and a domain score with `basis:`; the verdict still shows Quality, Risk and Score (info)
 
 **Member Selection (Quick Mode):**
 When `--quick` is specified, Captain America selects the 2 most relevant members based on `--focus` or topic analysis:
@@ -355,8 +374,13 @@ council-code-review --pr 789
 ## Topic
 PR #789: Add user authentication with OAuth2
 
-## Consensus: APPROVED WITH CONDITIONS
-Vote: 7 Approve / 2 Concerns / 0 Reject
+## Consensus
+
+**Verdict**: APPROVED WITH CONDITIONS
+**Quality**: D — 0 critical, 2 high, 1 medium, 0 low
+**Risk**: high — adds authentication and token handling
+**Vote**: 7 Approve / 2 Concerns / 0 Reject (9 voters)
+**Score**: 7.4/10 avg (info)
 
 ## Key Findings
 
@@ -453,7 +477,7 @@ council-code-review --files app/ProfileViewModel.kt,app/SettingsScreen.kt --quic
 
 ### Output Format
 
-Same structure as `council-plan-review` without the Risk Tier section, with additional code-specific details:
+Same structure as `council-plan-review` without the Risk Tier section (the `Risk` line under `## Consensus` still appears), plus a `Vote adjustments` line and these code-specific details:
 
 ```markdown
 ## Key Findings
@@ -719,9 +743,10 @@ council-code-review --files AuthService.ts --quick --focus security
 - Consider LOW/MEDIUM findings for future iterations
 
 **APPROVED WITH CONDITIONS:**
-- Ship after addressing conditions
-- Conditions are typically HIGH severity issues
+- Merge after fixing every HIGH. Every HIGH finding is a condition, and there is no CRITICAL
+- MEDIUM and LOW findings can follow after merge
 - Re-review not required unless specified
+- To merge without fixing a condition, choose "Override — record why". The reason is written into the verdict file next to the unmet conditions
 
 **NEEDS REVISION:**
 - Do not ship. Address CRITICAL/HIGH issues first.

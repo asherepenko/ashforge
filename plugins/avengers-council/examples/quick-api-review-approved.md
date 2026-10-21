@@ -10,9 +10,15 @@
 
 ---
 
-## Consensus: APPROVED WITH CONDITIONS
+## Consensus
 
-**Vote:** 2 Approve / 1 Concerns / 0 Reject
+**Verdict**: APPROVED WITH CONDITIONS
+**Quality**: C — 0 critical, 0 high, 4 medium, 2 low
+**Risk**: medium — ordinary product change to an existing read endpoint; backward compatible
+**Vote**: 2 Approve / 1 Concerns / 0 Reject (3 voters)
+**Score**: 7.5/10 avg (info)
+
+Quality and Risk are info lines. The verdict comes from votes and findings. Captain America does not score, so the average covers the two specialists.
 
 ---
 
@@ -38,7 +44,7 @@ The pagination implementation is straightforward and follows existing API patter
 
 ## Council Positions
 
-### Thor (Backend & APIs) — APPROVE
+### Thor (Backend & APIs) — APPROVE | Score: 8/10 — basis: 1
 **Confidence:** HIGH
 
 ✅ Pagination parameters follow REST conventions (`?page=1&limit=20`)
@@ -51,7 +57,7 @@ The pagination implementation is straightforward and follows existing API patter
 
 ---
 
-### Hulk (Testing & QA) — CONCERNS
+### Hulk (Testing & QA) — CONCERNS | Score: 7/10 — basis: 1, 2
 **Confidence:** MEDIUM
 
 ✅ Happy path tests present (page 1, page 2, last page)
@@ -103,4 +109,4 @@ Captain America presented the following options:
 > **What would you like to do next?**
 > 1. **Address conditions now** (Recommended)
 > 2. Save conditions as TODOs
-> 3. Proceed without addressing
+> 3. Override — record why

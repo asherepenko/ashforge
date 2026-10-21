@@ -6,7 +6,7 @@ Engineering advisory board (8 core members + Captain America orchestrator) for r
 
 - **8 Core Members** — Principal-engineer personas across architecture, backend, frontend, testing, security, mobile, data, and DevOps. Optional specialists join based on topic relevance.
 - **3-Round Debate** — Assessment → Challenge → Final Position. Members critique each other's findings before consensus.
-- **Domain Scoring** — Each member scores 1–10 in their specialty. Aggregate average < 5.0 forces NEEDS REVISION.
+- **Domain Scoring** — Each member scores 1–10 in their specialty from anchored bands and states the `basis:`. The score and its average are informational and never change the verdict. Every verdict also carries a **Quality** grade (A–F from finding counts) and a **Risk** tier (low, medium, high), both informational.
 - **Black Widow VETO** — Unmitigated CRITICAL security issues trigger automatic BLOCKED verdict (cannot be overridden).
 - **Verdict Archive** — Every review saved to `.artifacts/reviews/{plans,code}/council/YYYY-MM-DD/HHMMSS-review-{verdict}.md`.
 - **Quick Mode** — 3-member quorum with `--quick --focus <area>` when full council is overkill; also the documented autonomous cost-control path on hub-only runtimes (orchestration protocol → Mode Selection).

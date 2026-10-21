@@ -44,14 +44,14 @@
 │                                                                 │
 │  PHASE 5: SYNTHESIZE VERDICT                                    │
 │  ├─ Tally votes: APPROVE, CONCERNS, REJECT                      │
-│  ├─ Compute aggregate domain score (avg of all member scores)   │
+│  ├─ Compute informational avg domain score (score-check.sh)     │
 │  ├─ Check red lines (references/red-lines.md)                   │
 │  ├─ Check standards compliance:                                 │
 │  │   ├─ Mandatory standard violated? → min "NEEDS REVISION"     │
 │  │   ├─ CRITICAL security finding? → min "NEEDS REVISION"       │
 │  │   ├─ Missing AC (plans)? → min "NEEDS REVISION"              │
-│  │   └─ Avg domain score < 5.0? → min "NEEDS REVISION"          │
 │  ├─ Apply consensus rules (N-based thresholds)                  │
+│  ├─ Grade Quality (A–F) and set Risk tier — info only           │
 │  ├─ Apply tiebreaker hierarchy if contested (shared-principles) │
 │  ├─ Document conditions & action items                          │
 │  └─ Add Captain's own assessment                                │
@@ -59,6 +59,7 @@
 │  PHASE 6: RECORD VERDICT                                        │
 │  ├─ Create .artifacts/reviews/{plans|code}/council/YYYY-MM-DD/  │
 │  ├─ Write verdict with:                                         │
+│  │   ├─ Verdict, Quality, Risk, Vote, Score (info)              │
 │  │   ├─ Vote tally (APPROVE/CONCERNS/REJECT by member)          │
 │  │   ├─ Standards Compliance section                            │
 │  │   ├─ Key findings (grouped by severity)                      │
@@ -78,7 +79,7 @@
         │  Thor (APIs)         │  │ - Fix test coverage  │
         │  Scarlet Witch (FE)  │  │ - Add rollback plan  │
         │  Hulk (Testing)      │  │                      │
-        │  Black Widow (Sec)   │  │ Avg Score: 7.2/10    │
+        │  Black Widow (Sec)   │  │ Score 7.2/10 (info)  │
         │  Hawkeye (Mobile)    │  │                      │
         │  Vision (Data)       │  │ Saved to:            │
         │  Dr Strange (DevOps) │  │ .artifacts/reviews/  │
@@ -255,12 +256,12 @@ START: council-plan-review @proposal.md
   │  └─ Collect final verdicts + updated domain scores + confidence
   │
   ├─ Captain synthesizes:
-  │  ├─ Tallies votes + computes avg domain score
+  │  ├─ Tallies votes + computes avg domain score (info)
   │  ├─ Checks: Red line violations?
   │  ├─ Checks: Standards violated?
-  │  ├─ Checks: Avg score < 5.0?
   │  ├─ Checks: CRITICAL findings?
   │  ├─ Applies N-based consensus rules
+  │  ├─ Grades Quality, sets Risk (info only)
   │  ├─ Applies tiebreaker hierarchy if contested
   │  └─ Adds conditions if needed
   │
@@ -299,12 +300,12 @@ START: council-code-review --pr 123
   │  └─ Collect final verdicts + updated domain scores + confidence
   │
   ├─ Captain synthesizes:
-  │  ├─ Tallies votes + computes avg domain score
+  │  ├─ Tallies votes + computes avg domain score (info)
   │  ├─ Checks: Red line violations?
   │  ├─ Checks: Standards violated?
-  │  ├─ Checks: Avg score < 5.0?
   │  ├─ Checks: CRITICAL findings?
   │  ├─ Applies N-based consensus rules
+  │  ├─ Grades Quality, sets Risk (info only)
   │  ├─ Applies tiebreaker hierarchy if contested
   │  └─ Adds conditions if needed
   │
@@ -325,7 +326,7 @@ Captain America enforces project standards, shared principles, and red lines in 
 2. **Determining** roster — core members + topic-matched optional members
 3. **Indexing** standards by impact (Mandatory, Strong, Aspirational)
 4. **Validating** against red lines and shared principles
-5. **Scoring** — each member provides a domain score; aggregate < 5.0 overrides approval
+5. **Scoring** — each member provides a domain score with a `basis:`; the score and average are informational and never change the verdict. Quality (A–F) and Risk (low, medium, high) are computed after the debate, also informational
 6. **Applying** N-based consensus rules with graduated escalation hierarchy
 7. **Recording** verdicts with scores, standards compliance, and conditions
 

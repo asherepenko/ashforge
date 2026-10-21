@@ -9,9 +9,15 @@
 
 ---
 
-## Consensus: NEEDS REVISION
+## Consensus
 
-**Vote:** 3 Approve / 4 Concerns / 2 Reject
+**Verdict**: NEEDS REVISION
+**Quality**: D — 0 critical, 3 high, 11 medium, 7 low
+**Risk**: medium — ordinary product feature (feed screen, repository, local cache); no auth, billing or release path
+**Vote**: 3 Approve / 4 Concerns / 2 Reject (9 voters)
+**Score**: 7.4/10 avg (info)
+
+Quality and Risk are info lines. The verdict comes from votes and findings.
 
 ---
 
@@ -50,7 +56,7 @@ The social feed implementation has solid architecture and UI design, but contain
 
 ## Council Positions
 
-### Hawkeye (Mobile Platforms) — REJECT
+### Hawkeye (Mobile Platforms) — REJECT | Score: 5/10 — basis: 1, 2, 3, 4
 
 **Confidence:** HIGH
 
@@ -93,7 +99,7 @@ private val context: Context  // Activity context captured!
 
 ---
 
-### Hulk (Testing & QA) — REJECT
+### Hulk (Testing & QA) — REJECT | Score: 5/10 — basis: 1, 2, 3, 4
 
 **Confidence:** HIGH
 
@@ -106,7 +112,7 @@ private val context: Context  // Activity context captured!
 
 ---
 
-### Scarlet Witch (Frontend & UX) — APPROVE
+### Scarlet Witch (Frontend & UX) — APPROVE | Score: 9/10 — basis: none
 
 **Confidence:** MEDIUM
 
@@ -119,7 +125,7 @@ private val context: Context  // Activity context captured!
 
 ---
 
-### Iron Man (Architecture & Scalability) — CONCERNS
+### Iron Man (Architecture & Scalability) — CONCERNS | Score: 8/10 — basis: 1
 
 **Confidence:** MEDIUM
 
@@ -132,7 +138,7 @@ private val context: Context  // Activity context captured!
 
 ---
 
-### Thor (Backend & APIs) — APPROVE
+### Thor (Backend & APIs) — APPROVE | Score: 9/10 — basis: none
 
 **Confidence:** LOW
 
@@ -143,7 +149,7 @@ private val context: Context  // Activity context captured!
 
 ---
 
-### Black Widow (Security & Privacy) — CONCERNS
+### Black Widow (Security & Privacy) — CONCERNS | Score: 7/10 — basis: 1, 2
 
 **Confidence:** MEDIUM
 
@@ -155,7 +161,7 @@ private val context: Context  // Activity context captured!
 
 ---
 
-### Vision (Data & Observability) — CONCERNS
+### Vision (Data & Observability) — CONCERNS | Score: 7/10 — basis: 1, 2
 
 **Confidence:** MEDIUM
 
@@ -167,7 +173,7 @@ private val context: Context  // Activity context captured!
 
 ---
 
-### Doctor Strange (DevOps & CI/CD) — APPROVE
+### Doctor Strange (DevOps & CI/CD) — APPROVE | Score: 9/10 — basis: none
 
 **Confidence:** MEDIUM
 

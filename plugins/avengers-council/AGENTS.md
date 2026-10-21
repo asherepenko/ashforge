@@ -19,7 +19,8 @@ skills/                    — council-plan-review, council-code-review (each wi
 references/                — Protocols, templates, shared docs (incl. runtime-adapters.md)
 hooks/                     — PreToolUse:ExitPlanMode hook (Claude-only — no Codex equivalent)
 docs/                      — Detailed documentation
-tests/                     — Hook integration tests
+scripts/                   — review-grade.sh and change-size.sh (vendored from dotfiles, drift test keeps them in sync); score-check.sh
+tests/                     — Hook integration and script tests
 ```
 
 ## Sources of Truth
@@ -52,7 +53,9 @@ Exposed tools are authoritative. Modern Codex `[agents] enabled` defaults true; 
 ## Key Conventions
 
 - Skills use explicit `Read @references/...` — not bare `@references/` lines.
-- Agents include domain scores (1-10) in every assessment. Aggregate average < 5.0 overrides to NEEDS REVISION.
+- Agents include a domain score (1-10) with a `basis:` in every assessment. The score is informational: it never changes the verdict. `scripts/score-check.sh` flags scores that contradict the member's own findings.
+- Every verdict shows **Quality** (A-F, from `scripts/review-grade.sh`) and **Risk** (low | medium | high). Both are info lines; votes and findings decide the verdict.
+- APPROVED WITH CONDITIONS means no CRITICAL and every HIGH is a condition. Merge only after every condition is fixed; the post-verdict menu offers "Override — record why" if the user merges anyway.
 - Optional members auto-join based on topic matching. Add new ones via `member-registry.md`. The roster decision happens before any spawn — platform-agnostic.
 - Black Widow retains VETO power on unmitigated CRITICAL security issues — platform-agnostic.
 

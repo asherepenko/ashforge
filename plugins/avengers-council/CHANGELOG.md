@@ -4,6 +4,29 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.0.0] - 2026-10-21
+
+### Breaking
+
+- Member score format: every domain score carries a `basis:` (`DOMAIN SCORE: X/10 (domain) — basis: <finding numbers | weak: <slugs> | none>`). Member headers read `| Score: X/10 — basis: …`. A bare score is asked for once, then reported as `n/a` and left out of the average.
+- The domain score is informational. The rule that a low average forces NEEDS REVISION, and the section that described it, are removed; the verdict comes from votes and findings alone.
+- APPROVED WITH CONDITIONS means no CRITICAL and every HIGH is a condition. Merge only after every condition is fixed.
+- The post-verdict "Proceed without addressing" option is removed. Merging with unmet conditions is "Override — record why": the reason is written into the verdict file next to the unmet conditions.
+- The verdict heading is `## Consensus`, followed by `**Verdict**`, `**Quality**`, `**Risk**`, `**Vote**`, `**Score**` and `**Vote adjustments**` lines.
+
+### Added
+
+- `Quality` line in every verdict: grade A–F from finding counts, with `weak:` rubric slugs. Computed by `scripts/review-grade.sh`; on a script error the line reads `not scored`.
+- `Risk` line in every verdict: low, medium or high, with the basis that sets the tier.
+- `scripts/score-check.sh` flags a domain score that contradicts the member's own findings. The member fixes the score or the labels once; the verdict is unaffected.
+- `scripts/review-grade.sh` and `scripts/change-size.sh`, vendored from dotfiles, with a drift test.
+- Anchored score bands and rubric slugs (correctness, simplicity, consistency, robustness, maintainability) as WEAK criteria in each member's rubric.
+
+### Changed
+
+- Quick Mode members report severities and a domain score with `basis:`, so Quality, Risk and Score are computed the same way as in a full run.
+- Docs, README, AGENTS.md and the examples show the new verdict block; examples' Quality lines match their findings.
+
 ## [3.4.0] - 2026-10-20
 
 ### Added

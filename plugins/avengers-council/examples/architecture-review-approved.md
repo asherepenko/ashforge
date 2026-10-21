@@ -9,9 +9,15 @@
 
 ---
 
-## Consensus: APPROVED WITH CONDITIONS
+## Consensus
 
-**Vote:** 7 Approve / 2 Concerns / 0 Reject
+**Verdict**: APPROVED WITH CONDITIONS
+**Quality**: D — 0 critical, 3 high, 4 medium, 0 low
+**Risk**: high — splits one service into several, adds service-to-service auth, and migrates data between stores
+**Vote**: 7 Approve / 2 Concerns / 0 Reject (9 voters)
+**Score**: 6.0/10 avg (info)
+
+Quality and Risk are info lines. The verdict comes from votes and findings: no CRITICAL, and every HIGH is a condition below.
 
 ---
 
@@ -64,7 +70,7 @@ The proposed microservices migration plan is well-reasoned with clear service bo
 
 ## Council Positions
 
-### Iron Man (Architecture & Scalability) — APPROVE
+### Iron Man (Architecture & Scalability) — APPROVE | Score: 7/10 — basis: 1, 2
 **Confidence:** HIGH
 
 ✅ Service boundaries well-defined (User, Order, Payment, Inventory)
@@ -75,7 +81,7 @@ The proposed microservices migration plan is well-reasoned with clear service bo
 
 **Recommendation:** Approve with circuit breaker requirement.
 
-### Black Widow (Security & Privacy) — CONCERNS
+### Black Widow (Security & Privacy) — CONCERNS | Score: 5/10 — basis: 1, 2, 3
 **Confidence:** HIGH
 
 ❌ HIGH: Service-to-service auth not specified
@@ -85,7 +91,7 @@ The proposed microservices migration plan is well-reasoned with clear service bo
 
 **Condition for APPROVE:** Document auth propagation and security boundaries.
 
-### Vision (Data & Observability) — CONCERNS
+### Vision (Data & Observability) — CONCERNS | Score: 6/10 — basis: 1, 2
 **Confidence:** HIGH
 
 ❌ HIGH: No distributed tracing — debugging will be impossible
@@ -99,7 +105,7 @@ The proposed microservices migration plan is well-reasoned with clear service bo
 ## Conditions for Approval
 
 ### Must Have (Before Implementation)
-1. **Service-to-Service Authentication** — Document JWT/mTLS mechanism
+1. **Service-to-Service Authentication and Security Boundaries** — Document the JWT/mTLS mechanism and the security boundary of each service (covers both Black Widow HIGH findings)
 2. **Distributed Tracing** — Add OpenTelemetry
 3. **Circuit Breakers** — Add to each service
 
@@ -132,7 +138,7 @@ Captain America presented the following options:
 > **What would you like to do next?**
 > 1. **Address conditions now** (Recommended)
 > 2. Save conditions as TODOs
-> 3. Proceed without addressing
+> 3. Override — record why
 
 > **Would you like to update the plan based on findings?**
 > 1. **Update plan based on findings** (Recommended)
