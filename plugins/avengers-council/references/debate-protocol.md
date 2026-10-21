@@ -101,6 +101,8 @@ Only after both Round-2 completion barriers, when Cap sends a separate Round-3 t
    - [teammate]: [issue summary]
 
    KEY CONDITION: [what must change for CONCERNS to become APPROVE]
+
+   CONCERN FOR THE USER (optional): [a risk the change knowingly takes on, or a judgment call for the user — not a finding]
    ```
 2. **Stay-alive:** Send to Cap via `SendMessage({to: "team-lead"})`.
    **Hub:** Return the final position to the orchestrator through the actual worker result/continuation mechanism; ordinary Claude subagents use `main` if messaging is needed.
