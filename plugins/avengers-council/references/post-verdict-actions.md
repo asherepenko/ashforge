@@ -32,7 +32,7 @@ Present the user with (Claude: `AskUserQuestion`; Codex: plain prompt + numbered
 Present the user with (Claude: `AskUserQuestion`; Codex: plain prompt + numbered options):
 - **"Address conditions now"** (default) — Captain summarizes the top-priority conditions and begins working through them interactively
 - **"Save conditions as TODOs"** — Extract conditions from verdict as actionable items, create via the `/todo` skill
-- **"Proceed without addressing"** — Acknowledge conditions, continue to cleanup
+- **"Override — record why"** — Merge without fixing every condition. Ask the user for the reason, write it into the verdict file next to the unmet conditions, then continue to cleanup
 
 #### Conditions Tracking
 
@@ -87,6 +87,11 @@ Second question: "Would you like to update the plan based on findings?"
 3. Create TODO items via the `/todo` skill with severity prefix: `[CRITICAL]`, `[HIGH]`, etc.
 4. Confirm to user how many TODOs were created
 5. Fall through to cleanup
+
+### "Override — record why"
+1. Ask the user for a one-line reason
+2. Write the reason and the unmet conditions into the verdict file
+3. Fall through to cleanup
 
 ### "Proceed"
 1. Acknowledge the verdict
