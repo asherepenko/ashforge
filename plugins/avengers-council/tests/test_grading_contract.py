@@ -143,8 +143,46 @@ def test_concrete_risk_rows_start_with_matching_emoji():
             assert expected.get(emoji) == level, (path, line)
 
 
-def test_producer_skills_name_quality_and_risk_rows():
-    for path in ["skills/council-code-review/SKILL.md", "skills/council-plan-review/SKILL.md"]:
+PRODUCER_DOCS = [
+    "skills/council-code-review/SKILL.md",
+    "skills/council-plan-review/SKILL.md",
+    "references/orchestration-protocol.md",
+    "references/runtime-fallback.md",
+]
+
+
+def test_producer_docs_name_quality_and_risk_rows():
+    for path in PRODUCER_DOCS:
         text = read(path)
         assert "**Quality**" in text, path
         assert "**Risk**" in text, path
+
+
+def test_producer_docs_name_grading_steps():
+    for path in PRODUCER_DOCS:
+        text = read(path)
+        assert "score-check.sh" in text, path
+        assert "review-grade.sh" in text, path
+        assert "verdict-rules.md#quality-and-risk" in text, path
+
+
+def test_quick_flow_names_grading_steps():
+    text = read("references/orchestration-protocol.md")
+    quick = text[text.index("### Quick Flow"):]
+    quick = quick[: quick.index("\n## ")] if "\n## " in quick else quick
+    for fact in ["score-check.sh", "review-grade.sh", "Score flag:", "**Risk**"]:
+        assert fact in quick, fact
+
+
+def test_fallback_and_protocol_fill_rows_the_same_way():
+    for path in ["references/orchestration-protocol.md", "references/runtime-fallback.md"]:
+        text = read(path)
+        assert "leading `Quality: `" in text, path
+        assert "verdict-rules.md#quality" in text, path
+        assert "`<emoji> <level> — <basis>`" in text, path
+
+
+def test_captain_round_3_collects_final_score_with_basis():
+    line = next(l for l in read("references/captain-america-orchestrator.md").splitlines() if l.startswith("- **Round 3**:"))
+    assert "FINAL DOMAIN SCORE (with basis)" in line
+    assert "CONCERN FOR THE USER" in line
