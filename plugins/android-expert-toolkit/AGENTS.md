@@ -16,6 +16,7 @@ android-expert-toolkit/
 │   └── aet-check/                # SKILL.md — pattern detection (80/20)
 ├── hooks/                        # Shared Python scripts + hooks.json (Claude) + hooks-codex.json (Codex)
 ├── references/                   # Deep-dive references (read on demand) + runtime-adapters.md
+├── scripts/                      # Vendored review-grade.sh + change-size.sh (copies of the dotfiles source)
 ├── templates/                    # Handoff artifact scaffolds
 ├── examples/                     # End-to-end example pipeline output
 └── tests/                        # Hook validation tests
@@ -152,6 +153,8 @@ Python tests for hooks and agent prompts under `tests/`. Run:
 ```bash
 pytest tests/
 ```
+
+`scripts/review-grade.sh` and `scripts/change-size.sh` are vendored from the dotfiles source and must stay byte-identical to it. `tests/test_review_grade.py` fails on drift against the avengers-council plugin copy and `~/.agents/scripts/`. Edit the dotfiles source, then re-copy; never edit the vendored copy in place.
 
 ## Versioning
 

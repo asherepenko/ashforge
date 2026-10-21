@@ -4,6 +4,14 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [3.4.0] - 2026-10-21
+
+### Added
+
+- Code-review reports carry a `**Quality:** X — N critical, N high, N medium, N low` line. The letter comes from `scripts/review-grade.sh --ladder severity`, which the android-architect runs after filling the Severity Summary. Info findings never count.
+- `hooks/validate-handoff.py` rejects a code-review report that lacks a `**Quality:** [A-F] —` line.
+- `scripts/review-grade.sh` and `scripts/change-size.sh`, vendored byte-identical from the dotfiles source. `tests/test_review_grade.py` checks the grade ladder and fails when either copy drifts from the avengers-council plugin copy or from `~/.agents/scripts/`.
+
 ## [3.3.3] - 2026-10-11
 
 ### Fixed
