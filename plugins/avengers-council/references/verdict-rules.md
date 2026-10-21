@@ -78,7 +78,7 @@ Pick the band that matches your own findings and WEAK criteria, then a score ins
 | 3–4 | A CRITICAL that is contained or has a clear fix |
 | 1–2 | A CRITICAL that is fundamental, or several CRITICAL findings |
 
-WEAK criteria come from the member's rubric: correctness, simplicity, consistency, robustness, maintainability. A criterion is WEAK when the member found it clearly below acceptable, even without a numbered finding.
+WEAK criteria come from the member's rubric: correctness, simplicity, consistency, robustness, maintainability. A criterion is WEAK when the member found it clearly below acceptable, even without a numbered finding. In code reviews, a weakness that rests only on pre-existing findings (`Introduced here: pre-existing`) is not WEAK: it adds no weak slug to the Quality row and does not cap the score.
 
 LOW findings never lower a score.
 
