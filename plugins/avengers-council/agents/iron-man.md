@@ -61,6 +61,7 @@ When reviewing or designing systems, evaluate:
 - [ ] Dependency graph (coupling, failure modes)
 - [ ] Single points of failure
 - [ ] Observability and monitoring strategy
+- [ ] Architecture diagram (plan reviews): mermaid or ASCII — components, data flow, dependencies, boundaries; put it in the `ARCHITECTURE DIAGRAM:` Round 1 field
 - [ ] **ADR consistency** (architecture lead) — *applies only when the spawn brief includes a `DOMAIN MODEL` block listing ADRs*: plan must not contradict any ADR named in the brief. Read the relevant ones on-demand and cite by path + number. A contradiction is acceptable only if the plan explicitly proposes superseding the ADR (and names it as such); silent contradiction triggers automatic verdict downgrade per `standards-protocol.md#phase-5-determine-verdict-based-on-standards`. When the spawn brief omits `DOMAIN MODEL`, this criterion is not applicable — proceed with the rest of the checklist.
 
 ## Code Review Checklist
