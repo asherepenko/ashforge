@@ -83,7 +83,7 @@
         │  Hawkeye (Mobile)    │  │                      │
         │  Vision (Data)       │  │ Saved to:            │
         │  Dr Strange (DevOps) │  │ .artifacts/reviews/  │
-        │ + Optional members   │  │ {plans|code}/council │
+        │ + Optional: Ant-Man  │  │ {plans|code}/council │
         └──────────────────────┘  └──────────────────────┘
 ```
 

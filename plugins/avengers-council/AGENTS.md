@@ -3,7 +3,7 @@
 ## Routing
 
 - **Skills** (Skill tool / natural-language invocation): `council-code-review`, `council-plan-review` — orchestrate council sessions on both Claude Code and Codex.
-- **Agents** (Agent tool on Claude / `spawn_agent` on Codex): `hulk`, `iron-man`, `thor`, `scarlet-witch`, `black-widow`, `hawkeye`, `vision`, `doctor-strange` — spawned by the skills during orchestration.
+- **Agents** (Agent tool on Claude / `spawn_agent` on Codex): `hulk`, `iron-man`, `thor`, `scarlet-witch`, `black-widow`, `hawkeye`, `vision`, `doctor-strange` — spawned by the skills during orchestration. `ant-man` is an optional agent (reuse and placement), spawned only when the roster rules in `references/member-registry.md` select it.
 - `captain-america` — reference only, never spawned. The orchestrating session plays this role on both platforms. On Claude Code its wire name on the team channel is `team-lead` (harness-owned, not configurable) — teammates must address the lead as `to: "team-lead"`; `captain-america` is not a routable recipient.
 - Never spawn a skill as an agent `subagent_type`.
 
@@ -34,6 +34,7 @@ tests/                     — Hook integration and script tests
 | Orchestration flow | `references/orchestration-protocol.md` |
 | Debate transport (stay-alive SendMessage / hub-mediated) | `references/debate-protocol.md` |
 | Cross-runtime capability mapping | `references/runtime-adapters.md` |
+| Research briefs (who researches, web tools, skips) | `references/research-protocol.md` |
 
 ## Cross-Runtime Capability Mapping
 

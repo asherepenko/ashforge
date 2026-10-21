@@ -5,6 +5,8 @@ Engineering advisory board (8 core members + Captain America orchestrator) for r
 ## What It Does
 
 - **8 Core Members** — Principal-engineer personas across architecture, backend, frontend, testing, security, mobile, data, and DevOps. Optional specialists join based on topic relevance.
+- **Research Briefs** — In Round 1, Black Widow checks current advisories and facts on every review. Other members research only when their Research Focus applies. Without web tools, the skip is stated in the verdict.
+- **Scope Check** — Plan reviews list what the plan's source and acceptance criteria asked for, and flag each missing or partial item as a finding. Plan reviews also carry Iron Man and Hulk diagrams, and any review can add advisory Concerns for the User.
 - **3-Round Debate** — Assessment → Challenge → Final Position. Members critique each other's findings before consensus.
 - **Domain Scoring** — Each member scores 1–10 in their specialty from anchored bands and states the `basis:`. The score and its average are informational and never change the verdict. Every verdict also carries a **Quality** grade (A–F from finding counts) and a **Risk** tier (low, medium, high), both informational.
 - **Black Widow VETO** — Unmitigated CRITICAL security issues trigger automatic BLOCKED verdict (cannot be overridden).
@@ -102,6 +104,7 @@ Claude: the Skill tool auto-triggers on description match, or invoke explicitly 
 | Hawkeye | Sonnet | Mobile (Android, iOS, Flutter, RN, KMP) |
 | Vision | Sonnet | Data, observability, logging, metrics |
 | Doctor Strange | Sonnet | DevOps, CI/CD, IaC, containerization |
+| Ant-Man | Sonnet | Optional — reuse & placement |
 
 Captain America never spawns as a subagent — the orchestrating session plays this role.
 
