@@ -133,6 +133,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - Check naming conventions, style/organization standards, testing coverage, commit message format
   - Group findings by severity (CRITICAL first)
   - Move every `Introduced here: pre-existing` finding to the verdict's Pre-existing section. Exclude these findings from the consensus rules, the unmitigated-CRITICAL rules, and Black Widow's VETO
+  - Collect each member's `CONCERN FOR THE USER` from Round 3. Per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4, a concern that meets a severity definition or a red line is a finding: move it into the findings before grading. List only a residual trade-off under Concerns for the User (advisory, never a condition, not counted in Quality)
   - Run `score-check.sh` once per member score with that member's own counts (`yes` findings only), per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#checking-the-score`. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. Exit 1 is a FLAG: an unresolved one (or any FLAG in Quick/fallback modes) is printed as `Score flag:` under the member. A FLAG never changes the verdict:
     ```bash
     bash "$PLUGIN_ROOT/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
@@ -143,7 +144,6 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
     ```
   - Set Risk from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`, applied to the diff's touched paths. Highest tier wins. Put `<emoji> <level> — <basis>` in the **Risk** row (🟢 low, 🟡 medium, 🔴 high) and name the paths that set it
   - Quality, Risk and the average domain score are informational. The verdict comes from the consensus rules
-  - Collect each member's `CONCERN FOR THE USER` from Round 3. Per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4, a concern that meets a severity definition or a red line is a finding: move it into the findings before grading. List only a residual trade-off under Concerns for the User (advisory, never a condition, not counted in Quality)
   - Include file:line references for each finding
   - Include suggested fixes where available
   - Highlight findings challenged and overturned during debate
