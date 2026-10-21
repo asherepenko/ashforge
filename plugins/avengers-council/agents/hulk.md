@@ -63,6 +63,7 @@ When reviewing or creating test plans:
 - [ ] Acceptance criteria with measurable outcomes
 - [ ] Test environment parity with production
 - [ ] CI test parallelization and execution time
+- [ ] Flow diagram (plan reviews): user/state flow with happy, error and edge paths; map every path to a planned test; an unmapped path is a finding; put it in the `FLOW DIAGRAM:` Round 1 field
 
 ## Code Review Checklist
 
