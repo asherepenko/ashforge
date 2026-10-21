@@ -1,6 +1,10 @@
+import fnmatch
 import os
-from pathlib import Path
+import random
 import subprocess
+from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).parents[1]
 SCRIPT = ROOT / "skills/council-code-review/scripts/preflight.sh"
@@ -190,3 +194,56 @@ def test_nested_requirements_glob_not_expanded_by_root_file(tmp_path):
     out = run(repo)
     assert sorted(section(out, MANIFESTS)) == ["requirements.txt", "services/api/requirements-dev.txt"]
     assert section(out, CODE) == ["COUNT=0", "ADDED_DEFS=0", "NONE"]
+
+
+MANIFEST_NAMES = ["package.json", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "pyproject.toml",
+                  "poetry.lock", "uv.lock", "requirements.txt", "requirements-dev.txt", "build.gradle",
+                  "build.gradle.kts", "libs.versions.toml", "Podfile", "Podfile.lock", "Package.resolved",
+                  "go.mod", "go.sum", "Cargo.toml", "Cargo.lock", "Gemfile", "Gemfile.lock", "Dockerfile"]
+NOT_CODE_EXTS = ["md", "json", "yaml", "yml", "toml", "ini", "lock", "png", "jpg", "jpeg", "gif", "svg", "webp", "ico"]
+CODE_EXTS = ["py", "kt", "swift", "ts", "go", "rs", "sh"]
+DIRS = ["src", "services", "api", "a b", "docs", "lib", "Ünï", "requirements"]
+
+
+def expected_kind(rel):
+    parts = rel.split("/")
+    name = parts[-1]
+    if rel.startswith(".github/workflows/") or fnmatch.fnmatchcase(name, "requirements*.txt") \
+            or name in MANIFEST_NAMES:
+        return "manifest"
+    if "docs" in parts[:-1] or name.startswith(".env") or name.rsplit(".", 1)[-1] in NOT_CODE_EXTS:
+        return "other"
+    return "code"
+
+
+def random_path(rng, i):
+    roll = rng.random()
+    if roll < 0.1:
+        return f".github/workflows/ci{i}.yml"
+    dirs = [rng.choice(DIRS) for _ in range(rng.randint(0, 3))]
+    if roll < 0.4:
+        name = rng.choice(MANIFEST_NAMES)
+    elif roll < 0.5:
+        name = f".env{rng.choice(['', '.local'])}"
+    elif roll < 0.7:
+        name = f"f {i}.{rng.choice(NOT_CODE_EXTS)}"
+    else:
+        name = f"m{i}.{rng.choice(CODE_EXTS)}"
+    return "/".join(dirs + [name])
+
+
+@pytest.mark.parametrize("seed", range(6))
+def test_random_paths_split_into_manifests_and_code(tmp_path, seed):
+    rng = random.Random(seed)
+    paths = sorted({random_path(rng, i) for i in range(20)})
+    repo = make_repo(tmp_path)
+    for rel in paths:
+        write(repo, rel)
+    commit(repo)
+    out = run(repo)
+    manifests = sorted(p for p in paths if expected_kind(p) == "manifest")
+    code = sorted(p for p in paths if expected_kind(p) == "code")
+    assert sorted(section(out, MANIFESTS)) == (manifests or ["NONE"])
+    code_out = section(out, CODE)
+    assert code_out[0] == f"COUNT={len(code)}"
+    assert sorted(code_out[2:]) == (code or ["NONE"])
