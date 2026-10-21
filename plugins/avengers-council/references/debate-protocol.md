@@ -41,6 +41,7 @@ When Captain America sends context (stay-alive: spawn prompt + team channel; hub
 1. Review the material through your specialty lens
 2. Produce your assessment using this exact format (canonical — the spawn template in orchestration-protocol.md and all skill broadcasts require every field below):
    ```
+   RESEARCH BRIEF (only when your spawn prompt has a RESEARCH BRIEF block): [date — findings with URLs | Nothing material]
    VERDICT: [APPROVE | CONCERNS | REJECT]
    DOMAIN SCORE: X/10 ([your domain name]) — basis: <own finding numbers | weak: <slugs> | none>
 

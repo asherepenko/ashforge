@@ -13,6 +13,9 @@ For full consensus rules and severity guidelines, see @references/verdict-rules.
 ## Run Mode
 [Full Council | Quick Mode (--quick) | Quick Mode — cost-controlled degradation from Full Council | Single-orchestrator fallback]
 
+Research: <member> (<status>), … | skipped — no web tools
+[Status is completed, partial, failed (<reason>), or unavailable, per research-protocol.md. A member outside the Quick roster reads `<member> not in roster`. Disclosure only: it never changes the verdict.]
+
 [When not Full Council: one line stating why + the fidelity trade — e.g. "verified fresh-worker schedule (four passes, 32 spawns for eight members) disproportionate; facts adversarially verified in triage; user unavailable. No cross-member debate rounds."]
 
 ## Consensus
@@ -51,6 +54,8 @@ Set the tier by what the change touches, never by who writes it. See @references
 > **Findings:**
 > - [Finding 1 with file:line]
 > - [Finding 2 with file:line]
+>
+> - Research: (only for a member who researched) [date — findings with URLs | Nothing material | failed (<reason>)]
 >
 > **Score flag:** (only when a score-check FLAG was not resolved in Round 3: the flag text)
 >

@@ -2,7 +2,7 @@
 name: council-plan-review
 description: "Use when reviewing planning decisions, design specs, PRDs, or architectural plans with the Avengers Council. Triggers on 'review my plan', 'council feedback on this design', 'sanity check this approach', 'review this plan file', 'council review the plan'. Works on files (@path), free-text topics, or auto-detects plan files. For code/diff reviews, use the council-code-review skill instead."
 argument-hint: "[topic | @file] [--focus <area>] [--quick]"
-allowed-tools: Read, Grep, Glob, Bash, Write, Agent, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash, Write, Agent, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion, WebSearch, WebFetch
 metadata:
   short-description: "Multi-agent Avengers Council review of plans, PRDs, and designs with debate rounds and a saved verdict."
 ---
@@ -182,5 +182,6 @@ After council review completes, confirm:
 - [ ] Risk line states `low | medium | high` with its basis, and the Risk Tier section gives the recommended human review
 - [ ] Every score has a basis and passed `score-check.sh`, or carries a flag
 - [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — plan scope too narrow")
+- [ ] Research brief present for every selected member, or the skip disclosed
 - [ ] Verdict saved to `.artifacts/reviews/`
 - [ ] Post-verdict action taken per verdict routing (approved/conditions/revision/blocked)

@@ -90,7 +90,7 @@ Check red lines from `${CLAUDE_PLUGIN_ROOT}/references/red-lines.md` for automat
 
 Before any council decision, Captain America determines the active roster and gathers project conventions.
 
-1. **Determine roster**: Read `${CLAUDE_PLUGIN_ROOT}/references/member-registry.md` to identify which optional members should join based on the review topic.
+1. **Determine roster**: Read `${CLAUDE_PLUGIN_ROOT}/references/member-registry.md` to identify which optional members should join based on the review topic. Select researchers per `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md`.
 2. **Detect standards**: `${CLAUDE_PLUGIN_ROOT}/references/standards-protocol.md`
 3. **Audit codebase**: Per orchestration-protocol.md#codebase-audit-shared-across-all-commands
 

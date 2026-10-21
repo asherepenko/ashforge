@@ -93,6 +93,11 @@ council-plan-review @.claude/plans/phase-1-auth.md
 ## Topic
 Phase 1: Authentication System Plan
 
+## Run Mode
+Full Council
+
+Research: black-widow (completed), thor (partial) | skipped — no web tools
+
 ## Consensus
 
 ### ✅ APPROVED WITH CONDITIONS
@@ -231,6 +236,11 @@ All verdicts follow this structure:
 ## Topic
 [What was reviewed]
 
+## Run Mode
+[Full Council | Quick Mode | Single-orchestrator fallback]
+
+Research: <member> (<status>), … | skipped — no web tools
+
 ## Consensus
 
 ### [✅ | ⚠️ | ⛔] [APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED]
@@ -256,6 +266,7 @@ Recommended human review of the resulting code: [automated checks only | one per
 ### Iron Man (Architecture & Scalability) — [VERDICT] | Score: X/10 — basis: …
 - [Finding 1 with severity]
 - [Finding 2 with severity]
+- Research: [date — findings with URLs | Nothing material] (only for a member who researched)
 
 ### Thor (Backend & API) — [VERDICT] | Score: X/10 — basis: …
 [...]

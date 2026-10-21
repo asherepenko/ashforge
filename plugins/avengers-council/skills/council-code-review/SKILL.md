@@ -2,7 +2,7 @@
 name: council-code-review
 description: "Use when reviewing code changes, diffs, pull requests, or specific files with the Avengers Council. Triggers on 'council code review', 'review my changes before merge', 'review this PR'. For plan/architecture reviews, use the council-plan-review skill instead."
 argument-hint: "[--pr <n> | --diff | --files <paths>] [--focus <area>] [--quick]"
-allowed-tools: Read, Grep, Glob, Bash, Write, Agent, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash, Write, Agent, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion, WebSearch, WebFetch
 metadata:
   short-description: "Multi-agent Avengers Council review of diffs, PRs, or files with debate rounds and a saved verdict."
 ---
@@ -192,4 +192,5 @@ After code review completes, confirm:
 - [ ] Round 2 challenges exchanged between members (stay-alive: via SendMessage; hub: via re-spawn with consolidated context)
 - [ ] Mode selection followed the Mode Selection & Cost-Controlled Degradation section; any autonomous downgrade is disclosed in the verdict header
 - [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — diff too narrow")
+- [ ] Research brief present for every selected member, or the skip disclosed
 - [ ] Verdict saved with findings grouped by severity
