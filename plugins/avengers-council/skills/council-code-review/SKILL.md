@@ -137,7 +137,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
     ```bash
     bash "$PLUGIN_ROOT/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
     ```
-  - Grade Quality: count the `yes` findings by severity (pre-existing excluded) and run the script. Print its line as `Quality:`. On a script error print `Quality: not scored ({reason})`. Never write the letter by hand:
+  - Grade Quality: count the `yes` findings by severity (pre-existing excluded) and run the script. Print its line as `Quality:`, then append ` · weak: <slugs>`: the union of every member's reported WEAK rubric criteria (`weak: <slug>`), deduplicated, in rubric order (correctness, simplicity, consistency, robustness, maintainability). Omit the suffix when no member reported a WEAK criterion. On a script error print `Quality: not scored ({reason})`. Never write the letter by hand:
     ```bash
     bash "$PLUGIN_ROOT/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N
     ```

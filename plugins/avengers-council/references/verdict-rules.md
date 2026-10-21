@@ -143,6 +143,8 @@ Ladder, first match wins:
 
 Count each underlying issue once across members; the highest severity wins. On a script error, print `Quality: not scored ({reason})`, never a guessed letter.
 
+After the script's line, append ` · weak: <slugs>`: the union of every member's reported WEAK rubric criteria (`weak: <slug>`), deduplicated, in rubric order (correctness, simplicity, consistency, robustness, maintainability). Omit the suffix when no member reported a WEAK criterion. The letter comes only from the script; WEAK criteria never change it. Plan reviews often have no rubric, so the suffix is usually omitted.
+
 ### Risk
 
 Set the tier by what the change touches, never by who writes it. For plans and for code, the highest tier wins when the change touches several.

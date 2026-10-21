@@ -332,7 +332,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
    ```
 
-   **Grade quality and set risk:** run `review-grade.sh` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). On a script error print `Quality: not scored ({reason})`. Both are info only (@references/verdict-rules.md#quality-and-risk).
+   **Grade quality and set risk:** run `review-grade.sh` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Then append ` · weak: <slugs>`: the union of every member's reported WEAK rubric criteria (`weak: <slug>`), deduplicated, in rubric order (correctness, simplicity, consistency, robustness, maintainability). Omit the suffix when no member reported a WEAK criterion. On a script error print `Quality: not scored ({reason})`. Both are info only (@references/verdict-rules.md#quality-and-risk).
 
    ```bash
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N

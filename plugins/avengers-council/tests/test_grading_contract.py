@@ -66,3 +66,8 @@ def test_score_check_runs_before_round_3_in_both_trigger_blocks():
     debate = protocol.split("**Barrier B:**", 1)[1].split("## Phase 4", 1)[0]
     assert "score-check.sh" in debate
     assert debate.count("Score flag") >= 2
+
+
+def test_quality_line_weak_suffix_has_a_producer_in_rules_and_protocol():
+    for path in ("references/verdict-rules.md", "references/orchestration-protocol.md"):
+        assert "· weak:" in read(path), path
