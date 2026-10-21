@@ -349,3 +349,72 @@ Rationale: Modern Kotlin-first approach.
             assert "file paths" in result.stderr
         finally:
             tmp_path.unlink(missing_ok=True)
+
+
+# --- Code-review report Quality line ---
+
+CODE_REVIEW_REPORT = """# Code Review Report
+
+## Summary
+
+Reviewed the sync module for correctness and structure.
+
+**Scope:** sync/
+**Overall Assessment:** Needs Improvement
+{quality_line}**Files Reviewed:** 4
+
+## Findings
+
+### Finding 1: Unbounded retry
+
+**Severity:** High
+**Location:** `sync/Retry.kt:12`
+**Category:** Performance
+
+**Description:**
+Retries never back off.
+
+## Severity Summary
+
+| Severity | Count | Categories |
+|----------|-------|------------|
+| Critical | 0 | - |
+| High | 1 | Performance |
+| Medium | 2 | Testing |
+| Low | 0 | - |
+| Info | 0 | - |
+
+## Recommendations
+
+Add exponential backoff to the retry loop.
+Cover the retry path with a unit test.
+Document the retry policy in the module README.
+
+## Patterns Observed
+
+Repository pattern used consistently.
+Coroutines scoped to the ViewModel.
+Errors surfaced through sealed results.
+"""
+
+
+def _validate_code_review(tmp_path, quality_line: str):
+    report = tmp_path / "2026-01-01-000000-code-review-report.md"
+    report.write_text(CODE_REVIEW_REPORT.format(quality_line=quality_line))
+    return validate_handoff_mod.validate_handoff(str(report))
+
+
+def test_code_review_report_with_quality_line_passes(tmp_path):
+    """A code-review report carrying the Quality line is valid."""
+    line = "**Quality:** D — 0 critical, 1 high, 2 medium, 0 low\n"
+    is_valid, errors = _validate_code_review(tmp_path, line)
+
+    assert is_valid, f"Report with Quality line should pass. errors: {errors}"
+
+
+def test_code_review_report_without_quality_line_fails(tmp_path):
+    """A code-review report without the Quality line is rejected with a clear message."""
+    is_valid, errors = _validate_code_review(tmp_path, "")
+
+    assert not is_valid
+    assert any("**Quality:**" in e and "review-grade.sh" in e for e in errors), errors

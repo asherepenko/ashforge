@@ -215,6 +215,8 @@ Handoff mechanics (paths, validation, escalation): read `${CLAUDE_PLUGIN_ROOT}/r
 
 **Review mode (code-review pipeline):** write `{run_timestamp}-code-review-report.md` instead, using the template from `${CLAUDE_PLUGIN_ROOT}/templates/code-review-report-template.md`.
 
+Fill the Severity Summary table first. Then run `bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N` (counts from the table; Info never counts) and paste its output line into the header as `**Quality:** X — …`. Never write the letter by hand; the validator rejects a report without the line.
+
 ### Communication Style
 
 **With downstream agents:**

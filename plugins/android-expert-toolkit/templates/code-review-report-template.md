@@ -22,6 +22,7 @@ Mode: review
 
 **Scope:** [Files/modules reviewed]
 **Overall Assessment:** [Good / Needs Improvement / Significant Issues]
+**Quality:** [X — N critical, N high, N medium, N low — paste the line printed by review-grade.sh; Info never counts]
 **Files Reviewed:** [Count]
 
 ## Findings

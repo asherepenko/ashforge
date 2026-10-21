@@ -203,6 +203,20 @@ def check_next_steps_actionable(content: str) -> Tuple[bool, str]:
     return True, ""
 
 
+QUALITY_LINE_PATTERN = re.compile(r'^\*\*Quality:\*\*\s+[A-F]\s+—', re.MULTILINE)
+
+
+def check_quality_line(content: str) -> Tuple[bool, str]:
+    """Check that a code-review report carries the graded '**Quality:** X —' line."""
+    if QUALITY_LINE_PATTERN.search(content):
+        return True, ""
+    return False, (
+        "Missing '**Quality:** [A-F] — N critical, N high, N medium, N low' line. "
+        "Fill the Severity Summary, then run scripts/review-grade.sh --ladder severity "
+        "--critical N --high N --medium N --low N and paste its output line."
+    )
+
+
 def validate_handoff(filename: str) -> tuple[bool, List[str]]:
     """
     Validate a handoff artifact file.
@@ -258,6 +272,12 @@ def validate_handoff(filename: str) -> tuple[bool, List[str]]:
     # Next Steps actionable check
     if "Next Steps" in found_sections:
         ok, msg = check_next_steps_actionable(content)
+        if not ok:
+            errors.append(msg)
+
+    # Quality line check (code-review reports only)
+    if artifact_type == "code-review-report":
+        ok, msg = check_quality_line(content)
         if not ok:
             errors.append(msg)
 
