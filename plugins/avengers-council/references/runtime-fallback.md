@@ -46,7 +46,7 @@ Tell the user explicitly before any review work begins:
 
 Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1 with an inline persona walk by the orchestrating model (Captain America):
 
-1. **Build the active roster** the same way (read `references/member-registry.md`). Optional members still auto-join based on topic.
+1. **Build the active roster** the same way (read `references/member-registry.md`). Optional members still auto-join based on topic. Select researchers by the same rule (`references/research-protocol.md`): `black-widow` plus the owner of each changed dependency manifest, only when `WEB=available`. Walk each selected persona's `## Research Focus` searches before its assessment, within that member's budget, and put the status in the verdict's Run Mode line. With `WEB=none`, write `Research: skipped — no web tools`.
 
 2. **For each member in the roster:**
    - Read `agents/<member>.md` persona file
@@ -54,6 +54,7 @@ Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1
    - Apply against the REVIEW CONTEXT (same gathering logic — standards detection, codebase audit, domain artifacts)
    - Produce a single-member assessment block in that persona's voice with the same Round-1 schema:
      ```
+     RESEARCH BRIEF (selected researchers only): date — findings with URLs | Nothing material
      VERDICT: APPROVE / CONCERNS / REJECT
      DOMAIN SCORE: X/10 ([domain]) — basis: <own finding numbers | weak: <slugs> | none>
      KEY FINDINGS: max 5, each with severity (code review: plus Introduced here: yes | pre-existing)
