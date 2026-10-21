@@ -99,6 +99,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
     ACCEPTANCE CRITERIA:
     [List the plan's acceptance criteria — note if missing or vague]
     ```
+  - Include the `REQUESTED SCOPE` spawn block. Captain builds the numbered **Requested Scope** list from the plan's linked source (PRD, design doc, or the stated requirement in its Source section) and from its Goal and acceptance criteria, each item tagged `[PRD]`, `[source]`, `[goal]` or `[AC]`.
   - **Considered-but-not-flagged directive** (include verbatim in the spawn prompt):
     > Surface 1–3 design choices in your domain that looked risky but you chose not to flag, with the reasoning. This is not a list of LOW-severity findings — it is the audit trail of judgment calls (e.g., "considered flagging the synchronous DB call in step 3 — left it because the plan explicitly bounds the dataset to <100 rows"). The user can override a dismissal only if they can see it was made. If the plan is too narrow for near-misses, say "Nothing material — plan scope too narrow" rather than padding. See `${CLAUDE_PLUGIN_ROOT}/references/rubric-code-quality.md#forcing-function-considered-but-not-flagged`.
   - Each member's Round 1 response must include a `Considered but not flagged:` line (1–3 items or "Nothing material — plan scope too narrow").
@@ -109,7 +110,8 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
 - **Verdict synthesis additions:**
   - Check if acceptance criteria are testable and measurable
   - If major criteria missing → downgrade to "NEEDS REVISION" minimum
-  - Add Standards Compliance and Acceptance Criteria Validation sections to saved verdict
+  - Add Scope Check, Acceptance Criteria Validation and Standards Compliance sections to saved verdict
+  - **Scope Check:** mark each Requested Scope item ✅ covered, ⚠️ partial, ❌ missing or ⏸ deferred. ❌ is one HIGH finding and ⚠️ is one MEDIUM finding; ⏸ is no finding, and only when the source itself defers the item (a plan that defers a source requirement on its own is ⚠️ partial). Count them before grading. One underlying gap counts once across Scope Check, AC Validation and member findings; the highest severity wins. The Scope Check row cites the finding it shares. An unreadable linked source is disclosed as `Source not readable: <path>`.
   - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
   - **Count missing major acceptance criteria as one HIGH finding.** Add it to the finding list before grading.
   - **Check each score:** run `score-check.sh` once per member, per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. An unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. A FLAG never changes the verdict.
@@ -158,6 +160,7 @@ Choose one exact verdict value; the receipt JSON keeps these fields and enum unc
 - Skipping Round 2 debate challenges
 - No acceptance criteria validation in the verdict
 - APPROVED verdict when acceptance criteria are missing or vague
+- No Scope Check in the verdict, or a requested item missing from the plan reported as covered
 - Standards violations not called out explicitly
 - Council member deferring on their primary expertise area
 - On hub-transport runtimes: skipping the Round-2/3 spawn fan-out because "the Round-1 verdicts looked unanimous" — debate rounds are mandatory in full mode
@@ -175,6 +178,7 @@ After council review completes, confirm:
 - [ ] Round 2 challenges were exchanged (stay-alive: via SendMessage; hub: via re-spawn with consolidated context)
 - [ ] Mode selection followed the Mode Selection & Cost-Controlled Degradation section; any autonomous downgrade is disclosed in the verdict header
 - [ ] Final verdict includes Standards Compliance section
+- [ ] Final verdict includes a Scope Check table, with each ❌/⚠️ row counted once before grading
 - [ ] Acceptance criteria validated as testable and measurable
 - [ ] Each Round 1 position includes a `Pre-mortem:` line with 1–2 failure modes tied to plan sections
 - [ ] **Quality** row comes from `review-grade.sh` (or `not scored ({reason})`), never a hand-picked letter

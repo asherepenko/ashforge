@@ -279,6 +279,22 @@ Recommended human review of the resulting code: [automated checks only | one per
 ## Tiebreaker (if applicable)
 [Captain America's deciding vote with reasoning]
 
+## Scope Check
+[Plan reviews only]
+Legend: ✅ covered · ⚠️ partial · ❌ missing · ⏸ deferred
+| # | Requested item | Covered | Where |
+|---|----------------|---------|-------|
+| 1 | [item] `[PRD]` | ✅ | [plan section] |
+
+## Acceptance Criteria Validation
+[Plan reviews only]
+- [x] [Criterion]
+
+## Standards Compliance
+| Standard | Category | Status |
+|----------|----------|--------|
+| [standard] | Mandatory or Strong Guidance | [status] |
+
 ## Conditions for Approval
 [Must-fix items before proceeding]
 
@@ -290,6 +306,8 @@ Recommended human review of the resulting code: [automated checks only | one per
 The block under `## Consensus` is a headline with a status emoji (✅ approved, ⚠️ needs revision, ⛔ blocked) and a Quality/Risk/Vote/Score table. It is computed after the debate. The verdict comes from votes and findings alone. **Quality** is a grade A–F from the finding counts (`scripts/review-grade.sh`: any CRITICAL is F, any HIGH is D, 3+ MEDIUM is C, 1–2 MEDIUM or more than 3 LOW is B, otherwise A). **Risk** is the tier with its basis. **Score** is the average of the members' domain scores, for information only: it never raises or lowers the verdict. Each member's score sits in a band set by their own findings and carries a `basis:`; `scripts/score-check.sh` flags a score that contradicts the member's own findings. An optional member that joins, such as Ant-Man, adds a position in the same shape and a Domain Scores row (`| Ant-Man (optional) | Reuse & Placement | X/10 |`).
 
 Plan and code verdicts both include the Risk Tier section. The tier is set by what the change touches, never by who writes it: `low` for docs, copy, internal-only work, or additive behavior behind a flag; `medium` for an ordinary product change; `high` for auth, permissions, billing or payments, data migrations, CI/deploy/release, auto-update, secrets, or any other path that always needs two people. Each member also gives a 1–2 item pre-mortem in Round 1. An unmitigated failure mode in a member's primary domain is at least HIGH.
+
+Scope Check lists what the plan's source, Goal and acceptance criteria asked for. Each ❌ missing item is one HIGH finding and each ⚠️ partial item is one MEDIUM finding; ⏸ deferred is no finding and applies only when the source itself defers the item. One underlying gap counts once across Scope Check, AC Validation and member findings, and the highest severity wins.
 
 ### Consensus Rules
 
