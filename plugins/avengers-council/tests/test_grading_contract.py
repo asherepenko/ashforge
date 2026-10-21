@@ -102,8 +102,49 @@ def test_quality_line_weak_suffix_has_a_producer_in_rules_and_protocol():
 
 
 def test_consensus_table_rows_have_two_columns():
-    for path in ["assets/verdict-template.md", "docs/skills.md"]:
+    paths = ["assets/verdict-template.md", "docs/skills.md"]
+    paths += [f"examples/{p.name}" for p in sorted((PROJECT_ROOT / "examples").glob("*.md"))]
+    for path in paths:
         rows = [l for l in read(path).splitlines() if re.match(r"^\| \*\*(Quality|Risk|Vote|Score)\*\* \|", l)]
+        if path.startswith("examples/") and not rows:
+            continue
         assert rows, path
         for row in rows:
             assert row.count("|") == 3, (path, row)
+
+
+def _verdict_docs():
+    paths = ["assets/verdict-template.md", "docs/skills.md"]
+    return paths + [f"examples/{p.name}" for p in sorted((PROJECT_ROOT / "examples").glob("*.md"))]
+
+
+def test_consensus_headlines_use_matching_emoji():
+    expected = {"APPROVED WITH CONDITIONS": "✅", "APPROVED": "✅", "NEEDS REVISION": "⚠️", "BLOCKED": "⛔"}
+    for path in _verdict_docs():
+        for line in read(path).splitlines():
+            if not line.startswith("### ") or not re.search(r"APPROVED|NEEDS REVISION|BLOCKED", line):
+                continue
+            if line.startswith("### ["):
+                continue
+            assert line[4:].startswith(("✅", "⚠️", "⛔")), (path, line)
+            label = line[4:].split(" ", 1)[1].strip()
+            assert label in expected, (path, line)
+            assert line[4:].startswith(expected[label]), (path, line)
+
+
+def test_concrete_risk_rows_start_with_matching_emoji():
+    expected = {"🟢": "low", "🟡": "medium", "🔴": "high"}
+    for path in _verdict_docs():
+        for line in read(path).splitlines():
+            if not line.startswith("| **Risk** |") or "[" in line:
+                continue
+            cell = line.split("|")[2].strip()
+            emoji, level = cell.split(" ")[:2]
+            assert expected.get(emoji) == level, (path, line)
+
+
+def test_producer_skills_name_quality_and_risk_rows():
+    for path in ["skills/council-code-review/SKILL.md", "skills/council-plan-review/SKILL.md"]:
+        text = read(path)
+        assert "**Quality**" in text, path
+        assert "**Risk**" in text, path

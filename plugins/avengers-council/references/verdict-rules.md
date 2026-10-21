@@ -120,7 +120,7 @@ Exit 0 is ok. Exit 1 is FLAG: the score is above the cap its findings allow, or 
 
 ## Quality and Risk
 
-Two lines in every verdict, computed from labels after the debate. Neither changes the verdict.
+Quality and Risk are two rows of the Consensus table in every verdict, computed from labels after the debate. Neither changes the verdict.
 
 ### Quality
 
@@ -141,7 +141,7 @@ Ladder, first match wins:
 | B | 1-2 MEDIUM, or more than 3 LOW |
 | A | otherwise |
 
-Count each underlying issue once across members; the highest severity wins. On a script error, print `Quality: not scored ({reason})`, never a guessed letter.
+Count each underlying issue once across members; the highest severity wins. On a script error, put `not scored ({reason})` in the Quality row, never a guessed letter.
 
 After the script's line, append ` · weak: <slugs>`: the union of every member's reported WEAK rubric criteria (`weak: <slug>`), deduplicated, in rubric order (correctness, simplicity, consistency, robustness, maintainability). Omit the suffix when no member reported a WEAK criterion. The letter comes only from the script; WEAK criteria never change it. On `not scored`, add no suffix. Plan reviews often have no rubric, so the suffix is usually omitted.
 
@@ -187,7 +187,7 @@ Members base their vote and domain score on `yes` findings only. Captain America
 4. **Missing basis.** Full Council: Captain America asks for it in that member's Round 3 trigger. Quick Mode and fallback runs: the member's own Round 1 findings are the basis.
 5. **Full Council.** For a vote that passes the test, Captain America's Round 3 trigger to that member names the pre-existing findings and asks the member to restate the vote on `yes` findings only. If the `FINAL VOTE BASIS` still passes the test, the vote is adjusted (step 7).
 6. **Quick Mode and fallback runs** have no Round 3, so a vote that passes the test is adjusted directly.
-7. **Adjusting.** An adjusted vote counts as APPROVE in the tally. The verdict's **Vote adjustments** line lists each one, for example `Thor: REJECT → APPROVE — basis thor#2, thor#4 are pre-existing`. The member's original vote, findings and domain score stay in the record unchanged.
+7. **Adjusting.** An adjusted vote counts as APPROVE in the tally. The verdict's `Vote adjustments` line lists each one, for example `Thor: REJECT → APPROVE — basis thor#2, thor#4 are pre-existing`. The member's original vote, findings and domain score stay in the record unchanged.
 
 When members disagree on attribution, the debate rounds settle it. If it is still contested at synthesis, Captain America treats the finding as `yes` and records the disagreement.
 

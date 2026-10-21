@@ -137,11 +137,11 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
     ```bash
     bash "$PLUGIN_ROOT/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
     ```
-  - Grade Quality: count the `yes` findings by severity (pre-existing excluded) and run the script. Print its line as `Quality:`, then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error print `Quality: not scored ({reason})`. Never write the letter by hand:
+  - Grade Quality: count the `yes` findings by severity (pre-existing excluded) and run the script. Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error the row reads `not scored ({reason})`. Never write the letter by hand:
     ```bash
     bash "$PLUGIN_ROOT/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N
     ```
-  - Set Risk from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`, applied to the diff's touched paths. Highest tier wins. Print `Risk:` with the tier and name the paths that set it
+  - Set Risk from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`, applied to the diff's touched paths. Highest tier wins. Put `<emoji> <level> — <basis>` in the **Risk** row (🟢 low, 🟡 medium, 🔴 high) and name the paths that set it
   - Quality, Risk and the average domain score are informational. The verdict comes from the consensus rules
   - Include file:line references for each finding
   - Include suggested fixes where available
@@ -182,11 +182,11 @@ After code review completes, confirm:
 
 - [ ] All findings have severity classification and file:line references
 - [ ] Every finding states `Introduced here: yes | pre-existing`; pre-existing findings appear only in the Pre-existing section and did not affect the consensus
-- [ ] Every CONCERNS or REJECT vote states a vote basis; every adjusted vote is listed under **Vote adjustments** per verdict-rules.md#votes-that-rest-on-pre-existing-findings
+- [ ] Every CONCERNS or REJECT vote states a vote basis; every adjusted vote is listed under `Vote adjustments` per verdict-rules.md#votes-that-rest-on-pre-existing-findings
 - [ ] CRITICAL/HIGH findings include suggested fixes
 - [ ] Rubric grading applied (5 criteria, STRONG/ADEQUATE/WEAK); WEAK criteria reported as slugs
-- [ ] `Quality:` line is the `review-grade.sh` output on the `yes` finding counts (or `not scored ({reason})`)
-- [ ] `Risk:` line names the tier and the touched paths that set it
+- [ ] **Quality** row is the `review-grade.sh` output on the `yes` finding counts (or `not scored ({reason})`)
+- [ ] **Risk** row starts with the tier emoji (🟢/🟡/🔴), names the tier and the touched paths that set it
 - [ ] Every domain score has a `basis:` and passed `score-check.sh`, or carries a `Score flag:`
 - [ ] Standards compliance checked (naming, style, testing, commit format)
 - [ ] Round 2 challenges exchanged between members (stay-alive: via SendMessage; hub: via re-spawn with consolidated context)

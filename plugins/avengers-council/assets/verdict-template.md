@@ -26,7 +26,7 @@ For full consensus rules and severity guidelines, see @references/verdict-rules.
 | **Vote** | [N approve · N concerns · N reject (N voters)] |
 | **Score** | [X.X/10 avg] |
 
-**Vote adjustments** (code reviews only): [none | one line per adjusted vote, e.g. `Thor: REJECT → APPROVE — basis thor#2, thor#4 are pre-existing`; see verdict-rules.md#votes-that-rest-on-pre-existing-findings]
+Vote adjustments (code reviews only): [none | one line per adjusted vote, e.g. `Thor: REJECT → APPROVE — basis thor#2, thor#4 are pre-existing`; see verdict-rules.md#votes-that-rest-on-pre-existing-findings]
 
 Headline emoji: ✅ APPROVED and APPROVED WITH CONDITIONS, ⚠️ NEEDS REVISION, ⛔ BLOCKED. Quality and Risk are info rows computed after the debate; neither changes the verdict. See @references/verdict-rules.md#quality-and-risk
 

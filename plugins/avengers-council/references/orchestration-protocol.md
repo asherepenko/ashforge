@@ -332,7 +332,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
    ```
 
-   **Grade quality and set risk:** run `review-grade.sh` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Then append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error print `Quality: not scored ({reason})`. Both are info only (@references/verdict-rules.md#quality-and-risk).
+   **Grade quality and set risk:** run `review-grade.sh` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Put the script output, without its leading `Quality: `, in the **Quality** row of the Consensus table and append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error the row reads `not scored ({reason})`. Put Risk in the **Risk** row as `<emoji> <level> — <basis>`. Both are info only (@references/verdict-rules.md#quality-and-risk).
 
    ```bash
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N

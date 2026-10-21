@@ -69,7 +69,7 @@ Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1
    - Tally votes
    - Compute the average domain score (informational; never changes the verdict)
    - Run `score-check.sh` per member and note any FLAG in the verdict (no Round 3 in fallback)
-   - Run `review-grade.sh` on `yes` counts and set Risk from the tier table (`references/verdict-rules.md#quality-and-risk`)
+   - Run `review-grade.sh` on `yes` counts and set Risk from the tier table (`references/verdict-rules.md#quality-and-risk`); both go in the Consensus table's **Quality** and **Risk** rows
    - Check red lines (per `references/red-lines.md`)
    - Apply Black Widow veto on unmitigated CRITICAL security findings
 

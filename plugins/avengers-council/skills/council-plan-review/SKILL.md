@@ -113,13 +113,13 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
   - **Count missing major acceptance criteria as one HIGH finding.** Add it to the finding list before grading.
   - **Check each score:** run `score-check.sh` once per member, per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. An unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. A FLAG never changes the verdict.
-  - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Print its line as the verdict's `Quality:` line, then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error print `Quality: not scored ({reason})`:
+  - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error the row reads `not scored ({reason})`:
 
     ```bash
     bash "$PLUGIN_ROOT/scripts/review-grade.sh" --ladder severity \
       --critical N --high N --medium N --low N
     ```
-  - **Set the risk tier** from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk` and print it as the verdict's `Risk:` line. State the basis: name what the plan touches that sets the tier. Highest tier wins. Quality and Risk are info only; neither changes the verdict.
+  - **Set the risk tier** from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk` and put it in the **Risk** row as `<emoji> <level> — <basis>` (🟢 low, 🟡 medium, 🔴 high). State the basis: name what the plan touches that sets the tier. Highest tier wins. Quality and Risk are info only; neither changes the verdict.
   - If `plan_mode_source` is true, include in verdict header:
     ```
     > Reviewing plan file: `[filename]`
@@ -177,7 +177,8 @@ After council review completes, confirm:
 - [ ] Final verdict includes Standards Compliance section
 - [ ] Acceptance criteria validated as testable and measurable
 - [ ] Each Round 1 position includes a `Pre-mortem:` line with 1–2 failure modes tied to plan sections
-- [ ] Quality line comes from `review-grade.sh` (or `Quality: not scored ({reason})`), never a hand-picked letter
+- [ ] **Quality** row comes from `review-grade.sh` (or `not scored ({reason})`), never a hand-picked letter
+- [ ] **Risk** row starts with the tier emoji (🟢/🟡/🔴) and states the basis
 - [ ] Risk line states `low | medium | high` with its basis, and the Risk Tier section gives the recommended human review
 - [ ] Every score has a basis and passed `score-check.sh`, or carries a flag
 - [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — plan scope too narrow")

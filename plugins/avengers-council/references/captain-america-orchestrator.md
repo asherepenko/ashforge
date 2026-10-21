@@ -98,7 +98,7 @@ Before any council decision, Captain America determines the active roster and ga
 
 For the full verdict synthesis and recording protocol, see `${CLAUDE_PLUGIN_ROOT}/assets/verdict-template.md`.
 
-In plan and code reviews, set the verdict's `Risk: low | medium | high` and the matching recommended human review of the resulting code (low → automated checks only, medium → one person, high → two people). Set the tier by what the change touches, never by who writes it. The tier table is in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`. In plan reviews, treat any unmitigated pre-mortem failure mode in a member's primary domain as at least HIGH.
+In plan and code reviews, set the verdict's **Risk** row (`🟢 low | 🟡 medium | 🔴 high`, then the basis) and the matching recommended human review of the resulting code (low → automated checks only, medium → one person, high → two people). Set the tier by what the change touches, never by who writes it. The tier table is in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`. In plan reviews, treat any unmitigated pre-mortem failure mode in a member's primary domain as at least HIGH.
 
 In code reviews, list findings marked `Introduced here: pre-existing` in the verdict's Pre-existing section and keep them out of the consensus.
 

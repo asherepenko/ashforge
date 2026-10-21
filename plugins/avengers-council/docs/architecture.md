@@ -59,7 +59,7 @@
 │  PHASE 6: RECORD VERDICT                                        │
 │  ├─ Create .artifacts/reviews/{plans|code}/council/YYYY-MM-DD/  │
 │  ├─ Write verdict with:                                         │
-│  │   ├─ Verdict, Quality, Risk, Vote, Score (info)              │
+│  │   ├─ Headline + Quality, Risk, Vote, Score rows              │
 │  │   ├─ Vote tally (APPROVE/CONCERNS/REJECT by member)          │
 │  │   ├─ Standards Compliance section                            │
 │  │   ├─ Key findings (grouped by severity)                      │
@@ -79,7 +79,7 @@
         │  Thor (APIs)         │  │ - Fix test coverage  │
         │  Scarlet Witch (FE)  │  │ - Add rollback plan  │
         │  Hulk (Testing)      │  │                      │
-        │  Black Widow (Sec)   │  │ Score 7.2/10 (info)  │
+        │  Black Widow (Sec)   │  │ Score 7.2/10         │
         │  Hawkeye (Mobile)    │  │                      │
         │  Vision (Data)       │  │ Saved to:            │
         │  Dr Strange (DevOps) │  │ .artifacts/reviews/  │

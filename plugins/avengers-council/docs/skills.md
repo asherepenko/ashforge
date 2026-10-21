@@ -157,7 +157,7 @@ council-plan-review @docs/api-design.md --quick --focus security
 ```
 ## Consensus
 
-### ⚠️ NEEDS REVISION
+### ⛔ BLOCKED
 
 | | |
 |---|---|
@@ -242,7 +242,7 @@ All verdicts follow this structure:
 | **Vote** | [N approve · N concerns · N reject (N voters)] |
 | **Score** | [X.X/10 avg] |
 
-**Vote adjustments** (code reviews only): [none | one line per adjusted vote]
+Vote adjustments (code reviews only): [none | one line per adjusted vote]
 
 ## Risk Tier
 Risk tier: [low | medium | high]
@@ -297,7 +297,7 @@ Full consensus rules and severity guidelines: see @references/verdict-rules.md
 - **Model usage:** 2x Sonnet (selected members) + 1x Captain America (session model)
 - **Token cost:** Low (single round, focused review)
 - **Best for:** Focused reviews, time-sensitive decisions, smaller scope
-- **Output:** the two specialists report severities and a domain score with `basis:`; the verdict still shows Quality, Risk and Score (info)
+- **Output:** the two specialists report severities and a domain score with `basis:`; the verdict still shows Quality, Risk and Score as rows of the Consensus table
 
 **Member Selection (Quick Mode):**
 When `--quick` is specified, Captain America selects the 2 most relevant members based on `--focus` or topic analysis:
