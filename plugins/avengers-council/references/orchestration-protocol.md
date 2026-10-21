@@ -360,6 +360,8 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N
    ```
 
+   **Classify concerns:** check each `CONCERN FOR THE USER` against the severity guidelines (@references/verdict-rules.md#severity-guidelines) and the red lines (@references/red-lines.md). A concern that meets a severity definition or a red line is a finding, not a concern. Move it into the findings before grading and count it once, at its severity. Only a residual trade-off stays in the verdict's Concerns for the User section. That section is advisory: never a condition, not counted in Quality, never changes the verdict.
+
 5. **Apply consensus rules** per @references/verdict-rules.md (single source of truth — do not restate here)
    - For contested votes, apply the escalation hierarchy from verdict-rules.md
 

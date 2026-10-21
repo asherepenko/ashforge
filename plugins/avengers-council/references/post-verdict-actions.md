@@ -83,7 +83,7 @@ Second question: "Would you like to update the plan based on findings?"
 
 ### "Save as TODOs"
 1. Parse the verdict for all actionable findings
-2. Group by severity (CRITICAL → HIGH → MEDIUM → LOW)
+2. Group by severity (CRITICAL → HIGH → MEDIUM → LOW). Skip the Concerns for the User section unless the user asks to include it
 3. Create TODO items via the `/todo` skill with severity prefix: `[CRITICAL]`, `[HIGH]`, etc.
 4. Confirm to user how many TODOs were created
 5. Fall through to cleanup

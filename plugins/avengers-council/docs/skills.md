@@ -305,6 +305,9 @@ When a member is not in the Quick roster, its slot reads `not drawn — <member>
 ## Conditions for Approval
 [Must-fix items before proceeding]
 
+## Concerns for the User
+[Include this section ONLY when a member raised a concern. Advisory: never a condition, not counted in Quality, never changes the verdict. A concern that meets a severity definition or a red line is a finding, not a concern.]
+
 ## Action Items
 1. [Specific action with owner suggestion]
 2. [...]

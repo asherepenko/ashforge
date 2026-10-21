@@ -223,6 +223,14 @@ When a member is not in the Quick roster, its slot reads `not drawn — <member>
 ## Conditions for Approval
 [Items that must be addressed]
 
+## Concerns for the User
+
+[Include this section ONLY when a member raised a concern. Otherwise omit entirely.]
+
+Advisory. A concern is a risk the change knowingly takes on, or a judgment call for the user. It is never a condition, is not counted in Quality, and never changes the verdict. A concern that meets a severity definition or a red line is a finding, not a concern.
+
+- [Member] [Concern and the trade-off behind it]
+
 ## Pre-existing
 
 [Include this section ONLY for code reviews. Omit it for plan reviews. When no finding is pre-existing, write "None".]
