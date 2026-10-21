@@ -23,7 +23,9 @@ manifest_names="package.json package-lock.json yarn.lock pnpm-lock.yaml pyprojec
 requirements*.txt build.gradle build.gradle.kts libs.versions.toml Podfile Podfile.lock Package.resolved
 go.mod go.sum Cargo.toml Cargo.lock Gemfile Gemfile.lock Dockerfile"
 manifest_globs=()
+set -f
 for name in $manifest_names; do manifest_globs+=("**/$name"); done
+set +f
 manifest_globs+=(".github/workflows/**")
 
 (
