@@ -133,7 +133,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - Check naming conventions, style/organization standards, testing coverage, commit message format
   - Group findings by severity (CRITICAL first)
   - Move every `Introduced here: pre-existing` finding to the verdict's Pre-existing section. Exclude these findings from the consensus rules, the unmitigated-CRITICAL rules, and Black Widow's VETO
-  - Run `score-check.sh` once per member score with that member's own counts (`yes` findings only), per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#checking-the-score`. Exit 1 is a FLAG: in Full mode send it back to that member in Round 3; otherwise print `Score flag:` under the member. A FLAG never changes the verdict:
+  - Run `score-check.sh` once per member score with that member's own counts (`yes` findings only), per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#checking-the-score`. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. Exit 1 is a FLAG: an unresolved one (or any FLAG in Quick/fallback modes) is printed as `Score flag:` under the member. A FLAG never changes the verdict:
     ```bash
     bash "$PLUGIN_ROOT/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
     ```

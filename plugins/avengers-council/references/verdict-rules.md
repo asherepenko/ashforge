@@ -102,7 +102,7 @@ Captain America runs `scripts/score-check.sh` once per score, passing the member
 bash "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
 ```
 
-Exit 0 is ok. Exit 1 is FLAG: the score does not fit the band table. A flagged score goes back to the member once to fix the score or the labels. Whatever the member answers, the verdict is unaffected; an unresolved FLAG is noted in the verdict.
+Exit 0 is ok. Exit 1 is FLAG: the score is above the cap its findings allow, or a clean-domain score is below 7. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger, to fix the score or the labels; a bare score is asked for its basis in the same slot. Final scores are checked again in synthesis. Whatever the member answers, the verdict is unaffected; an unresolved FLAG (or any FLAG in Quick/fallback modes, which have no Round 3) becomes `Score flag:` in the verdict.
 
 ### Aggregate Score
 

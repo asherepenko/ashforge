@@ -59,3 +59,10 @@ def test_post_verdict_actions_conditions_menu():
     conditions = actions.split("### APPROVED WITH CONDITIONS", 1)[1].split("### NEEDS REVISION", 1)[0]
     assert "Address conditions now" in conditions
     assert "Override — record why" in conditions
+
+
+def test_score_check_runs_before_round_3_in_both_trigger_blocks():
+    protocol = read("references/orchestration-protocol.md")
+    debate = protocol.split("**Barrier B:**", 1)[1].split("## Phase 4", 1)[0]
+    assert "score-check.sh" in debate
+    assert debate.count("Score flag") >= 2

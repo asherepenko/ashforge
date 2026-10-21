@@ -238,7 +238,7 @@ After collecting Round 1 responses:
 
    **Barrier A:** Collect ROUND2_CHALLENGES_COMPLETE from every participating reviewer (apply timeout/quorum policy and disclose omissions). Consolidate every challenge/support by recipient, then send each reviewer its received challenges and the full consolidated debate. Ask for responses to incoming challenges and ROUND2_RESPONSES_COMPLETE; members with no received challenges must explicitly acknowledge that. Do not request final positions yet.
 
-   **Barrier B:** Collect ROUND2_RESPONSES_COMPLETE from every participating reviewer. Consolidate the responses with the challenges. Only then send a separate Round-3 trigger to every reviewer:
+   **Barrier B:** Collect ROUND2_RESPONSES_COMPLETE from every participating reviewer. Consolidate the responses with the challenges. Then run `score-check.sh` once per member on that member's Round-1 `DOMAIN SCORE` and own finding counts (code reviews: `Introduced here: yes` only; plus the WEAK count), as in Phase 4 step 4. Only then send a separate Round-3 trigger to every reviewer:
 
    ```
    ROUND 3 — FINAL POSITION
@@ -249,6 +249,9 @@ After collecting Round 1 responses:
    [Code review, only for a member whose vote rests on pre-existing findings or gave no basis
    (verdict-rules.md#votes-that-rest-on-pre-existing-findings): "Your vote basis [list] is
    pre-existing / missing. Restate your vote on findings this change introduced, or APPROVE."]
+   [Only for a member whose Round-1 score was flagged by score-check.sh, or was a bare score with no basis:
+   "Score flag: <FLAG text>. Fix the score or the severity labels in your FINAL DOMAIN SCORE and its basis."
+   (bare score: "Give the basis for your score.")]
    ```
 
    **Hub:** Round-1 workers have returned results; a completed turn does not prove thread release. Resume/continue by the actual tool schema when available, close then replace when close exists, or reuse the bounded pool as described in runtime-adapters.md. Dispatch Round 2 for the full roster using bounded batches or continued workers per runtime-adapters.md. Each prompt embeds the persona + REVIEW CONTEXT + the consolidated Round-1 findings block + a Round-2 instruction block:
@@ -273,7 +276,7 @@ After collecting Round 1 responses:
    Return CHALLENGES and SUPPORTS as the result of this spawn. Do not request your final verdict yet — that's Round 3.
    ```
 
-   After all Round-2 challenge batches are collected, consolidate cross-member challenges/supports by recipient. Dispatch a bounded Round-2 RESPONSE pass to every participating member with all received challenges, asking for an evidence-backed response and explicit completion (or "no received challenges"). Collect every response batch before constructing the Round-3 context block containing all challenges, supports and responses. Do not request final votes during either Round-2 pass. Dispatch Round 3 for the full roster using the same bounded scheduling, with the completed debate:
+   After all Round-2 challenge batches are collected, consolidate cross-member challenges/supports by recipient. Dispatch a bounded Round-2 RESPONSE pass to every participating member with all received challenges, asking for an evidence-backed response and explicit completion (or "no received challenges"). Collect every response batch, and run `score-check.sh` once per member on that member's Round-1 `DOMAIN SCORE` and own finding counts (code reviews: `Introduced here: yes` only; plus the WEAK count), before constructing the Round-3 context block containing all challenges, supports and responses. Do not request final votes during either Round-2 pass. Dispatch Round 3 for the full roster using the same bounded scheduling, with the completed debate:
 
    ```
    ROUND 3 — FINAL POSITION (you are [agent-name]):
@@ -291,6 +294,9 @@ After collecting Round 1 responses:
 
    [Code review, only for a member whose vote rests on pre-existing findings or gave no basis:
    the same restate request as the stay-alive Round-3 trigger above.]
+   [Only for a member whose Round-1 score was flagged by score-check.sh, or was a bare score with no basis:
+   "Score flag: <FLAG text>. Fix the score or the severity labels in your FINAL DOMAIN SCORE and its basis."
+   (bare score: "Give the basis for your score.")]
    ```
 
    Cost: up to 4M fresh spawns, where M excludes Captain America, (assessment, challenges, responses, final positions), or bounded continued workers as capacity permits. Disclose when worker reuse reduces independent-context isolation. Debate context is preserved — every cross-agent finding flows through the orchestrator's prompt instead of through SendMessage. This maximum cost is what the Mode Selection section's capability trigger measures.
@@ -320,7 +326,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    - Calculate average per @references/verdict-rules.md#domain-scoring (informational — never changes the verdict)
    - A score with no basis is asked for once; if still missing, report `n/a` and leave it out of the average
 
-   **Check each score:** run `score-check.sh` once per member with their own counts. Exit 1 is a FLAG: in Full mode send it back to that member in Round 3 to fix the score or the labels; in Quick and fallback modes note it in the verdict. A FLAG never changes the verdict.
+   **Check each score:** run `score-check.sh` once per member with their own counts. Full mode already checked the Round-1 scores and sent any FLAG back in the Round 3 trigger; this run covers the final scores. Exit 1 is a FLAG: a FLAG still present after Round 3, or any FLAG in Quick and fallback modes (no Round 3), is printed as `Score flag:` under the member in the verdict. A FLAG never changes the verdict.
 
    ```bash
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N

@@ -112,7 +112,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - Add Standards Compliance and Acceptance Criteria Validation sections to saved verdict
   - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
   - **Count missing major acceptance criteria as one HIGH finding.** Add it to the finding list before grading.
-  - **Check each score:** run `score-check.sh` once per member, per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4. Exit 1 is a FLAG: send it back to that member in Round 3, or note it in the verdict. A FLAG never changes the verdict.
+  - **Check each score:** run `score-check.sh` once per member, per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. An unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. A FLAG never changes the verdict.
   - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Print its line as the verdict's `Quality:` line. On a script error print `Quality: not scored ({reason})`:
 
     ```bash
