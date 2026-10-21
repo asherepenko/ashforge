@@ -4,6 +4,22 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.1.0] - 2026-10-21
+
+### Added
+
+- Research briefs: `references/research-protocol.md` and a WEB capability axis in `references/runtime-adapters.md`. Black Widow researches every review; seven other core members have a Research Focus and web tools. Skips are disclosed in the verdict.
+- Ant-Man, an optional member for reuse and placement (`agents/ant-man.md`), wired into the roster, debate and verdict.
+- Code-review preflight reports `== Dependency manifests changed ==` and `== Code files added or moved ==`.
+- Plan reviews: Scope Check and Acceptance Criteria Validation sections. Standards Compliance is in every review.
+- Plan reviews require an Iron Man architecture diagram and a Hulk flow diagram with a path-to-test map.
+- Advisory `Concerns for the User` section.
+
+### Changed
+
+- Missing or partial Scope Check items become HIGH or MEDIUM findings. A gap counts once across Scope Check, AC Validation and member findings.
+- Docs, README, AGENTS.md and the architecture diagram show Ant-Man and the research protocol.
+
 ## [4.0.1] - 2026-10-21
 
 ### Changed
