@@ -62,3 +62,14 @@ def test_claude_hooks_no_op_when_plugin_root_is_unset():
         assert command.startswith('if [ -f "${CLAUDE_PLUGIN_ROOT}/'), (
             f"hook command must guard on the resolved plugin root: {command}"
         )
+
+
+def test_codex_short_description_lives_in_openai_yaml():
+    """Codex documents only name and description in SKILL.md frontmatter;
+    the UI short text belongs in agents/openai.yaml as interface.short_description."""
+    for skill in sorted((PROJECT_ROOT / "skills").glob("*/SKILL.md")):
+        frontmatter = skill.read_text(encoding="utf-8").split("---", 2)[1]
+        assert "metadata:" not in frontmatter, skill
+        assert "short-description" not in frontmatter, skill
+        yaml = (skill.parent / "agents" / "openai.yaml").read_text(encoding="utf-8")
+        assert yaml.startswith("interface:\n  short_description: "), skill

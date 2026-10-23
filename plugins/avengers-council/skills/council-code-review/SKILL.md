@@ -3,8 +3,6 @@ name: council-code-review
 description: "Use when reviewing code changes, diffs, pull requests, or specific files with the Avengers Council. Triggers on 'council code review', 'review my changes before merge', 'review this PR'. For plan/architecture reviews, use the council-plan-review skill instead."
 argument-hint: "[--pr <n> | --diff | --files <paths>] [--focus <area>] [--quick]"
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, SendMessage, TaskCreate, TaskUpdate, AskUserQuestion, WebSearch, WebFetch
-metadata:
-  short-description: "Multi-agent Avengers Council review of diffs, PRs, or files with debate rounds and a saved verdict."
 ---
 
 # Avengers Council — Code Review

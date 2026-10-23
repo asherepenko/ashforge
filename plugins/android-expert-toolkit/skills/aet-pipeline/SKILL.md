@@ -2,8 +2,6 @@
 name: aet-pipeline
 description: "Use when running a multi-agent Android development pipeline end-to-end — feature builds, architecture reviews, migrations, UI redesigns, build optimizations, test backfills, or code reviews. Triggers on 'build a feature', 'review architecture', 'migrate to X', 'redesign UI', 'optimize build', 'add tests', 'code review module'. Not for ad-hoc Android questions (use android-expert)."
 argument-hint: "<feature-build|architecture-review|migration|ui-redesign|build-optimization|test|code-review>"
-metadata:
-  short-description: "Run a multi-agent Android pipeline (feature build, migration, review) with validated handoffs"
 ---
 
 # Android Expert Pipeline Orchestration

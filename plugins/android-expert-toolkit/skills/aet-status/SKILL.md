@@ -1,8 +1,6 @@
 ---
 name: aet-status
 description: "Use when checking on an Android Expert Toolkit pipeline run — show progress, completed stages, generated artifacts, timing, and recovery options. Trigger on 'pipeline status', 'aet status', 'what's running', 'where are we in the pipeline', 'show pipeline progress'."
-metadata:
-  short-description: "Show Android pipeline progress, artifacts, and recovery options"
 ---
 
 # Android Expert Pipeline Status

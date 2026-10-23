@@ -1,0 +1,2 @@
+interface:
+  short_description: "Detect Android codebase pattern consistency with the 80/20 matrix"

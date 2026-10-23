@@ -2,8 +2,6 @@
 name: android-expert
 description: "Use for ad-hoc Android app development questions, pattern guidance, and code review — Jetpack Compose UI, ViewModel, StateFlow, Hilt/Koin, Room, Coroutines/Flow, Navigation, DataStore, WorkManager, Android Gradle convention plugins, ProGuard/R8, Material 3, or Android app architecture. Trigger on Android app work (Compose UI, Android framework, app architecture) — NOT for backend/server Kotlin or plain Gradle JVM builds. NOT for multi-agent pipeline execution (use the `aet-pipeline` skill for end-to-end feature builds, migrations, or reviews)."
 argument-hint: "[question or topic] — e.g. 'Room offline-first', 'ViewModel StateFlow pattern'"
-metadata:
-  short-description: "Ad-hoc Android app development guidance — Compose, architecture, DI, testing patterns"
 ---
 
 # Android Engineering Expert

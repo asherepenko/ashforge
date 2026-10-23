@@ -2,8 +2,6 @@
 name: aet-check
 description: "Use when analyzing pattern consistency in an Android codebase — state management, dependency injection, testing, architecture, security, performance, or accessibility. Runs detection sweeps and applies the 80/20 decision matrix. Trigger on 'check patterns', 'which DI is used', 'state management consistency', 'audit Compose patterns', 'aet check'."
 argument-hint: "[state | di | testing | architecture | security | performance | accessibility | all] [--fresh]"
-metadata:
-  short-description: "Detect Android codebase pattern consistency with the 80/20 matrix"
 ---
 
 # Android Expert Pattern Check
