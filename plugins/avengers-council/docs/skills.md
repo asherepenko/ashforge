@@ -37,6 +37,17 @@ Comprehensive reference for Avengers Council skills: `council-plan-review` and `
 - Validating implementation against plan
 - Need feedback on "is this code ready to ship?"
 
+### Use `council-advise` when:
+- You have a question during development, not a finished plan or diff
+- You want several expert views on a trade-off: "Room or SQLDelight?", "split this module or not?"
+- You want a recommendation fast, without votes, grades or a saved verdict
+
+```
+council-advise "<question>" [@file ...] [--focus <area>] [--members <a,b,...>] [--debate]
+```
+
+It asks 3–4 members (picked by `--focus` or topic, or exactly `--members`). Each returns POSITION, WHY, TRADE-OFFS, WOULD CHANGE MY MIND IF and CONFIDENCE. `--debate` adds one rebuttal round. Captain America then writes Positions, Where they agree, Where they split, Captain's recommendation and Open questions. See `skills/council-advise/SKILL.md`.
+
 ---
 
 ## `council-plan-review`

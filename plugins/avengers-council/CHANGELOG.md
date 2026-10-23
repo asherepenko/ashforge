@@ -4,6 +4,16 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.2.0] - 2026-10-23
+
+### Added
+
+- `council-advise` skill: ask 3–4 council members a development question and get their positions, trade-offs and a Captain's recommendation. Flags: `--focus`, `--members`, `--debate` (one rebuttal round). No vote, grade, score or saved verdict. Reuses the plan-review preflight.
+
+### Changed
+
+- Codex short text moved from the SKILL.md `metadata.short-description` key to `agents/openai.yaml` `interface.short_description`, the field the Codex skills docs name. A packaging test keeps the old key out.
+
 ## [4.1.0] - 2026-10-21
 
 ### Added

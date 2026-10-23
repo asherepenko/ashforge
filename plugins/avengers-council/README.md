@@ -83,7 +83,11 @@ council-code-review                                   # Review unstaged diff
 council-code-review --pr 123                          # Review a GitHub PR
 council-code-review --files src/auth.ts,src/db.ts     # Review specific files
 council-code-review --pr 456 --quick --focus mobile   # 3-member quick review
+council-advise "Room or SQLDelight for offline sync?" # Ask a question, get several views
+council-advise "Split this module?" --debate          # Views plus one rebuttal round
 ```
+
+`council-advise` takes `--focus`, `--members <a,b>` and `--debate`. It returns positions, splits and a recommendation — no vote, grade or saved verdict.
 
 Claude: the Skill tool auto-triggers on description match, or invoke explicitly with `Skill(skill="council-plan-review", args="@my-plan.md")`. Codex: state the intent in natural language.
 
@@ -154,7 +158,7 @@ avengers-council/
 ├── .claude-plugin/plugin.json    # Claude Code manifest
 ├── .codex-plugin/plugin.json     # Codex CLI / Codex App manifest (points at skills/)
 ├── agents/                       # 8 core member personas (Captain America + optional members: see references/)
-├── skills/                       # council-plan-review, council-code-review (replaces the retired commands/)
+├── skills/                       # council-plan-review, council-code-review, council-advise (replaces the retired commands/)
 ├── references/                   # Verdict rules, red lines, debate protocol, member registry, runtime-adapters
 ├── hooks/                        # PreToolUse:ExitPlanMode hook (Claude-only)
 ├── docs/                         # Detailed skill + hook + architecture docs

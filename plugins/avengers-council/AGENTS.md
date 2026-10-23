@@ -2,7 +2,7 @@
 
 ## Routing
 
-- **Skills** (Skill tool / natural-language invocation): `council-code-review`, `council-plan-review` — orchestrate council sessions on both Claude Code and Codex.
+- **Skills** (Skill tool / natural-language invocation): `council-code-review`, `council-plan-review` — orchestrate council sessions on both Claude Code and Codex. `council-advise` asks 3–4 members a development question and returns their views plus a recommendation — no verdict, grade or saved review.
 - **Agents** (Agent tool on Claude / `spawn_agent` on Codex): `hulk`, `iron-man`, `thor`, `scarlet-witch`, `black-widow`, `hawkeye`, `vision`, `doctor-strange` — spawned by the skills during orchestration. `ant-man` is an optional agent (reuse and placement), spawned only when the roster rules in `references/member-registry.md` select it.
 - `captain-america` — reference only, never spawned. The orchestrating session plays this role on both platforms. On Claude Code its wire name on the team channel is `team-lead` (harness-owned, not configurable) — teammates must address the lead as `to: "team-lead"`; `captain-america` is not a routable recipient.
 - Never spawn a skill as an agent `subagent_type`.
@@ -15,7 +15,7 @@ The slash-command form (`/avengers-council:plan-review`, `/avengers-council:code
 .claude-plugin/plugin.json — Claude Code manifest
 .codex-plugin/plugin.json  — Codex CLI / Codex App manifest (points at skills/)
 agents/                    — 8 core member personas (Captain America: references/captain-america-orchestrator.md; optional members: references/member-registry.md)
-skills/                    — council-plan-review, council-code-review (each with SKILL.md + scripts/preflight.sh)
+skills/                    — council-plan-review, council-code-review (each with SKILL.md + scripts/preflight.sh); council-advise (SKILL.md only, reuses the plan-review preflight)
 references/                — Protocols, templates, shared docs (incl. runtime-adapters.md)
 hooks/                     — PreToolUse:ExitPlanMode hook (Claude-only — no Codex equivalent)
 docs/                      — Detailed documentation

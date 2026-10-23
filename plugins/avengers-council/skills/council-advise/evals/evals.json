@@ -1,0 +1,39 @@
+{
+  "skill_name": "council-advise",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "ask the council: should our Android app use Room or SQLDelight for offline sync?",
+      "expected_output": "3-4 member views on the storage choice and a Captain's recommendation, with no verdict.",
+      "files": [],
+      "expectations": [
+        "announces a roster of 3 or 4 members, each with a one-line reason",
+        "every member answer has POSITION, WHY, TRADE-OFFS, WOULD CHANGE MY MIND IF and CONFIDENCE",
+        "the answer has Positions, Where they agree, Where they split, Captain's recommendation and Open questions",
+        "the answer contains no APPROVE/REJECT vote, Quality grade or domain score",
+        "no file is written under .artifacts/"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "council advise \"should token refresh live in the API client or an interceptor?\" --members thor,black-widow --debate",
+      "expected_output": "Exactly Thor and Black Widow answer, then one rebuttal round, then the synthesis.",
+      "files": [],
+      "expectations": [
+        "only thor and black-widow are spawned",
+        "one rebuttal round runs after the first answers, and no further round",
+        "each split under Where they split names who holds which side"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "council advise",
+      "expected_output": "The skill asks for the question and spawns no one.",
+      "files": [],
+      "expectations": [
+        "asks the user for the question",
+        "spawns no member before the question is given"
+      ]
+    }
+  ]
+}
