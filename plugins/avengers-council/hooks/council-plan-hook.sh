@@ -26,7 +26,7 @@ case "$MODE" in
 EOF
     ;;
   auto)
-    python3 "$(dirname "$0")/plan-approval.py" check
+    python3 "$(dirname "$0")/council-plan-approval.py" check
     ;;
   *)
     echo "Warning: Unknown AVENGERS_COUNCIL_ON_PLAN value: $MODE (expected: off, prompt, auto)" >&2
