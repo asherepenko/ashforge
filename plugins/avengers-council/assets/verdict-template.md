@@ -2,6 +2,27 @@
 
 Use this exact structure for the final council verdict output.
 
+## Chat Output
+
+The chat shows the verdict the same way the saved file does. Print the `## Consensus` block as it is: the emoji headline, then the Quality, Risk, Vote and Score table. Under it, list each condition (or each blocking finding) as one line with its severity emoji (🔴 CRITICAL, 🟠 HIGH, 🟡 MEDIUM, 🟢 LOW) and file:line. Then print the `Verdict saved to:` line. Never replace the block with a one-line prose recap such as "Quality grade: D (11 high, 14 medium, 3 low). The verdict is still APPROVED WITH CONDITIONS…".
+
+```markdown
+### ✅ APPROVED WITH CONDITIONS
+
+| | |
+|---|---|
+| **Quality** | 🟠 D — 0 critical, 11 high, 14 medium, 3 low |
+| **Risk** | 🟡 medium — ordinary product change in the feed module |
+| **Vote** | 6 approve · 3 concerns · 0 reject (9 voters) |
+| **Score** | 6.8/10 avg |
+
+**Conditions (merge after all are fixed)**
+- 🟠 HIGH — `feed/Repo.kt:42` — cache is never invalidated on logout
+- 🟠 HIGH — …
+
+> **Verdict saved to:** `<absolute path>`
+```
+
 For full consensus rules and severity guidelines, see @references/verdict-rules.md
 
 ```markdown
@@ -24,14 +45,14 @@ Research: <member> (<status>), … | skipped — no web tools
 
 | | |
 |---|---|
-| **Quality** | [X — N critical, N high, N medium, N low · weak: slugs, or not scored ({reason})] |
+| **Quality** | [🟢 / 🟡 / 🟠 / 🔴] [X — N critical, N high, N medium, N low · weak: slugs, or not scored ({reason})] |
 | **Risk** | [🟢 low / 🟡 medium / 🔴 high] — [basis: what the change touches that sets the level] |
 | **Vote** | [N approve · N concerns · N reject (N voters)] |
 | **Score** | [X.X/10 avg] |
 
 Vote adjustments (code reviews only): [none | one line per adjusted vote, e.g. `Thor: REJECT → APPROVE — basis thor#2, thor#4 are pre-existing`; see verdict-rules.md#votes-that-rest-on-pre-existing-findings]
 
-Headline emoji: ✅ APPROVED and APPROVED WITH CONDITIONS, ⚠️ NEEDS REVISION, ⛔ BLOCKED. Quality and Risk are info rows computed after the debate; neither changes the verdict. See @references/verdict-rules.md#quality-and-risk
+Headline emoji: ✅ APPROVED and APPROVED WITH CONDITIONS, ⚠️ NEEDS REVISION, ⛔ BLOCKED. Quality emoji: 🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored. Quality and Risk are info rows computed after the debate; neither changes the verdict. See @references/verdict-rules.md#quality-and-risk
 
 ## Risk Tier
 

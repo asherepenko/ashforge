@@ -219,3 +219,31 @@ def test_rubric_prompts_exclude_pre_existing_weakness():
     rubric = read("references/rubric-code-quality.md").split("\n\n", 2)[1]
     for text in (skill, rubric):
         assert "pre-existing" in text
+
+
+GRADE_EMOJI = {"A": "🟢", "B": "🟢", "C": "🟡", "D": "🟠", "F": "🔴"}
+
+
+def test_grade_emoji_ladder_is_in_rules():
+    quality = read("references/verdict-rules.md").split("### Quality", 1)[1].split("### Risk", 1)[0]
+    for letter, emoji in GRADE_EMOJI.items():
+        assert re.search(rf"^\| {emoji} {letter} \|", quality, re.M), letter
+    assert "⚪ not scored" in quality
+
+
+def test_concrete_quality_rows_start_with_matching_grade_emoji():
+    for path in _verdict_docs():
+        for line in read(path).splitlines():
+            if not line.startswith("| **Quality** |") or "[" in line:
+                continue
+            cell = line.split("|")[2].strip()
+            emoji, letter = cell.split(" ")[:2]
+            assert GRADE_EMOJI.get(letter) == emoji, (path, line)
+
+
+def test_chat_shows_the_consensus_block_not_a_prose_recap():
+    for path in ["assets/verdict-template.md", "references/orchestration-protocol.md",
+                 "references/runtime-fallback.md"]:
+        text = read(path)
+        assert "## Chat Output" in text or "Chat output" in text, path
+        assert "one-line prose recap" in text, path

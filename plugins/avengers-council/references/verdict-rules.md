@@ -133,13 +133,15 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity \
 
 Ladder, first match wins:
 
-| Grade | Rule |
-|-------|------|
-| F | 1+ CRITICAL |
-| D | 1+ HIGH |
-| C | 3+ MEDIUM |
-| B | 1-2 MEDIUM, or more than 3 LOW |
-| A | otherwise |
+| Row starts | Grade | Rule |
+|------------|-------|------|
+| 🔴 F | F | 1+ CRITICAL |
+| 🟠 D | D | 1+ HIGH |
+| 🟡 C | C | 3+ MEDIUM |
+| 🟢 B | B | 1-2 MEDIUM, or more than 3 LOW |
+| 🟢 A | A | otherwise |
+
+The Quality row starts with the grade's emoji, then the script's line: `🟠 D — 0 critical, 11 high, 14 medium, 3 low`. A row that reads `not scored` starts with `⚪ not scored`.
 
 Count each underlying issue once across members; the highest severity wins. On a script error, put `not scored ({reason})` in the Quality row, never a guessed letter.
 

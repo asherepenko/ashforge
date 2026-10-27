@@ -15,7 +15,7 @@
 
 | | |
 |---|---|
-| **Quality** | F — 2 critical, 5 high, 9 medium, 5 low |
+| **Quality** | 🔴 F — 2 critical, 5 high, 9 medium, 5 low |
 | **Risk** | 🔴 high — new authentication, password storage and session handling |
 | **Vote** | 2 approve · 4 concerns · 3 reject (9 voters) |
 | **Score** | 6.4/10 avg |

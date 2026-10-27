@@ -15,7 +15,7 @@
 
 | | |
 |---|---|
-| **Quality** | D — 0 critical, 3 high, 11 medium, 7 low |
+| **Quality** | 🟠 D — 0 critical, 3 high, 11 medium, 7 low |
 | **Risk** | 🟡 medium — ordinary product feature (feed screen, repository, local cache); no auth, billing or release path |
 | **Vote** | 3 approve · 4 concerns · 2 reject (9 voters) |
 | **Score** | 7.4/10 avg |

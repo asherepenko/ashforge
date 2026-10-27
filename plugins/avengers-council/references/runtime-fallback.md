@@ -73,7 +73,7 @@ Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1
    - Tally votes
    - Compute the average domain score (informational; never changes the verdict)
    - Run `score-check.sh` per member and note any FLAG in the verdict (no Round 3 in fallback)
-   - Run `review-grade.sh --ladder severity` on `yes` finding counts (plans: all findings; on a script error the Quality row reads `not scored ({reason})`) and set Risk from the tier table (`references/verdict-rules.md#quality-and-risk`); both go in the Consensus table's **Quality** and **Risk** rows. For **Quality**, strip the leading `Quality: ` from the script output and append the weak-slug suffix per `references/verdict-rules.md#quality` (none on `not scored`). For **Risk**, write `<emoji> <level> — <basis>`
+   - Run `review-grade.sh --ladder severity` on `yes` finding counts (plans: all findings; on a script error the Quality row reads `not scored ({reason})`) and set Risk from the tier table (`references/verdict-rules.md#quality-and-risk`); both go in the Consensus table's **Quality** and **Risk** rows. For **Quality**, strip the leading `Quality: ` from the script output, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) and append the weak-slug suffix per `references/verdict-rules.md#quality` (none on `not scored`). For **Risk**, write `<emoji> <level> — <basis>`
    - Check red lines (per `references/red-lines.md`)
    - Apply Black Widow veto on unmitigated CRITICAL security findings
 
@@ -98,6 +98,8 @@ Mark the saved verdict (`.artifacts/reviews/{plans,code}/council/YYYY-MM-DD/HHMM
 > Debate rounds skipped — verdict reflects sequential persona review by Captain America.
 > Aggregate verdict capped at APPROVED WITH CONDITIONS regardless of tally; see runtime-fallback.md.
 ```
+
+**Chat output:** show the verdict in the chat as the template's `## Chat Output` section sets out: the `## Consensus` block as it is (emoji headline plus the Quality, Risk, Vote and Score table), one line per condition or blocking finding with its severity emoji, then the saved path. Never a one-line prose recap of the grade and the verdict.
 
 ### Step 5 — Post-verdict actions
 

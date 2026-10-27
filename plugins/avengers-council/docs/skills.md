@@ -115,7 +115,7 @@ Research: black-widow (completed), thor (partial) | skipped — no web tools
 
 | | |
 |---|---|
-| **Quality** | D — 0 critical, 2 high, 3 medium, 1 low |
+| **Quality** | 🟠 D — 0 critical, 2 high, 3 medium, 1 low |
 | **Risk** | 🔴 high — adds authentication and session handling |
 | **Vote** | 6 approve · 2 concerns · 0 reject (8 voters) |
 | **Score** | 7.1/10 avg |
@@ -177,7 +177,7 @@ council-plan-review @docs/api-design.md --quick --focus security
 
 | | |
 |---|---|
-| **Quality** | F — 3 critical, 0 high, 0 medium, 0 low |
+| **Quality** | 🔴 F — 3 critical, 0 high, 0 medium, 0 low |
 | **Risk** | 🔴 high — API authentication and session handling |
 | **Vote** | 0 approve · 1 concerns · 2 reject (3 voters) |
 | **Score** | 3.5/10 avg |
@@ -258,7 +258,7 @@ Research: <member> (<status>), … | skipped — no web tools
 
 | | |
 |---|---|
-| **Quality** | [X — N critical, N high, N medium, N low · weak: slugs, or not scored ({reason})] |
+| **Quality** | [🟢 / 🟡 / 🟠 / 🔴] [X — N critical, N high, N medium, N low · weak: slugs, or not scored ({reason})] |
 | **Risk** | [🟢 low / 🟡 medium / 🔴 high] — [basis: what the change touches] |
 | **Vote** | [N approve · N concerns · N reject (N voters)] |
 | **Score** | [X.X/10 avg] |
@@ -448,7 +448,7 @@ PR #789: Add user authentication with OAuth2
 
 | | |
 |---|---|
-| **Quality** | D — 0 critical, 2 high, 1 medium, 0 low |
+| **Quality** | 🟠 D — 0 critical, 2 high, 1 medium, 0 low |
 | **Risk** | 🔴 high — adds authentication and token handling |
 | **Vote** | 7 approve · 2 concerns · 0 reject (9 voters) |
 | **Score** | 7.4/10 avg |

@@ -16,7 +16,7 @@
 
 | | |
 |---|---|
-| **Quality** | C — 0 critical, 0 high, 4 medium, 2 low |
+| **Quality** | 🟡 C — 0 critical, 0 high, 4 medium, 2 low |
 | **Risk** | 🟡 medium — ordinary product change to an existing read endpoint; backward compatible |
 | **Vote** | 2 approve · 1 concerns · 0 reject (3 voters) |
 | **Score** | 7.5/10 avg |

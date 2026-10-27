@@ -4,6 +4,13 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.2.2] - 2026-10-27
+
+### Changed
+
+- The chat now shows the verdict as a structured block, not a one-line prose recap: the emoji headline, the Quality, Risk, Vote and Score table, one line per condition or blocking finding with its severity emoji, then the saved path. The rule is in the new `## Chat Output` section of `assets/verdict-template.md` and is wired into Phase 5 of the orchestration protocol, the runtime fallback and both review skills.
+- The Quality row starts with a grade emoji: 🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored (`references/verdict-rules.md#quality`). The docs and examples use it.
+
 ## [4.2.1] - 2026-10-25
 
 ### Changed

@@ -358,7 +358,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
 
    **Scope Check (plan reviews):** count each `❌ missing` row as one HIGH finding and each `⚠️ partial` row as one MEDIUM finding before grading. An underlying gap already raised by a member or in AC Validation counts once, at the highest severity, and its Scope Check row cites that finding.
 
-   **Grade quality and set risk:** run `review-grade.sh` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Put the script output, without its leading `Quality: `, in the **Quality** row of the Consensus table and append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error the row reads `not scored ({reason})`. Put Risk in the **Risk** row as `<emoji> <level> — <basis>`. Both are info only (@references/verdict-rules.md#quality-and-risk).
+   **Grade quality and set risk:** run `review-grade.sh` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Put the script output, without its leading `Quality: `, in the **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) of the Consensus table and append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error the row reads `not scored ({reason})`. Put Risk in the **Risk** row as `<emoji> <level> — <basis>`. Both are info only (@references/verdict-rules.md#quality-and-risk).
 
    ```bash
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N
@@ -389,6 +389,7 @@ Write verdict to permanent record. Hook-triggered Claude plan-mode reviews use t
    > **Verdict saved to:** `<absolute path>`
    ```
    This line MUST appear after the verdict markdown, before presenting interactive follow-up options.
+6. **Chat output:** show the verdict in the chat as the template's `## Chat Output` section sets out: the `## Consensus` block as it is (emoji headline plus the Quality, Risk, Vote and Score table), one line per condition or blocking finding with its severity emoji, then the saved path. Never a one-line prose recap of the grade and the verdict.
 
 ## Phase 6 — Interactive Follow-up
 

@@ -15,7 +15,7 @@
 
 | | |
 |---|---|
-| **Quality** | D — 0 critical, 3 high, 4 medium, 0 low |
+| **Quality** | 🟠 D — 0 critical, 3 high, 4 medium, 0 low |
 | **Risk** | 🔴 high — splits one service into several, adds service-to-service auth, and migrates data between stores |
 | **Vote** | 7 approve · 2 concerns · 0 reject (9 voters) |
 | **Score** | 6.0/10 avg |

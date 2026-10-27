@@ -136,12 +136,13 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
     ```bash
     bash "$PLUGIN_ROOT/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
     ```
-  - Grade Quality: count the `yes` findings by severity (pre-existing excluded) and run the script. Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error the row reads `not scored ({reason})`. Never write the letter by hand:
+  - Grade Quality: count the `yes` findings by severity (pre-existing excluded) and run the script. Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored), then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error the row reads `not scored ({reason})`. Never write the letter by hand:
     ```bash
     bash "$PLUGIN_ROOT/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N
     ```
   - Set Risk from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`, applied to the diff's touched paths. Highest tier wins. Put `<emoji> <level> — <basis>` in the **Risk** row (🟢 low, 🟡 medium, 🔴 high) and name the paths that set it
   - Quality, Risk and the average domain score are informational. The verdict comes from the consensus rules
+  - **Chat output:** show the verdict in the chat as the template's `## Chat Output` section sets out: the `## Consensus` block as it is (emoji headline plus the Quality, Risk, Vote and Score table), one line per condition or blocking finding with its severity emoji, then the saved path. Never a one-line prose recap of the grade and the verdict.
   - Include file:line references for each finding
   - Include suggested fixes where available
   - Highlight findings challenged and overturned during debate

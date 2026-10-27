@@ -116,13 +116,14 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
   - **Count missing major acceptance criteria as one HIGH finding.** Add it to the finding list before grading.
   - **Check each score:** run `score-check.sh` once per member, per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. An unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. A FLAG never changes the verdict.
-  - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error the row reads `not scored ({reason})`:
+  - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored), then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error the row reads `not scored ({reason})`:
 
     ```bash
     bash "$PLUGIN_ROOT/scripts/review-grade.sh" --ladder severity \
       --critical N --high N --medium N --low N
     ```
   - **Set the risk tier** from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk` and put it in the **Risk** row as `<emoji> <level> — <basis>` (🟢 low, 🟡 medium, 🔴 high). State the basis: name what the plan touches that sets the tier. Highest tier wins. Quality and Risk are info only; neither changes the verdict.
+  - **Chat output:** show the verdict in the chat as the template's `## Chat Output` section sets out: the `## Consensus` block as it is (emoji headline plus the Quality, Risk, Vote and Score table), one line per condition or blocking finding with its severity emoji, then the saved path. Never a one-line prose recap of the grade and the verdict.
   - If `plan_mode_source` is true, include in verdict header:
     ```
     > Reviewing plan file: `[filename]`
