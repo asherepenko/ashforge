@@ -15,12 +15,12 @@ android-expert-toolkit/
 │   ├── android-testing/         # own skill
 │   ├── android-error-handling/  # own skill
 │   ├── aet-check/               # pattern detection + cache
-│   └── <official skills>/       # vendored, listed in official-skills.lock — do not edit
+│   └── <official skills>/       # vendored, listed in android-skills.lock — do not edit
 ├── references/                  # topic references, each ≤ ~300 lines
 ├── scripts/
 │   ├── sync-android-skills.sh  # vendors the official skills at a pinned commit
 │   └── codex-agents-gen.py      # agents/*.md → codex-agents/*.toml
-├── official-skills.lock         # upstream repo, commit, skill list
+├── android-skills.lock         # upstream repo, commit, skill list
 ├── THIRD_PARTY_NOTICES.md       # Apache-2.0 attribution
 └── tests/
 ```
@@ -35,7 +35,7 @@ android-expert-toolkit/
 
 ## Vendored official skills
 
-`scripts/sync-android-skills.sh [ref]` downloads android/skills at `ref` (default: the locked commit), replaces each listed skill directory, copies upstream `LICENSE.txt` into it, and rewrites `official-skills.lock`. `android-cli` is excluded on purpose: users often install their own and a same-named copy would shadow it. To add a skill, add it to `SKILLS` in the script, run it, list it in `THIRD_PARTY_NOTICES.md`, and route it in `skills/android-expert/SKILL.md`.
+`scripts/sync-android-skills.sh [ref]` downloads android/skills at `ref` (default: the locked commit), replaces each listed skill directory, copies upstream `LICENSE.txt` into it, and rewrites `android-skills.lock`. `android-cli` is excluded on purpose: users often install their own and a same-named copy would shadow it. To add a skill, add it to `SKILLS` in the script, run it, list it in `THIRD_PARTY_NOTICES.md`, and route it in `skills/android-expert/SKILL.md`.
 
 ## Codex
 

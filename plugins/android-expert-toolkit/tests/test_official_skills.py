@@ -7,7 +7,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 SKILLS = PROJECT_ROOT / "skills"
-LOCK = PROJECT_ROOT / "official-skills.lock"
+LOCK = PROJECT_ROOT / "android-skills.lock"
 OWN_SKILLS = {"aet-check", "android-expert", "android-testing", "android-error-handling"}
 
 

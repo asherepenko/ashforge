@@ -18,7 +18,7 @@ Breaking: the multi-agent pipeline is gone. The plugin is now a lean Android kno
 
 ### Added
 
-- Official Android skills vendored from android/skills at a pinned commit by `scripts/sync-android-skills.sh` (`official-skills.lock`, Apache-2.0 attribution in `THIRD_PARTY_NOTICES.md`): navigation-3, navigation-event, edge-to-edge, adaptive, jetpack-compose-performance, migrate-xml-views-to-jetpack-compose, agp-9-upgrade, r8-analyzer, anr-audit-and-fix, android-profiler, testing-setup, android-intent-security, android-permissions-security. `android-cli` is deliberately excluded.
+- Official Android skills vendored from android/skills at a pinned commit by `scripts/sync-android-skills.sh` (`android-skills.lock`, Apache-2.0 attribution in `THIRD_PARTY_NOTICES.md`): navigation-3, navigation-event, edge-to-edge, adaptive, jetpack-compose-performance, migrate-xml-views-to-jetpack-compose, agp-9-upgrade, r8-analyzer, anr-audit-and-fix, android-profiler, testing-setup, android-intent-security, android-permissions-security. `android-cli` is deliberately excluded.
 - `android-testing` skill: adversarial break-vector method, the redundancy rule, unit = behavior, contract-first vectors, fakes first, SavedStateHandle testing.
 - `android-error-handling` skill: closed typed errors at the catching layer, `CancellationException` rethrow, resource-based UI errors.
 - Codex agent definitions in `codex-agents/*.toml`, generated from `agents/*.md` by `scripts/codex-agents-gen.py` and checked by tests.

@@ -14,7 +14,7 @@ set -euo pipefail
 REPO="android/skills"
 PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILLS_DIR="$PLUGIN_ROOT/skills"
-LOCK="$PLUGIN_ROOT/official-skills.lock"
+LOCK="$PLUGIN_ROOT/android-skills.lock"
 
 # App-development skills only. android-cli is deliberately excluded: users
 # often install their own android-cli skill and a same-named copy would shadow it.
