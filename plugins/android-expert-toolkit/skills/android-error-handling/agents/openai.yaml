@@ -1,0 +1,2 @@
+interface:
+  short_description: "Typed errors, CancellationException-safe catches, resource-based UI errors"

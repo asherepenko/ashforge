@@ -8,7 +8,7 @@ argument-hint: "[state | di | testing | architecture | security | performance | 
 
 Run pattern detection from `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` against the current codebase. Reports consistency percentages and applies the 80/20 decision matrix.
 
-> **Platform notes:** Pure read-only — uses Grep, Glob, Read, and shell. No subagent dispatch, no interactive prompts. Works identically on every runtime (Claude Code, Codex, Zcode, pi, Antigravity). See `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md` only if you need to substitute the shell tool name.
+> **Platform notes:** Read-only apart from the cache file — uses Grep, Glob, Read, and shell. No subagent dispatch, no interactive prompts. Works the same on every runtime (Claude Code, Codex, and others); substitute the runtime's shell tool where this says Bash.
 
 ## Pre-flight Context
 
@@ -65,7 +65,7 @@ Before running detection, check for a valid cache at `.artifacts/aet/cache/detec
    - If both match: **cache hit** — use cached patterns, skip to Step 4 (Report Results)
    - If either differs: **cache stale** — proceed to Step 2
 
-After detection completes (Step 3), write results to `.artifacts/aet/cache/detected-patterns.json` following the schema in `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` § Pattern Detection Cache.
+After detection completes (Step 3), write results to `.artifacts/aet/cache/detected-patterns.json` following the schema in `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` (section *Pattern Detection Cache*). The path and keys are a stable contract read by other tools; don't change them.
 
 ### 2. Run Detection
 
@@ -123,9 +123,10 @@ For each category:
 
 Modern best practice recommendations:
 - State: StateFlow
-- DI: Hilt
-- Testing: Test doubles
-- Architecture: Compose + MVVM
+- DI: Hilt (Android-only apps); Koin is reasonable for KMP
+- Testing: fakes first; mocks only for final framework classes
+- Architecture: Compose + MVVM/MVI
+- Security: flag `androidx.security:security-crypto` (`EncryptedSharedPreferences`, `EncryptedFile`) as deprecated; see `${CLAUDE_PLUGIN_ROOT}/references/security.md`
 
 ### 6. Summary
 
