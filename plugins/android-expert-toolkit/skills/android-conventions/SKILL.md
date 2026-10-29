@@ -1,5 +1,5 @@
 ---
-name: aet-check
+name: android-conventions
 description: "Use when analyzing pattern consistency in an Android codebase — state management, dependency injection, testing, architecture, security, performance, or accessibility. Runs detection sweeps and applies the 80/20 decision matrix. Trigger on 'check patterns', 'which DI is used', 'state management consistency', 'audit Compose patterns', 'aet check'."
 argument-hint: "[state | di | testing | architecture | security | performance | accessibility | all] [--fresh]"
 ---
@@ -16,7 +16,7 @@ Run the pre-flight script — all probes parallelize and emit labeled `== sectio
 
 ```bash
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
-bash "$PLUGIN_ROOT/skills/aet-check/scripts/preflight.sh"
+bash "$PLUGIN_ROOT/skills/android-conventions/scripts/preflight.sh"
 ```
 
 The script collects: project hash (shasum over settings.gradle.kts + build.gradle.kts), cached patterns, Kotlin file count, DI fingerprint, state fingerprint, and testing fingerprint.
@@ -28,20 +28,20 @@ Use the output to:
 
 ## Invocation
 
-Claude: `/aet-check di` or auto-trigger on natural-language prompts. Other runtimes: state intent naturally.
+Claude: `/android-conventions di` or auto-trigger on natural-language prompts. Other runtimes: state intent naturally.
 
 Examples:
 ```
-aet-check              # Run all categories
-aet-check state        # State management only
-aet-check di           # Dependency injection only
-aet-check testing      # Testing patterns only
-aet-check architecture # Architecture patterns only
-aet-check security     # Security patterns
-aet-check performance  # Performance patterns
-aet-check accessibility # Accessibility patterns
-aet-check --fresh      # Force re-detection, ignore cache
-aet-check di --fresh   # Re-detect specific category
+android-conventions              # Run all categories
+android-conventions state        # State management only
+android-conventions di           # Dependency injection only
+android-conventions testing      # Testing patterns only
+android-conventions architecture # Architecture patterns only
+android-conventions security     # Security patterns
+android-conventions performance  # Performance patterns
+android-conventions accessibility # Accessibility patterns
+android-conventions --fresh      # Force re-detection, ignore cache
+android-conventions di --fresh   # Re-detect specific category
 ```
 
 ## Execution

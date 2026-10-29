@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-flight context for the aet-check skill.
+# Pre-flight context for the android-conventions skill.
 # Output is labeled with `== section ==` headers. Probes run in parallel,
 # each captured to its own temp file, then printed serially so section
 # blocks never interleave on shared stdout.

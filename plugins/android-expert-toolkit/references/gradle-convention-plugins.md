@@ -98,7 +98,7 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
 
 ## DI plugin (Hilt example)
 
-Use whatever DI the project uses (run `aet-check di`). For Hilt:
+Use whatever DI the project uses (run `android-conventions di`). For Hilt:
 
 ```kotlin
 class HiltConventionPlugin : Plugin<Project> {

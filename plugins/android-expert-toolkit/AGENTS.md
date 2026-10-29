@@ -14,7 +14,7 @@ android-expert-toolkit/
 │   ├── android-expert/          # router
 │   ├── android-testing/         # own skill
 │   ├── android-error-handling/  # own skill
-│   ├── aet-check/               # pattern detection + cache
+│   ├── android-conventions/               # pattern detection + cache
 │   └── <official skills>/       # vendored, listed in android-skills.lock — do not edit
 ├── references/                  # topic references, each ≤ ~300 lines
 ├── scripts/
@@ -29,9 +29,9 @@ android-expert-toolkit/
 
 - **Thin skills, short agents.** Skills route or state rules; detail lives in `references/` or the official skills. Agents work from a plain brief (goal, acceptance criteria, files, verify command) and point at skills/references instead of embedding pattern dumps. Every agent keeps a `## Scope Boundaries` section.
 - **Defer to official skills.** When an official skill covers a topic, the reference keeps a one-line pointer, not a copy.
-- **Stack-neutral.** Skills say "detect what the project uses (`aet-check`)"; don't mandate a DI framework, assertion library, HTTP client, or result type.
+- **Stack-neutral.** Skills say "detect what the project uses (`android-conventions`)"; don't mandate a DI framework, assertion library, HTTP client, or result type.
 - **Verify facts.** API claims are checked with `android docs search` / `android docs fetch`; cite the page when a reference states a deprecation or threshold.
-- **Cache contract.** `aet-check` writes `.artifacts/aet/cache/detected-patterns.json`. External tools read it; don't move it or rename existing keys.
+- **Cache contract.** `android-conventions` writes `.artifacts/aet/cache/detected-patterns.json`. External tools read it; don't move it or rename existing keys.
 
 ## Vendored official skills
 

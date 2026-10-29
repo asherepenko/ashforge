@@ -4,7 +4,7 @@
 
 Read for test code mechanics: fakes, ViewModel and Flow tests, integration tests, Compose UI tests. **What** to test (break vectors, distinct angles, unit = behavior) is the `android-testing` skill — apply it first. Test infrastructure, instrumented runners, screenshot and E2E setup → `testing-setup` skill. Benchmarks → `performance.md`.
 
-Use the project's libraries (`aet-check testing`). Samples use JUnit 4 + Truth + Turbine; swap for the module's equivalents.
+Use the project's libraries (`android-conventions testing`). Samples use JUnit 4 + Truth + Turbine; swap for the module's equivalents.
 
 ## Test pyramid
 

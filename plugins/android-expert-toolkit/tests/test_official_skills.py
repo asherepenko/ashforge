@@ -8,7 +8,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 SKILLS = PROJECT_ROOT / "skills"
 LOCK = PROJECT_ROOT / "android-skills.lock"
-OWN_SKILLS = {"aet-check", "android-expert", "android-testing", "android-error-handling"}
+OWN_SKILLS = {"android-conventions", "android-expert", "android-testing", "android-error-handling"}
 
 
 def lock_values(key: str) -> list[str]:

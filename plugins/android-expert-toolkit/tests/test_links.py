@@ -11,7 +11,7 @@ import pytest
 
 
 PROJECT_ROOT = Path(__file__).parent.parent
-OWN_SKILLS = ["aet-check", "android-expert", "android-testing", "android-error-handling"]
+OWN_SKILLS = ["android-conventions", "android-expert", "android-testing", "android-error-handling"]
 REMOVED = ["aet-pipeline", "aet-status", "handoff", "session-start", "track-progress",
            "validate-handoff", "validate-dependencies", "runtime-adapters", "agent-routing"]
 

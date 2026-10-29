@@ -45,5 +45,5 @@ def test_pipeline_components_are_gone():
 
 def test_aet_check_keeps_cache_contract():
     """An external consumer reads this path; it must not move."""
-    assert ".artifacts/aet/cache/detected-patterns.json" in read("skills/aet-check/SKILL.md")
-    assert ".artifacts/aet/cache/detected-patterns.json" in read("skills/aet-check/scripts/preflight.sh")
+    assert ".artifacts/aet/cache/detected-patterns.json" in read("skills/android-conventions/SKILL.md")
+    assert ".artifacts/aet/cache/detected-patterns.json" in read("skills/android-conventions/scripts/preflight.sh")

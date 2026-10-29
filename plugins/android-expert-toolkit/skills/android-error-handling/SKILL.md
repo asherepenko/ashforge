@@ -8,7 +8,7 @@ argument-hint: "[file, layer, or error type]"
 
 Expected failures are values, not exceptions. The layer that owns a failure catches it once, converts it into a **closed, typed error**, and every layer above works with that type. The UI shows a **string resource** chosen from the error, never `Throwable.message`.
 
-**Detect, don't impose.** Use the result type the project already has — a custom `Result<T, E>`, `kotlin.Result`, Arrow `Either`, or a sealed outcome per call (`aet-check`). Introduce a new wrapper only when there is none and the user agrees. The rules below hold for all of them.
+**Detect, don't impose.** Use the result type the project already has — a custom `Result<T, E>`, `kotlin.Result`, Arrow `Either`, or a sealed outcome per call (`android-conventions`). Introduce a new wrapper only when there is none and the user agrees. The rules below hold for all of them.
 
 ## Rules
 

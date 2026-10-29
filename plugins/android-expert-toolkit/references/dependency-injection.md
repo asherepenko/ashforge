@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when adding bindings, scoping a dependency, or reviewing DI code. Run `aet-check di` first: use the framework the project already uses. Changing frameworks is a separate, approved migration.
+Read when adding bindings, scoping a dependency, or reviewing DI code. Run `android-conventions di` first: use the framework the project already uses. Changing frameworks is a separate, approved migration.
 
 ## Framework-agnostic rules
 

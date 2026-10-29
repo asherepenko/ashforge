@@ -6,7 +6,7 @@ argument-hint: "[question or topic] — e.g. 'Room offline-first', 'ViewModel er
 
 # Android Expert
 
-A router. Find the topic, load only what it names, then answer or act. Before recommending a pattern, check what the project already uses (`aet-check`) and follow `${CLAUDE_PLUGIN_ROOT}/references/pragmatics.md`: user instructions, then codebase consistency, then constraints, then best practice. Verify API claims you aren't sure of with `android docs search "<query>"` rather than memory.
+A router. Find the topic, load only what it names, then answer or act. Before recommending a pattern, check what the project already uses (`android-conventions`) and follow `${CLAUDE_PLUGIN_ROOT}/references/pragmatics.md`: user instructions, then codebase consistency, then constraints, then best practice. Verify API claims you aren't sure of with `android docs search "<query>"` rather than memory.
 
 ## Topic → load
 
@@ -14,7 +14,7 @@ References live in `${CLAUDE_PLUGIN_ROOT}/references/`. Skills are loaded by nam
 
 | Topic | Load |
 |-------|------|
-| Which patterns does this codebase use (DI, state, testing, a11y) | `aet-check` skill |
+| Which patterns does this codebase use (DI, state, testing, a11y) | `android-conventions` skill |
 | Layers, modules, dependency rules, coroutines | `architecture.md` |
 | ViewModel, UI state, actions, events, SavedStateHandle, Route/Screen | `presentation.md` |
 | Error types, try/catch, CancellationException, error messages in UI | `android-error-handling` skill |

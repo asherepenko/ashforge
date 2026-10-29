@@ -4,7 +4,7 @@
 
 Read when writing or reviewing a ViewModel, screen state, user actions, or the Route/Screen composable split. Error typing → `android-error-handling` skill. Composable components and previews → `compose-ui.md`. Testing → `android-testing` skill.
 
-Match the project's existing style (`aet-check state`): sealed `UiState` (Loading/Error/Success) and single `data class State` + `Action` (MVI) are both fine; don't mix them in one feature.
+Match the project's existing style (`android-conventions state`): sealed `UiState` (Loading/Error/Success) and single `data class State` + `Action` (MVI) are both fine; don't mix them in one feature.
 
 ## ViewModel
 

@@ -7,7 +7,7 @@ Android knowledge for Claude Code and Codex: a topic router, focused skills, the
 - **`android-expert`** — a router skill: topic → the reference, skill, or agent to load.
 - **`android-testing`** — adversarial unit testing: break vectors from the contract, one distinct angle per test, fakes first.
 - **`android-error-handling`** — closed typed errors, `CancellationException`-safe catches, string-resource errors in UI state.
-- **`aet-check`** — read-only 80/20 pattern detection (DI, state, testing, architecture, security, performance, accessibility). Caches results at `.artifacts/aet/cache/detected-patterns.json`.
+- **`android-conventions`** — read-only 80/20 pattern detection (DI, state, testing, architecture, security, performance, accessibility). Caches results at `.artifacts/aet/cache/detected-patterns.json`.
 - **Official Android skills** vendored from [android/skills](https://github.com/android/skills) (Apache-2.0): `navigation-3`, `navigation-event`, `edge-to-edge`, `adaptive`, `jetpack-compose-performance`, `migrate-xml-views-to-jetpack-compose`, `agp-9-upgrade`, `r8-analyzer`, `anr-audit-and-fix`, `android-profiler`, `testing-setup`, `android-intent-security`, `android-permissions-security`. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 - **Agents** that work from a plain brief (goal, acceptance criteria, files):
 
@@ -54,7 +54,7 @@ Ask an Android question or name the task; the `android-expert` router picks what
 - "Write tests for `LoginValidator`" → `android-testing`
 - "Upgrade to AGP 9" → `agp-9-upgrade`
 - "Make the home screen work on tablets" → `adaptive`
-- "Which DI does this project use?" → `aet-check di`
+- "Which DI does this project use?" → `android-conventions di`
 
 Delegate implementation to an agent with a brief:
 

@@ -8,7 +8,7 @@ argument-hint: "[class or file under test]"
 
 Write tests as an adversary paid to make the code produce a wrong answer, crash, hang, or corrupt its state. Assume a bug is there; find the input, ordering, or collaborator response that exposes it.
 
-**Stack: detect, don't impose.** Use the test framework, assertion library, and result type the project already uses (`aet-check testing`). JUnit 4 or 5, Truth/AssertK/kotlin.test, Turbine or manual collection — follow the module's existing tests. Mechanics and code samples: `${CLAUDE_PLUGIN_ROOT}/references/testing-patterns.md`. Test infrastructure, instrumented/screenshot/E2E setup: the `testing-setup` skill.
+**Stack: detect, don't impose.** Use the test framework, assertion library, and result type the project already uses (`android-conventions testing`). JUnit 4 or 5, Truth/AssertK/kotlin.test, Turbine or manual collection — follow the module's existing tests. Mechanics and code samples: `${CLAUDE_PLUGIN_ROOT}/references/testing-patterns.md`. Test infrastructure, instrumented/screenshot/E2E setup: the `testing-setup` skill.
 
 ## Method
 

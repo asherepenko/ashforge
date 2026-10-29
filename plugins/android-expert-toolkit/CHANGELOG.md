@@ -8,6 +8,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 Breaking: the multi-agent pipeline is gone. The plugin is now a lean Android knowledge plugin — a router skill, focused skills, vendored official Android skills, and standalone agents.
 
+### Renamed
+
+- Skill `/aet-check` is now `/android-conventions`. Its cache path `.artifacts/aet/cache/detected-patterns.json` is unchanged.
+
 ### Removed
 
 - Skills `/aet-pipeline` and `/aet-status`, with their preflight scripts.

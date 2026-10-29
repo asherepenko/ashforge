@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when writing repositories, Room, DataStore, network clients, or background work. Error typing → `android-error-handling` skill. Sync queues and conflict resolution → `offline-sync.md`. Changing anything already stored on installed devices → `persisted-state-review.md`. Detect the project's stack first (`aet-check`): Retrofit vs Ktor, Moshi vs kotlinx.serialization, Room vs SQLDelight.
+Read when writing repositories, Room, DataStore, network clients, or background work. Error typing → `android-error-handling` skill. Sync queues and conflict resolution → `offline-sync.md`. Changing anything already stored on installed devices → `persisted-state-review.md`. Detect the project's stack first (`android-conventions`): Retrofit vs Ktor, Moshi vs kotlinx.serialization, Room vs SQLDelight.
 
 ## Offline-first repository
 

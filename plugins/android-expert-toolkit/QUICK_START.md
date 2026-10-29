@@ -23,9 +23,9 @@ Review this Compose screen for accessibility.
 ## 2. Check what the project already uses
 
 ```
-aet-check            # all categories
-aet-check di         # one category
-aet-check --fresh    # ignore the 24h cache
+android-conventions            # all categories
+android-conventions di         # one category
+android-conventions --fresh    # ignore the 24h cache
 ```
 
 The result decides between matching the codebase (≥80% consistency) and proposing a change.

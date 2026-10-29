@@ -32,7 +32,7 @@ Follow the `android-testing` skill exactly: map the attack surface, list break v
 
 ## Rules
 
-- Use the project's test framework, assertion library, and dispatcher rule (`aet-check testing`).
+- Use the project's test framework, assertion library, and dispatcher rule (`android-conventions testing`).
 - Fakes first; mocks only for final framework/third-party classes or unobservable side effects.
 - No sleeps, real clocks, or real network in unit tests.
 - A test that fails must fail for one nameable reason.

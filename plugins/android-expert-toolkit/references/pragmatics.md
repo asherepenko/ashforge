@@ -7,7 +7,7 @@ Read when a best practice conflicts with what the codebase already does, when te
 ## Priority order
 
 1. **User instructions** — the task, the project's `AGENTS.md`/`CLAUDE.md`. "Use LiveData" means LiveData.
-2. **Codebase consistency** — match the pattern the module already uses (`aet-check`; ≥80% prevalence decides, see `pattern-detection.md`).
+2. **Codebase consistency** — match the pattern the module already uses (`android-conventions`; ≥80% prevalence decides, see `pattern-detection.md`).
 3. **Constraints** — API contracts, legacy dependencies, deadlines, team expertise.
 4. **Best practice** — the patterns in this plugin and the official skills.
 

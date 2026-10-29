@@ -16,7 +16,7 @@ Work from the caller's brief: **goal**, **scope** (modules or files in play), **
 
 ## Before deciding
 
-1. Read the code in scope and its build files. Run the `aet-check` skill (`architecture`, `di`, `state`) or read its cache at `.artifacts/aet/cache/detected-patterns.json`.
+1. Read the code in scope and its build files. Run the `android-conventions` skill (`architecture`, `di`, `state`) or read its cache at `.artifacts/aet/cache/detected-patterns.json`.
 2. Apply the 80/20 rule and priority order in `${CLAUDE_PLUGIN_ROOT}/references/pragmatics.md`: match what the codebase does unless the brief approves a change.
 3. Verify any API or library claim you aren't sure of with `android docs search "<query>"` / `android docs fetch <url>`.
 

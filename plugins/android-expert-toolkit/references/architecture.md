@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when deciding layers, module boundaries, or data flow for a feature, or when reviewing a change for architectural fit. ViewModel/state details → `presentation.md`. Repositories and persistence → `data-layer.md`. DI → `dependency-injection.md`. Run `aet-check architecture` first and match what the project already does.
+Read when deciding layers, module boundaries, or data flow for a feature, or when reviewing a change for architectural fit. ViewModel/state details → `presentation.md`. Repositories and persistence → `data-layer.md`. DI → `dependency-injection.md`. Run `android-conventions architecture` first and match what the project already does.
 
 ## Layers
 

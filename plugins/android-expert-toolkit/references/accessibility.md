@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when building or reviewing UI for TalkBack, Switch Access, keyboard, or large-font support. Run `aet-check accessibility` to see the project's current coverage.
+Read when building or reviewing UI for TalkBack, Switch Access, keyboard, or large-font support. Run `android-conventions accessibility` to see the project's current coverage.
 
 ## Rules
 
