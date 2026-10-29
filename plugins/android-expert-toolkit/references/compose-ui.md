@@ -9,6 +9,7 @@ Read when building or reviewing composables below the Root/Screen level, theming
 | Window sizes, nav bar vs rail, list-detail, foldables, keyboard/mouse | `adaptive` |
 | Insets, system bars, IME padding | `edge-to-edge` |
 | Recomposition, stability, lazy-list jank, `remember` keys | `jetpack-compose-performance` |
+| Effect API catalogue (`SideEffect`, `snapshotFlow`, `produceState`), `Modifier.Node` internals, animation phase deferral | `jetpack-compose-performance` (its effects, custom-modifier and animation references) |
 | Porting an XML layout to Compose | `migrate-xml-views-to-jetpack-compose` |
 | Screenshot test setup | `testing-setup` |
 
@@ -21,6 +22,51 @@ Read when building or reviewing composables below the Root/Screen level, theming
 - Size with constraints (`fillMaxWidth`, `weight`, `widthIn(max = …)`), not fixed dp for containers, so components fit any pane.
 - Slot parameters (`content: @Composable () -> Unit`) instead of boolean flags that switch layouts.
 - Animations that change every frame read state in `graphicsLayer { }` / lambda modifiers, not in composition (`jetpack-compose-performance`).
+
+## State placement
+
+Hoist state to the lowest common ancestor of everything that reads or writes it — no higher.
+
+| State | Lives in |
+|-------|----------|
+| UI element state only this composable uses (expanded, animation, focus) | the composable (`remember`/`rememberSaveable`) |
+| UI element state shared by several composables or with non-trivial UI logic | a plain state holder class (`LazyListState`-style), remembered |
+| Anything business logic reads or changes, or that must reach the data layer | the ViewModel |
+
+Don't push a purely visual `isExpanded` into the ViewModel just to make the component "stateless"; do hoist it when a parent, a test, or a sibling needs it. UI state that must survive recreation: `rememberSaveable` in UI, `SavedStateHandle` in the ViewModel (`presentation.md`).
+
+## Side effects
+
+- Every value an effect block reads goes in its keys, or is wrapped in `rememberUpdatedState` when a change must not restart it. Missing keys run stale work; extra keys restart it needlessly.
+- `LaunchedEffect(Unit)`/`LaunchedEffect(true)` means "once per entry into composition"; treat it as suspicious and check it really should not restart.
+- Long-running effect that calls a callback parameter (timeouts, tickers, flow collection): `val currentOnDone by rememberUpdatedState(onDone)`.
+- Registration that needs teardown (listeners, observers, callbacks): `DisposableEffect(key) { …; onDispose { … } }`.
+- Work started from a click or gesture: `rememberCoroutineScope()`, not a `LaunchedEffect` toggled by a flag.
+- Business work (loading, saving) belongs in the ViewModel behind an action, not in an effect.
+
+```kotlin
+@Composable
+fun SessionTimeout(timeoutMs: Long, onTimeout: () -> Unit) {
+    val currentOnTimeout by rememberUpdatedState(onTimeout)
+    LaunchedEffect(timeoutMs) {          // restart only when the duration changes
+        delay(timeoutMs)
+        currentOnTimeout()               // always the latest callback
+    }
+}
+```
+
+## Text input
+
+Value-based text fields (`value` + `onValueChange`) are deprecated. New code uses the state-based `TextField(state = …)` / `BasicTextField(state = …)` with `TextFieldState`; filtering goes in an `InputTransformation`, formatting in an `OutputTransformation`, and passwords use `SecureTextField`.
+
+- Local-only input (search box, dialog field): `rememberTextFieldState()` — saved across recreation for you.
+- Input the ViewModel validates or submits: hold `TextFieldState` in the ViewModel and pass it to the field. It is a snapshot-state holder with no UI dependency, so this is allowed. Save it with the `SavedStateHandle.saveable` delegate and `TextFieldState.Saver` (see `presentation.md`).
+- Can't restructure a `StateFlow` UI state yet: keep `rememberTextFieldState(initial)` in the composable and forward changes with `snapshotFlow { state.text.toString() }.collectLatest(onChange)` inside a `LaunchedEffect(state)`.
+- Don't write a new `value`/`onValueChange` field that round-trips every keystroke through a `StateFlow`; async updates can desync the cursor and drop input.
+
+## Custom modifiers
+
+In order of preference: chain existing modifiers in a plain `fun Modifier.x() = this.then(…)`; a `@Composable` modifier factory only when it needs composition APIs (it is never skipped and resolves `CompositionLocal`s at the call site); `Modifier.Node` + `ModifierNodeElement` (a data class, for correct `equals`) for custom drawing, layout, input, or animation. Never `composed { }` — it is no longer recommended. Always build on `this`, or earlier modifiers in the chain are dropped.
 
 ## Previews: one per distinct state
 
@@ -85,6 +131,20 @@ Card(onClick = onToggle, modifier = Modifier.fillMaxWidth().animateContentSize()
 AnimatedVisibility(visible, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) { /* … */ }
 ```
 
+### Which animation API
+
+| Animating | Use |
+|-----------|-----|
+| Content appearing/disappearing | `AnimatedVisibility` |
+| Swapping between different content | `AnimatedContent` / `Crossfade`; destinations → the navigation library's transitions |
+| Size change of one composable | `Modifier.animateContentSize()` |
+| List item insert/move/remove | `Modifier.animateItem()` |
+| One value with a known target | `animate*AsState`, read in `graphicsLayer { }` / `offset { }` |
+| Several values that start together | `updateTransition` |
+| Gesture-driven or sequenced values | `Animatable` (`animateTo`/`snapTo`) |
+| Repeating forever | `rememberInfiniteTransition` |
+| Vector icon micro-animation | `AnimatedVectorDrawable` |
+
 Verify component APIs against the project's Compose BOM (`android docs search "<component> compose"`); Material 3 APIs change between releases.
 
 ## Theme
@@ -123,5 +183,7 @@ Don't hand-roll `when (windowSizeClass)` branches that swap a `NavigationBar` fo
 - [ ] Preview per distinct state, light and dark.
 - [ ] No hardcoded strings, colors, or fixed container sizes.
 - [ ] `key` on lazy items.
+- [ ] Effect keys cover every value the block reads (or `rememberUpdatedState`); no `composed { }` modifiers.
+- [ ] Text fields are state-based (`TextFieldState`), not new `value`/`onValueChange` code.
 - [ ] Adaptive chrome via `NavigationSuiteScaffold`/scenes, not hand-rolled rails.
 - [ ] Accessibility pass (`accessibility.md`).

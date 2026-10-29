@@ -22,7 +22,7 @@ References live in `${CLAUDE_PLUGIN_ROOT}/references/`. Skills are loaded by nam
 | Sync queues, conflict resolution | `offline-sync.md` |
 | Changing data already stored on devices | `persisted-state-review.md` |
 | Hilt, Koin, Dagger, manual DI | `dependency-injection.md` |
-| Compose components, previews per state, lists, theme, interop | `compose-ui.md` |
+| Compose components, state placement, side effects, text fields, custom modifiers, animations, previews, lists, theme, interop | `compose-ui.md` |
 | Accessibility | `accessibility.md` |
 | Window sizes, nav bar vs rail, list-detail, foldables, keyboard/mouse | `adaptive` skill |
 | Edge-to-edge, insets, system bars | `edge-to-edge` skill |
@@ -65,7 +65,7 @@ Typical order for a new feature: architect (if structure changes) → gradle (if
 
 ## Defaults when the codebase has no precedent
 
-- Single `StateFlow` of UI state per screen; actions in, state out; errors as string resources.
+- Single `StateFlow` of UI state per screen; actions in, state out; errors as string resources; ViewModel-originated messages and navigation as state, not event channels.
 - Repository is the source of truth; `Flow` for observed data; typed errors; `CancellationException` rethrown.
 - Constructor injection with the project's DI (Hilt for new Android-only apps).
 - Fakes over mocks; tests from break vectors, not the happy path.

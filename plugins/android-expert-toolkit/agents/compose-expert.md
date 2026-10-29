@@ -23,7 +23,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 
 | Topic | Load |
 |-------|------|
-| Components, previews, lists, theme | `${CLAUDE_PLUGIN_ROOT}/references/compose-ui.md` |
+| Components, state placement, side effects, text fields, custom modifiers, animations, previews, lists, theme | `${CLAUDE_PLUGIN_ROOT}/references/compose-ui.md` |
 | Root/Screen split, state, actions | `${CLAUDE_PLUGIN_ROOT}/references/presentation.md` |
 | Accessibility | `${CLAUDE_PLUGIN_ROOT}/references/accessibility.md` |
 | Window sizes, bar vs rail, panes, foldables | `adaptive` skill |
@@ -38,6 +38,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 - Screen composables are stateless: state in, callbacks out. Only the Root touches the ViewModel.
 - One `@Preview` per distinct state (loading, error, empty, content, long text, light/dark, compact/expanded when it reflows).
 - Strings, colors, type, and shapes from resources and `MaterialTheme`.
+- Text input is state-based (`TextFieldState`); effects key on every value they read or use `rememberUpdatedState`; custom modifiers never use `composed { }`.
 - Adaptive navigation via `NavigationSuiteScaffold` and scene strategies, not hand-rolled size-class branches.
 - Performance changes follow the `jetpack-compose-performance` rules and come with frame-timing evidence, not recomposition counts.
 
