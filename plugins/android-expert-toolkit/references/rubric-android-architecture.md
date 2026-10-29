@@ -4,7 +4,7 @@ Grading criteria for architecture and data layer work. Use both as **generation 
 
 ## When to use
 
-Read this reference when authoring an `architecture-blueprint.md` (to aim at the "Strong" column) or when reviewing architecture and data-layer work (to grade against the rubric). Used by android-architect for generation and by any reviewer for evaluation.
+Read this reference when designing a feature or module (to aim at the "Strong" column) or when reviewing architecture and data-layer work (to grade against the rubric). Used by android-architect for generation and by any reviewer for evaluation.
 
 ## 1. Module Independence
 
@@ -14,7 +14,7 @@ Read this reference when authoring an `architecture-blueprint.md` (to aim at the
 
 ## 2. Data Flow Integrity
 
-**Strong**: Unidirectional data flow — User Action -> ViewModel -> Repository -> DataSource -> Room/Network, with reactive Flow carrying data back up. Repositories expose only Flow (never snapshot methods). ViewModels expose StateFlow with WhileSubscribed(5_000). No layer skipping.
+**Strong**: Unidirectional data flow — User Action -> ViewModel -> Repository -> DataSource -> Room/Network, with reactive Flow carrying data back up. Repositories expose Flow for observed data (one-shot commands are suspend). ViewModels expose StateFlow with WhileSubscribed(5_000). No layer skipping.
 
 **Weak**: UI calls network directly. Repositories return suspend functions that give point-in-time snapshots instead of reactive streams. ViewModel exposes mutable state. Data flows sideways between repositories.
 
@@ -26,12 +26,12 @@ Read this reference when authoring an `architecture-blueprint.md` (to aim at the
 
 ## 4. State Predictability
 
-**Strong**: UI state modeled with sealed interfaces (Loading, Error, Success). State transitions are explicit and traceable from user action to UI update. Error is state, not an exception thrown to the caller. A single StateFlow per screen carries all UI-relevant state.
+**Strong**: UI state modeled with sealed interfaces (Loading, Error, Success). State transitions are explicit and traceable from user action to UI update. Error is state, not an exception thrown to the caller: failures arrive as closed typed errors and reach the UI as string resources (`android-error-handling`). A single StateFlow per screen carries all UI-relevant state.
 
 **Weak**: Multiple independent boolean flags (isLoading, isError, hasData) that can enter impossible combinations. Error handling via try-catch in the UI layer. State scattered across multiple LiveData/StateFlow properties that can go out of sync.
 
 ## 5. Dependency Hygiene
 
-**Strong**: All injection via constructor (Hilt @Inject). Every dependency has an interface boundary. Any dependency can be replaced with a test double by providing an alternative implementation. No service locators, no static singletons, no ambient state.
+**Strong**: All injection via constructor, using the project's DI framework. Every dependency has an interface boundary. Any dependency can be replaced with a test double by providing an alternative implementation. No service locators, no static singletons, no ambient state.
 
 **Weak**: Field injection, service locators, or companion object singletons for convenience. Classes that cannot be instantiated in tests without the full DI graph. Dependencies on concrete implementations rather than interfaces.

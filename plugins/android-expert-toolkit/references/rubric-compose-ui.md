@@ -4,7 +4,7 @@ Grading criteria for Jetpack Compose implementations. Use both as **generation t
 
 ## When to use
 
-Read this reference when building Compose UI (to aim at the "Strong" column) or when reviewing Compose implementations (to grade against the rubric). Used by compose-expert for generation and by any UI reviewer for evaluation.
+Read this reference when building Compose UI (to aim at the "Strong" column) or when reviewing Compose implementations (to grade against the rubric). Used by compose-expert and by any UI reviewer.
 
 ## 1. Design Cohesion
 
@@ -14,7 +14,7 @@ Read this reference when building Compose UI (to aim at the "Strong" column) or 
 
 ## 2. State Completeness
 
-**Strong**: Every screen handles all state variations — Loading (skeleton or indicator), Error (message + retry action), Empty (actionable messaging, not just "No data"), Success (with 1 item and many items), Refreshing (pull-to-refresh indicator). Each state has a distinct, intentional visual representation. Transitions between states are smooth (AnimatedVisibility, crossfade).
+**Strong**: Every screen handles all state variations, each with its own `@Preview` (`compose-ui.md`) — Loading (skeleton or indicator), Error (resource-based message + retry action), Empty (actionable messaging, not just "No data"), Success (with 1 item and many items), Refreshing (pull-to-refresh indicator). Each state has a distinct, intentional visual representation. Transitions between states are smooth (AnimatedVisibility, crossfade).
 
 **Weak**: Loading is a centered spinner with no context. Error shows a toast and otherwise looks like empty success. Empty state is a blank screen. Only the happy path (Success with data) received design attention. State transitions are jarring — content pops in without animation.
 
@@ -26,12 +26,12 @@ Read this reference when building Compose UI (to aim at the "Strong" column) or 
 
 ## 4. Performance
 
-**Strong**: LazyLists use stable keys and contentType. remember for expensive calculations. derivedStateOf for computed state. No lambdas capturing changing values in composable parameters. Images loaded with Coil and memory caching. DisposableEffect cleans up resources. Nesting depth is shallow. Recomposition scope is narrow — changing one field doesn't recompose the entire screen.
+**Strong**: Follows the `jetpack-compose-performance` skill: LazyLists use stable keys and contentType; frequently changing state is read in layout/draw lambdas (`graphicsLayer`, `offset { }`) rather than in composition; `remember` only for heavy allocations, with all inputs as keys; no backwards writes. Relies on strong skipping instead of blanket `@Stable`/`ImmutableList`. Jank claims are backed by frame timing from a release build.
 
-**Weak**: LazyList items keyed by index (breaks animations, causes recomposition). Expensive filtering/sorting runs on every recomposition. Large composables where a single state change triggers full recomposition. Images loaded without caching. Forgotten subscriptions or listeners leak.
+**Weak**: LazyList items keyed by index. Expensive filtering/sorting runs in composition on every pass. Animated values read in composition. `@Immutable`/`ImmutableList` added everywhere to "fix" recomposition counts without a measured problem. Forgotten listeners leak.
 
 ## 5. Adaptive Layout
 
-**Strong**: WindowSizeClass drives layout decisions. Compact shows single-pane, Medium shows navigation rail, Expanded shows dual-pane master-detail. Content reflows rather than simply stretching. Landscape orientation is handled. Foldable configurations are considered. Typography and spacing scale appropriately.
+**Strong**: Follows the `adaptive` skill. Top-level navigation uses `NavigationSuiteScaffold`, so bar/rail/drawer follows the window size without hand-written branches. Multi-pane layouts use Navigation 3 scene strategies (or `ListDetailPaneScaffold` in Nav 2 projects). Content reflows rather than stretching; state survives fold/unfold, rotation, and window resizing. Keyboard and pointer input work on large screens.
 
-**Weak**: Phone layout stretched to tablet (huge margins, tiny content). No WindowSizeClass checks. Landscape shows the same single-column layout with empty space. Navigation doesn't adapt (bottom nav on tablets instead of navigation rail).
+**Weak**: Phone layout stretched to tablet. Hand-rolled `when (windowSizeClass)` branches that swap a `NavigationBar` for a `NavigationRail` and duplicate screen code. Landscape shows the same single column with empty space. Selection or scroll position lost on fold/unfold.
