@@ -68,7 +68,7 @@ Verify: ./gradlew :core:data:testDebugUnitTest
 
 ## Maintenance
 
-- Update the official skills: `scripts/sync-official-skills.sh main` (pins the new upstream commit in `official-skills.lock`). Never edit vendored skill files by hand.
+- Update the official skills: `scripts/sync-android-skills.sh main` (pins the new upstream commit in `official-skills.lock`). Never edit vendored skill files by hand.
 - After editing `agents/*.md`: `python3 scripts/codex-agents-gen.py --write`.
 - Tests: `pytest tests -q`.
 
