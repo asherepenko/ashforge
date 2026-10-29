@@ -1,7 +1,7 @@
 {
   "name": "android-expert-toolkit",
-  "version": "3.4.0",
-  "description": "Expert Android engineering agents, interactive multi-agent pipelines, and 80/20 pattern detection for modern Kotlin/Compose/Gradle development",
+  "version": "4.0.0",
+  "description": "Android knowledge for Claude Code and Codex: a topic router, adversarial testing and error-handling skills, vendored official Android skills, 80/20 pattern detection, and five standalone agents for Kotlin/Compose/Gradle",
   "author": {
     "name": "Andrew Sherepenko",
     "url": "https://github.com/asherepenko"
@@ -16,14 +16,13 @@
     "gradle",
     "architecture",
     "testing",
-    "pipelines"
+    "skills"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks/hooks-codex.json",
   "interface": {
     "displayName": "Android Expert Toolkit",
-    "shortDescription": "Android engineering agents, pipelines, and pattern detection",
-    "longDescription": "Production-grade Android development guidance for Kotlin, Compose, Gradle, architecture, testing, and pipeline-style engineering workflows.",
+    "shortDescription": "Android skills, agents, and pattern detection",
+    "longDescription": "Android development knowledge for Kotlin, Compose, Gradle, architecture, and testing: a router skill, official Android skills, pattern detection, and standalone specialist agents.",
     "developerName": "Andrew Sherepenko",
     "category": "Coding",
     "capabilities": [
@@ -34,7 +33,7 @@
     "defaultPrompt": [
       "Review this Android module architecture.",
       "Run Android pattern detection.",
-      "Plan an Android feature pipeline."
+      "Write adversarial tests for this ViewModel."
     ],
     "brandColor": "#3DDC84"
   }

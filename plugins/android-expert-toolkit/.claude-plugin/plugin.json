@@ -1,7 +1,7 @@
 {
   "name": "android-expert-toolkit",
-  "description": "Expert Android engineering agents, interactive multi-agent pipelines, and 80/20 pattern detection for modern Kotlin/Compose/Gradle development",
-  "version": "3.4.0",
+  "description": "Android knowledge for Claude Code and Codex: a topic router, adversarial testing and error-handling skills, vendored official Android skills, 80/20 pattern detection, and five standalone agents for Kotlin/Compose/Gradle",
+  "version": "4.0.0",
   "author": {
     "name": "Andrew Sherepenko",
     "url": "https://github.com/asherepenko"
@@ -16,6 +16,6 @@
     "gradle",
     "architecture",
     "testing",
-    "pipelines"
+    "skills"
   ]
 }

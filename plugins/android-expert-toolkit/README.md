@@ -1,19 +1,27 @@
 # Android Expert Toolkit
 
-Expert Android engineering agents, interactive multi-agent pipelines, and 80/20 pattern detection for modern Kotlin/Compose/Gradle development.
+Android knowledge for Claude Code and Codex: a topic router, focused skills, the official Google Android skills, and five standalone agents for modern Kotlin/Compose/Gradle work.
 
-## What It Does
+## What it ships
 
-- **5 Specialized Agents** — Architecture, development, testing, Compose UI, Gradle builds
-- **7 Pipeline Types** — `feature-build`, `architecture-review`, `migration`, `ui-redesign`, `build-optimization`, `test`, `code-review`
-- **Pattern Detection (80/20 Rule)** — Matches existing codebase conventions when ≥80% consistent; proposes modern alternatives below that threshold
-- **Decision Council** — 3-perspective deliberation (status quo / best practices / pragmatic) for major architectural decisions
-- **Handoff Artifacts** — Agents communicate through structured markdown reports, not in-context conversation
-- **Validation Hooks** — Pipeline state tracking, handoff schema validation, dependency-graph checks
+- **`android-expert`** — a router skill: topic → the reference, skill, or agent to load.
+- **`android-testing`** — adversarial unit testing: break vectors from the contract, one distinct angle per test, fakes first.
+- **`android-error-handling`** — closed typed errors, `CancellationException`-safe catches, string-resource errors in UI state.
+- **`aet-check`** — read-only 80/20 pattern detection (DI, state, testing, architecture, security, performance, accessibility). Caches results at `.artifacts/aet/cache/detected-patterns.json`.
+- **Official Android skills** vendored from [android/skills](https://github.com/android/skills) (Apache-2.0): `navigation-3`, `navigation-event`, `edge-to-edge`, `adaptive`, `jetpack-compose-performance`, `migrate-xml-views-to-jetpack-compose`, `agp-9-upgrade`, `r8-analyzer`, `anr-audit-and-fix`, `android-profiler`, `testing-setup`, `android-intent-security`, `android-permissions-security`. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- **Agents** that work from a plain brief (goal, acceptance criteria, files):
+
+| Agent | Scope |
+|-------|-------|
+| `android-architect` | module/layer structure, data flow, ADRs, architecture review |
+| `android-developer` | ViewModels, repositories, Room/DataStore, networking, WorkManager, DI |
+| `compose-expert` | screens, components, previews per state, accessibility, adaptive UI |
+| `gradle-build-engineer` | modules, convention plugins (AGP 9), version catalog, build performance |
+| `android-testing-specialist` | tests and test review using the `android-testing` method |
+
+- **References** (`references/`, each ≤ ~300 lines) on architecture, presentation, data layer, offline sync, DI, Compose UI, accessibility, navigation (Nav 2), Gradle, security, performance, observability, testing mechanics, and Kotlin–Java interop.
 
 ## Installation
-
-The toolkit ships in the [ashforge](https://github.com/asherepenko/ashforge) marketplace and works on both Claude Code and Codex (CLI / App).
 
 ### Claude Code
 
@@ -23,145 +31,47 @@ The toolkit ships in the [ashforge](https://github.com/asherepenko/ashforge) mar
 /reload-plugins
 ```
 
-Plugin assets land in `~/.claude/plugins/cache/`. Hooks use `${CLAUDE_PLUGIN_ROOT}` to resolve plugin paths.
-
 ### Codex (CLI / App)
 
 ```bash
 codex plugin marketplace add asherepenko/ashforge
 ```
 
-Then enable the plugin — either via the Codex UI or by adding to `~/.codex/config.toml`:
+Enable it in the Codex UI or `~/.codex/config.toml`:
 
 ```toml
 [plugins."android-expert-toolkit@ashforge"]
 enabled = true
-
-[features]
-hooks = true            # enable hooks at all
-plugin_hooks = true     # enable plugin-bundled hooks (gated separately while in beta)
-
-[agents]
-enabled = true          # default on current Codex; actual exposed tools decide spawning
 ```
 
-**Sandbox mode**: Codex must run with `sandbox_mode = "workspace-write"` (or `danger-full-access`) for the plugin to function. `read-only` mode blocks hook writes to `.artifacts/aet/state.json`, handoff artifact creation, and pipeline branch operations. Check your `~/.codex/config.toml`:
-
-```toml
-sandbox_mode = "workspace-write"
-```
-
-On first run Codex will prompt to trust each plugin hook command — accept to record the `trusted_hash` entries. Without trust, hooks register but never execute.
-
-### Zcode / pi / Antigravity
-
-Skills install into the runtime's skills directory (copy or symlink `skills/*` from this plugin; pi users also need a subagent skill/extension for agent dispatch). The `aet-pipeline` preflight detects the runtime and emits a capability profile — where no subagent spawning exists it falls back to sequential single-orchestrator dispatch per `references/runtime-fallback.md` (state.json records `dispatch_mode`). Unattended runs resolve decision points autonomously with safe defaults; DP2 architecture approval always pauses.
-
-Plugin assets land under `~/.codex/plugins/cache/`. Hooks use `${PLUGIN_ROOT}` (not `${CLAUDE_PLUGIN_ROOT}`). The Codex manifest lives at `.codex-plugin/plugin.json`; hooks at `.codex-plugin/hooks.json`. See [`references/runtime-adapters.md`](references/runtime-adapters.md) for the full capability mapping and the PreToolUse deny-only caveat.
-
-### Project-Level Setup (both runtimes)
-
-The plugin writes pipeline state, handoff artifacts, and detection caches under `.artifacts/aet/`. These are transient per-run outputs — add them to your project's `.gitignore`:
-
-```gitignore
-.artifacts/aet/state.json
-.artifacts/aet/handoffs/
-.artifacts/aet/cache/
-.artifacts/aet/log.md
-```
-
-If you want to keep handoff artifacts in version control (useful for review history and reproducibility), exclude only `state.json` and `cache/`:
-
-```gitignore
-.artifacts/aet/state.json
-.artifacts/aet/cache/
-```
+Codex loads the skills from the plugin. Its custom agents are TOML files: the generated `codex-agents/*.toml` mirror `agents/*.md`. To use them, copy or symlink them into `~/.codex/agents/` (or a project's `.codex/agents/`).
 
 ## Usage
 
-The toolkit ships as **skills** — invoke by intent on Claude Code or Codex CLI/App. No slash commands.
+Ask an Android question or name the task; the `android-expert` router picks what to load. Examples:
+
+- "How should this ViewModel expose errors?" → `presentation.md` + `android-error-handling`
+- "Write tests for `LoginValidator`" → `android-testing`
+- "Upgrade to AGP 9" → `agp-9-upgrade`
+- "Make the home screen work on tablets" → `adaptive`
+- "Which DI does this project use?" → `aet-check di`
+
+Delegate implementation to an agent with a brief:
 
 ```
-aet-pipeline feature-build "Social Feed"       # Multi-agent feature build
-aet-pipeline architecture-review               # Analyze codebase
-aet-pipeline migration "LiveData to StateFlow"
-aet-pipeline test "User Profile"               # Add tests only
-aet-pipeline code-review "Auth Module"         # Code review
-aet-status                                     # Check pipeline progress
-aet-check di                                   # Detect DI patterns
-aet-check                                      # Run all pattern checks
-android-expert "ViewModel StateFlow pattern"   # Ad-hoc Android question
+Agent: android-developer
+Goal: add offline refresh to ItemsRepository
+Acceptance: refresh() returns a typed error on no network; cached items stay visible
+Files: core/data/src/main/.../ItemsRepository.kt, OfflineFirstItemsRepository.kt
+Verify: ./gradlew :core:data:testDebugUnitTest
 ```
 
-Claude: the Skill tool auto-triggers on description match, or invoke explicitly with `Skill(skill="aet-pipeline", args="feature-build Social Feed")`. Codex: state the intent in natural language — inspect the exposed spawn and continuation tools. Current Codex defaults `agents.enabled` to true; older CLI versions support `features.multi_agent`. Configuration hints do not override available tools.
+## Maintenance
 
-See [QUICK_START.md](QUICK_START.md) for guided examples and scenarios, and [runtime-adapters](references/runtime-adapters.md) for the per-runtime capability mapping (Claude Code, Codex, Zcode, pi, Antigravity) used inside the skills.
-
-## Agents
-
-| Agent | Purpose | Model | Plan Mode |
-|-------|---------|-------|-----------|
-| android-architect | Architecture, ADRs, pattern detection | Opus | Yes |
-| android-developer | ViewModels, repositories, data layer | Sonnet | No |
-| compose-expert | Compose UI, Material 3, adaptive layouts | Sonnet | No |
-| gradle-build-engineer | Convention plugins, version catalogs | Sonnet | No |
-| android-testing-specialist | Test doubles, Turbine, coverage | Sonnet | No |
-
-**Pipeline flow** (`feature-build`): architect → approved blueprint → Gradle setup → developer → UI/unit tests → UI tests. Gradle and developer may run in parallel only when target modules and required files already exist and there is no setup handoff dependency. Workers report through the orchestrator; Claude teams-enabled named agents may deliver final answers through idle notifications.
-
-Agents hand off through markdown artifacts under `.artifacts/aet/handoffs/{feature_slug}/` — each agent reads its predecessor's report and writes its own before the next agent starts.
-
-## When to Use
-
-| You want | Reach for |
-|----------|-----------|
-| An end-to-end multi-agent workflow — build a feature, migrate an API, redesign UI, backfill tests, review a module | `aet-pipeline <type>` |
-| Progress, artifacts, or recovery options for an in-flight pipeline | `aet-status` |
-| Pattern detection only — which DI/state/testing conventions the codebase actually uses, with the 80/20 verdict | `aet-check [category]` |
-| An ad-hoc Android question, pattern guidance, or a quick code look — no pipeline | `android-expert` |
-
-**Skip the toolkit** for backend/server Kotlin, plain Gradle JVM builds, and non-Android questions — the skills are scoped to Android app work.
-
-## Plugin Structure
-
-```
-android-expert-toolkit/
-├── .claude-plugin/plugin.json    # Claude Code manifest
-├── .codex-plugin/
-│   ├── plugin.json               # Codex CLI / Codex App manifest
-│   └── hooks.json                # Codex hooks (mirrors hooks/hooks.json with Codex matchers + ${PLUGIN_ROOT})
-├── agents/                       # 5 specialized agents (subagent_type on Claude; persona templates on Codex)
-├── skills/
-│   ├── android-expert/           # Ad-hoc Android Q&A
-│   ├── aet-pipeline/             # Multi-agent orchestration
-│   ├── aet-status/               # Pipeline status & recovery
-│   └── aet-check/                # Pattern detection (80/20)
-├── hooks/                        # Shared Python scripts — registered by both .claude-plugin and .codex-plugin manifests
-├── references/                   # Deep-dive references with "When to use" + runtime-adapters.md capability mapping
-├── templates/                    # Handoff artifact scaffolds + project settings
-├── examples/                     # Example pipeline outputs
-└── tests/                        # Hook validation tests
-```
-
-## Per-Project Configuration
-
-Copy `templates/android-expert-toolkit.local.md.template` to your project root as `android-expert-toolkit.local.md` and set DI framework, state management, and pipeline skip flags. When all values are set, the pipeline skips the interactive configuration prompt.
-
-## Documentation
-
-| Doc | Purpose |
-|-----|---------|
-| [QUICK_START.md](QUICK_START.md) | Getting started with the skills, guided examples |
-| [CLAUDE.md](CLAUDE.md) | Plugin internals (for maintainers) |
-| [examples/](examples/) | End-to-end example pipeline output |
-| [agent-routing](references/agent-routing.md) | Agent selection matrix |
-| [pattern-detection](references/pattern-detection.md) | Detection commands and 80/20 framework |
-| [conflict-resolution](references/conflict-resolution.md) | Priority hierarchy (P0–P3) |
-
-## Credits
-
-Built on [Now in Android](https://github.com/android/nowinandroid) patterns, Modern Android Development guides, and validated on production codebases.
+- Update the official skills: `scripts/sync-official-skills.sh main` (pins the new upstream commit in `official-skills.lock`). Never edit vendored skill files by hand.
+- After editing `agents/*.md`: `python3 scripts/codex-agents-gen.py --write`.
+- Tests: `pytest tests -q`.
 
 ## License
 
-[MIT](./LICENSE)
+MIT (see [LICENSE](LICENSE)). Vendored official skills are Apache-2.0 (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
