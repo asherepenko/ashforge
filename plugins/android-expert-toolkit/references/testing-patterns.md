@@ -72,6 +72,8 @@ flow.test {
 }
 ```
 
+ViewModel-originated messages and navigation are state (`presentation.md`): assert the `userMessage`/`isSaved` field, then dispatch the `MessageShown` action and assert it clears. Text input held as `TextFieldState`: drive it with `viewModel.titleState.setTextAndPlaceCursorAtEnd("Draft")`.
+
 `awaitError()` for flows that should fail; `expectNoEvents()` to prove nothing else was emitted (useful for double-tap and stale-response vectors).
 
 ## SavedStateHandle and routes

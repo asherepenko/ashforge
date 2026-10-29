@@ -31,6 +31,7 @@ Breaking: the multi-agent pipeline is gone. The plugin is now a lean Android kno
 ### Changed
 
 - `android-expert` is a short router: topic → reference, skill, or agent.
+- Compose and presentation guidance checked against current Android docs: `compose-ui.md` gains state placement (hoisting), side-effect keys and `rememberUpdatedState`, state-based text fields (`TextFieldState`; value-based fields are deprecated), custom modifiers (`Modifier.Node`, never `composed {}`), an animation-API table, and design-system component rules; `presentation.md` models ViewModel-originated messages and navigation as state instead of event channels, holds text input as `TextFieldState` saved through `SavedStateHandle.saveable`, and requires `UiText` args as a `List`; `android-testing` adds format/path strings, mutable returned collections, and one redundancy case.
 - The five agents work from a plain brief (goal, acceptance criteria, files, verify command) with no handoff files, and point at skills/references instead of embedding patterns.
 - `aet-check` keeps its cache at `.artifacts/aet/cache/detected-patterns.json`.
 

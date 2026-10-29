@@ -63,34 +63,55 @@ sealed interface ItemsAction {
 
 - State is plain data: no `Throwable`, no lambdas, no `Flow`. **Retry is an action** (`ItemsAction.Retry`), not a `retry: () -> Unit` stored in an error state — a lambda in state breaks `equals`, can't be saved, and captures stale scope.
 - Use UI models (`ItemUi`) with preformatted strings/dates when formatting is non-trivial.
-- `UiText` is a small sealed type in the project (`StringResource(id, args)` / `DynamicString(value)`); reuse what exists.
+- `UiText` is a small sealed type in the project (`StringResource(id, args)` / `DynamicString(value)`); reuse what exists. Make both cases `data class`es and hold `args` as a `List`, not an `Array`: an `Array` compares by identity, so equal states compare unequal, `StateFlow` re-emits, and state assertions fail.
 
 ## One-time events
 
-Prefer state over events. Use an event channel only for effects the ViewModel alone decides (navigate after a successful save, show a snackbar for a failure):
+ViewModel-originated "events" become state; the UI reacts and reports back with an action. A `Channel`/`SharedFlow` of events can lose an event when the ViewModel emits while no collector is active (rotation, background), so don't introduce one in new code; keep an existing one consistent rather than mixing both styles in a feature.
+
+| Effect | Model as |
+|--------|----------|
+| Snackbar/toast after a failure | `userMessage: UiText?` in state + a `MessageShown` action that clears it (the `ErrorShown` pattern above) |
+| Navigate after an async result (login, save) | a state flag (`isSaved = true`); the Root navigates from a `LaunchedEffect` |
+| Navigate on a plain click | a composable callback; the ViewModel is not involved |
 
 ```kotlin
-private val _events = Channel<ItemsEvent>()
-val events = _events.receiveAsFlow()
+@Composable
+fun EditItemRoot(onSaved: () -> Unit, viewModel: EditItemViewModel = hiltViewModel()) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val currentOnSaved by rememberUpdatedState(onSaved)
+    LaunchedEffect(state.isSaved) { if (state.isSaved) currentOnSaved() }
+    EditItemScreen(state, viewModel::onAction)
+}
 ```
 
-Collect with lifecycle awareness in the Root composable. Plain button-click navigation goes straight through composable callbacks, not through the ViewModel.
+When the source screen stays on the back stack, reset the flag (or track "navigation pending" in the UI) so returning to it doesn't navigate again.
 
 ## Process death and SavedStateHandle
 
-- **Form fields that must survive process death live in `SavedStateHandle`**, written on every change; state is initialized from it.
+- **Text input** uses state-based fields: the ViewModel holds a `TextFieldState` per field and saves it through `SavedStateHandle`, so typed text survives process death. Read `titleState.text` when validating or submitting. Value-based `value`/`onValueChange` fields are deprecated (`compose-ui.md`).
+
+```kotlin
+class EditItemViewModel(handle: SavedStateHandle, private val repo: ItemsRepository) : ViewModel() {
+    @OptIn(SavedStateHandleSaveableApi::class) // lifecycle-viewmodel-compose; opt-in as of Lifecycle 2.11
+    val titleState: TextFieldState by handle.saveable(saver = TextFieldState.Saver) { TextFieldState() }
+    // Screen: TextField(state = viewModel.titleState)
+}
+```
+
+- **Other form fields that must survive process death** (selections, toggles, steps) live in `SavedStateHandle`, written on every change; state is initialized from it.
 
 ```kotlin
 class EditItemViewModel(private val handle: SavedStateHandle, private val repo: ItemsRepository) : ViewModel() {
     private val _state = MutableStateFlow(
-        EditItemState(title = handle[KEY_TITLE] ?: "", body = handle[KEY_BODY] ?: "")
+        EditItemState(category = handle[KEY_CATEGORY] ?: Category.DEFAULT)
     )
     val state = _state.asStateFlow()
 
     fun onAction(action: EditItemAction) = when (action) {
-        is EditItemAction.TitleChanged -> {
-            handle[KEY_TITLE] = action.title
-            _state.update { it.copy(title = action.title) }
+        is EditItemAction.CategorySelected -> {
+            handle[KEY_CATEGORY] = action.category
+            _state.update { it.copy(category = action.category) }
         }
         // …
     }
@@ -129,7 +150,7 @@ fun ItemsScreen(
 }
 ```
 
-- Root: obtains the ViewModel, collects state with `collectAsStateWithLifecycle()`, collects events, wires navigation callbacks. Not previewed.
+- Root: obtains the ViewModel, collects state with `collectAsStateWithLifecycle()`, turns state flags into navigation callbacks, wires navigation. Not previewed.
 - Screen: stateless, takes state + callbacks, fully previewable. Ship one preview per distinct state (Loading, Error, Success, empty, long content) — see `compose-ui.md`.
 
 ## Review checklist
@@ -137,5 +158,6 @@ fun ItemsScreen(
 - [ ] State has no `Throwable`, raw `message` string from an exception, lambda, or `Context`.
 - [ ] Errors reach the UI as resource references.
 - [ ] Retry, dismiss, and refresh are actions.
-- [ ] Form input survives process death via `SavedStateHandle`.
+- [ ] ViewModel-originated effects (messages, navigate-after-save) are state plus an action, not a new event channel.
+- [ ] Text input is `TextFieldState`; form input survives process death via `SavedStateHandle`.
 - [ ] `collectAsStateWithLifecycle()` in the Root; Screen is preview-only-inputs.

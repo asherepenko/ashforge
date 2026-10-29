@@ -38,7 +38,8 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files** you m
 
 - Expected failures become closed typed errors at the catching layer; rethrow `CancellationException` from every catch-all.
 - UI state: no `Throwable`, raw messages, lambdas, or `Context`. Retry is an action.
-- Form input that must survive process death goes through `SavedStateHandle`.
+- Form input that must survive process death goes through `SavedStateHandle`; text fields as `TextFieldState` saved with `saveable`.
+- Messages and navigate-after-result are state plus an action, not a new event `Channel`.
 - No `GlobalScope`; no blocking I/O on the main thread.
 - Write or update unit tests for the behavior you change when the brief includes tests; apply the `android-testing` skill's method.
 

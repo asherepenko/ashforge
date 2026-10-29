@@ -30,6 +30,7 @@ Write tests as an adversary paid to make the code produce a wrong answer, crash,
 - Max length exactly, one below, one above; 10k-char input.
 - Control and invisible characters (U+0000, U+200B, U+202E); homoglyphs where uniqueness matters.
 - Strings that look like other types: `"007"`, `"1e5"`, `"NaN"`, `"1,5"` vs `"1.5"`, `"  12  "`.
+- Anything interpolated, formatted, or used as a path: `"%s"`, `"{0}"`, `"../.."`, quotes, backslashes, HTML/Markdown.
 
 **Numbers**
 - 0, 1, -1, and both sides of every domain boundary.
@@ -41,6 +42,7 @@ Write tests as an adversary paid to make the code produce a wrong answer, crash,
 **Collections**
 - Empty, one, exactly page size, page size + 1; duplicates; all equal; unsorted where sorted is assumed; sort ties.
 - Nulls inside a "non-null" list from deserialization; very large inputs on an O(n²) path.
+- A returned collection the caller can mutate, corrupting the unit's internal state.
 
 **Time**
 - A fake clock returning the same instant twice; a clock that **goes backwards** (NTP correction).
@@ -69,6 +71,7 @@ Before keeping a test, name the behavior or branch that only it guards. If you c
 | "empty email invalid" + "blank email invalid", one branch handles both | the same pair when the validator trims first — two branches |
 | one test per error variant when all map to the same message | one test per variant when each maps to a different message |
 | "loads notes" + "loads notes and shows them" | "loads notes" + "keeps previous notes when refresh fails" |
+| two tests differing only in a field the unit never reads | vary only fields the unit reads |
 
 Use a parameterized test for one angle across many data points (twelve malformed emails, one rejection branch). Don't hide several angles in one parameterized test — each angle deserves a name.
 
