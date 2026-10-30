@@ -41,7 +41,7 @@ android-expert-toolkit/
 
 - Skills: `.codex-plugin/plugin.json` → `"skills": "./skills/"`. Each own skill has `agents/openai.yaml` with `interface.short_description`; vendored skills are left as upstream ships them.
 - Agents: Codex custom agents are TOML. After editing `agents/*.md`, run `python3 scripts/codex-agents-gen.py --write`; `tests/test_codex_packaging.py` fails on drift.
-- No hooks on either runtime.
+- One hook per runtime, both `SessionStart` agent linkers: Claude runs `hooks/link-cursor-agents.sh` (links `agents/*.md` into `~/.cursor/agents/`), Codex runs `hooks/link-codex-agents.sh`.
 
 ## Agents
 

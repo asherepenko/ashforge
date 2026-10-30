@@ -19,10 +19,10 @@ def read_json(path: Path) -> dict:
 LINK_SCRIPT = PROJECT_ROOT / "hooks" / "link-codex-agents.sh"
 
 
-def test_only_codex_registers_the_link_hook():
+def test_only_codex_registers_the_codex_link_hook():
     assert read_json(PROJECT_ROOT / ".codex-plugin" / "plugin.json")["hooks"] == "./hooks/hooks-codex.json"
     assert "hooks" not in read_json(PROJECT_ROOT / ".claude-plugin" / "plugin.json")
-    assert not (PROJECT_ROOT / "hooks" / "hooks.json").exists()
+    assert "link-codex-agents.sh" not in (PROJECT_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8")
     hooks = read_json(PROJECT_ROOT / "hooks" / "hooks-codex.json")["hooks"]
     assert list(hooks) == ["SessionStart"]
     assert "link-codex-agents.sh" in hooks["SessionStart"][0]["hooks"][0]["command"]

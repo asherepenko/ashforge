@@ -44,7 +44,11 @@ Enable it in the Codex UI or `~/.codex/config.toml`:
 enabled = true
 ```
 
-Codex loads the skills from the plugin. Its custom agents are TOML files: the generated `codex-agents/*.toml` mirror `agents/*.md`. Codex plugins cannot declare agents, so the plugin's only hook, a Codex `SessionStart` hook (`hooks/link-codex-agents.sh`), keeps `~/.codex/agents/android-expert-toolkit` symlinked to the installed version's `codex-agents/`. It repairs a missing, broken or stale link, never replaces a real directory, and does nothing when the link is valid. Trust it once with `/hooks` in Codex. A fresh install or update shows the agents from the next Codex session.
+Codex loads the skills from the plugin. Its custom agents are TOML files: the generated `codex-agents/*.toml` mirror `agents/*.md`. Codex plugins cannot declare agents, so a Codex `SessionStart` hook (`hooks/link-codex-agents.sh`), keeps `~/.codex/agents/android-expert-toolkit` symlinked to the installed version's `codex-agents/`. It repairs a missing, broken or stale link, never replaces a real directory, and does nothing when the link is valid. Trust it once with `/hooks` in Codex. A fresh install or update shows the agents from the next Codex session.
+
+### Cursor
+
+Cursor has no plugin route for these agents, but it loads user subagents from `~/.cursor/agents/*.md` in the same Markdown format ([Cursor subagents](https://cursor.com/docs/subagents)). With the plugin installed in Claude Code, a Claude `SessionStart` hook (`hooks/link-cursor-agents.sh`) keeps one symlink per agent in `~/.cursor/agents/` pointing at the installed version. It runs only when `~/.cursor` exists, repairs missing, broken or stale links, removes links to agents a newer version dropped, and never replaces a real file. After an install or update, open one Claude Code session; Cursor shows the agents from its next session.
 
 ## Usage
 

@@ -4,6 +4,12 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.2.0] - 2026-10-30
+
+### Added
+
+- Claude `SessionStart` hook (`hooks/link-cursor-agents.sh`, registered in `hooks/hooks.json`) that keeps `~/.cursor/agents/<agent>.md` symlinked to the installed `agents/*.md`, so Cursor gets the five agents with no manual step. Runs only when `~/.cursor` exists; no-ops on valid links, repairs missing, broken or stale ones, drops links to removed agents, never replaces a real file.
+
 ## [4.1.0] - 2026-10-30
 
 ### Added
