@@ -1,164 +1,72 @@
 # Android Expert Toolkit
 
-Maintainer notes for the plugin itself. For user-facing usage, see `README.md` and `QUICK_START.md`.
+Maintainer notes. Usage: [README.md](README.md), [QUICK_START.md](QUICK_START.md).
 
-## Plugin Structure
+## Layout
 
 ```
 android-expert-toolkit/
-├── .claude-plugin/plugin.json    # Claude Code manifest (name, version, description)
-├── .codex-plugin/plugin.json     # Codex CLI / Codex App manifest (points at skills/, hooks/hooks-codex.json)
-├── agents/                       # 5 specialized agents (functional, not roleplay)
-├── skills/                       # All entry points are skills — no slash commands
-│   ├── android-expert/           # SKILL.md — ad-hoc Android engineering knowledge
-│   ├── aet-pipeline/             # SKILL.md — multi-agent orchestration
-│   ├── aet-status/               # SKILL.md — pipeline status & recovery
-│   └── aet-check/                # SKILL.md — pattern detection (80/20)
-├── hooks/                        # Shared Python scripts + hooks.json (Claude) + hooks-codex.json (Codex)
-├── references/                   # Deep-dive references (read on demand) + runtime-adapters.md
-├── scripts/                      # Vendored review-grade.sh + change-size.sh (copies of the dotfiles source)
-├── templates/                    # Handoff artifact scaffolds
-├── examples/                     # End-to-end example pipeline output
-└── tests/                        # Hook validation tests
+├── .claude-plugin/plugin.json   # Claude Code manifest
+├── .codex-plugin/plugin.json    # Codex manifest (skills only; no hooks)
+├── agents/                      # 5 agents, canonical Markdown
+├── codex-agents/                # generated Codex TOML agents — do not edit
+├── skills/
+│   ├── android-expert/          # router
+│   ├── android-testing/         # own skill
+│   ├── android-error-handling/  # own skill
+│   ├── android-conventions/               # pattern detection + cache
+│   └── <official skills>/       # vendored, listed in android-skills.lock — do not edit
+├── references/                  # topic references, each ≤ ~300 lines
+├── scripts/
+│   ├── sync-android-skills.sh  # vendors the official skills at a pinned commit
+│   └── codex-agents-gen.py      # agents/*.md → codex-agents/*.toml
+├── android-skills.lock         # upstream repo, commit, skill list
+├── THIRD_PARTY_NOTICES.md       # Apache-2.0 attribution
+└── tests/
 ```
 
-## Skills (Entry Points)
+## Rules
 
-| Skill | Purpose | Codex-safe |
-|-------|---------|------------|
-| `android-expert` | Ad-hoc Android/Kotlin questions, pattern guidance | Yes |
-| `aet-pipeline <type> "<name>"` | Multi-agent pipeline execution | Yes (uses exposed spawn/continuation tools; sequential fallback when unavailable) |
-| `aet-status` | Read `.artifacts/aet/state.json` (with filesystem fallback), show progress | Yes |
-| `aet-check [category]` | Run pattern detection (80/20 matrix) | Yes |
+- **Thin skills, short agents.** Skills route or state rules; detail lives in `references/` or the official skills. Agents work from a plain brief (goal, acceptance criteria, files, verify command) and point at skills/references instead of embedding pattern dumps. Every agent keeps a `## Scope Boundaries` section.
+- **Defer to official skills.** When an official skill covers a topic, the reference keeps a one-line pointer, not a copy.
+- **Stack-neutral.** Skills say "detect what the project uses (`android-conventions`)"; don't mandate a DI framework, assertion library, HTTP client, or result type.
+- **Verify facts.** API claims are checked with `android docs search` / `android docs fetch`; cite the page when a reference states a deprecation or threshold.
+- **Cache contract.** `android-conventions` writes `.artifacts/aet/cache/detected-patterns.json`. External tools read it; don't move it or rename existing keys.
 
-Pipeline types: `feature-build`, `architecture-review`, `migration`, `ui-redesign`, `build-optimization`, `test`, `code-review`.
+## Vendored official skills
 
-The toolkit used to ship slash commands (`/aet-pipeline`, `/aet-status`, `/aet-check`). Those were migrated to skills so the plugin works on both Claude Code and the Codex marketplace. Slash-command form is no longer supported.
+`scripts/sync-android-skills.sh [ref]` downloads android/skills at `ref` (default: the locked commit), replaces each listed skill directory, copies upstream `LICENSE.txt` into it, and rewrites `android-skills.lock`. `android-cli` is excluded on purpose: users often install their own and a same-named copy would shadow it. To add a skill, add it to `SKILLS` in the script, run it, list it in `THIRD_PARTY_NOTICES.md`, and route it in `skills/android-expert/SKILL.md`.
 
-## Cross-Platform Tool Mapping
+## Codex
 
-Skill bodies reference Claude Code primitives (`Agent`, `TaskCreate`, `AskUserQuestion`). Other runtimes map onto the capability axes in `references/runtime-adapters.md` (SPAWN / PROGRESS / ASK / ROOT_ENV / HOOKS / SANDBOX): Codex (exposed collaboration or CLI spawn/continuation tools / available task tool or state file / plain-text prompts), Zcode (`Agent(subagent_type)` with result-returning spawns / `TodoWrite`), pi (no native subagent tool — sequential fallback unless a subagent skill is installed), Antigravity (discover tools and inspect spawn shape). Sandbox worktrees also need the read-only-environment handling documented there.
-
-The pipeline uses hub-oriented dispatch: specialists return final answers and validated artifacts to the orchestrator. Inspect actual tool schemas and retain agent IDs. With Claude teams enabled, named `Agent` launches may become teammates and report final answers through idle notifications; AET still does not require peer messaging or explicit team creation. Codex uses its exposed collaboration or CLI tools, bounded batches, and worker reuse when no close tool exists. Gradle/developer parallelism requires existing target modules and required files with no setup handoff dependency; new module setup runs first.
-
-## Pipeline Decision Points
-
-Interactive pipeline has 4 user-gated decisions:
-1. **Configuration** — DI framework, state management, stages to skip
-2. **Architecture Approval** — review blueprint before implementation proceeds
-3. **Pattern Conflict** — when no clear winner in 80/20 detection matrix
-4. **Error Recovery** — auto-fix, manual fix, skip, or abort on failures
-
-When `android-expert-toolkit.local.md` exists in the project root with all values set, step 1 is skipped.
+- Skills: `.codex-plugin/plugin.json` → `"skills": "./skills/"`. Each own skill has `agents/openai.yaml` with `interface.short_description`; vendored skills are left as upstream ships them.
+- Agents: Codex custom agents are TOML. After editing `agents/*.md`, run `python3 scripts/codex-agents-gen.py --write`; `tests/test_codex_packaging.py` fails on drift.
+- No hooks on either runtime.
 
 ## Agents
 
-| Agent | Role | Model |
-|-------|------|-------|
-| android-architect | Architecture design, ADRs, pattern detection | Opus |
-| android-developer | Data layer, ViewModels, repositories | Sonnet |
-| compose-expert | Compose UI, Material 3, adaptive layouts | Sonnet |
-| gradle-build-engineer | Convention plugins, version catalogs | Sonnet |
-| android-testing-specialist | Test doubles, Turbine, coverage | Sonnet |
+| Agent | Model (Claude) | Tools |
+|-------|----------------|-------|
+| android-architect | opus | read, write notes, web |
+| android-developer | sonnet | read/write/edit, web |
+| compose-expert | sonnet | read/write/edit, web |
+| gradle-build-engineer | sonnet | read/write/edit (no web: build config shouldn't drift on web content) |
+| android-testing-specialist | sonnet | read/write/edit (no web) |
 
-Architect output (blueprints, ADRs) is user-approved at the pipeline's DP2 decision point before downstream agents consume it. Plugin subagents cannot enter Claude Code plan mode themselves, so the approval gate lives in the `aet-pipeline` orchestrator, not the agent.
-
-### Agent template asymmetry (intentional)
-
-`Red Flags` and `Common Rationalizations` sections appear only in `android-architect` and `android-developer` because those agents exercise discretion on judgment calls (pattern choice, module boundaries, error handling, null safety) where bad-faith shortcuts tempt. `compose-expert`, `gradle-build-engineer`, and `android-testing-specialist` operate against well-defined standards (Material 3 rubric, Gradle conventions, no-mock policy) that serve the same guardrail function. Do not normalize this asymmetry away — it reflects real domain risk, not template drift.
-
-### Tool-list asymmetry (intentional)
-
-`android-architect`, `android-developer`, and `compose-expert` have `WebFetch`/`WebSearch` for researching patterns and design inspiration. `gradle-build-engineer` and `android-testing-specialist` don't — their work is deterministic (build config, local code testing) and shouldn't drift based on web content.
-
-### Persona frontmatter — Claude-only metadata
-
-Each `agents/<name>.md` declares frontmatter like:
-
-```yaml
-tools: Read, Write, Edit, Bash, Glob, Grep, WebFetch, WebSearch
-model: opus
-```
-
-These fields apply on Claude Code only — they configure Claude's subagent registry. On Codex, `spawn_agent` ignores them: tool availability follows the session's permissions and the model follows the session's configured model. Don't read `model: opus` as "this agent runs on Opus when invoked from Codex" — it doesn't.
-
-Persona body content (specialty lens, checklists, red flags) is platform-agnostic and applies on both runtimes. The skill orchestrator reads the persona at runtime and embeds the body text into the Codex `spawn_agent` prompt; the frontmatter is discarded.
-
-## Skill
-
-`skills/android-expert/SKILL.md` is the entry point for ad-hoc Android questions ("Room offline-first", "ViewModel StateFlow pattern", etc.) — used when the user isn't running a full pipeline. It points to `references/` for deep dives.
-
-## References
-
-Deep-dive references under `references/`. Each starts with `## When to use` so agents (and humans) know when to load the file. Organized by role:
-
-- **Architect-facing**: `architecture-patterns.md`, `architect-code-examples.md`, `pattern-detection.md`, `rubric-android-architecture.md`
-- **Developer-facing**: `developer-patterns.md`, `data-layer-patterns.md`, `ui-patterns.md`
-- **Compose-facing**: `compose-patterns.md`, `rubric-compose-ui.md`
-- **Gradle-facing**: `gradle-patterns.md`
-- **Testing-facing**: `testing-patterns.md`, `testing-patterns-detail.md`
-- **Cross-cutting**: `conflict-resolution.md`, `performance-targets.md`, `pragmatic-examples.md`, `agent-routing.md`, `pipeline-error-scenarios.md`, `runtime-adapters.md`, `runtime-fallback.md`, `handoff-protocol.md`
-
-The **80/20 rule** (in `pattern-detection.md`) is the core decision framework: if a pattern has ≥80% prevalence in the codebase, match it; below 80%, propose a modern alternative. This keeps agents consistent with existing code instead of imposing ideal-world patterns.
-
-## Handoff Artifacts
-
-Written to `.artifacts/aet/handoffs/{feature_slug}/` with run timestamp prefix:
-
-- `{run_timestamp}-architecture-blueprint.md` — module structure, data flow, ADRs
-- `{run_timestamp}-module-setup.md` — convention plugins, dependencies
-- `{run_timestamp}-implementation-report.md` — ViewModels, repositories
-- `{run_timestamp}-ui-report.md` — composables, Material 3 components
-- `{run_timestamp}-test-report.md` — test doubles, coverage
-- `{run_timestamp}-code-review-report.md` — findings with severity ratings
-
-Scaffolds live in `templates/` — each agent reads its template before writing to keep artifact structure consistent. Required section headings are defined by `hooks/validate-handoff.py` (`REQUIRED_SECTIONS`) — the validator and templates are the single source of truth; agents carry no hand-maintained section lists. Shared handoff mechanics (path construction, validation, escalation) live in `references/handoff-protocol.md`.
-
-Example path: `.artifacts/aet/handoffs/social-feed/2026-02-18-143022-architecture-blueprint.md`
-
-## Hooks
-
-Two parallel manifests register the same Python scripts:
-
-- `hooks/hooks.json` — Claude Code. Uses `${CLAUDE_PLUGIN_ROOT}` and Claude tool matchers (`Write|Edit|MultiEdit`, `Bash`), routed through `hooks/track-progress.sh` — a cost guard that no-ops fast unless `.artifacts/aet` exists in cwd.
-- `hooks/hooks-codex.json` — Codex CLI / App. Uses `${PLUGIN_ROOT}` and Codex tool matchers (`apply_patch`, `local_shell|shell|shell_command|exec_command`), same `track-progress.sh` guard. Declared via `.codex-plugin/plugin.json` → `"hooks"`.
-
-**Codex loads both manifests.** It honors the declared `hooks-codex.json` *and* auto-discovers the legacy `hooks/hooks.json` from the plugin cache. In the Claude manifest `${CLAUDE_PLUGIN_ROOT}` expands to an empty string there, so every command in it is wrapped in `if [ -f "${CLAUDE_PLUGIN_ROOT}/…" ]; then … fi`: on Claude the file resolves and the hook runs as before, on Codex the guard fails and the manifest no-ops instead of failing with `can't open file '/hooks/session-start.py'`. Keep that wrapper on any command added to `hooks/hooks.json` — `tests/test_codex_packaging.py` enforces it.
-
-| Hook | Trigger (Claude → Codex) | Purpose |
-|------|---------|---------|
-| `session-start.py` | SessionStart (`startup\|resume\|clear`) → SessionStart | Plugin banner and interrupted-pipeline state; exits silently when no Gradle markers in cwd, so non-Android projects get zero output |
-| `track-progress.py` (via `track-progress.sh`) | PostToolUse (Write/Edit/MultiEdit, Bash) → PostToolUse (apply_patch, shell-family) | Updates `.artifacts/aet/state.json` under a POSIX transaction lock with atomic replacement; safely no-ops without `fcntl`. Inline state updates occur only before dispatch or after all worker tool calls/hooks finish. On Codex the `apply_patch` branch silently no-ops (payload doesn't expose `file_path`); the shell branch still records validate-handoff results. The `aet-pipeline` skill is required to update state inline regardless — the hook is a write-through cache, not the source of truth. |
-| `validate-handoff.py` | (invoked by agents) | Validates handoff artifact schema before downstream agent consumes it |
-| `validate-dependencies.py` | (invoked by agents) | Validates module dependency graph for circularity |
-
-**Codex hook activation requires:**
-
-1. `[features] hooks = true` and `[features] plugin_hooks = true` in `~/.codex/config.toml`
-2. Per-command user trust — Codex prompts once for each hook command and stores the `trusted_hash` in `[hooks.state."<manifest>:<event>:<idx>:<sub>"]`
-3. `PreToolUse` on Codex is **deny-only** — no input modification, no `additionalContext` injection. Use `PostToolUse` or `SessionStart` for context injection. ([openai/codex#18491](https://github.com/openai/codex/issues/18491))
-
-Full mapping in `references/runtime-adapters.md`.
-
-## State
-
-- Pipeline state: `.artifacts/aet/state.json` — includes `feature_slug`, `run_timestamp`, completed stages, current agent
-- Project settings: `android-expert-toolkit.local.md` (project root, optional)
-- Settings template: `templates/android-expert-toolkit.local.md.template`
+`model` and `tools` frontmatter apply on Claude Code only; Codex agents inherit the session model.
 
 ## Tests
 
-Python tests for hooks and agent prompts under `tests/`. Run:
-
 ```bash
-pytest tests/
+pytest tests -q
 ```
 
-`scripts/review-grade.sh` and `scripts/change-size.sh` are vendored from the dotfiles source and must stay byte-identical to it. `tests/test_review_grade.py` fails on drift against the avengers-council plugin copy and `~/.agents/scripts/`. Edit the dotfiles source, then re-copy; never edit the vendored copy in place.
+Covers agent frontmatter/size, Codex packaging and TOML drift, the vendored-skill lock, link and reference-path resolution, and manifest/CHANGELOG version agreement.
 
 ## Versioning
 
-Semantic versioning in `.claude-plugin/plugin.json` (mirrored in `.codex-plugin/plugin.json`):
-- **Major**: breaking changes to skill/agent contracts
-- **Minor**: new skills, agents, or pipeline types
-- **Patch**: docs, references, hook fixes, agent prompt tuning
+Semver in both manifests (they must match; the newest `CHANGELOG.md` heading must equal it):
+
+- **Major**: removed or renamed skills/agents, breaking agent contracts.
+- **Minor**: new skills, agents, or vendored official skills.
+- **Patch**: reference and prompt fixes, upstream skill refreshes.

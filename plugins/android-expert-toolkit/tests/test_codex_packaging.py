@@ -2,74 +2,55 @@
 """Tests for Codex plugin packaging."""
 
 import json
+import subprocess
+import sys
+import tomllib
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).parent.parent
+OWN_SKILLS = {"android-conventions", "android-expert", "android-testing", "android-error-handling"}
 
 
 def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def test_codex_manifest_declares_codex_hooks_manifest():
-    manifest = read_json(PROJECT_ROOT / ".codex-plugin" / "plugin.json")
-
-    assert manifest["hooks"] == "./hooks/hooks-codex.json"
-    assert manifest["hooks"] != "./hooks/hooks.json"
-
-
-def test_codex_hooks_use_codex_root_and_matchers():
-    hooks_path = PROJECT_ROOT / "hooks" / "hooks-codex.json"
-    hooks_text = hooks_path.read_text(encoding="utf-8")
-    hooks = json.loads(hooks_text)
-
-    assert "${PLUGIN_ROOT}" in hooks_text
-    assert "${CLAUDE_PLUGIN_ROOT}" not in hooks_text
-
-    post_tool_use = hooks["hooks"]["PostToolUse"]
-    matchers = {entry["matcher"] for entry in post_tool_use}
-    assert "apply_patch" in matchers
-    assert "local_shell|shell|shell_command|exec_command" in matchers
-
-
-def test_claude_hooks_remain_claude_specific():
-    hooks_text = (PROJECT_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8")
-
-    assert "${CLAUDE_PLUGIN_ROOT}" in hooks_text
-    assert "Write" in hooks_text
-    assert "Bash" in hooks_text
-
-
-def test_claude_hooks_no_op_when_plugin_root_is_unset():
-    """Codex auto-discovers the legacy hooks/hooks.json alongside its own manifest.
-
-    There, ${CLAUDE_PLUGIN_ROOT} expands to an empty string, so an unguarded
-    command becomes `python3 "/hooks/session-start.py"` and the hook fails. Every
-    command must therefore test the resolved path before running anything.
-    """
-    hooks = read_json(PROJECT_ROOT / "hooks" / "hooks.json")
-
-    commands = [
-        hook["command"]
-        for entries in hooks["hooks"].values()
-        for entry in entries
-        for hook in entry["hooks"]
-    ]
-    assert commands, "no hook commands found"
-
-    for command in commands:
-        assert command.startswith('if [ -f "${CLAUDE_PLUGIN_ROOT}/'), (
-            f"hook command must guard on the resolved plugin root: {command}"
-        )
+def test_plugin_ships_no_hooks():
+    """The pipeline hooks were removed in 4.0.0; neither runtime registers hooks."""
+    assert not (PROJECT_ROOT / "hooks").exists()
+    assert "hooks" not in read_json(PROJECT_ROOT / ".codex-plugin" / "plugin.json")
+    assert "hooks" not in read_json(PROJECT_ROOT / ".claude-plugin" / "plugin.json")
 
 
 def test_codex_short_description_lives_in_openai_yaml():
     """Codex documents only name and description in SKILL.md frontmatter;
-    the UI short text belongs in agents/openai.yaml as interface.short_description."""
-    for skill in sorted((PROJECT_ROOT / "skills").glob("*/SKILL.md")):
+    the UI short text belongs in agents/openai.yaml as interface.short_description.
+    Vendored official skills are left exactly as upstream ships them."""
+    for name in sorted(OWN_SKILLS):
+        skill = PROJECT_ROOT / "skills" / name / "SKILL.md"
         frontmatter = skill.read_text(encoding="utf-8").split("---", 2)[1]
         assert "metadata:" not in frontmatter, skill
         assert "short-description" not in frontmatter, skill
         yaml = (skill.parent / "agents" / "openai.yaml").read_text(encoding="utf-8")
         assert yaml.startswith("interface:\n  short_description: "), skill
+
+
+def test_codex_agents_match_markdown_agents():
+    result = subprocess.run(
+        [sys.executable, str(PROJECT_ROOT / "scripts" / "codex-agents-gen.py"), "--check"],
+        capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+def test_codex_agents_are_valid_toml_with_required_fields():
+    agents = sorted((PROJECT_ROOT / "agents").glob("*.md"))
+    tomls = sorted((PROJECT_ROOT / "codex-agents").glob("*.toml"))
+    assert [p.stem for p in agents] == [p.stem for p in tomls]
+    for path in tomls:
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        assert data["name"] == path.stem
+        assert data["description"]
+        assert "## Scope Boundaries" in data["developer_instructions"]
+        assert "Codex runtime adapter" in data["developer_instructions"]

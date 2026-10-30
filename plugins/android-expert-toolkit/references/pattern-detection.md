@@ -130,7 +130,7 @@ find . -name "network_security_config.xml" -path "*/res/xml/*" | wc -l
 grep -r "CertificatePinner" --include="*.kt" --include="*.java" . | wc -l
 
 # Detect encrypted storage
-grep -r "EncryptedSharedPreferences\|EncryptedFile" --include="*.kt" . | wc -l
+grep -r "EncryptedSharedPreferences\|EncryptedFile\|MasterKey" --include="*.kt" . | wc -l   # androidx.security:security-crypto is deprecated: flag, don't recommend
 
 # Detect hardcoded secrets (API keys, tokens in string literals)
 grep -rn '"[A-Za-z0-9_-]\{32,\}"' --include="*.kt" . | grep -v "test\|Test\|mock\|Mock" | wc -l
@@ -216,8 +216,8 @@ find . -name "*.java" -path "*/src/main/*" | wc -l
 | State Management | <50% consistency | Adopt StateFlow for all new features |
 | DI Framework | Mixed Hilt + Koin | Consolidate to Hilt (official Android) |
 | DI Framework | Manual DI present | Introduce Hilt incrementally |
-| Testing | <50% test doubles | Adopt test doubles over mocks |
-| Testing | Mixed mock frameworks | Standardize on MockK (Kotlin) or test doubles |
+| Testing | <50% test doubles | Prefer fakes for new tests; mocks only for final framework classes |
+| Testing | Mixed mock frameworks | Standardize on one mock library for the cases that need mocks; fakes elsewhere |
 | UI Framework | <30% Compose | Propose Compose for new features |
 | Data Layer | SharedPreferences | Migrate to DataStore for new preferences |
 
@@ -257,277 +257,6 @@ if [ $total_di -gt 0 ]; then
 fi
 ```
 
-## Operational Triggers
-
-### Pragmatic Mode (Match Existing)
-
-Activate when:
-- Pattern consistency ≥80%
-- Codebase is mature and stable
-- Team has established conventions
-- Migration cost outweighs benefits
-- Deadline-driven feature work
-
-**Behavior**: Match existing patterns, note technical debt in comments with TODO.
-
-### Best Practice Mode (Propose Modern)
-
-Activate when:
-- Pattern consistency <80%
-- Greenfield feature or module
-- Explicit request to modernize
-- Legacy patterns cause bugs
-- Long-term maintenance priority
-
-**Behavior**: Propose modern architecture, provide migration path, document rationale.
-
-## Implementation Workflow
-
-### Step 1: Detection
-
-Run detection commands before implementing any feature:
-
-```bash
-# State management analysis
-echo "LiveData: $(grep -r 'LiveData<' --include='*.kt' --include='*.java' . | wc -l)"
-echo "StateFlow: $(grep -r 'StateFlow<' --include='*.kt' . | wc -l)"
-
-# DI analysis
-echo "Hilt: $(grep -r '@HiltViewModel\|@HiltAndroidApp' --include='*.kt' . | wc -l)"
-echo "Koin: $(grep -r 'koinViewModel\|startKoin' --include='*.kt' . | wc -l)"
-echo "Manual Factory: $(grep -r 'ViewModelProvider.Factory' --include='*.kt' . | wc -l)"
-
-# Testing analysis
-echo "Mockito: $(grep -r '@Mock\|mock(' --include='*.kt' --include='*.java' . | wc -l)"
-echo "Test Doubles: $(grep -r 'class Test.*Repository\|class Fake' --include='*.kt' . | wc -l)"
-```
-
-### Step 2: Decision
-
-Apply 80/20 matrix:
-
-1. Calculate consistency percentage for relevant patterns
-2. If ≥80% consistency → Match existing pattern
-3. If <80% consistency → Propose modern alternative with rationale
-4. Document decision in implementation plan
-
-### Step 3: Documentation
-
-Document pattern decision in code:
-
-```kotlin
-// ARCHITECTURE_DECISION: Using LiveData to match existing codebase patterns (94% LiveData usage)
-// See: .claude/pattern-detection.md
-// TODO(tech-debt): Consider StateFlow migration in JIRA-XXX
-class ItemsViewModel : ViewModel() {
-    val items: LiveData<List<Item>> = repository.items.asLiveData()
-}
-```
-
-Or when proposing modern patterns:
-
-```kotlin
-// ARCHITECTURE_DECISION: Using StateFlow (modern reactive pattern)
-// Rationale: Existing state management inconsistent (45% LiveData, 35% StateFlow, 20% RxJava)
-// Migration path: New features use StateFlow, legacy code migrated incrementally
-// See: .claude/pattern-detection.md
-class ItemsViewModel : ViewModel() {
-    val items: StateFlow<List<Item>> = repository.items.stateIn(...)
-}
-```
-
-## Examples
-
-### Example 1: Strong Consistency Signal
-
-**Scenario**: Implementing new feature in codebase with established patterns.
-
-**Detection**:
-```bash
-$ grep -r "LiveData<" --include="*.kt" . | wc -l
-156
-$ grep -r "StateFlow<" --include="*.kt" . | wc -l
-10
-```
-
-**Analysis**:
-- LiveData: 156 occurrences
-- StateFlow: 10 occurrences
-- Total: 166 reactive state implementations
-- LiveData consistency: 94%
-
-**Decision**: Match existing pattern (LiveData) - consistency ≥80%
-
-**Implementation**:
-```kotlin
-// ARCHITECTURE_DECISION: Using LiveData (94% codebase consistency)
-// TODO(tech-debt): StateFlow migration tracked in JIRA-456
-@HiltViewModel
-class ItemsViewModel @Inject constructor(
-    private val repository: ItemRepository,
-) : ViewModel() {
-    val items: LiveData<List<Item>> = repository.items.asLiveData()
-
-    fun refresh() {
-        viewModelScope.launch {
-            repository.refresh()
-        }
-    }
-}
-```
-
-**Rationale**: Team knows LiveData, tests use LiveData patterns, minimal cognitive load for maintenance.
-
-### Example 2: Mixed Patterns Requiring Architecture Decision
-
-**Scenario**: Dependency injection shows split between frameworks.
-
-**Detection**:
-```bash
-$ grep -r "@HiltViewModel\|@HiltAndroidApp\|@AndroidEntryPoint" --include="*.kt" . | wc -l
-45
-$ grep -r "startKoin\|inject()\|get()" --include="*.kt" . | wc -l
-37
-```
-
-**Analysis**:
-- Hilt: 45 occurrences (55%)
-- Koin: 37 occurrences (45%)
-- No clear winner (<80% threshold)
-
-**Decision**: Propose Hilt standardization with migration plan.
-
-**Recommendation**:
-```markdown
-## DI Framework Consolidation Proposal
-
-**Current State**: Mixed Hilt (55%) and Koin (45%)
-
-**Recommendation**: Standardize on Hilt
-
-**Rationale**:
-1. Hilt is official Android DI framework
-2. Better IDE support and compile-time safety
-3. Jetpack integration (ViewModel, WorkManager)
-4. Google's long-term support commitment
-
-**Migration Strategy**:
-- Phase 1: New features use Hilt only
-- Phase 2: Migrate Koin modules by feature area
-- Phase 3: Remove Koin dependency
-
-**Estimated Effort**: 2-3 sprints for complete migration
-```
-
-**Implementation** (new feature with Hilt):
-```kotlin
-// ARCHITECTURE_DECISION: Using Hilt for DI
-// Rationale: Standardizing on Hilt (official Android framework) from mixed 55% Hilt / 45% Koin
-// Migration: New code uses Hilt, legacy Koin modules migrated incrementally
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class DataModule {
-    @Binds
-    internal abstract fun bindsItemRepository(
-        impl: OfflineFirstItemRepository,
-    ): ItemRepository
-}
-
-@HiltViewModel
-class ItemsViewModel @Inject constructor(
-    private val repository: ItemRepository,
-) : ViewModel() {
-    // Implementation
-}
-```
-
-### Example 3: Greenfield Opportunity (Inconsistent Testing)
-
-**Scenario**: Testing patterns are inconsistent, greenfield testing setup needed.
-
-**Detection**:
-```bash
-$ grep -r "@Mock\|mock(" --include="*.kt" . | wc -l
-23
-$ grep -r "mockk<\|every " --include="*.kt" . | wc -l
-15
-$ grep -r "class Test.*Repository\|class Fake" --include="*.kt" . | wc -l
-8
-```
-
-**Analysis**:
-- Mockito: 23 occurrences (50%)
-- MockK: 15 occurrences (33%)
-- Test Doubles: 8 occurrences (17%)
-- No consistency (<80% threshold)
-
-**Decision**: Propose modern best practice (test doubles).
-
-**Recommendation**:
-```markdown
-## Testing Strategy Proposal
-
-**Current State**: Inconsistent (50% Mockito, 33% MockK, 17% test doubles)
-
-**Recommendation**: Adopt test doubles as primary strategy
-
-**Rationale**:
-1. No mock framework dependency (simpler, faster)
-2. Compile-time safety (no runtime verification errors)
-3. Real implementations (better confidence in tests)
-4. Easier to understand (no DSL or magic)
-5. Better refactoring support (type-safe)
-
-**Guidelines**:
-- Default: Test doubles for repositories and data sources
-- Exception: Mocking allowed for Android framework classes (Context, etc.)
-- Legacy: Keep existing mocks, migrate opportunistically
-
-**Supporting Infrastructure**:
-- Create `core:testing` module for test doubles
-- Provide templates for common test double patterns
-```
-
-**Implementation**:
-```kotlin
-// core:testing module
-class TestItemRepository : ItemRepository {
-    private val _items = MutableStateFlow<List<Item>>(emptyList())
-    override val items: Flow<List<Item>> = _items
-
-    fun setItems(items: List<Item>) {
-        _items.value = items
-    }
-
-    override suspend fun refresh() {
-        // Controllable behavior for testing
-    }
-}
-
-// Test usage
-class ItemsViewModelTest {
-    private lateinit var repository: TestItemRepository
-    private lateinit var viewModel: ItemsViewModel
-
-    @Before
-    fun setup() {
-        repository = TestItemRepository()
-        viewModel = ItemsViewModel(repository)
-    }
-
-    @Test
-    fun `items are displayed when repository returns data`() = runTest {
-        val testItems = listOf(Item("1", "Test"))
-        repository.setItems(testItems)
-
-        viewModel.uiState.test {
-            val state = awaitItem() as Success
-            assertThat(state.items).isEqualTo(testItems)
-        }
-    }
-}
-```
-
 ## Pattern Detection Cache
 
 ### Cache Location
@@ -552,7 +281,7 @@ class ItemsViewModelTest {
 
 - Cache is valid if `project_hash` matches current build files AND `timestamp` is <24 hours old
 - Any change to `settings.gradle.kts` or root `build.gradle.kts` invalidates the cache (project structure changed)
-- Pipeline DP1 (framework selection) can override cached values — user choice always wins
+- An explicit user choice overrides a cached value — record it with `confidence: 1.0`
 - To force re-detection: delete the cache file or pass `--fresh` to the check command
 
 ### Computing `project_hash`
@@ -563,60 +292,9 @@ cat settings.gradle.kts build.gradle.kts 2>/dev/null | shasum -a 256 | cut -d' '
 
 Only the root-level `settings.gradle.kts` and `build.gradle.kts` are included. Module-level build files are excluded — they change frequently without affecting which frameworks are in use.
 
-### Integration with Pipeline
+The cache path is a stable contract: other tools read `.artifacts/aet/cache/detected-patterns.json`. Don't rename it or change existing keys.
 
-- **Before running pattern detection**, check for valid cache at `.artifacts/aet/cache/detected-patterns.json`
-- **If cache is fresh** (hash matches + <24h old), use cached patterns and skip detection (saves ~10K tokens)
-- **If cache is stale or missing**, run full detection, then write results to cache file
-- **Log cache hit/miss** in pipeline state under `pattern_cache_status`: `"hit"`, `"miss"`, or `"stale"`
-- **DP1 overrides**: When the user explicitly selects a framework in DP1, update the corresponding cache entry and set its `confidence` to `1.0`
-
-### Cache Lifecycle
-
-```
-1. Pipeline starts / check command runs
-   ↓
-2. Read .artifacts/aet/cache/detected-patterns.json
-   ↓
-3. File exists?
-   NO → run detection → write cache → continue
-   YES ↓
-4. Compute current project_hash
-   ↓
-5. Hash matches AND timestamp < 24h?
-   NO → run detection → write cache → continue
-   YES → use cached patterns (log cache hit) → continue
-```
-
-## Quick Reference
-
-### Detection Script
-
-Save as `detect-patterns.sh`:
-
-```bash
-#!/bin/bash
-echo "=== State Management ==="
-echo "LiveData: $(grep -r 'LiveData<' --include='*.kt' --include='*.java' . 2>/dev/null | wc -l)"
-echo "StateFlow: $(grep -r 'StateFlow<' --include='*.kt' . 2>/dev/null | wc -l)"
-echo "Flow: $(grep -r 'Flow<' --include='*.kt' . 2>/dev/null | wc -l)"
-
-echo -e "\n=== Dependency Injection ==="
-echo "Hilt: $(grep -r '@HiltViewModel\|@HiltAndroidApp\|@AndroidEntryPoint' --include='*.kt' . 2>/dev/null | wc -l)"
-echo "Koin: $(grep -r 'startKoin\|inject()\|get()' --include='*.kt' . 2>/dev/null | wc -l)"
-
-echo -e "\n=== Testing ==="
-echo "Mockito: $(grep -r '@Mock\|mock(' --include='*.kt' --include='*.java' . 2>/dev/null | wc -l)"
-echo "MockK: $(grep -r 'mockk<\|every ' --include='*.kt' . 2>/dev/null | wc -l)"
-echo "Test Doubles: $(grep -r 'class Test.*Repository\|class Fake' --include='*.kt' . 2>/dev/null | wc -l)"
-
-echo -e "\n=== Architecture ==="
-echo "ViewModels: $(grep -r 'ViewModel()' --include='*.kt' --include='*.java' . 2>/dev/null | wc -l)"
-echo "Composables: $(grep -r '@Composable' --include='*.kt' . 2>/dev/null | wc -l)"
-echo "XML Layouts: $(find . -name '*.xml' -path '*/res/layout/*' 2>/dev/null | wc -l)"
-```
-
-### Decision Flowchart
+## Decision Flowchart
 
 ```
 1. Run detection commands

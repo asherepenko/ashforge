@@ -8,17 +8,17 @@ A personal plugin marketplace by [Andrew Sherepenko](https://github.com/asherepe
 
 | Plugin | What It Does |
 | --- | --- |
-| [`android-expert-toolkit`](./plugins/android-expert-toolkit) | Production-grade Android development: 5 specialized agents (architect, developer, compose, gradle, testing), 7 pipeline types, 80/20 pattern detection, decision council |
+| [`android-expert-toolkit`](./plugins/android-expert-toolkit) | Android knowledge: router skill, adversarial testing and error-handling skills, vendored official Android skills, 80/20 pattern detection, 5 standalone agents (architect, developer, compose, gradle, testing) |
 | [`avengers-council`](./plugins/avengers-council) | 8-member engineering advisory board (+ Captain America orchestrator) for plan and code review through structured 3-round debate with domain scoring and security veto |
 
-Both plugins ship dual manifests: `.claude-plugin/plugin.json` for Claude Code, `.codex-plugin/plugin.json` for Codex. Skills are the only entry point — slash commands (`/aet-pipeline`, `/avengers-council:plan-review`) were retired in 3.0.0.
+Both plugins ship dual manifests: `.claude-plugin/plugin.json` for Claude Code, `.codex-plugin/plugin.json` for Codex. Skills are the only entry point — slash commands were retired in 3.0.0. android-expert-toolkit 4.0.0 removed its multi-agent pipeline; its agents now work standalone from a plain brief.
 
 ## Runtime support
 
-Beyond the two first-class runtimes, both plugins detect the running harness at preflight and adapt via capability profiles (spawn model, transport, progress tool, ask style, plugin-root env) — see each plugin's `references/runtime-adapters.md`:
+Beyond the two first-class runtimes, avengers-council detects the running harness at preflight and adapts via capability profiles (spawn model, transport, progress tool, ask style, plugin-root env) — see its `references/runtime-adapters.md`. android-expert-toolkit has no orchestration, so its skills run anywhere skills load:
 
-- **Zcode** — plugin agents register by `subagent_type`; spawns are result-returning, so the council runs hub-mediated debate and the aet-pipeline dispatches per stage.
-- **pi** — no native subagent tool: install the skills into pi's skills directory; without a subagent skill/extension both plugins degrade to single-orchestrator mode.
+- **Zcode** — plugin agents register by `subagent_type`; spawns are result-returning, so the council runs hub-mediated debate.
+- **pi** — no native subagent tool: install the skills into pi's skills directory; without a subagent skill/extension the council degrades to single-orchestrator mode.
 - **Antigravity** — supports the Claude Agent Skills standard; confirm its subagent spawn shape before multi-agent dispatch.
 
 On runtimes where no subagent spawning exists, plugins fall back to single-orchestrator mode (`references/runtime-fallback.md`) instead of failing. The Avengers Council protocol may also autonomously downgrade non-critical unattended reviews from full council to Quick Mode (3-member quorum) — always stated openly in the verdict.
@@ -72,7 +72,7 @@ For a live Claude council debate, enable `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 /plugin                    # interactive plugin manager (Claude only)
 ```
 
-In Codex, list plugins via `codex plugin list` or via the App's plugin settings. Skills auto-trigger on natural-language description match — try saying "run the aet-pipeline skill" or "review my plan with the council".
+In Codex, list plugins via `codex plugin list` or via the App's plugin settings. Skills auto-trigger on natural-language description match — try saying "run aet-check on this project" or "review my plan with the council".
 
 ## Updating
 

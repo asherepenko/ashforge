@@ -1,2 +1,0 @@
-interface:
-  short_description: "Run a multi-agent Android pipeline (feature build, migration, review) with validated handoffs"
