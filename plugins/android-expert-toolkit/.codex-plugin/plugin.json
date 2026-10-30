@@ -1,6 +1,6 @@
 {
   "name": "android-expert-toolkit",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Android knowledge for Claude Code and Codex: a topic router, adversarial testing and error-handling skills, vendored official Android skills, 80/20 pattern detection, and five standalone agents for Kotlin/Compose/Gradle",
   "author": {
     "name": "Andrew Sherepenko",
@@ -19,6 +19,7 @@
     "skills"
   ],
   "skills": "./skills/",
+  "hooks": "./hooks/hooks-codex.json",
   "interface": {
     "displayName": "Android Expert Toolkit",
     "shortDescription": "Android skills, agents, and pattern detection",

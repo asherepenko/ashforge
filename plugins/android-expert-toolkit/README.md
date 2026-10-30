@@ -44,7 +44,7 @@ Enable it in the Codex UI or `~/.codex/config.toml`:
 enabled = true
 ```
 
-Codex loads the skills from the plugin. Its custom agents are TOML files: the generated `codex-agents/*.toml` mirror `agents/*.md`. To use them, copy or symlink them into `~/.codex/agents/` (or a project's `.codex/agents/`).
+Codex loads the skills from the plugin. Its custom agents are TOML files: the generated `codex-agents/*.toml` mirror `agents/*.md`. Codex plugins cannot declare agents, so the plugin's only hook, a Codex `SessionStart` hook (`hooks/link-codex-agents.sh`), keeps `~/.codex/agents/android-expert-toolkit` symlinked to the installed version's `codex-agents/`. It repairs a missing, broken or stale link, never replaces a real directory, and does nothing when the link is valid. Trust it once with `/hooks` in Codex. A fresh install or update shows the agents from the next Codex session.
 
 ## Usage
 

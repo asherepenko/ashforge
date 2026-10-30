@@ -39,7 +39,7 @@ def test_manifest_version_has_changelog_entry():
 
 
 def test_pipeline_components_are_gone():
-    for path in ["skills/aet-pipeline", "skills/aet-status", "hooks", "templates", "examples"]:
+    for path in ["skills/aet-pipeline", "skills/aet-status", "templates", "examples"]:
         assert not (PROJECT_ROOT / path).exists(), path
 
 

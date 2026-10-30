@@ -4,6 +4,12 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.1.0] - 2026-10-30
+
+### Added
+
+- Codex-only `SessionStart` hook (`hooks/link-codex-agents.sh`) that keeps `$CODEX_HOME/agents/android-expert-toolkit` symlinked to the installed `codex-agents/`, so Codex gets the five agents on install and update with no manual step. It no-ops when the link is valid, repairs missing, broken or stale links, and never replaces a real directory. Claude registers no hooks.
+
 ## [4.0.0] - 2026-10-30
 
 Breaking: the multi-agent pipeline is gone. The plugin is now a lean Android knowledge plugin — a router skill, focused skills, vendored official Android skills, and standalone agents.

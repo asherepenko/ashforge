@@ -16,11 +16,58 @@ def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def test_plugin_ships_no_hooks():
-    """The pipeline hooks were removed in 4.0.0; neither runtime registers hooks."""
-    assert not (PROJECT_ROOT / "hooks").exists()
-    assert "hooks" not in read_json(PROJECT_ROOT / ".codex-plugin" / "plugin.json")
+LINK_SCRIPT = PROJECT_ROOT / "hooks" / "link-codex-agents.sh"
+
+
+def test_only_codex_registers_the_link_hook():
+    assert read_json(PROJECT_ROOT / ".codex-plugin" / "plugin.json")["hooks"] == "./hooks/hooks-codex.json"
     assert "hooks" not in read_json(PROJECT_ROOT / ".claude-plugin" / "plugin.json")
+    assert not (PROJECT_ROOT / "hooks" / "hooks.json").exists()
+    hooks = read_json(PROJECT_ROOT / "hooks" / "hooks-codex.json")["hooks"]
+    assert list(hooks) == ["SessionStart"]
+    assert "link-codex-agents.sh" in hooks["SessionStart"][0]["hooks"][0]["command"]
+
+
+def run_link(codex_home: Path, plugin_root: Path = PROJECT_ROOT) -> subprocess.CompletedProcess:
+    env = {"PATH": "/usr/bin:/bin", "HOME": str(codex_home), "CODEX_HOME": str(codex_home), "PLUGIN_ROOT": str(plugin_root)}
+    return subprocess.run(["bash", str(LINK_SCRIPT)], env=env, capture_output=True, text=True, check=False)
+
+
+def test_link_hook_creates_link(tmp_path):
+    result = run_link(tmp_path)
+    link = tmp_path / "agents" / "android-expert-toolkit"
+    assert result.returncode == 0
+    assert link.is_symlink()
+    assert link.resolve() == (PROJECT_ROOT / "codex-agents").resolve()
+    assert (link / "compose-expert.toml").is_file()
+
+
+def test_link_hook_is_a_no_op_when_valid(tmp_path):
+    run_link(tmp_path)
+    link = tmp_path / "agents" / "android-expert-toolkit"
+    before = link.lstat().st_mtime_ns
+    assert run_link(tmp_path).returncode == 0
+    assert link.lstat().st_mtime_ns == before
+
+
+def test_link_hook_repairs_broken_or_stale_link(tmp_path):
+    agents = tmp_path / "agents"
+    agents.mkdir()
+    link = agents / "android-expert-toolkit"
+    link.symlink_to(tmp_path / "old-version" / "codex-agents")
+    assert run_link(tmp_path).returncode == 0
+    assert link.resolve() == (PROJECT_ROOT / "codex-agents").resolve()
+
+
+def test_link_hook_never_replaces_a_real_directory(tmp_path):
+    real = tmp_path / "agents" / "android-expert-toolkit"
+    real.mkdir(parents=True)
+    (real / "mine.toml").write_text("x", encoding="utf-8")
+    result = run_link(tmp_path)
+    assert result.returncode == 0
+    assert not real.is_symlink()
+    assert (real / "mine.toml").exists()
+    assert "not a symlink" in result.stderr
 
 
 def test_codex_short_description_lives_in_openai_yaml():
