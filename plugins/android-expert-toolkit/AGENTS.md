@@ -7,7 +7,7 @@ Maintainer notes. Usage: [README.md](README.md), [QUICK_START.md](QUICK_START.md
 ```
 android-expert-toolkit/
 ├── .claude-plugin/plugin.json   # Claude Code manifest
-├── .codex-plugin/plugin.json    # Codex manifest (skills only; no hooks)
+├── .codex-plugin/plugin.json    # Codex manifest (skills + agent-link hook)
 ├── agents/                      # 5 agents, canonical Markdown
 ├── codex-agents/                # generated Codex TOML agents — do not edit
 ├── skills/
