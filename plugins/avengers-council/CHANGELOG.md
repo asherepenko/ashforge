@@ -4,6 +4,12 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.2.3] - 2026-11-01
+
+### Changed
+
+- Round 1 now shows a progress table in chat each time a member reports, not a one-line status recap: one row per member with status, score, verdict, findings by severity and top concern, plus a veto and waiting-on footer. The rule is in Phase 2 of `references/orchestration-protocol.md`.
+
 ## [4.2.2] - 2026-10-27
 
 ### Changed

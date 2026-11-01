@@ -236,7 +236,21 @@ Never paste entire large diffs into agent prompts — this wastes context and re
 Agents self-start Round 1 immediately from their spawn prompt — no broadcast needed.
 
 1. Track the phase per the PROGRESS axis in @references/runtime-adapters.md — `TaskCreate` (Claude Code), `TodoWrite` (Zcode), `update_plan` (Codex) — with the step name "Round 1 — Initial Assessment"; optional but recommended.
-2. Collect responses (apply timeout policy from Phase 1 Step 4)
+2. Collect responses (apply timeout policy from Phase 1 Step 4). Each time a member reports, show the progress block below in chat. Never a one-line status recap.
+
+   ```
+   ### Council — Round 1 (3/5 reported)
+
+   | Member | Status | Score | Verdict | Findings | Top concern |
+   |--------|--------|-------|---------|----------|-------------|
+   | 🛡️ black-widow | ✅ done | 7/10 | CONDITIONAL | 🟠 1 HIGH · 🟡 2 MED | Token stored in plain prefs |
+   | 🧪 hulk | ✅ done | 6/10 | CONDITIONAL | 🟡 3 MED | No test for retry path |
+   | 🔧 doctor-strange | ⏳ waiting | — | — | — | — |
+
+   Veto: none · Waiting on: doctor-strange, ant-man
+   ```
+
+   One row per spawned member, in spawn order. Fill Score, Verdict and Findings from the member's Round-1 report; Top concern is its highest-severity finding in under 10 words. Write `🚫 VETO` in Status for a black-widow veto, and `⌛ silent` for a member past the timeout.
 3. Mark Round 1 task as completed
 
 ## Phase 3 — Rounds 2 & 3: Challenge and Final Position
