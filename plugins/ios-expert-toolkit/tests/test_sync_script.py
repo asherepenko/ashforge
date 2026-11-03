@@ -271,6 +271,15 @@ def test_ambiguous_ref_exits_1(env):
     assert "ambiguous" in proc.stderr
 
 
+def test_ref_listing_without_matching_ref_exits_1(env):
+    # ls-remote prints a line, but none for the requested ref: no SHA resolves.
+    env._stub("git", "#!/bin/bash\nprintf '%s\\trefs/heads/other\\n' " + "d" * 40 + "\n")
+    before = snapshot(env.plugin)
+    proc = env.run("--community-ref", "main")
+    assert_failed_unchanged(env, before, proc)
+    assert "cannot resolve ref 'main'" in proc.stderr
+
+
 @pytest.mark.parametrize("entry", ["traversal", "absolute", "symlink", "hardlink"])
 def test_unsafe_tar_entry_exits_1_and_tree_unchanged(env, entry):
     # The unsafe archive is the LAST skill, so earlier skills were already staged.
