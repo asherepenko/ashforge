@@ -16,7 +16,7 @@ APPROVED and APPROVED WITH CONDITIONS remove the plugin denial without auto-appr
 
 **Purpose:** Catch plan completion and trigger council review before implementation begins
 
-**Location:** `.claude/hooks/council-plan-hook.sh`
+**Location:** `.claude/hooks/council-plan-hook.py`
 
 **Configuration:** Environment variable `AVENGERS_COUNCIL_ON_PLAN`
 
@@ -157,7 +157,7 @@ Then test by entering and exiting plan mode in a Claude Code session.
 
 **Timing:** Right before the assistant would proceed with implementation
 
-**Hook executes:** `hooks/council-plan-hook.sh` (source location; installed at `.claude/hooks/council-plan-hook.sh` when plugin is registered)
+**Hook executes:** `hooks/council-plan-hook.py` (source location; installed at `.claude/hooks/council-plan-hook.py` when plugin is registered)
 
 ### What Hook Does
 
@@ -205,7 +205,7 @@ Then test by entering and exiting plan mode in a Claude Code session.
 echo $AVENGERS_COUNCIL_ON_PLAN
 
 # 2. Verify hook file exists and is executable
-ls -la ~/.claude/plugins/*/avengers-council/*/hooks/council-plan-hook.sh
+ls -la ~/.claude/plugins/*/avengers-council/*/hooks/council-plan-hook.py
 
 # 3. Check hook registration
 cat ~/.claude/plugins/*/avengers-council/*/hooks/hooks.json
@@ -259,7 +259,7 @@ claude
 
 The hook script can be modified for custom behavior:
 
-**Location:** `.claude/hooks/council-plan-hook.sh` (in plugin directory)
+**Location:** `.claude/hooks/council-plan-hook.py` (in plugin directory)
 
 **Example customization:** Add a 4th mode for specific project patterns:
 
@@ -301,7 +301,7 @@ The Avengers Council hook can coexist with other `PreToolUse:ExitPlanMode` hooks
 **Execution order:** Alphabetical by hook file name
 
 **Example hook chain:**
-1. `council-plan-hook.sh` (from avengers-council)
+1. `council-plan-hook.py` (from avengers-council)
 2. `plan-validator-hook.sh` (hypothetical other plugin)
 3. `security-check-hook.sh` (hypothetical)
 

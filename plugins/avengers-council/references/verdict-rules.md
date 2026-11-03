@@ -5,7 +5,7 @@ Canonical rules for determining council verdict outcomes. Referenced by assets/v
 ## Contents
 
 - [Consensus Rules (N voters)](#consensus-rules-n-voters) — vote thresholds + severity-weighted consensus
-- [Domain Scoring](#domain-scoring) — informational per-member scores, anchored bands, basis line, score-check.sh
+- [Domain Scoring](#domain-scoring) — informational per-member scores, anchored bands, basis line, score-check.py
 - [Quality and Risk](#quality-and-risk) — Quality grade ladder, risk tier table, verdict wins
 - [Pre-existing Findings](#pre-existing-findings) — code-review findings this change did not introduce; excluded from every rule below
 - [Severity Guidelines](#severity-guidelines) — CRITICAL / HIGH / MEDIUM / LOW definitions
@@ -96,10 +96,10 @@ A bare score is missing. Captain America asks the member for the basis once. If 
 
 ### Checking the Score
 
-Captain America runs `scripts/score-check.sh` once per score, passing the member's own counts:
+Captain America runs `scripts/score-check.py` once per score, passing the member's own counts:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
 ```
 
 Exit 0 is ok. Exit 1 is FLAG: the score is above the cap its findings allow, or a clean-domain score is below 7. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger, to fix the score or the labels; a bare score is asked for its basis in the same slot. Final scores are checked again in synthesis. Whatever the member answers, the verdict is unaffected; an unresolved FLAG (or any FLAG in Quick/fallback modes, which have no Round 3) becomes `Score flag:` in the verdict.
@@ -127,7 +127,7 @@ Quality and Risk are two rows of the Consensus table in every verdict, computed 
 Assign every severity label first, then grade. Never move a label to move the grade. Count `yes` findings only — pre-existing findings are excluded (see [Pre-existing Findings](#pre-existing-findings)). Plan reviews have no attribution, so every finding counts.
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity \
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.py" --ladder severity \
   --critical N --high N --medium N --low N
 ```
 

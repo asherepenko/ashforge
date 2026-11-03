@@ -64,18 +64,18 @@ def test_skills_reference_runtime_adapters_and_mode_selection():
 
 def test_preflight_emits_capability_profile():
     for script in [
-        "skills/council-plan-review/scripts/preflight.sh",
-        "skills/council-code-review/scripts/preflight.sh",
+        "skills/council-plan-review/scripts/preflight.py",
+        "skills/council-code-review/scripts/preflight.py",
     ]:
         text = read(script)
-        assert "== Runtime capability ==" in text, script
-        assert "RUNTIME=$runtime" in text, script
-        assert "SPAWN=$spawn" in text, script
-        assert "TRANSPORT=$transport" in text, script
+        assert '"Runtime capability"' in text, script
+        assert "RUNTIME={runtime}" in text, script
+        assert "SPAWN={spawn}" in text, script
+        assert "TRANSPORT={transport}" in text, script
         # definitive env markers before install-dir heuristics
         zcode_idx = text.index("ZCODE_APP_VERSION")
         claude_idx = text.index("CLAUDECODE")
-        codex_dir_idx = text.index('elif [ -d "$HOME/.codex" ]')
+        codex_dir_idx = text.index('os.path.isdir(os.path.join(HOME, ".codex"))')
         assert zcode_idx < codex_dir_idx
         assert claude_idx < codex_dir_idx
 

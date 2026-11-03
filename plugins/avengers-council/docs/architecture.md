@@ -44,7 +44,7 @@
 │                                                                 │
 │  PHASE 5: SYNTHESIZE VERDICT                                    │
 │  ├─ Tally votes: APPROVE, CONCERNS, REJECT                      │
-│  ├─ Compute informational avg domain score (score-check.sh)     │
+│  ├─ Compute informational avg domain score (score-check.py)     │
 │  ├─ Check red lines (references/red-lines.md)                   │
 │  ├─ Check standards compliance:                                 │
 │  │   ├─ Mandatory standard violated? → min "NEEDS REVISION"     │

@@ -72,8 +72,8 @@ Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1
 4. **Aggregate the per-member blocks** using the same logic as the full mode (`references/verdict-rules.md`):
    - Tally votes
    - Compute the average domain score (informational; never changes the verdict)
-   - Run `score-check.sh` per member and note any FLAG in the verdict (no Round 3 in fallback)
-   - Run `review-grade.sh --ladder severity` on `yes` finding counts (plans: all findings; on a script error the Quality row reads `not scored ({reason})`) and set Risk from the tier table (`references/verdict-rules.md#quality-and-risk`); both go in the Consensus table's **Quality** and **Risk** rows. For **Quality**, strip the leading `Quality: ` from the script output, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) and append the weak-slug suffix per `references/verdict-rules.md#quality` (none on `not scored`). For **Risk**, write `<emoji> <level> — <basis>`
+   - Run `score-check.py` per member and note any FLAG in the verdict (no Round 3 in fallback)
+   - Run `review-grade.py --ladder severity` on `yes` finding counts (plans: all findings; on a script error the Quality row reads `not scored ({reason})`) and set Risk from the tier table (`references/verdict-rules.md#quality-and-risk`); both go in the Consensus table's **Quality** and **Risk** rows. For **Quality**, strip the leading `Quality: ` from the script output, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) and append the weak-slug suffix per `references/verdict-rules.md#quality` (none on `not scored`). For **Risk**, write `<emoji> <level> — <basis>`
    - Check red lines (per `references/red-lines.md`)
    - Apply Black Widow veto on unmitigated CRITICAL security findings
 

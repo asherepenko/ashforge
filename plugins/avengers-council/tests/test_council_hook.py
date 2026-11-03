@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Integration tests for council-plan-hook.sh
+Integration tests for council-plan-hook.py
 
 Tests all 3 modes: off, prompt, auto
 """
@@ -12,7 +12,7 @@ from pathlib import Path
 
 # Locate hook script
 PROJECT_ROOT = Path(__file__).parent.parent
-HOOK_SCRIPT = PROJECT_ROOT / "hooks" / "council-plan-hook.sh"
+HOOK_SCRIPT = PROJECT_ROOT / "hooks" / "council-plan-hook.py"
 
 
 def run_hook(mode: str) -> tuple[int, dict]:
@@ -24,7 +24,7 @@ def run_hook(mode: str) -> tuple[int, dict]:
     env["AVENGERS_COUNCIL_ON_PLAN"] = mode
 
     result = subprocess.run(
-        ["bash", str(HOOK_SCRIPT)],
+        ["python3", str(HOOK_SCRIPT)],
         env=env,
         capture_output=True,
         text=True
@@ -155,7 +155,7 @@ def run_all_tests():
     passed = 0
     failed = 0
 
-    print("Running council-plan-hook.sh integration tests...\n")
+    print("Running council-plan-hook.py integration tests...\n")
 
     for name, test_func in tests:
         try:

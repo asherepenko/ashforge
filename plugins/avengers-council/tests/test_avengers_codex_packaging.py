@@ -41,7 +41,7 @@ def test_claude_hooks_no_op_when_plugin_root_is_unset():
 
     There, ${CLAUDE_PLUGIN_ROOT} expands to an empty string. The ExitPlanMode
     matcher never fires on Codex today, but any command in this manifest must
-    still guard on the resolved path so it no-ops instead of running `bash
+    still guard on the resolved path so it no-ops instead of running `python3
     "/hooks/..."` if a matcher ever does match.
     """
     hooks = read_json(PROJECT_ROOT / "hooks" / "hooks.json")

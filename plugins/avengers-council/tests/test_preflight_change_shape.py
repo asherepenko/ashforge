@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).parents[1]
-SCRIPT = ROOT / "skills/council-code-review/scripts/preflight.sh"
+SCRIPT = ROOT / "skills/council-code-review/scripts/preflight.py"
 MANIFESTS = "== Dependency manifests changed =="
 CODE = "== Code files added or moved =="
 
@@ -45,7 +45,7 @@ def commit(repo):
 def run(repo):
     env = {k: v for k, v in os.environ.items() if k not in ("CLAUDECODE", "CLAUDE_PLUGIN_ROOT")}
     env["HOME"] = str(repo.parent / "home")
-    out = subprocess.run(["bash", str(SCRIPT)], cwd=repo, env=env,
+    out = subprocess.run(["python3", str(SCRIPT)], cwd=repo, env=env,
                          capture_output=True, text=True, check=True).stdout
     return out
 

@@ -15,11 +15,11 @@ The slash-command form (`/avengers-council:plan-review`, `/avengers-council:code
 .claude-plugin/plugin.json — Claude Code manifest
 .codex-plugin/plugin.json  — Codex CLI / Codex App manifest (points at skills/)
 agents/                    — 8 core member personas (Captain America: references/captain-america-orchestrator.md; optional members: references/member-registry.md)
-skills/                    — council-plan-review, council-code-review (each with SKILL.md + scripts/preflight.sh); council-advise (SKILL.md only, reuses the plan-review preflight)
+skills/                    — council-plan-review, council-code-review (each with SKILL.md + scripts/preflight.py); council-advise (SKILL.md only, reuses the plan-review preflight)
 references/                — Protocols, templates, shared docs (incl. runtime-adapters.md)
 hooks/                     — PreToolUse:ExitPlanMode hook (Claude-only — no Codex equivalent)
 docs/                      — Detailed documentation
-scripts/                   — review-grade.sh and change-size.sh (vendored from dotfiles, drift test keeps them in sync); score-check.sh
+scripts/                   — review-grade.py, change-size.py and score-check.py (stdlib Python, run as `python3 scripts/<name>.py`)
 tests/                     — Hook integration and script tests
 ```
 
@@ -54,8 +54,8 @@ Exposed tools are authoritative. Modern Codex `[agents] enabled` defaults true; 
 ## Key Conventions
 
 - Skills use explicit `Read @references/...` — not bare `@references/` lines.
-- Agents include a domain score (1-10) with a `basis:` in every assessment. The score is informational: it never changes the verdict. `scripts/score-check.sh` flags scores that contradict the member's own findings.
-- Every verdict shows **Quality** (A-F, from `scripts/review-grade.sh`) and **Risk** (low | medium | high). Both are info rows; votes and findings decide the verdict.
+- Agents include a domain score (1-10) with a `basis:` in every assessment. The score is informational: it never changes the verdict. `scripts/score-check.py` flags scores that contradict the member's own findings.
+- Every verdict shows **Quality** (A-F, from `scripts/review-grade.py`) and **Risk** (low | medium | high). Both are info rows; votes and findings decide the verdict.
 - APPROVED WITH CONDITIONS means no CRITICAL and every HIGH is a condition. Merge only after every condition is fixed; the post-verdict menu offers "Override — record why" if the user merges anyway.
 - Optional members auto-join based on topic matching. Add new ones via `member-registry.md`. The roster decision happens before any spawn — platform-agnostic.
 - Black Widow retains VETO power on unmitigated CRITICAL security issues — platform-agnostic.
@@ -75,7 +75,7 @@ Persona body content (specialty lens, planning/code-review checklists, debate be
 
 ## Hooks (Claude-only)
 
-`hooks/hooks.json` registers `PreToolUse:ExitPlanMode` → `hooks/council-plan-hook.sh`. The hook fires when the user exits Claude plan mode and offers a council review based on the `AVENGERS_COUNCIL_ON_PLAN` env var (off | prompt | auto).
+`hooks/hooks.json` registers `PreToolUse:ExitPlanMode` → `hooks/council-plan-hook.py`. The hook fires when the user exits Claude plan mode and offers a council review based on the `AVENGERS_COUNCIL_ON_PLAN` env var (off | prompt | auto).
 
 `.codex-plugin/plugin.json` declares `hooks/hooks-codex.json`, which is deliberately empty (`{"hooks": {}}`) — Codex has no `ExitPlanMode` tool to hook into. On Codex, users invoke the `council-plan-review` skill explicitly when they want a council review.
 

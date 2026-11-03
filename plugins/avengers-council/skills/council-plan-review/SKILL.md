@@ -39,7 +39,7 @@ if [ -z "$PLUGIN_ROOT" ]; then
   echo "ERROR: cannot locate the avengers-council plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, ZCODE_PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
   exit 1
 fi
-bash "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.sh"
+python3 "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.py"
 ```
 
 The script collects: local plans dir listing, global plans dir, artifact specs (PRDs), recent reviews, domain glossary presence (DOMAIN-MAP.md / DOMAIN.md), and the 20 most-recent ADRs under `docs/adr/`.
@@ -115,11 +115,11 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - Collect each member's `CONCERN FOR THE USER` from Round 3. Per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4, a concern that meets a severity definition or a red line is a finding: move it into the findings before grading. List only a residual trade-off under Concerns for the User (advisory, never a condition, not counted in Quality)
   - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
   - **Count missing major acceptance criteria as one HIGH finding.** Add it to the finding list before grading.
-  - **Check each score:** run `score-check.sh` once per member, per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. An unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. A FLAG never changes the verdict.
+  - **Check each score:** run `score-check.py` once per member, per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. An unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. A FLAG never changes the verdict.
   - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored), then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error the row reads `not scored ({reason})`:
 
     ```bash
-    bash "$PLUGIN_ROOT/scripts/review-grade.sh" --ladder severity \
+    python3 "$PLUGIN_ROOT/scripts/review-grade.py" --ladder severity \
       --critical N --high N --medium N --low N
     ```
   - **Set the risk tier** from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk` and put it in the **Risk** row as `<emoji> <level> — <basis>` (🟢 low, 🟡 medium, 🔴 high). State the basis: name what the plan touches that sets the tier. Highest tier wins. Quality and Risk are info only; neither changes the verdict.
@@ -152,7 +152,7 @@ Choose one exact verdict value; the receipt JSON keeps these fields and enum unc
 | "This finding is minor, I'll soften it" | Report findings at their actual severity. LLM evaluators have a documented tendency to praise LLM-generated work. Resist. |
 | "I considered flagging this design choice but it's probably fine" | Silent dismissals are opaque. Record near-misses in the "Considered but not flagged" section with reasoning. The user decides whether your judgment was correct. |
 | "The plan is written by a senior engineer, so the risk tier is low" | The tier is set by what the change touches, never by who writes it. |
-| "The findings are mild, I'll write the Quality letter myself" | Run `review-grade.sh` on the counts and paste its line. A hand-written letter is a second verdict. |
+| "The findings are mild, I'll write the Quality letter myself" | Run `review-grade.py` on the counts and paste its line. A hand-written letter is a second verdict. |
 | "The diagram is obvious from the plan text, skip it" | Draw it. A path you cannot map to a test shows up only when drawn. |
 | "The pre-mortem failure is unlikely, I'll leave it out" | Name it and state the plan's mitigation or `unmitigated`. An unmitigated failure mode in your primary domain is at least HIGH. |
 | "The debate round produced agreement, skip Round 2 challenges" | Agreement in Round 1 often means groupthink. Round 2 challenges are mandatory — they surface assumptions everyone shares but nobody questioned. On hub-transport runtimes this means a separate spawn fan-out with the consolidated Round-1 context, not a SendMessage exchange. |
@@ -186,10 +186,10 @@ After council review completes, confirm:
 - [ ] Acceptance criteria validated as testable and measurable
 - [ ] Each Round 1 position includes a `Pre-mortem:` line with 1–2 failure modes tied to plan sections
 - [ ] Iron Man's Round 1 position includes an `ARCHITECTURE DIAGRAM:` field; Hulk's includes `FLOW DIAGRAM:` and `PATH → TEST:` (or the Diagrams section reads `not drawn — <member> not in Quick roster`)
-- [ ] **Quality** row comes from `review-grade.sh` (or `not scored ({reason})`), never a hand-picked letter
+- [ ] **Quality** row comes from `review-grade.py` (or `not scored ({reason})`), never a hand-picked letter
 - [ ] **Risk** row starts with the tier emoji (🟢/🟡/🔴) and states the basis
 - [ ] Risk line states `low | medium | high` with its basis, and the Risk Tier section gives the recommended human review
-- [ ] Every score has a basis and passed `score-check.sh`, or carries a flag
+- [ ] Every score has a basis and passed `score-check.py`, or carries a flag
 - [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — plan scope too narrow")
 - [ ] Research brief present for every selected member, or the skip disclosed
 - [ ] Verdict saved to `.artifacts/reviews/`

@@ -24,7 +24,7 @@ def test_skill_reuses_runtime_scaffolding():
     assert "== Runtime capability ==" in text
     assert "ZCODE_PLUGIN_ROOT" in text
     assert ".zcode/cli/plugins/cache" in text
-    assert "skills/council-plan-review/scripts/preflight.sh" in text
+    assert "skills/council-plan-review/scripts/preflight.py" in text
 
 
 def test_skill_routes_members_by_focus_table():
@@ -45,7 +45,7 @@ def test_synthesis_has_no_review_verdict():
     synthesis = text.split("### Step 4", 1)[1].split("## Common Rationalizations", 1)[0]
     for section in ("Where they agree", "Where they split", "Captain's recommendation", "Open questions"):
         assert section in synthesis, section
-    for review_only in ("review-grade.sh", "score-check.sh", "APPROVED WITH CONDITIONS", "DOMAIN SCORE"):
+    for review_only in ("review-grade.py", "score-check.py", "APPROVED WITH CONDITIONS", "DOMAIN SCORE"):
         assert review_only not in synthesis, review_only
 
 

@@ -31,7 +31,7 @@ def test_corrupt_pending_nonce_cannot_release_gate(tmp_path, token, with_transcr
             "isSidechain": False, "message": {"role": "assistant", "content": [{"type": "text",
                 "text": "COUNCIL_PLAN_REVIEW_RESULT " + json.dumps(receipt)}]}}) + "\n")
         payload["transcript_path"] = str(transcript)
-    result = subprocess.run(["bash", str(ROOT / "hooks/council-plan-hook.sh")],
+    result = subprocess.run(["python3", str(ROOT / "hooks/council-plan-hook.py")],
         input=json.dumps(payload), text=True, capture_output=True,
         env=dict(os.environ, AVENGERS_COUNCIL_ON_PLAN="auto"))
     assert result.returncode == 0, result.stderr
@@ -50,7 +50,7 @@ def test_hook_records_plan_mode_review_from_own_assistant_transcript(tmp_path):
                    "planFilePath": str(plan), "plan": plan.read_text()}}
     env = dict(os.environ, AVENGERS_COUNCIL_ON_PLAN="auto")
     def hook():
-        run = subprocess.run(["bash", str(ROOT / "hooks/council-plan-hook.sh")],
+        run = subprocess.run(["python3", str(ROOT / "hooks/council-plan-hook.py")],
                              input=json.dumps(payload), env=env, text=True,
                              capture_output=True, check=True)
         return json.loads(run.stdout or "{}")

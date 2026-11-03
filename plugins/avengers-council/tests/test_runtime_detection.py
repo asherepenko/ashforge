@@ -10,7 +10,7 @@ def profile(tmp_path, **overrides):
         "CODEX_HOME", "CLAUDECODE", "CLAUDE_PLUGIN_ROOT", "ZCODE_APP_VERSION",
         "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS", "AVENGERS_COUNCIL_INTERACTIVE")}
     env.update(HOME=str(tmp_path), **overrides)
-    result = subprocess.run(["bash", str(ROOT / "skills/council-code-review/scripts/preflight.sh")],
+    result = subprocess.run(["python3", str(ROOT / "skills/council-code-review/scripts/preflight.py")],
                             env=env, capture_output=True, text=True, check=True)
     return result.stdout
 

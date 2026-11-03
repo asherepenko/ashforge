@@ -76,7 +76,7 @@ def test_post_verdict_actions_conditions_menu():
 def test_score_check_runs_before_round_3_in_both_trigger_blocks():
     protocol = read("references/orchestration-protocol.md")
     debate = protocol.split("**Barrier B:**", 1)[1].split("## Phase 4", 1)[0]
-    assert "score-check.sh" in debate
+    assert "score-check.py" in debate
     assert debate.count("Score flag") >= 2
 
 
@@ -162,8 +162,8 @@ def test_producer_docs_name_quality_and_risk_rows():
 def test_producer_docs_name_grading_steps():
     for path in PRODUCER_DOCS:
         text = read(path)
-        assert "score-check.sh" in text, path
-        assert "review-grade.sh" in text, path
+        assert "score-check.py" in text, path
+        assert "review-grade.py" in text, path
         assert "verdict-rules.md#quality-and-risk" in text, path
 
 
@@ -171,7 +171,7 @@ def test_quick_flow_names_grading_steps():
     text = read("references/orchestration-protocol.md")
     quick = text[text.index("### Quick Flow"):]
     quick = quick[: quick.index("\n## ")] if "\n## " in quick else quick
-    for fact in ["score-check.sh", "review-grade.sh", "Score flag:", "**Risk**"]:
+    for fact in ["score-check.py", "review-grade.py", "Score flag:", "**Risk**"]:
         assert fact in quick, fact
 
 
