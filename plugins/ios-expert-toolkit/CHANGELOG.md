@@ -8,6 +8,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ### Added
 
+- Codex and Cursor link hooks and the sweep test helper are Python (`hooks/link-codex-agents.py`, `hooks/link-cursor-agents.py`, `tests/fixtures/run-sweeps.py`). `sync-ios-skills.sh` stays shell.
 - Plugin scaffold: Claude and Codex manifests, the Xcode MCP (`xcrun mcpbridge`), and maintainer docs.
 - Claude manifest lists skill groups: `./skills/`, `./skills/community/`, `./skills/xcode/`. Codex scans `./skills/` recursively.
 - 6 own skills: `ios-expert` (topic router), `tca`, `ios-conventions`, `ios-error-handling`, `ios-testing`, and `swiftui-pro` (a fork of the community SwiftUI skill).

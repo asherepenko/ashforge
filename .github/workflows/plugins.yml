@@ -14,6 +14,6 @@ jobs:
           python-version: "3.12"
       - run: pip install pytest
       - name: Run tests
-        run: pytest --import-mode=importlib tests plugins/android-expert-toolkit/tests plugins/ios-expert-toolkit/tests -q -m "not network"
+        run: pytest --import-mode=importlib tests plugins/android-expert-toolkit/tests plugins/ios-expert-toolkit/tests plugins/avengers-council/tests -q -m "not network"
       - name: Shellcheck
-        run: shellcheck plugins/*/scripts/*.sh plugins/*/hooks/*.sh
+        run: shellcheck plugins/*/scripts/*.sh

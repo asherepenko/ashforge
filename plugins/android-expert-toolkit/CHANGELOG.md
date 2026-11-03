@@ -8,6 +8,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ### Changed
 
+- The Codex and Cursor link hooks and the `android-conventions` preflight are Python now (`hooks/link-codex-agents.py`, `hooks/link-cursor-agents.py`, `skills/android-conventions/scripts/preflight.py`). Same behavior; needs `python3` on PATH. `sync-android-skills.sh` stays shell.
 - Official Android skills moved from the top of `skills/` into `skills/android/`. Their names, content and `android-skills.lock` entries are unchanged, and `scripts/sync-android-skills.sh` now writes to `skills/android/`.
 - Claude manifest lists skill groups: `"skills": ["./skills/", "./skills/android/"]`, so both the own skills and the vendored group load.
 - Codex manifest is unchanged: `"skills": "./skills/"` scans nested directories, so `skills/android/` loads with no array.

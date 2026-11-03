@@ -4,6 +4,16 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.2.4] - 2026-11-03
+
+### Changed
+
+- Scripts and the plan hook are Python now, not bash: `hooks/council-plan-hook.py`, `scripts/change-size.py`, `scripts/review-grade.py`, `scripts/score-check.py`, and both skill `preflight.py` scripts. Flags, stdout and exit codes are unchanged. Stdlib only; needs `python3` on PATH.
+
+### Fixed
+
+- Preflight no longer prints `NO_MARKERS` when only some project markers exist.
+
 ## [4.2.3] - 2026-11-01
 
 ### Changed
