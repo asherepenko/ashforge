@@ -16,6 +16,16 @@ def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def test_codex_finds_nested_skill_groups_with_the_plain_skills_string():
+    """Codex scans the "skills" path recursively, so the string alone reaches
+    skills/android/*. The Claude manifest needs the explicit array."""
+    manifest = read_json(PROJECT_ROOT / ".codex-plugin" / "plugin.json")
+    assert manifest["skills"] == "./skills/"
+    nested = sorted((PROJECT_ROOT / "skills" / "android").glob("*/SKILL.md"))
+    assert nested, "vendored skills must live under skills/android/"
+    assert not [p for p in (PROJECT_ROOT / "skills").iterdir() if p.is_symlink()]
+
+
 LINK_SCRIPT = PROJECT_ROOT / "hooks" / "link-codex-agents.sh"
 
 
