@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Vendor a pinned subset of Google's official Android skills
-# (https://github.com/android/skills, Apache-2.0) into skills/.
+# (https://github.com/android/skills, Apache-2.0) into skills/android/.
 #
 # Usage: scripts/sync-android-skills.sh [ref]
 #   ref  branch, tag or commit to fetch (default: the commit in the lock file,
@@ -13,7 +13,7 @@ set -euo pipefail
 
 REPO="android/skills"
 PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SKILLS_DIR="$PLUGIN_ROOT/skills"
+SKILLS_DIR="$PLUGIN_ROOT/skills/android"
 LOCK="$PLUGIN_ROOT/android-skills.lock"
 
 # App-development skills only. android-cli is deliberately excluded: users
@@ -49,6 +49,7 @@ else
   [ -n "$sha" ] || { echo "sync-android-skills: cannot resolve ref '$ref'" >&2; exit 1; }
 fi
 
+mkdir -p "$SKILLS_DIR"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 curl -fsSL "https://codeload.github.com/$REPO/tar.gz/$sha" -o "$work/src.tgz"
