@@ -7,6 +7,9 @@
 #                            --update-xcode. Content depends on the installed
 #                            Xcode build.
 #
+#   --fork-ref REF           print `diff -ruN` of the locked swiftui-pro upstream
+#                            tree against REF's tree; writes nothing.
+#
 # Usage: scripts/sync-ios-skills.sh [--community-ref REF] [--update-xcode] [--fork-ref REF]
 #
 # Safety: every skill is staged and validated in a temp dir before anything in
@@ -58,15 +61,6 @@ lock_get() {
   [ -f "$LOCK" ] || return 0
   awk -F= -v k="$1" '$1==k { sub(/^[^=]*=/, ""); print; exit }' "$LOCK"
 }
-
-if [ -n "$fork_ref" ]; then
-  if [ -f "$LOCK" ] && grep -q '^fork\.' "$LOCK"; then
-    echo "sync-ios-skills: --fork-ref is not implemented yet" >&2
-  else
-    echo "sync-ios-skills: --fork-ref not implemented until fork exists" >&2
-  fi
-  exit 2
-fi
 
 work="$(mktemp -d)"
 committed=0
@@ -192,6 +186,32 @@ check_skill() { # dir expected-name
 
 mkdir -p "$work/stage/community" "$work/stage/xcode" "$work/backup"
 swaps=()   # staged|dest
+
+# --- Fork drift check --------------------------------------------------------
+# Print `diff -ruN` of the locked upstream tree against REF's tree. Writes
+# nothing to the plugin; exit 0 whatever the diff says, 1 if REF cannot resolve.
+fork_fetch() { # sha dest-dir
+  local sha="$1" dest="$2" tgz members
+  tgz="$work/fork-$sha.tgz"
+  members="$work/fork-$sha.members"
+  curl -fsSL "https://codeload.github.com/$fork_repo/tar.gz/$sha" -o "$tgz" || die "cannot download $fork_repo@$sha"
+  check_tar "$tgz" "$fork_path" "$members"
+  mkdir -p "$dest"
+  tar -xzf "$tgz" -C "$dest" --strip-components=1 -T "$members" || die "cannot extract $fork_repo@$sha"
+  [ -d "$dest/$fork_path" ] || die "'$fork_path' not found in $fork_repo@$sha"
+}
+
+if [ -n "$fork_ref" ]; then
+  fork_repo="$(lock_get fork.swiftui-pro.repo)"
+  fork_locked="$(lock_get fork.swiftui-pro.commit)"
+  fork_path="swiftui-pro"
+  [ -n "$fork_repo" ] && [ -n "$fork_locked" ] || die "no fork.swiftui-pro lock lines to compare against"
+  fork_sha="$(resolve_ref "$fork_repo" "$fork_ref")" || die "cannot resolve ref '$fork_ref' in $fork_repo"
+  fork_fetch "$fork_locked" "$work/fork-locked"
+  fork_fetch "$fork_sha" "$work/fork-new"
+  (cd "$work" && diff -ruN fork-locked fork-new) || true
+  exit 0
+fi
 
 # --- Xcode build bookkeeping -------------------------------------------------
 installed_build=""

@@ -1,6 +1,6 @@
 # Third-party notices
 
-The vendored skills below are copied unmodified by `scripts/sync-ios-skills.sh`.
+The vendored skills below are copied unmodified, except swiftui-pro (a fork), by `scripts/sync-ios-skills.sh`.
 Pinned commits and the Xcode build are recorded in `ios-skills.lock`. The rest of
 this plugin is MIT (see `LICENSE`).
 
@@ -28,7 +28,13 @@ Each skill keeps its upstream `LICENSE` file next to its `SKILL.md`.
 
 ### swiftui-pro
 
-Added in a later phase.
+A modified fork, not a copy: `SKILL.md` and `references/views.md` are changed and
+three upstream references are removed (see `skills/swiftui-pro/FORK.md`). The other
+references are byte-identical to upstream; their sha256 are in `ios-skills.lock`.
+
+- Repo: [twostraws/SwiftUI-Agent-Skill](https://github.com/twostraws/SwiftUI-Agent-Skill)
+- Commit: `f9800713b24580bc444931949aad4519128605e8` (tag `2.0.0`)
+- Copyright (c) 2026 Paul Hudson. MIT License. Upstream `LICENSE` is kept in `skills/swiftui-pro/`.
 
 ## Xcode skills (Apple Inc.)
 

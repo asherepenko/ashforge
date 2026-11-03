@@ -481,11 +481,66 @@ def test_repeated_signals_do_not_abort_rollback(env):
     assert not list(env.tmp.glob("tmp.*")), "temp dir leaked"
 
 
-def test_fork_ref_is_not_implemented_and_writes_nothing(env):
+FORK_REPO = "twostraws/SwiftUI-Agent-Skill"
+FORK_LOCKED = "f" * 40
+FORK_NEW = "e" * 40
+
+
+def add_fork_tree(env: Env, sha: str, views: bytes, extra_files=None):
+    files = {"swiftui-pro/SKILL.md": skill_md("swiftui-pro"), "swiftui-pro/references/views.md": views,
+             "LICENSE": b"MIT License upstream\n", **(extra_files or {})}
+    write_tar(env.fixtures / f"{FORK_REPO.replace('/', '__')}__{sha}.tgz", f"SwiftUI-Agent-Skill-{sha}", files)
+
+
+def set_fork_refs(env: Env, *pairs):
+    lines = [f"{sha}\t{ref}" for sha, ref in pairs]
+    (env.lsremote / (FORK_REPO.replace("/", "__") + ".txt")).write_text("\n".join(lines) + "\n")
+
+
+def test_fork_ref_prints_diff_and_writes_nothing(env):
+    add_fork_tree(env, FORK_LOCKED, b"old rule\n")
+    add_fork_tree(env, FORK_NEW, b"new rule\n", {"swiftui-pro/references/extra.md": b"added\n"})
+    set_fork_refs(env, (FORK_NEW, "refs/tags/3.0.0"))
     before = snapshot(env.plugin)
-    proc = env.run("--fork-ref", "v2.0.0")
-    assert_failed_unchanged(env, before, proc, rc=2)
-    assert "--fork-ref" in proc.stderr
+    proc = env.run("--fork-ref", "3.0.0")
+    assert_failed_unchanged(env, before, proc, rc=0)
+    assert "-old rule" in proc.stdout and "+new rule" in proc.stdout
+    assert "extra.md" in proc.stdout and "+added" in proc.stdout
+
+
+def test_fork_ref_with_no_changes_prints_nothing_and_exits_0(env):
+    add_fork_tree(env, FORK_LOCKED, b"same\n")
+    set_fork_refs(env, (FORK_LOCKED, "refs/tags/2.0.0"))
+    before = snapshot(env.plugin)
+    proc = env.run("--fork-ref", "2.0.0")
+    assert_failed_unchanged(env, before, proc, rc=0)
+    assert proc.stdout == ""
+
+
+def test_fork_ref_unresolvable_exits_1_and_writes_nothing(env):
+    add_fork_tree(env, FORK_LOCKED, b"old\n")
+    set_fork_refs(env, (FORK_NEW, "refs/tags/3.0.0"))
+    before = snapshot(env.plugin)
+    proc = env.run("--fork-ref", "nope")
+    assert_failed_unchanged(env, before, proc, rc=1)
+    assert proc.stdout == ""
+    assert "cannot resolve" in proc.stderr
+
+
+def test_fork_ref_sha_without_tarball_exits_1(env):
+    add_fork_tree(env, FORK_LOCKED, b"old\n")
+    before = snapshot(env.plugin)
+    proc = env.run("--fork-ref", "d" * 40)
+    assert_failed_unchanged(env, before, proc, rc=1)
+
+
+def test_fork_ref_rejects_unsafe_archive_entry(env):
+    add_fork_tree(env, FORK_LOCKED, b"old\n")
+    add_fork_tree(env, FORK_NEW, b"new\n", {"swiftui-pro/../evil": b"x\n"})
+    set_fork_refs(env, (FORK_NEW, "refs/tags/3.0.0"))
+    before = snapshot(env.plugin)
+    proc = env.run("--fork-ref", "3.0.0")
+    assert_failed_unchanged(env, before, proc, rc=1)
 
 
 def test_unknown_argument_exits_2(env):
