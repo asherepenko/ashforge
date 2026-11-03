@@ -34,7 +34,7 @@ OLD_SHA = {name: f"{i}" * 40 for i, name in zip("123", COMMUNITY)}
 NEW_SHA = {name: f"{i}" * 40 for i, name in zip("abc", COMMUNITY)}
 
 TOOLS = (
-    "bash env tar sed find cp mv rm mkdir mktemp cmp diff grep head tail cut sort cat "
+    "bash env seq sleep kill tar sed find cp mv rm mkdir mktemp cmp diff grep head tail cut sort cat "
     "dirname basename tr awk ls date wc xargs uniq tee readlink chmod"
 ).split()
 
@@ -82,10 +82,26 @@ echo "Xcode 27.2"
 echo "Build version $STUB_XCODE_BUILD"
 """
 
-FAIL_LOCK_MV = """#!/bin/bash
+# Programmable `mv`. Counts calls in $STUB_LOG/mv.count and acts on env knobs:
+#   MV_FAIL_LOCK=1       a move onto ios-skills.lock exits 1 (after INT/TERM
+#                        signals to the parent when MV_SIGNAL_LOCK=N)
+#   MV_FAIL_AFTER_N=n    call n does the real move, then exits 1
+#   MV_SIGNAL_ON_N=n     call n sends SIGINT to the parent, then moves for real
+MV = """#!/bin/bash
 for a in "$@"; do last="$a"; done
-case "$last" in *ios-skills.lock) exit 1 ;; esac
-exec "$REAL_MV" "$@"
+n=$(( $(cat "$STUB_LOG/mv.count" 2>/dev/null || echo 0) + 1 ))
+echo "$n" >"$STUB_LOG/mv.count"
+case "$last" in
+  *ios-skills.lock)
+    if [ -n "$MV_FAIL_LOCK" ]; then
+      for _ in $(seq 1 "${MV_SIGNAL_LOCK:-0}"); do kill -INT "$PPID"; sleep 0.2; done
+      exit 1
+    fi ;;
+esac
+[ "$n" = "$MV_SIGNAL_ON_N" ] && { kill -INT "$PPID"; sleep 0.2; }
+"$REAL_MV" "$@" || exit $?
+[ "$n" = "$MV_FAIL_AFTER_N" ] && exit 1
+exit 0
 """
 
 
@@ -195,12 +211,12 @@ class Env:
             (d / "references").mkdir()
             (d / "references" / "x.md").write_text("x\n")
 
-    def run(self, *args, with_xcrun=True, fail_lock_mv=False):
+    def run(self, *args, with_xcrun=True, fail_lock_mv=False, mv_env=None):
         if not with_xcrun:
             (self.bin / "xcrun").unlink()
-        if fail_lock_mv:
+        if fail_lock_mv or mv_env:
             (self.bin / "mv").unlink()
-            self._stub("mv", FAIL_LOCK_MV)
+            self._stub("mv", MV)
         env = {
             "PATH": str(self.bin),
             "HOME": str(self.tmp),
@@ -212,6 +228,8 @@ class Env:
             "STUB_LOG": str(self.log),
             "STUB_XCODE_BUILD": self.xcode_build,
             "REAL_MV": self.real_mv,
+            **({"MV_FAIL_LOCK": "1"} if fail_lock_mv else {}),
+            **(mv_env or {}),
         }
         return subprocess.run([shutil.which("bash"), str(SCRIPT), *args], env=env,
                               capture_output=True, text=True, timeout=60)
@@ -328,6 +346,73 @@ def test_failed_lock_write_rolls_back_every_skill(env):
     proc = env.run("--community-ref", "main", fail_lock_mv=True)
     assert proc.returncode != 0
     assert snapshot(env.plugin) == before
+
+
+def _community_update(env):
+    for name in COMMUNITY:
+        env.set_refs(name, NEW_SHA[name])
+
+
+def test_dangling_symlink_dest_survives_failed_swap(env):
+    victim = env.plugin / "skills" / "community" / list(COMMUNITY)[0]
+    shutil.rmtree(victim)
+    victim.symlink_to(env.tmp / "does-not-exist")
+    _community_update(env)
+    before = snapshot(env.plugin)
+    proc = env.run("--community-ref", "main", fail_lock_mv=True)
+    assert proc.returncode != 0
+    assert victim.is_symlink() and os.readlink(victim) == str(env.tmp / "does-not-exist")
+    assert snapshot(env.plugin) == before
+
+
+@pytest.mark.parametrize("n", [1, 2, 3])
+def test_mv_failing_after_it_moved_leaves_tree_unchanged(env, n):
+    # Call 1 = dest->backup, 2 = staged->dest of the first skill, 3 = backup of the second.
+    # The move itself succeeds but reports failure, so the swap state must already be recorded.
+    _community_update(env)
+    before = snapshot(env.plugin)
+    proc = env.run("--community-ref", "main", mv_env={"MV_FAIL_AFTER_N": str(n)})
+    assert proc.returncode != 0
+    assert snapshot(env.plugin) == before
+    assert not list(env.tmp.glob("tmp.*")), "temp dir leaked"
+
+
+@pytest.mark.parametrize("n", [1, 2, 4])
+def test_sigint_during_swap_cannot_leave_a_partial_tree(env, n):
+    # The swap is a critical section: the signal is deferred, so the run either
+    # finishes fully (lock + every skill new) or leaves everything as it was.
+    _community_update(env)
+    before = snapshot(env.plugin)
+    proc = env.run("--community-ref", "main", mv_env={"MV_SIGNAL_ON_N": str(n)})
+    if proc.returncode == 0:
+        lock = env.lock()
+        for name in COMMUNITY:
+            assert lock[f"community.{name}.commit"] == [NEW_SHA[name]]
+            assert (env.plugin / "skills/community" / name / "SKILL.md").read_bytes() == skill_md(name, "NEW")
+    else:
+        assert snapshot(env.plugin) == before
+    assert not list(env.tmp.glob("tmp.*")), "temp dir leaked"
+
+
+def test_sigint_after_lock_move_does_not_roll_back_skills(env):
+    # Lock is the last mv (call 7: 3 backups + 3 swaps + lock). A signal sent
+    # as it lands must not undo the skills while the new lock stays.
+    _community_update(env)
+    proc = env.run("--community-ref", "main", mv_env={"MV_SIGNAL_ON_N": "7"})
+    assert proc.returncode == 0, proc.stderr
+    lock = env.lock()
+    for name in COMMUNITY:
+        assert lock[f"community.{name}.commit"] == [NEW_SHA[name]]
+        assert (env.plugin / "skills/community" / name / "SKILL.md").read_bytes() == skill_md(name, "NEW")
+
+
+def test_repeated_signals_do_not_abort_rollback(env):
+    _community_update(env)
+    before = snapshot(env.plugin)
+    proc = env.run("--community-ref", "main", fail_lock_mv=True, mv_env={"MV_SIGNAL_LOCK": "3"})
+    assert proc.returncode != 0
+    assert snapshot(env.plugin) == before
+    assert not list(env.tmp.glob("tmp.*")), "temp dir leaked"
 
 
 def test_fork_ref_is_not_implemented_and_writes_nothing(env):

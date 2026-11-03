@@ -73,16 +73,30 @@ committed=0
 swap_dests=()
 swap_backups=()
 
+# Undo swaps newest first. An entry is recorded before its first move, so each
+# step checks what actually happened: with a backup present the old content is
+# put back (dest holds the new content or nothing); without one the old content
+# never moved and dest is left alone. No backup is expected for a dest that did
+# not exist, so dest is removed there.
 rollback() {
-  local i
+  local i d b
   [ "${#swap_dests[@]}" -gt 0 ] || return 0
   for ((i = ${#swap_dests[@]} - 1; i >= 0; i--)); do
-    rm -rf "${swap_dests[$i]}"
-    if [ -n "${swap_backups[$i]}" ]; then mv "${swap_backups[$i]}" "${swap_dests[$i]}"; fi
+    d="${swap_dests[$i]}"
+    b="${swap_backups[$i]}"
+    if [ -n "$b" ]; then
+      if [ -e "$b" ] || [ -L "$b" ]; then
+        rm -rf "$d"
+        mv "$b" "$d"
+      fi
+    else
+      rm -rf "$d"
+    fi
   done
 }
 cleanup() {
   local rc=$?
+  trap '' INT TERM
   if [ "$committed" -eq 0 ]; then rollback || true; fi
   rm -f "$LOCK.tmp.$$"
   rm -rf "$work"
@@ -231,6 +245,9 @@ if [ -f "$LOCK" ]; then
 fi
 
 # --- Swap everything in, then write the lock last ----------------------------
+# INT/TERM are ignored from the first move until the lock is in place, so the
+# swap, the lock write and the commit flag cannot be split by a signal.
+trap '' INT TERM
 n=0
 for pair in "${swaps[@]}"; do
   staged="${pair%%|*}"
@@ -238,13 +255,13 @@ for pair in "${swaps[@]}"; do
   if [ -d "$dest" ] && diff -r "$staged" "$dest" >/dev/null 2>&1; then continue; fi
   mkdir -p "$(dirname "$dest")"
   backup=""
-  if [ -e "$dest" ]; then
+  if [ -e "$dest" ] || [ -L "$dest" ]; then
     n=$((n + 1))
     backup="$work/backup/$n"
-    mv "$dest" "$backup"
   fi
   swap_dests+=("$dest")
   swap_backups+=("$backup")
+  if [ -n "$backup" ]; then mv "$dest" "$backup"; fi
   mv "$staged" "$dest"
 done
 
@@ -260,5 +277,6 @@ if [ ! -f "$LOCK" ] || ! cmp -s "$work/lock.new" "$LOCK"; then
   mv "$LOCK.tmp.$$" "$LOCK"
 fi
 committed=1
+trap 'exit 130' INT TERM
 
 echo "Synced ${#COMMUNITY[@]} community skills$([ "$update_xcode" -eq 1 ] && echo " and ${#XCODE_SKILLS[@]} Xcode skills")"
