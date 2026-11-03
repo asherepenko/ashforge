@@ -236,7 +236,7 @@ Never paste entire large diffs into agent prompts — this wastes context and re
 Agents self-start Round 1 immediately from their spawn prompt — no broadcast needed.
 
 1. Track the phase per the PROGRESS axis in @references/runtime-adapters.md — `TaskCreate` (Claude Code), `TodoWrite` (Zcode), `update_plan` (Codex) — with the step name "Round 1 — Initial Assessment"; optional but recommended.
-2. Collect responses (apply timeout policy from Phase 1 Step 4). Each time a member reports, show the progress block below in chat. Never a one-line status recap.
+2. Collect responses (apply timeout policy from Phase 1 Step 4). While members report, show one short count line per report (`Round 1: 3/5 in. Waiting on doctor-strange, ant-man.`). When every member is in (or the timeout ends the round), show the progress block below in chat, once.
 
    ```
    ### Council — Round 1 (3/5 reported)
@@ -335,6 +335,48 @@ After collecting Round 1 responses:
    (bare score: "Give the basis for your score.")]
    ```
 
+   **Round tables (both transports).** Each later round ends the same way as Round 1: count lines while members report, then one table in chat when the round is done. Never only a file write or a prose recap. One row per member, in spawn order; `⌛ silent` for a member past the timeout. Cells are under 10 words.
+
+   After the Round-2 challenge pass:
+
+   ```
+   ### Council — Round 2: Challenges (9/9 in)
+
+   | Member | Status | Sent | Received | Supports | Key challenge |
+   |--------|--------|------|----------|----------|---------------|
+   | 🛡️ black-widow | ✅ done | 4 | 2 | 3 | → thor: expectSha is not consent |
+   | 🧪 hulk | ✅ done | 3 | 1 | 2 | → hawkeye: fonts.check can't see missing fonts |
+
+   Duplicate groups: 16 (count once) · Still disputed: 4
+   ```
+
+   Sent and Received count CHALLENGE blocks; Key challenge is the member's strongest sent challenge as `→ target: point`.
+
+   After the Round-2 response pass:
+
+   ```
+   ### Council — Round 2b: Responses (9/9 in)
+
+   | Member | Status | Received | Conceded | Held | Score flag | Main response |
+   |--------|--------|----------|----------|------|------------|---------------|
+   | 🦾 iron-man | ✅ done | 3 | 1 | 2 | ⚠️ cap 6 | Keep browser overwrite, add pin per replace |
+   | 🐜 ant-man | ✅ done | 0 | — | — | ok | no received challenges |
+   ```
+
+   Conceded and Held split the received challenges; Score flag is the `score-check.py` result for that member.
+
+   After Round 3:
+
+   ```
+   ### Council — Round 3: Final positions (9/9 in)
+
+   | Member | Verdict | Score R1→R3 | Confidence | Key condition |
+   |--------|---------|-------------|------------|---------------|
+   | 🛡️ black-widow | CONCERNS | 5→6 | HIGH | Move overwrite off the browser path |
+
+   Votes: 0 APPROVE · 9 CONCERNS · 0 REJECT · Unresolved: Adopt guard, reference URLs
+   ```
+
    Cost: up to 4M fresh spawns, where M excludes Captain America, (assessment, challenges, responses, final positions), or bounded continued workers as capacity permits. Disclose when worker reuse reduces independent-context isolation. Debate context is preserved — every cross-agent finding flows through the orchestrator's prompt instead of through SendMessage. This maximum cost is what the Mode Selection section's capability trigger measures.
 
 3. **Completion gate:**
@@ -403,7 +445,7 @@ Write verdict to permanent record.
    > **Verdict saved to:** `<absolute path>`
    ```
    This line MUST appear after the verdict markdown, before presenting interactive follow-up options.
-6. **Chat output:** show the verdict in the chat as the template's `## Chat Output` section sets out: the `## Consensus` block as it is (emoji headline plus the Quality, Risk, Vote and Score table), one line per condition or blocking finding with its severity emoji, then the saved path. Never a one-line prose recap of the grade and the verdict.
+6. **Chat output:** show the verdict in the chat as the template's `## Chat Output` section sets out: the `## Consensus` block as it is (emoji headline plus the Quality, Risk, Vote and Score table), one line per condition or blocking finding with its severity emoji, then the saved path. Never a one-line prose recap of the grade and the verdict. Print this as chat text after the save; text inside the save command (a heredoc or Write call) does not count as shown.
 
 ## Phase 6 — Interactive Follow-up
 

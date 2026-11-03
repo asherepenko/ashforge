@@ -4,6 +4,14 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.1] - 2026-11-04
+
+### Changed
+
+- Round 1 shows a count line per report and the progress table once, when the round is done.
+- Rounds 2, 2b and 3 each end with a table in chat: challenges sent and received, responses conceded and held with score flags, and final verdicts with score change and key condition. The rule is in Phase 3 of `references/orchestration-protocol.md`.
+- The verdict block must be printed as chat text after the save; text inside the save command does not count.
+
 ## [5.0.0] - 2026-11-03
 
 ### Removed
