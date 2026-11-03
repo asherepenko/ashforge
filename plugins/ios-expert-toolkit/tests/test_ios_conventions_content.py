@@ -7,7 +7,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 SKILL = PROJECT_ROOT / "skills/ios-conventions/SKILL.md"
 REFERENCE = PROJECT_ROOT / "references/pattern-detection.md"
-SCRIPT = PROJECT_ROOT / "tests/fixtures/run-sweeps.sh"
+SCRIPT = PROJECT_ROOT / "tests/fixtures/run-sweeps.py"
 OPENAI = PROJECT_ROOT / "skills/ios-conventions/agents/openai.yaml"
 
 VERDICTS = ["NEW", "TCA", "MVVM", "MIXED"]

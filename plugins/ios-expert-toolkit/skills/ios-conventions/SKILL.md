@@ -27,7 +27,7 @@ Count files, not matches. Exclude `Pods/`, `Carthage/`, `.build/`, `SourcePackag
 For the architecture verdict, run the reference implementation when the plugin checkout is available:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/tests/fixtures/run-sweeps.sh" <project-dir>
+python3 "${CLAUDE_PLUGIN_ROOT}/tests/fixtures/run-sweeps.py" <project-dir>
 ```
 
 It prints one of `NEW`, `TCA`, `MVVM`, `MIXED`. Without the script, apply the same counts by hand with the patterns from the reference.

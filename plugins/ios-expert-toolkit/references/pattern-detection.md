@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read this before deciding whether new iOS code should match the codebase's existing architecture or follow the toolkit default. The `ios-conventions` skill runs these sweeps. This file is the single source for the sweep patterns; `tests/fixtures/run-sweeps.sh` implements the architecture sweep and a test keeps it identical to the table below.
+Read this before deciding whether new iOS code should match the codebase's existing architecture or follow the toolkit default. The `ios-conventions` skill runs these sweeps. This file is the single source for the sweep patterns; `tests/fixtures/run-sweeps.py` implements the architecture sweep and a test keeps it identical to the table below.
 
 ## Architecture sweep (counts files)
 
@@ -19,7 +19,7 @@ The `\|` in the MVVM_OBSERVABLE row is table escaping; the real pattern is `@Obs
 
 MVVM = files matching MVVM_OBSERVABLE or MVVM_OBJECT (a file counts once). A class need not be named `*Model` or `*ViewModel`.
 
-Reference run: `bash tests/fixtures/run-sweeps.sh <project-dir>` prints exactly one verdict.
+Reference run: `python3 tests/fixtures/run-sweeps.py <project-dir>` prints exactly one verdict.
 
 ```
 total = TCA + MVVM + UIKit

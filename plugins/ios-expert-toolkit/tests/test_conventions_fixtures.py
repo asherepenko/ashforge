@@ -2,12 +2,13 @@
 """Run the architecture sweep over each fixture project and check its verdict."""
 
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
 FIXTURES = Path(__file__).parent / "fixtures"
-SCRIPT = FIXTURES / "run-sweeps.sh"
+SCRIPT = FIXTURES / "run-sweeps.py"
 
 EXPECTED = {
     "tca-app": "TCA",
@@ -24,7 +25,7 @@ EXPECTED = {
 
 def sweep(path: Path) -> subprocess.CompletedProcess:
     return subprocess.run(
-        ["bash", str(SCRIPT), str(path)], capture_output=True, text=True, timeout=30
+        [sys.executable, str(SCRIPT), str(path)], capture_output=True, text=True, timeout=30
     )
 
 
@@ -52,7 +53,7 @@ def test_pods_tests_and_previews_are_ignored():
 
 
 def test_missing_directory_argument_fails():
-    result = subprocess.run(["bash", str(SCRIPT)], capture_output=True, text=True, timeout=30)
+    result = subprocess.run([sys.executable, str(SCRIPT)], capture_output=True, text=True, timeout=30)
     assert result.returncode != 0
 
 

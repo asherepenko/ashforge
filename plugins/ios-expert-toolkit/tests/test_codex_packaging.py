@@ -28,21 +28,21 @@ def test_codex_finds_nested_skill_groups_with_the_plain_skills_string():
     assert not [p for p in (PROJECT_ROOT / "skills").iterdir() if p.is_symlink()]
 
 
-LINK_SCRIPT = PROJECT_ROOT / "hooks" / "link-codex-agents.sh"
+LINK_SCRIPT = PROJECT_ROOT / "hooks" / "link-codex-agents.py"
 
 
 def test_only_codex_registers_the_codex_link_hook():
     assert read_json(PROJECT_ROOT / ".codex-plugin" / "plugin.json")["hooks"] == "./hooks/hooks-codex.json"
     assert "hooks" not in read_json(PROJECT_ROOT / ".claude-plugin" / "plugin.json")
-    assert "link-codex-agents.sh" not in (PROJECT_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8")
+    assert "link-codex-agents.py" not in (PROJECT_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8")
     hooks = read_json(PROJECT_ROOT / "hooks" / "hooks-codex.json")["hooks"]
     assert list(hooks) == ["SessionStart"]
-    assert "link-codex-agents.sh" in hooks["SessionStart"][0]["hooks"][0]["command"]
+    assert "link-codex-agents.py" in hooks["SessionStart"][0]["hooks"][0]["command"]
 
 
 def run_link(codex_home: Path, plugin_root: Path = PROJECT_ROOT) -> subprocess.CompletedProcess:
     env = {"PATH": "/usr/bin:/bin", "HOME": str(codex_home), "CODEX_HOME": str(codex_home), "PLUGIN_ROOT": str(plugin_root)}
-    return subprocess.run(["bash", str(LINK_SCRIPT)], env=env, capture_output=True, text=True, check=False)
+    return subprocess.run([sys.executable, str(LINK_SCRIPT)], env=env, capture_output=True, text=True, check=False)
 
 
 def test_link_hook_creates_link(tmp_path):
