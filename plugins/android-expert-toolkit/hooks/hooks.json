@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/link-cursor-agents.sh\"",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/link-cursor-agents.py\"",
             "timeout": 5
           }
         ]

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${PLUGIN_ROOT}/hooks/link-codex-agents.sh\"",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/link-codex-agents.py\"",
             "timeout": 5
           }
         ]
