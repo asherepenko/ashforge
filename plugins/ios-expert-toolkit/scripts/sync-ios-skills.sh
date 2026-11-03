@@ -213,6 +213,32 @@ if [ -n "$fork_ref" ]; then
   exit 0
 fi
 
+# --- Destination guard -------------------------------------------------------
+# Refuse before anything is staged or moved if a directory this run writes into
+# is a symlink or resolves outside the plugin. A skill dir that is a symlink to
+# a directory is refused too; a dangling one is replaced as a link, never followed.
+plugin_phys="$(cd "$PLUGIN_ROOT" && pwd -P)" || die "cannot resolve plugin root '$PLUGIN_ROOT'"
+check_parent() { # dir
+  [ -e "$1" ] || [ -L "$1" ] || return 0
+  local phys
+  [ ! -L "$1" ] || die "refusing to write: '$1' is a symlink"
+  phys="$(cd "$1" && pwd -P)" || die "cannot resolve '$1'"
+  case "$phys" in
+    "$plugin_phys"/*) ;;
+    *) die "refusing to write: '$1' resolves outside the plugin ($phys)" ;;
+  esac
+}
+check_skill_dest() { # dir
+  if [ -L "$1" ] && [ -d "$1" ]; then die "refusing to replace '$1': it is a symlink to a directory"; fi
+}
+check_parent "$PLUGIN_ROOT/skills"
+check_parent "$COMMUNITY_DIR"
+for entry in "${COMMUNITY[@]}"; do check_skill_dest "$COMMUNITY_DIR/${entry%%|*}"; done
+if [ "$update_xcode" -eq 1 ]; then
+  check_parent "$XCODE_DIR"
+  for name in "${XCODE_SKILLS[@]}"; do check_skill_dest "$XCODE_DIR/$name"; done
+fi
+
 # --- Xcode build bookkeeping -------------------------------------------------
 installed_build=""
 installed_version=""

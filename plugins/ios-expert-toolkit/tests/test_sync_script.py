@@ -636,3 +636,78 @@ def test_second_run_changes_nothing(env):
     after_first = snapshot(env.plugin)
     assert env.run().returncode == 0
     assert snapshot(env.plugin) == after_first
+
+
+# --- destination parents must stay inside the plugin ------------------------
+
+def _outside_dir(env, names):
+    outside = env.tmp / "outside"
+    outside.mkdir()
+    for n in names:
+        d = outside / n
+        d.mkdir()
+        (d / "SKILL.md").write_bytes(skill_md(n, "OUTSIDE"))
+    return outside
+
+
+def _symlink_parent(env, rel, names):
+    outside = _outside_dir(env, names)
+    link = env.plugin / rel
+    shutil.rmtree(link)
+    link.symlink_to(outside)
+    return outside
+
+
+def test_symlinked_community_parent_is_refused(env):
+    outside = _symlink_parent(env, "skills/community", list(COMMUNITY))
+    _community_update(env)
+    before, out_before = snapshot(env.plugin), snapshot(outside)
+    proc = env.run("--community-ref", "main")
+    assert_failed_unchanged(env, before, proc)
+    assert snapshot(outside) == out_before
+    assert "skills/community" in proc.stderr
+
+
+def test_symlinked_xcode_parent_is_refused_with_update_xcode(env):
+    outside = _symlink_parent(env, "skills/xcode", XCODE)
+    _community_update(env)
+    before, out_before = snapshot(env.plugin), snapshot(outside)
+    proc = env.run("--community-ref", "main", "--update-xcode")
+    assert_failed_unchanged(env, before, proc)
+    assert snapshot(outside) == out_before
+    assert "skills/xcode" in proc.stderr
+
+
+def test_symlinked_xcode_parent_is_ignored_without_update_xcode(env):
+    # skills/xcode is not written on this run, so it is not checked.
+    outside = _symlink_parent(env, "skills/xcode", XCODE)
+    _community_update(env)
+    out_before = snapshot(outside)
+    proc = env.run("--community-ref", "main")
+    assert proc.returncode == 0, proc.stderr
+    assert snapshot(outside) == out_before
+
+
+def test_symlinked_skills_parent_is_refused(env):
+    outside = env.tmp / "outside"
+    shutil.move(str(env.plugin / "skills"), str(outside))
+    (env.plugin / "skills").symlink_to(outside)
+    _community_update(env)
+    before, out_before = snapshot(env.plugin), snapshot(outside)
+    proc = env.run("--community-ref", "main")
+    assert_failed_unchanged(env, before, proc)
+    assert snapshot(outside) == out_before
+
+
+def test_symlinked_skill_dir_to_outside_directory_is_refused(env):
+    victim = env.plugin / "skills" / "community" / list(COMMUNITY)[0]
+    shutil.rmtree(victim)
+    outside = env.tmp / "outside-skill"
+    outside.mkdir()
+    (outside / "SKILL.md").write_bytes(skill_md(victim.name, "OUTSIDE"))
+    victim.symlink_to(outside)
+    _community_update(env)
+    before, out_before = snapshot(env.plugin), snapshot(outside)
+    proc = env.run("--community-ref", "main")
+    assert_failed_unchanged(env, before, proc)
+    assert snapshot(outside) == out_before
