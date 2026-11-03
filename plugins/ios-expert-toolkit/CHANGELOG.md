@@ -6,6 +6,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ## [1.0.0] - 2026-11-03
 
+Live check: Claude lists all skills and the `xcode` MCP connects. Routing signed off by the maintainer ("routing OK", 2026-11-03).
+
 ### Added
 
 - Codex and Cursor link hooks and the sweep test helper are Python (`hooks/link-codex-agents.py`, `hooks/link-cursor-agents.py`, `tests/fixtures/run-sweeps.py`). `sync-ios-skills.sh` stays shell.
