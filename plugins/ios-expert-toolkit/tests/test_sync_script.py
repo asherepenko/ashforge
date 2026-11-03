@@ -276,6 +276,7 @@ def test_unsafe_tar_entry_exits_1_and_tree_unchanged(env, entry):
     # The unsafe archive is the LAST skill, so earlier skills were already staged.
     last = list(COMMUNITY)[-1]
     top = f"{COMMUNITY[last][0].split('/')[1]}-{OLD_SHA[last]}"
+    inside = f"{top}/{COMMUNITY[last][1]}"
     if entry == "traversal":
         info = tarfile.TarInfo("../evil.txt")
         info.size = 0
@@ -283,11 +284,11 @@ def test_unsafe_tar_entry_exits_1_and_tree_unchanged(env, entry):
         info = tarfile.TarInfo("/tmp/evil.txt")
         info.size = 0
     elif entry == "symlink":
-        info = tarfile.TarInfo(f"{top}/link")
+        info = tarfile.TarInfo(f"{inside}/link")
         info.type = tarfile.SYMTYPE
         info.linkname = "/etc/passwd"
     else:
-        info = tarfile.TarInfo(f"{top}/hard")
+        info = tarfile.TarInfo(f"{inside}/hard")
         info.type = tarfile.LNKTYPE
         info.linkname = f"{top}/LICENSE"
     env.add_repo(last, OLD_SHA[last], extra=[info])
@@ -296,6 +297,71 @@ def test_unsafe_tar_entry_exits_1_and_tree_unchanged(env, entry):
     assert_failed_unchanged(env, before, proc)
     assert "unsafe" in proc.stderr
     assert not (env.tmp / "evil.txt").exists()
+
+
+def _top(name, sha):
+    return f"{COMMUNITY[name][0].split('/')[1]}-{sha}"
+
+
+def test_symlink_outside_skill_path_is_ignored(env):
+    name = "swift-concurrency"
+    info = tarfile.TarInfo(f"{_top(name, NEW_SHA[name])}/{name}")
+    info.type = tarfile.SYMTYPE
+    info.linkname = "skills/swift-concurrency"
+    env.add_repo(name, NEW_SHA[name], extra=[info])
+    for n in COMMUNITY:
+        env.set_refs(n, NEW_SHA[n])
+    proc = env.run("--community-ref", "main")
+    assert proc.returncode == 0, proc.stderr
+    skill = env.plugin / "skills" / "community" / name
+    assert b"NEW" in (skill / "SKILL.md").read_bytes()
+    assert not any(p.is_symlink() for p in skill.rglob("*"))
+
+
+def test_dotdot_symlink_inside_skill_path_exits_1(env):
+    name = "swiftdata-pro"
+    info = tarfile.TarInfo(f"{_top(name, NEW_SHA[name])}/{COMMUNITY[name][1]}/escape")
+    info.type = tarfile.SYMTYPE
+    info.linkname = "../../../outside"
+    env.add_repo(name, NEW_SHA[name], extra=[info])
+    for n in COMMUNITY:
+        env.set_refs(n, NEW_SHA[n])
+    before = snapshot(env.plugin)
+    proc = env.run("--community-ref", "main")
+    assert_failed_unchanged(env, before, proc)
+    assert "unsafe" in proc.stderr
+
+
+def test_members_outside_skill_path_are_not_extracted(env):
+    name = "swift-testing-expert"
+    top = _top(name, NEW_SHA[name])
+    info = tarfile.TarInfo(f"{top}/other/secret.txt")
+    info.size = 0
+    env.add_repo(name, NEW_SHA[name], extra=[info])
+    for n in COMMUNITY:
+        env.set_refs(n, NEW_SHA[n])
+    (env.bin / "tar").unlink()
+    env._stub("tar", """#!/bin/bash
+prev=""
+for a in "$@"; do
+  [ "$prev" = "-T" ] && cat "$a" >>"$STUB_LOG/tar.members"
+  prev="$a"
+done
+exec "$REAL_TAR" "$@"
+""")
+    proc = subprocess.run(
+        [shutil.which("bash"), str(SCRIPT), "--community-ref", "main"],
+        env={"PATH": str(env.bin), "HOME": str(env.tmp), "TMPDIR": str(env.tmp),
+             "IOS_SKILLS_PLUGIN_ROOT": str(env.plugin), "STUB_FIXTURES": str(env.fixtures),
+             "STUB_LSREMOTE": str(env.lsremote), "STUB_EXPORT": str(env.export),
+             "STUB_LOG": str(env.log), "STUB_XCODE_BUILD": env.xcode_build,
+             "REAL_TAR": shutil.which("tar")},
+        capture_output=True, text=True, timeout=60)
+    assert proc.returncode == 0, proc.stderr
+    members = (env.log / "tar.members").read_text()
+    assert f"{top}/swift-testing-expert/SKILL.md" in members
+    assert f"{top}/LICENSE" in members
+    assert "secret.txt" not in members
 
 
 def test_missing_license_exits_1_and_tree_unchanged(env):

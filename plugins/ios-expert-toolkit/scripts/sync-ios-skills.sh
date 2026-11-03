@@ -135,23 +135,39 @@ resolve_ref() {
   echo "$sha"
 }
 
-# Reject archive entries with `..`, an absolute path, or any type other than
-# regular file or directory (symlinks, hardlinks, devices, fifos).
-check_tar() {
-  local tgz="$1" line
+# Reject archive entries with `..` or an absolute path anywhere in the archive.
+# Entries under the skill path, or a LICENSE file at the repo root, are the only
+# ones extracted; those must be a regular file or directory (no symlinks,
+# hardlinks, devices, fifos). Links elsewhere in the repo are never extracted,
+# so they are ignored. The in-scope member list is written to the third argument.
+check_tar() { # tgz skill-path members-file
+  local tgz="$1" skill="$2" members="$3" line type rel cand in_scope
   tar -tzf "$tgz" >"$work/tar.names" 2>/dev/null || die "cannot read archive $tgz"
   tar -tvzf "$tgz" >"$work/tar.types" 2>/dev/null || die "cannot read archive $tgz"
+  [ "$(wc -l <"$work/tar.names")" -eq "$(wc -l <"$work/tar.types")" ] || die "cannot read archive $tgz"
+  : >"$members"
   while IFS= read -r line; do
     case "$line" in
       /*|..|../*|*/..|*/../*) die "unsafe path in archive: $line" ;;
     esac
   done <"$work/tar.names"
-  while IFS= read -r line; do
-    case "${line:0:1}" in
-      -|d) ;;
-      *) die "unsafe entry (link or special file) in archive: $line" ;;
+  while IFS= read -r line <&3 && IFS= read -r type <&4; do
+    rel="${line#*/}"
+    [ "$rel" != "$line" ] || continue
+    in_scope=0
+    case "$rel" in
+      "$skill"|"$skill"/*) in_scope=1 ;;
     esac
-  done <"$work/tar.types"
+    for cand in LICENSE LICENSE.md LICENSE.txt; do
+      [ "$rel" = "$cand" ] && in_scope=1
+    done
+    [ "$in_scope" -eq 1 ] || continue
+    case "${type:0:1}" in
+      -|d) ;;
+      *) die "unsafe entry (link or special file) in archive: $type" ;;
+    esac
+    printf '%s\n' "$line" >>"$members"
+  done 3<"$work/tar.names" 4<"$work/tar.types"
 }
 
 # Value of `name:` in the SKILL.md frontmatter block.
@@ -201,10 +217,10 @@ for entry in "${COMMUNITY[@]}"; do
   sha="$(resolve_ref "$repo" "$ref")" || die "cannot resolve ref '$ref' in $repo"
   tgz="$work/$name.tgz"
   curl -fsSL "https://codeload.github.com/$repo/tar.gz/$sha" -o "$tgz" || die "cannot download $repo@$sha"
-  check_tar "$tgz"
+  check_tar "$tgz" "$path" "$work/$name.members"
   src="$work/src-$name"
   mkdir "$src"
-  tar -xzf "$tgz" -C "$src" --strip-components=1 || die "cannot extract $repo@$sha"
+  tar -xzf "$tgz" -C "$src" --strip-components=1 -T "$work/$name.members" || die "cannot extract $repo@$sha"
   [ -d "$src/$path" ] || die "$name: '$path' not found in $repo@$sha"
   lic_file=""
   for cand in LICENSE LICENSE.md LICENSE.txt; do

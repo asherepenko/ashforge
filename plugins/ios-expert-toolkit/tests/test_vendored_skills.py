@@ -74,3 +74,20 @@ def test_xcode_skills_match_lock(lock):
 def test_no_vendored_skill_at_top_level(lock):
     for name in community_names(lock) + xcode_names(lock):
         assert not (SKILLS / name).exists(), f"skills/{name} shadows the vendored copy"
+
+
+def test_notices_cover_lock(lock):
+    notices = (PROJECT_ROOT / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
+    for name in community_names(lock):
+        section = re.search(rf"### {re.escape(name)}\n(.*?)(?=\n### |\n## |\Z)", notices, re.S)
+        assert section, f"{name}: no notices section"
+        body = section.group(1)
+        assert lock[f"community.{name}.commit"][0] in body, f"{name}: commit missing"
+        assert lock[f"community.{name}.license"][0] in body or "MIT License" in body, name
+        assert lock[f"community.{name}.repo"][0] in body, f"{name}: repo missing"
+    xcode = xcode_names(lock)
+    if xcode:
+        version = lock["xcode.version"][0]
+        assert f"© Apple Inc., exported from Xcode {version} ({lock['xcode.build'][0]})" in notices
+        for name in xcode:
+            assert f"`{name}`" in notices, f"{name}: not in notices"
