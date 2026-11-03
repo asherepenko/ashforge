@@ -206,7 +206,7 @@ if [ -n "$fork_ref" ]; then
   fork_repo="$(lock_get fork.swiftui-pro.repo)"
   fork_locked="$(lock_get fork.swiftui-pro.commit)"
   fork_path="swiftui-pro"
-  [ -n "$fork_repo" ] && [ -n "$fork_locked" ] || die "no fork.swiftui-pro lock lines to compare against"
+  if [ -z "$fork_repo" ] || [ -z "$fork_locked" ]; then die "no fork.swiftui-pro lock lines to compare against"; fi
   fork_sha="$(resolve_ref "$fork_repo" "$fork_ref")" || die "cannot resolve ref '$fork_ref' in $fork_repo"
   fork_fetch "$fork_locked" "$work/fork-locked"
   fork_fetch "$fork_sha" "$work/fork-new"
