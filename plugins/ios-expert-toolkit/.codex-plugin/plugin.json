@@ -1,0 +1,41 @@
+{
+  "name": "ios-expert-toolkit",
+  "version": "1.0.0",
+  "description": "iOS knowledge for Claude Code and Codex: a topic router, TCA and SwiftUI skills, pattern detection, vendored community and Xcode skills, the Xcode MCP, and five agents for Swift/SwiftUI/Xcode",
+  "author": {
+    "name": "Andrew Sherepenko",
+    "url": "https://github.com/asherepenko"
+  },
+  "homepage": "https://github.com/asherepenko/ashforge/tree/main/plugins/ios-expert-toolkit",
+  "repository": "https://github.com/asherepenko/ashforge",
+  "license": "MIT",
+  "keywords": [
+    "ios",
+    "swift",
+    "swiftui",
+    "tca",
+    "xcode",
+    "testing",
+    "skills"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks-codex.json",
+  "interface": {
+    "displayName": "iOS Expert Toolkit",
+    "shortDescription": "iOS skills, agents, Xcode MCP, and pattern detection",
+    "longDescription": "iOS development knowledge for Swift, SwiftUI, TCA, testing, and Xcode: a router skill, community and Xcode skills, pattern detection, the Xcode MCP, and standalone specialist agents.",
+    "developerName": "Andrew Sherepenko",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/asherepenko/ashforge/tree/main/plugins/ios-expert-toolkit",
+    "defaultPrompt": [
+      "Review this SwiftUI feature's architecture.",
+      "Run iOS pattern detection.",
+      "Write Swift Testing tests for this reducer."
+    ],
+    "brandColor": "#147EFB"
+  }
+}
