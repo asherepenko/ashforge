@@ -25,7 +25,7 @@ The plugin ships in the [ashforge](https://github.com/asherepenko/ashforge) mark
 /reload-plugins
 ```
 
-The `PreToolUse:ExitPlanMode` hook activates automatically (default mode: off). Live teammate debate requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` and an interactive Claude session; disabled teams and `-p`/SDK sessions use hub-mediated ordinary subagents. The preflight defaults conservatively to hub until the orchestrator verifies the session. In auto mode, a successful review receipt is bound to the current session and exact plan content; the hook saves its review and removes only the plugin denial, preserving normal human plan approval.
+Live teammate debate requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` and an interactive Claude session; disabled teams and `-p`/SDK sessions use hub-mediated ordinary subagents. The preflight defaults conservatively to hub until the orchestrator verifies the session.
 
 ### Codex (CLI / App)
 
@@ -51,7 +51,7 @@ sandbox_mode = "workspace-write"
 
 The council checks exposed spawn and continuation tools, then schedules the full roster in bounded batches. Modern Codex `[agents] enabled` defaults true; `[features] multi_agent` is a legacy configuration hint. Missing actual dispatch tools trigger the disclosed single-orchestrator fallback. A close tool is optional: continuing a bounded worker pool is supported, with its reduced context isolation disclosed.
 
-The plugin does not ship Codex-side hooks (the `ExitPlanMode` hook is Claude-only — no other runtime's hook parity is verified yet). See [`references/runtime-adapters.md`](references/runtime-adapters.md) for the full capability mapping (Claude Code, Codex, Zcode, pi, Antigravity) including the hub-mediated debate trade-off.
+The plugin ships no hooks. See [`references/runtime-adapters.md`](references/runtime-adapters.md) for the full capability mapping (Claude Code, Codex, Zcode, pi, Antigravity) including the hub-mediated debate trade-off.
 
 ### Zcode / pi / Antigravity
 
@@ -128,18 +128,6 @@ Verdicts: **APPROVED**, **APPROVED WITH CONDITIONS**, **NEEDS REVISION**, **BLOC
 
 Debate context is propagated on every supported platform — every cross-member finding flows either through `SendMessage` (stay-alive runtimes) or through the orchestrator's next-round spawn prompt (hub runtimes). Hub full mode may require up to 4N fresh spawns; continued worker pools reduce spawns but reuse contexts; `--quick` mode collapses to a single fan-out everywhere. Other runtimes (Zcode, pi, Antigravity) follow the capability profiles in [`references/runtime-adapters.md`](references/runtime-adapters.md).
 
-## Hook Configuration
-
-The plugin registers a `PreToolUse:ExitPlanMode` hook (**Claude-only** — Codex has no `ExitPlanMode` tool) controlled by an env var:
-
-```bash
-export AVENGERS_COUNCIL_ON_PLAN=off      # No intervention (default)
-export AVENGERS_COUNCIL_ON_PLAN=prompt   # Suggest review when exiting plan mode
-export AVENGERS_COUNCIL_ON_PLAN=auto     # Require review before proceeding
-```
-
-Add to `~/.zshrc` / `~/.bashrc` to persist. On Codex, invoke the `council-plan-review` skill explicitly when needed.
-
 ## When to Use
 
 **Reach for the council** when the change carries production, security, or architectural-debt risk:
@@ -160,9 +148,8 @@ avengers-council/
 ├── agents/                       # 8 core member personas (Captain America + optional members: see references/)
 ├── skills/                       # council-plan-review, council-code-review, council-advise (replaces the retired commands/)
 ├── references/                   # Verdict rules, red lines, debate protocol, member registry, runtime-adapters
-├── hooks/                        # PreToolUse:ExitPlanMode hook (Claude-only)
-├── docs/                         # Detailed skill + hook + architecture docs
-└── tests/                        # Hook integration tests
+├── docs/                         # Detailed skill + architecture docs
+└── tests/                        # Script and contract tests
 ```
 
 ## Documentation
@@ -172,7 +159,6 @@ avengers-council/
 | [docs/skills.md](docs/skills.md) | Full skill reference with all flags |
 | [references/runtime-adapters.md](references/runtime-adapters.md) | Capability profiles per runtime (Claude Code, Codex, Zcode, pi, Antigravity) and hub-mediated debate notes |
 | [docs/examples.md](docs/examples.md) | End-to-end walkthroughs (architecture plan, security PR, quick mobile) |
-| [docs/hooks.md](docs/hooks.md) | Hook configuration deep-dive |
 | [docs/architecture.md](docs/architecture.md) | System architecture and data flow |
 | [references/debate-protocol.md](references/debate-protocol.md) | How rounds, challenges, and consensus work |
 | [references/verdict-rules.md](references/verdict-rules.md) | Severity guidelines and verdict thresholds |

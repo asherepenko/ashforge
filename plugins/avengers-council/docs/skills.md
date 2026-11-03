@@ -13,7 +13,7 @@ Comprehensive reference for Avengers Council skills: `council-plan-review` and `
 | **Purpose** | Review plans, design specs, PRDs, plan-mode plan files | Review code changes, diffs, PRs |
 | **Input** | Topic, file path, or auto-detects the runtime plans dirs (`.claude/plans/`, `.zcode/plans/`, `.pi/plans/`, `.codex/plans/`) | Diff, PR number, or files |
 | **Review Type** | Design, architecture & plan completeness | Code & implementation |
-| **Auto-invoked** | Yes (via ExitPlanMode hook) or manual | No |
+| **Auto-invoked** | No | No |
 | **Typical Use** | Before implementation / after plan mode | Before merge |
 | **Performance** | 30-60 min (full) / 5-10 min (quick) | 30-60 min (full) / 5-10 min (quick) |
 
@@ -26,7 +26,7 @@ Comprehensive reference for Avengers Council skills: `council-plan-review` and `
 - Reviewing architectural specs, PRDs, or technical proposals
 - Discussing framework choices, system design, or patterns
 - Planning major refactors or migrations
-- Exiting plan mode (auto-invoked by hook, or run with no args to auto-detect)
+- Leaving plan mode (run with no args to auto-detect the plan file)
 - Manually reviewing a generated `.claude/plans/` file
 - Need broader perspective on "should we build this?" or "is this plan complete?"
 
@@ -722,7 +722,7 @@ council-plan-review @file.md --quick --focus security
    - Use `council-code-review`
 
 3. **Just exited plan mode?**
-   - Use `council-plan-review` with no args (auto-detects plan files across the runtime plans dirs, or auto-runs via hook)
+   - Use `council-plan-review` with no args (auto-detects plan files across the runtime plans dirs)
 
 4. **Not sure?**
    - Plans/specs/design/`.claude/plans/` → `plan`

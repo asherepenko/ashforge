@@ -4,6 +4,12 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.0] - 2026-11-03
+
+### Removed
+
+- The ExitPlanMode plan-review hook, its approval script and the `AVENGERS_COUNCIL_ON_PLAN` switch. Run `council-plan-review` manually instead.
+
 ## [4.2.4] - 2026-11-03
 
 ### Changed

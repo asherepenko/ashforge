@@ -13,8 +13,6 @@ Read `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` before proceed
 
 > **Cross-runtime:** Read `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md` first — it defines the capability profiles (Claude Code, Codex, Zcode, pi, Antigravity), how to interpret the preflight's `== Runtime capability ==` section, and the substitution per axis (`Agent`/`SendMessage`/`TaskCreate`/`AskUserQuestion` on Claude Code; hub-mediated spawns elsewhere). On Claude Code the tool names below work as written.
 
-**Hook integration (Claude Code only):** this skill is also auto-suggested by the `PreToolUse:ExitPlanMode` hook when the `AVENGERS_COUNCIL_ON_PLAN` env var is set to `prompt` or `auto`. Codex has no equivalent hook — invoke the skill explicitly there.
-
 ## Pre-flight Context
 
 Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
@@ -127,20 +125,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - If `plan_mode_source` is true, include in verdict header:
     ```
     > Reviewing plan file: `[filename]`
-    > Plan mode integration: This review was triggered [manually | by ExitPlanMode hook (Claude only)]
     ```
-
-### Hook-triggered reviews while Claude remains in plan mode
-
-The auto hook supplies a `COUNCIL_PLAN_REVIEW_RESULT` JSON template in its denial context, containing the current session, absolute plan path, SHA-256 digest and pending token. Review **that exact file/content**, not the newest plan from another session. Preserve these binding fields verbatim. If the plan changed during review, retry ExitPlanMode to obtain a new binding and review the updated plan.
-
-After Phase 4 synthesis, before any follow-up question, emit a standalone assistant-text line:
-
-```text
-COUNCIL_PLAN_REVIEW_RESULT {"session":"<from hook>","plan":"<from hook>","digest":"<from hook>","token":"<from hook>","verdict":"APPROVED | APPROVED WITH CONDITIONS | NEEDS REVISION | BLOCKED","review":"<full synthesized review markdown, JSON escaped>"}
-```
-
-Choose one exact verdict value; the receipt JSON keeps these fields and enum unchanged. The `review` field carries the full verdict block (Verdict, Quality, Risk, Vote, Score) as synthesized. Do not place the receipt in a tool result, quoted user text, subagent response or code block. Retry ExitPlanMode after emitting it. The hook reads only this session's top-level assistant text and persists the review under `.artifacts/reviews/plans/council/YYYY-MM-DD/`; no Bash recorder or out-of-plan write is required while plan mode restricts writes. This hook-side save replaces Phase 5's direct write only for hook-triggered plan-mode reviews. Successful review removes the plugin denial and preserves Andrew's normal plan approval prompt; NEEDS REVISION/BLOCKED continue to deny. Ordinary manual reviews use Phase 5's normal save. Never claim a receipt alone has been persisted: the next hook invocation performs that write.
 
 ## Common Rationalizations
 

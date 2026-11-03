@@ -65,11 +65,9 @@ Read the preflight's `== Runtime capability ==` section, then resolve each axis 
 
 | Value | Meaning |
 |-------|---------|
-| `full` | `hooks/hooks.json` fires as declared (Claude Code). |
+| `full` | Plugin hook manifests fire as declared (Claude Code). |
 | `gated` | Hooks need `[features] hooks = true, plugin_hooks = true` plus per-command user trust; `PreToolUse` is deny-only (Codex). |
-| `unverified` | Zcode / Antigravity / pi hook parity not verified — skills never *depend* on hooks; the plan-review hook is Claude-only until verified otherwise. |
-
-The `if [ -f "${CLAUDE_PLUGIN_ROOT}/…" ]` wrapper on every command in `hooks/hooks.json` keeps that manifest a no-op on runtimes that auto-discover it without the variable set. Keep the wrapper on anything added there.
+| `unverified` | Zcode / Antigravity / pi hook parity not verified — skills never *depend* on hooks. |
 
 ### SANDBOX — git-operation limits
 
@@ -92,7 +90,7 @@ Advisory only — the preflight detection wins over this table. The WEB column i
 |---------|-------|-----------|----------|-----|-----|-------|
 | claude-code | `registry` | `hub` / verified `stay-alive` | `task-list` | `structured` | `available` | Stay-alive requires enabled teams and verified interactive session; `-p`/SDK always hub. A tty alone is not proof. `AVENGERS_COUNCIL_INTERACTIVE=1` is an orchestrator hint, never automatic tty detection. |
 | codex | `prompt-embed` | `hub` | `plan-tool` | `plain-text` | `available` / `none` | `[agents] enabled` defaults true; `[features] multi_agent` is a legacy hint. Exposed tools and session restrictions decide dispatch, including when config says false. Hooks gated + trust. |
-| zcode | `registry` | `hub` | `todo` | `structured` | `available` / `none` | Result-returning `Agent` spawns; `SendMessage` resume of completed agents available; `ExitPlanMode` exists, hook parity unverified. |
+| zcode | `registry` | `hub` | `todo` | `structured` | `available` / `none` | Result-returning `Agent` spawns; `SendMessage` resume of completed agents available; hook parity unverified. |
 | pi | `none`* | `hub` | `none`/extension | `plain-text` | `available` / `none` | *No native subagent tool — SPAWN=`none` unless a subagent skill/extension is installed (then `prompt-embed`). Skills format is compatible; verify spawn availability conversationally. |
 | antigravity | `unknown` | `hub` | internal | interactive | `available` / `none` | Claude Agent Skills standard; custom subagents exist — confirm spawn shape conversationally before dispatch. |
 

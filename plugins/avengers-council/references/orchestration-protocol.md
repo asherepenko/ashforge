@@ -389,7 +389,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
 
 ## Phase 5 — Save Verdict
 
-Write verdict to permanent record. Hook-triggered Claude plan-mode reviews use the plan-review skill's transcript receipt and hook-side save instead of direct writes; emit the complete result before follow-up, then retry ExitPlanMode.
+Write verdict to permanent record.
 
 1. Determine verdict slug: approved/revision/blocked
 2. Determine review type directory: plans or code (passed by calling command)

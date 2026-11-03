@@ -65,7 +65,7 @@ def test_requested_scope_block_in_spawn_template():
 
 def test_plan_skill_lists_scope_check():
     assert "Requested Scope" in PLAN
-    synth = PLAN[PLAN.index("**Verdict synthesis additions:**"):PLAN.index("### Hook-triggered")]
+    synth = PLAN[PLAN.index("**Verdict synthesis additions:**"):PLAN.index("## Common Rationalizations")]
     red = PLAN[PLAN.index("## Red Flags"):PLAN.index("## Verification")]
     ver = PLAN[PLAN.index("## Verification"):]
     for part in (synth, red, ver):
