@@ -1,0 +1,2 @@
+interface:
+  short_description: "Detect iOS codebase patterns and apply the TCA decision rule"

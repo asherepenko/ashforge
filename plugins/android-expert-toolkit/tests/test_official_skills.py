@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Tests for the vendored official Android skills."""
 
+import json
 import re
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).parent.parent
-SKILLS = PROJECT_ROOT / "skills"
+SKILLS = PROJECT_ROOT / "skills" / "android"
+TOP_SKILLS = PROJECT_ROOT / "skills"
 LOCK = PROJECT_ROOT / "android-skills.lock"
 OWN_SKILLS = {"android-conventions", "android-expert", "android-testing", "android-error-handling"}
 
@@ -16,7 +18,7 @@ def lock_values(key: str) -> list[str]:
 
 
 def test_lock_lists_exactly_the_vendored_skill_dirs():
-    on_disk = {p.name for p in SKILLS.iterdir() if p.is_dir()} - OWN_SKILLS
+    on_disk = {p.name for p in SKILLS.iterdir() if p.is_dir()}
     assert sorted(lock_values("skill")) == sorted(on_disk)
 
 
@@ -47,3 +49,23 @@ def test_third_party_notice_names_every_vendored_skill():
     assert "Apache License, Version 2.0" in notice
     for name in lock_values("skill"):
         assert f"`{name}`" in notice, name
+
+
+def test_claude_manifest_lists_android_group():
+    manifest = json.loads((PROJECT_ROOT / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
+    assert manifest["skills"] == ["./skills/", "./skills/android/"]
+
+
+def test_no_vendored_skill_at_top_level():
+    for name in lock_values("skill"):
+        assert not (TOP_SKILLS / name).exists(), f"stale vendored copy at skills/{name}"
+
+
+def test_skill_names_unique_across_groups():
+    names = []
+    for skill_md in [*TOP_SKILLS.glob("*/SKILL.md"), *SKILLS.glob("*/SKILL.md")]:
+        frontmatter = skill_md.read_text(encoding="utf-8").split("---", 2)[1]
+        match = re.search(r"^name: (.+)$", frontmatter, re.MULTILINE)
+        assert match, skill_md
+        names.append(match.group(1).strip())
+    assert len(names) == len(set(names)), sorted(n for n in set(names) if names.count(n) > 1)

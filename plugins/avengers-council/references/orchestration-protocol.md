@@ -273,7 +273,7 @@ After collecting Round 1 responses:
 
    **Barrier A:** Collect ROUND2_CHALLENGES_COMPLETE from every participating reviewer (apply timeout/quorum policy and disclose omissions). Consolidate every challenge/support by recipient, then send each reviewer its received challenges and the full consolidated debate. Ask for responses to incoming challenges and ROUND2_RESPONSES_COMPLETE; members with no received challenges must explicitly acknowledge that. Do not request final positions yet.
 
-   **Barrier B:** Collect ROUND2_RESPONSES_COMPLETE from every participating reviewer. Consolidate the responses with the challenges. Then run `score-check.sh` once per member on that member's Round-1 `DOMAIN SCORE` and own finding counts (code reviews: `Introduced here: yes` only; plus the WEAK count), as in Phase 4 step 4. Only then send a separate Round-3 trigger to every reviewer:
+   **Barrier B:** Collect ROUND2_RESPONSES_COMPLETE from every participating reviewer. Consolidate the responses with the challenges. Then run `score-check.py` once per member on that member's Round-1 `DOMAIN SCORE` and own finding counts (code reviews: `Introduced here: yes` only; plus the WEAK count), as in Phase 4 step 4. Only then send a separate Round-3 trigger to every reviewer:
 
    ```
    ROUND 3 — FINAL POSITION
@@ -284,7 +284,7 @@ After collecting Round 1 responses:
    [Code review, only for a member whose vote rests on pre-existing findings or gave no basis
    (verdict-rules.md#votes-that-rest-on-pre-existing-findings): "Your vote basis [list] is
    pre-existing / missing. Restate your vote on findings this change introduced, or APPROVE."]
-   [Only for a member whose Round-1 score was flagged by score-check.sh, or was a bare score with no basis:
+   [Only for a member whose Round-1 score was flagged by score-check.py, or was a bare score with no basis:
    "Score flag: <FLAG text>. Fix the score or the severity labels in your FINAL DOMAIN SCORE and its basis."
    (bare score: "Give the basis for your score.")]
    ```
@@ -311,7 +311,7 @@ After collecting Round 1 responses:
    Return CHALLENGES and SUPPORTS as the result of this spawn. Do not request your final verdict yet — that's Round 3.
    ```
 
-   After all Round-2 challenge batches are collected, consolidate cross-member challenges/supports by recipient. Dispatch a bounded Round-2 RESPONSE pass to every participating member with all received challenges, asking for an evidence-backed response and explicit completion (or "no received challenges"). Collect every response batch, and run `score-check.sh` once per member on that member's Round-1 `DOMAIN SCORE` and own finding counts (code reviews: `Introduced here: yes` only; plus the WEAK count), before constructing the Round-3 context block containing all challenges, supports and responses. Do not request final votes during either Round-2 pass. Dispatch Round 3 for the full roster using the same bounded scheduling, with the completed debate:
+   After all Round-2 challenge batches are collected, consolidate cross-member challenges/supports by recipient. Dispatch a bounded Round-2 RESPONSE pass to every participating member with all received challenges, asking for an evidence-backed response and explicit completion (or "no received challenges"). Collect every response batch, and run `score-check.py` once per member on that member's Round-1 `DOMAIN SCORE` and own finding counts (code reviews: `Introduced here: yes` only; plus the WEAK count), before constructing the Round-3 context block containing all challenges, supports and responses. Do not request final votes during either Round-2 pass. Dispatch Round 3 for the full roster using the same bounded scheduling, with the completed debate:
 
    ```
    ROUND 3 — FINAL POSITION (you are [agent-name]):
@@ -330,7 +330,7 @@ After collecting Round 1 responses:
 
    [Code review, only for a member whose vote rests on pre-existing findings or gave no basis:
    the same restate request as the stay-alive Round-3 trigger above.]
-   [Only for a member whose Round-1 score was flagged by score-check.sh, or was a bare score with no basis:
+   [Only for a member whose Round-1 score was flagged by score-check.py, or was a bare score with no basis:
    "Score flag: <FLAG text>. Fix the score or the severity labels in your FINAL DOMAIN SCORE and its basis."
    (bare score: "Give the basis for your score.")]
    ```
@@ -364,18 +364,18 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    - Calculate average per @references/verdict-rules.md#domain-scoring (informational — never changes the verdict)
    - A score with no basis is asked for once; if still missing, report `n/a` and leave it out of the average
 
-   **Check each score:** run `score-check.sh` once per member with their own counts. Full mode already checked the Round-1 scores and sent any FLAG back in the Round 3 trigger; this run covers the final scores. Exit 1 is a FLAG: a FLAG still present after Round 3, or any FLAG in Quick and fallback modes (no Round 3), is printed as `Score flag:` under the member in the verdict. A FLAG never changes the verdict.
+   **Check each score:** run `score-check.py` once per member with their own counts. Full mode already checked the Round-1 scores and sent any FLAG back in the Round 3 trigger; this run covers the final scores. Exit 1 is a FLAG: a FLAG still present after Round 3, or any FLAG in Quick and fallback modes (no Round 3), is printed as `Score flag:` under the member in the verdict. A FLAG never changes the verdict.
 
    ```bash
-   bash "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
    ```
 
    **Scope Check (plan reviews):** count each `❌ missing` row as one HIGH finding and each `⚠️ partial` row as one MEDIUM finding before grading. An underlying gap already raised by a member or in AC Validation counts once, at the highest severity, and its Scope Check row cites that finding.
 
-   **Grade quality and set risk:** run `review-grade.sh` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Put the script output, without its leading `Quality: `, in the **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) of the Consensus table and append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error the row reads `not scored ({reason})`. Put Risk in the **Risk** row as `<emoji> <level> — <basis>`. Both are info only (@references/verdict-rules.md#quality-and-risk).
+   **Grade quality and set risk:** run `review-grade.py` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Put the script output, without its leading `Quality: `, in the **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) of the Consensus table and append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error the row reads `not scored ({reason})`. Put Risk in the **Risk** row as `<emoji> <level> — <basis>`. Both are info only (@references/verdict-rules.md#quality-and-risk).
 
    ```bash
-   bash "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.py" --ladder severity --critical N --high N --medium N --low N
    ```
 
 5. **Apply consensus rules** per @references/verdict-rules.md (single source of truth — do not restate here)
@@ -389,7 +389,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
 
 ## Phase 5 — Save Verdict
 
-Write verdict to permanent record. Hook-triggered Claude plan-mode reviews use the plan-review skill's transcript receipt and hook-side save instead of direct writes; emit the complete result before follow-up, then retry ExitPlanMode.
+Write verdict to permanent record.
 
 1. Determine verdict slug: approved/revision/blocked
 2. Determine review type directory: plans or code (passed by calling command)
@@ -455,7 +455,7 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
    - Recommendation: 1-2 sentences
    ```
 3. Collect 2 positions + add your own = 3 votes (stay-alive: messages arrive automatically; hub: results return per spawn — `wait_agent` on each, Codex)
-4. Quick consensus per @references/verdict-rules.md Quick Mode section. Then grade, as in Phase 4 step 4: run `score-check.sh` per member (any FLAG becomes `Score flag:` in the verdict; Quick has no Round 3), run `review-grade.sh --ladder severity` on the `yes` findings (plans: all findings) for the **Quality** row, and set the **Risk** row from the tier table (@references/verdict-rules.md#quality-and-risk). Fill both rows as Phase 4 describes
+4. Quick consensus per @references/verdict-rules.md Quick Mode section. Then grade, as in Phase 4 step 4: run `score-check.py` per member (any FLAG becomes `Score flag:` in the verdict; Quick has no Round 3), run `review-grade.py --ladder severity` on the `yes` findings (plans: all findings) for the **Quality** row, and set the **Risk** row from the tier table (@references/verdict-rules.md#quality-and-risk). Fill both rows as Phase 4 describes
 5. Format abbreviated verdict (3 positions only)
 6. Save verdict (same Phase 5)
 7. Interactive follow-up (Phase 6)

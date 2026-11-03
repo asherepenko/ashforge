@@ -14,8 +14,9 @@ android-expert-toolkit/
 │   ├── android-expert/          # router
 │   ├── android-testing/         # own skill
 │   ├── android-error-handling/  # own skill
-│   ├── android-conventions/               # pattern detection + cache
-│   └── <official skills>/       # vendored, listed in android-skills.lock — do not edit
+│   ├── android-conventions/     # own skill: pattern detection + cache
+│   └── android/                 # vendored official skills, listed in android-skills.lock — do not edit
+│       └── <official skill>/    # one directory per upstream skill
 ├── references/                  # topic references, each ≤ ~300 lines
 ├── scripts/
 │   ├── sync-android-skills.sh  # vendors the official skills at a pinned commit
@@ -35,13 +36,13 @@ android-expert-toolkit/
 
 ## Vendored official skills
 
-`scripts/sync-android-skills.sh [ref]` downloads android/skills at `ref` (default: the locked commit), replaces each listed skill directory, copies upstream `LICENSE.txt` into it, and rewrites `android-skills.lock`. `android-cli` is excluded on purpose: users often install their own and a same-named copy would shadow it. To add a skill, add it to `SKILLS` in the script, run it, list it in `THIRD_PARTY_NOTICES.md`, and route it in `skills/android-expert/SKILL.md`.
+`scripts/sync-android-skills.sh [ref]` downloads android/skills at `ref` (default: the locked commit), replaces each listed skill directory under `skills/android/`, copies upstream `LICENSE.txt` into it, and rewrites `android-skills.lock`. `android-cli` is excluded on purpose: users often install their own and a same-named copy would shadow it. To add a skill, add it to `SKILLS` in the script, run it, list it in `THIRD_PARTY_NOTICES.md`, and route it in `skills/android-expert/SKILL.md`.
 
 ## Codex
 
-- Skills: `.codex-plugin/plugin.json` → `"skills": "./skills/"`. Each own skill has `agents/openai.yaml` with `interface.short_description`; vendored skills are left as upstream ships them.
+- Skills: `.codex-plugin/plugin.json` → `"skills": "./skills/"`. Codex scans that path recursively, so it also finds the vendored group in `skills/android/` with no array and no symlinks. Checked with Codex CLI 0.164.0: an isolated `CODEX_HOME`, `codex plugin marketplace add .`, `codex plugin add android-expert-toolkit@ashforge`, then `skills/list` over `codex app-server` returned all 17 skills once. A `["./skills/", "./skills/android/"]` array also loads (no duplicates), but is not needed. The Claude manifest does need the array. Each own skill has `agents/openai.yaml` with `interface.short_description`; vendored skills are left as upstream ships them.
 - Agents: Codex custom agents are TOML. After editing `agents/*.md`, run `python3 scripts/codex-agents-gen.py --write`; `tests/test_codex_packaging.py` fails on drift.
-- One hook per runtime, both `SessionStart` agent linkers: Claude runs `hooks/link-cursor-agents.sh` (links `agents/*.md` into `~/.cursor/agents/`), Codex runs `hooks/link-codex-agents.sh`.
+- One hook per runtime, both `SessionStart` agent linkers: Claude runs `hooks/link-cursor-agents.py` (links `agents/*.md` into `~/.cursor/agents/`), Codex runs `hooks/link-codex-agents.py`.
 
 ## Agents
 

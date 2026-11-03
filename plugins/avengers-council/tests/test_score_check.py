@@ -2,12 +2,12 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "scripts" / "score-check.sh"
+SCRIPT = ROOT / "scripts" / "score-check.py"
 
 
 def check(score, critical=0, high=0, medium=0, low=0, weak=0):
     return subprocess.run(
-        ["bash", str(SCRIPT), "--score", str(score), "--critical", str(critical),
+        ["python3", str(SCRIPT), "--score", str(score), "--critical", str(critical),
          "--high", str(high), "--medium", str(medium), "--low", str(low), "--weak", str(weak)],
         capture_output=True, text=True)
 
@@ -47,7 +47,7 @@ def test_bad_input_is_usage_error():
 
 
 def run_raw(*args):
-    return subprocess.run(["bash", str(SCRIPT), *args], capture_output=True, text=True)
+    return subprocess.run(["python3", str(SCRIPT), *args], capture_output=True, text=True)
 
 
 def test_high_finding_flags_seven():

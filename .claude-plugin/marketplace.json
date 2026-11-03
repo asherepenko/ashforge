@@ -10,12 +10,20 @@
     {
       "name": "android-expert-toolkit",
       "source": "./plugins/android-expert-toolkit",
-      "description": "Android knowledge for Claude Code and Codex: a topic router, adversarial testing and error-handling skills, vendored official Android skills, 80/20 pattern detection, and five standalone agents for Kotlin/Compose/Gradle"
+      "description": "Android knowledge for Claude Code and Codex: a topic router, adversarial testing and error-handling skills, vendored official Android skills, 80/20 pattern detection, and five standalone agents for Kotlin/Compose/Gradle",
+      "version": "4.3.0"
+    },
+    {
+      "name": "ios-expert-toolkit",
+      "source": "./plugins/ios-expert-toolkit",
+      "description": "iOS knowledge for Claude Code and Codex: a topic router, TCA and SwiftUI skills, pattern detection, vendored community and Xcode skills, the Xcode MCP, and five agents for Swift/SwiftUI/Xcode",
+      "version": "1.0.0"
     },
     {
       "name": "avengers-council",
       "source": "./plugins/avengers-council",
-      "description": "Engineering advisory board (8 core members + Captain America orchestrator) for reviewing plans, code, and architecture through structured 3-round debate with domain scoring and security veto"
+      "description": "Engineering advisory board (8 core members + Captain America orchestrator) for reviewing plans, code, and architecture through structured 3-round debate with domain scoring and security veto",
+      "version": "5.0.0"
     }
   ]
 }

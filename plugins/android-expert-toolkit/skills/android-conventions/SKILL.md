@@ -16,7 +16,7 @@ Run the pre-flight script — all probes parallelize and emit labeled `== sectio
 
 ```bash
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
-bash "$PLUGIN_ROOT/skills/android-conventions/scripts/preflight.sh"
+python3 "$PLUGIN_ROOT/skills/android-conventions/scripts/preflight.py"
 ```
 
 The script collects: project hash (shasum over settings.gradle.kts + build.gradle.kts), cached patterns, Kotlin file count, DI fingerprint, state fingerprint, and testing fingerprint.

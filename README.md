@@ -9,9 +9,10 @@ A personal plugin marketplace by [Andrew Sherepenko](https://github.com/asherepe
 | Plugin | What It Does |
 | --- | --- |
 | [`android-expert-toolkit`](./plugins/android-expert-toolkit) | Android knowledge: router skill, adversarial testing and error-handling skills, vendored official Android skills, 80/20 pattern detection, 5 standalone agents (architect, developer, compose, gradle, testing) |
+| [`ios-expert-toolkit`](./plugins/ios-expert-toolkit) | iOS knowledge: router skill, TCA and SwiftUI skills, pattern detection, vendored community and Xcode 27.2 skills, the Xcode MCP, 5 standalone agents (architect, developer, SwiftUI, build, testing) |
 | [`avengers-council`](./plugins/avengers-council) | 8-member engineering advisory board (+ Captain America orchestrator) for plan and code review through structured 3-round debate with domain scoring and security veto |
 
-Both plugins ship dual manifests: `.claude-plugin/plugin.json` for Claude Code, `.codex-plugin/plugin.json` for Codex. Skills are the only entry point — slash commands were retired in 3.0.0. android-expert-toolkit 4.0.0 removed its multi-agent pipeline; its agents now work standalone from a plain brief.
+All three plugins ship dual manifests: `.claude-plugin/plugin.json` for Claude Code, `.codex-plugin/plugin.json` for Codex. Skills are the only entry point — slash commands were retired in 3.0.0. android-expert-toolkit 4.0.0 removed its multi-agent pipeline; its agents now work standalone from a plain brief.
 
 ## Runtime support
 
@@ -61,7 +62,7 @@ enabled = true          # current Codex default; false disables subagents
 
 Older Codex releases use `[features] multi_agent = true` instead. The plugins check the tools exposed by the running session before choosing subagent dispatch; configuration files are capability hints. Worker batches respect the session's available slots and reuse agents when a close tool is unavailable.
 
-On first run, Codex will prompt to trust each plugin hook command — accept to record the `trusted_hash` entries. The avengers-council plugin does not ship Codex-side hooks (the `ExitPlanMode` hook is Claude-only), so only android-expert-toolkit's hooks need trust.
+On first run, Codex will prompt to trust each plugin hook command — accept to record the `trusted_hash` entries. The avengers-council plugin ships no hooks, so only android-expert-toolkit's hooks need trust.
 
 For a live Claude council debate, enable `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` and use an interactive session. Other Claude sessions use reports passed through the orchestrator between rounds. Android stages use reports and validated handoff files in either mode.
 

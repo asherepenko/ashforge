@@ -15,12 +15,11 @@ The slash-command form (`/avengers-council:plan-review`, `/avengers-council:code
 .claude-plugin/plugin.json — Claude Code manifest
 .codex-plugin/plugin.json  — Codex CLI / Codex App manifest (points at skills/)
 agents/                    — 8 core member personas (Captain America: references/captain-america-orchestrator.md; optional members: references/member-registry.md)
-skills/                    — council-plan-review, council-code-review (each with SKILL.md + scripts/preflight.sh); council-advise (SKILL.md only, reuses the plan-review preflight)
+skills/                    — council-plan-review, council-code-review (each with SKILL.md + scripts/preflight.py); council-advise (SKILL.md only, reuses the plan-review preflight)
 references/                — Protocols, templates, shared docs (incl. runtime-adapters.md)
-hooks/                     — PreToolUse:ExitPlanMode hook (Claude-only — no Codex equivalent)
 docs/                      — Detailed documentation
-scripts/                   — review-grade.sh and change-size.sh (vendored from dotfiles, drift test keeps them in sync); score-check.sh
-tests/                     — Hook integration and script tests
+scripts/                   — review-grade.py, change-size.py and score-check.py (stdlib Python, run as `python3 scripts/<name>.py`)
+tests/                     — Script and contract tests
 ```
 
 ## Sources of Truth
@@ -45,7 +44,6 @@ The council was built around Claude Code's agent-team primitives (parallel `Agen
 - `SendMessage` (per-teammate DMs, lead addressed as `team-lead`) → hub-mediated context propagation on hub runtimes (Captain consolidates each round's verdicts and dispatches bounded batches or continued workers for the next round with the consolidated context inlined)
 - `TaskCreate` / `TaskUpdate` → `update_plan` (Codex) or `TodoWrite` (Zcode)
 - `AskUserQuestion` → plain prompt with numbered options + free-form reply parsing on plain-text runtimes
-- `PreToolUse:ExitPlanMode` hook → Claude-only until another runtime's hook parity is verified
 
 All rounds respect available worker capacity. Hub full-mode cost: up to 4N fresh spawns, or a continued bounded pool with reduced context isolation disclosed. `--quick` mode collapses to a single fan-out everywhere. The orchestration protocol's Mode Selection section may autonomously downgrade hub runs to Quick Mode when its three triggers hold (capability + proportionality + user unavailable), with mandatory disclosure in the verdict.
 
@@ -54,8 +52,8 @@ Exposed tools are authoritative. Modern Codex `[agents] enabled` defaults true; 
 ## Key Conventions
 
 - Skills use explicit `Read @references/...` — not bare `@references/` lines.
-- Agents include a domain score (1-10) with a `basis:` in every assessment. The score is informational: it never changes the verdict. `scripts/score-check.sh` flags scores that contradict the member's own findings.
-- Every verdict shows **Quality** (A-F, from `scripts/review-grade.sh`) and **Risk** (low | medium | high). Both are info rows; votes and findings decide the verdict.
+- Agents include a domain score (1-10) with a `basis:` in every assessment. The score is informational: it never changes the verdict. `scripts/score-check.py` flags scores that contradict the member's own findings.
+- Every verdict shows **Quality** (A-F, from `scripts/review-grade.py`) and **Risk** (low | medium | high). Both are info rows; votes and findings decide the verdict.
 - APPROVED WITH CONDITIONS means no CRITICAL and every HIGH is a condition. Merge only after every condition is fixed; the post-verdict menu offers "Override — record why" if the user merges anyway.
 - Optional members auto-join based on topic matching. Add new ones via `member-registry.md`. The roster decision happens before any spawn — platform-agnostic.
 - Black Widow retains VETO power on unmitigated CRITICAL security issues — platform-agnostic.
@@ -73,17 +71,9 @@ These fields apply on Claude Code only — they configure Claude's subagent regi
 
 Persona body content (specialty lens, planning/code-review checklists, debate behavior, character) is platform-agnostic and applies on both runtimes. The orchestrator skill reads the persona at runtime and embeds the body text into the Codex `spawn_agent` prompt; the frontmatter is discarded.
 
-## Hooks (Claude-only)
-
-`hooks/hooks.json` registers `PreToolUse:ExitPlanMode` → `hooks/council-plan-hook.sh`. The hook fires when the user exits Claude plan mode and offers a council review based on the `AVENGERS_COUNCIL_ON_PLAN` env var (off | prompt | auto).
-
-`.codex-plugin/plugin.json` declares `hooks/hooks-codex.json`, which is deliberately empty (`{"hooks": {}}`) — Codex has no `ExitPlanMode` tool to hook into. On Codex, users invoke the `council-plan-review` skill explicitly when they want a council review.
-
-Codex nevertheless auto-discovers the legacy `hooks/hooks.json` from the plugin cache, where `${CLAUDE_PLUGIN_ROOT}` expands to an empty string. Every command in that manifest is therefore wrapped in `if [ -f "${CLAUDE_PLUGIN_ROOT}/…" ]; then … fi` so it no-ops there instead of running `bash "/hooks/…"`. Keep the wrapper on anything added to `hooks/hooks.json`, and don't reach for Codex's `${PLUGIN_ROOT}` in it — a `PLUGIN_ROOT` set in the environment would resolve the wrong plugin root on Claude. `tests/test_avengers_codex_packaging.py` enforces both.
-
 ## Tests
 
-Python tests for the `PreToolUse:ExitPlanMode` hook under `tests/`. Run:
+Python tests live under `tests/`. Run:
 
 ```bash
 pytest tests/
@@ -96,4 +86,4 @@ All collected tests must pass.
 Semantic versioning in `.claude-plugin/plugin.json` (mirrored in `.codex-plugin/plugin.json`):
 - **Major**: breaking changes to skill/agent contracts, removed primitives, removed entry points
 - **Minor**: new optional members, new flags, new skills
-- **Patch**: docs, references, hook fixes, agent prompt tuning
+- **Patch**: docs, references, script fixes, agent prompt tuning

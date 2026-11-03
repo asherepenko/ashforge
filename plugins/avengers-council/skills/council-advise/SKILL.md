@@ -40,7 +40,7 @@ if [ -z "$PLUGIN_ROOT" ]; then
   echo "ERROR: cannot locate the avengers-council plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, ZCODE_PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
   exit 1
 fi
-bash "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.sh"
+python3 "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.py"
 ```
 
 Ignore the plan, PRD and review sections. Read the `== Runtime capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`: discover the actual spawn tools first. When no permitted spawn tool is exposed, read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md`, warn the user, and write each member's view yourself from their persona in `agents/<name>.md`, labeled as single-orchestrator views.

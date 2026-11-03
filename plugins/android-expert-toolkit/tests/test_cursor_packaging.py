@@ -3,23 +3,24 @@
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).parent.parent
-LINK_SCRIPT = PROJECT_ROOT / "hooks" / "link-cursor-agents.sh"
+LINK_SCRIPT = PROJECT_ROOT / "hooks" / "link-cursor-agents.py"
 AGENTS = sorted(p.name for p in (PROJECT_ROOT / "agents").glob("*.md"))
 
 
 def run_link(home: Path, plugin_root: Path = PROJECT_ROOT) -> subprocess.CompletedProcess:
     env = {"PATH": "/usr/bin:/bin", "HOME": str(home), "CLAUDE_PLUGIN_ROOT": str(plugin_root)}
-    return subprocess.run(["bash", str(LINK_SCRIPT)], env=env, capture_output=True, text=True, check=False)
+    return subprocess.run([sys.executable, str(LINK_SCRIPT)], env=env, capture_output=True, text=True, check=False)
 
 
 def test_claude_registers_only_the_cursor_link_hook():
     hooks = json.loads((PROJECT_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8"))["hooks"]
     assert list(hooks) == ["SessionStart"]
-    assert "link-cursor-agents.sh" in hooks["SessionStart"][0]["hooks"][0]["command"]
+    assert "link-cursor-agents.py" in hooks["SessionStart"][0]["hooks"][0]["command"]
 
 
 def test_no_cursor_home_means_no_op(tmp_path):

@@ -1,0 +1,25 @@
+{
+  "skill_name": "swiftui-pro",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review ContentView.swift for SwiftUI best practices. It uses foregroundColor, NavigationView and a custom ForEach(items.indices).",
+      "expected_output": "Findings grouped by file with line, rule and before/after code, plus a prioritized summary.",
+      "files": [],
+      "expectations": [
+        "Loads swiftui-specialist soft-deprecated-apis.md or soft-deprecation.md to check the deprecated APIs",
+        "Loads swiftui-specialist foreach.md for the index-based ForEach",
+        "Output lists file, line, rule and a before/after snippet per issue, and ends with a summary"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review the strings in this SwiftUI view for localization problems.",
+      "expected_output": "Localization findings sourced from the specialist's localization reference.",
+      "files": [],
+      "expectations": [
+        "Loads swiftui-specialist localization.md rather than a swiftui-pro localization file"
+      ]
+    }
+  ]
+}

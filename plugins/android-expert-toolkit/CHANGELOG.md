@@ -4,6 +4,19 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.3.0] - 2026-11-03
+
+### Changed
+
+- The Codex and Cursor link hooks and the `android-conventions` preflight are Python now (`hooks/link-codex-agents.py`, `hooks/link-cursor-agents.py`, `skills/android-conventions/scripts/preflight.py`). Same behavior; needs `python3` on PATH. `sync-android-skills.sh` stays shell.
+- Official Android skills moved from the top of `skills/` into `skills/android/`. Their names, content and `android-skills.lock` entries are unchanged, and `scripts/sync-android-skills.sh` now writes to `skills/android/`.
+- Claude manifest lists skill groups: `"skills": ["./skills/", "./skills/android/"]`, so both the own skills and the vendored group load.
+- Codex manifest is unchanged: `"skills": "./skills/"` scans nested directories, so `skills/android/` loads with no array.
+
+### Added
+
+- Tests that pin the layout: no stale vendored copy at the top level of `skills/`, skill names unique across groups, and the Codex skills shape (nested groups found by the plain `skills` string).
+
 ## [4.2.0] - 2026-10-30
 
 ### Added

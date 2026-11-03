@@ -37,7 +37,7 @@ if [ -z "$PLUGIN_ROOT" ]; then
   echo "ERROR: cannot locate the avengers-council plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, ZCODE_PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
   exit 1
 fi
-bash "$PLUGIN_ROOT/skills/council-code-review/scripts/preflight.sh"
+python3 "$PLUGIN_ROOT/skills/council-code-review/scripts/preflight.py"
 ```
 
 The script collects: current branch, working tree status, diff stat vs the merge base, commits ahead of base, and project markers.
@@ -132,13 +132,13 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
   - Group findings by severity (CRITICAL first)
   - Move every `Introduced here: pre-existing` finding to the verdict's Pre-existing section. Exclude these findings from the consensus rules, the unmitigated-CRITICAL rules, and Black Widow's VETO
   - Collect each member's `CONCERN FOR THE USER` from Round 3. Per `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md` Phase 4, a concern that meets a severity definition or a red line is a finding: move it into the findings before grading. List only a residual trade-off under Concerns for the User (advisory, never a condition, not counted in Quality)
-  - Run `score-check.sh` once per member score with that member's own counts (`yes` findings only), per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#checking-the-score`. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. Exit 1 is a FLAG: an unresolved one (or any FLAG in Quick/fallback modes) is printed as `Score flag:` under the member. A FLAG never changes the verdict:
+  - Run `score-check.py` once per member score with that member's own counts (`yes` findings only), per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#checking-the-score`. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. Exit 1 is a FLAG: an unresolved one (or any FLAG in Quick/fallback modes) is printed as `Score flag:` under the member. A FLAG never changes the verdict:
     ```bash
-    bash "$PLUGIN_ROOT/scripts/score-check.sh" --score X --critical N --high N --medium N --low N --weak N
+    python3 "$PLUGIN_ROOT/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
     ```
   - Grade Quality: count the `yes` findings by severity (pre-existing excluded) and run the script. Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored), then append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`). On a script error the row reads `not scored ({reason})`. Never write the letter by hand:
     ```bash
-    bash "$PLUGIN_ROOT/scripts/review-grade.sh" --ladder severity --critical N --high N --medium N --low N
+    python3 "$PLUGIN_ROOT/scripts/review-grade.py" --ladder severity --critical N --high N --medium N --low N
     ```
   - Set Risk from the tier table in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`, applied to the diff's touched paths. Highest tier wins. Put `<emoji> <level> — <basis>` in the **Risk** row (🟢 low, 🟡 medium, 🔴 high) and name the paths that set it
   - Quality, Risk and the average domain score are informational. The verdict comes from the consensus rules
@@ -173,7 +173,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/references/orchestration-protocol.md#phase-1--asse
 - Quick Mode ran without `--quick` and without the three-trigger cost-controlled disclosure — a silent downgrade is a hidden fidelity loss
 - A pre-existing finding counted toward NEEDS REVISION, BLOCKED, an unmitigated-CRITICAL rule, or Black Widow's VETO
 - `REVIEW.md` read from the change under review instead of the base ref
-- Writing the Quality letter by hand instead of running `review-grade.sh`
+- Writing the Quality letter by hand instead of running `review-grade.py`
 - A domain score without a `basis:`, or a score treated as able to override or re-open the verdict
 
 ## Verification
@@ -185,9 +185,9 @@ After code review completes, confirm:
 - [ ] Every CONCERNS or REJECT vote states a vote basis; every adjusted vote is listed under `Vote adjustments` per verdict-rules.md#votes-that-rest-on-pre-existing-findings
 - [ ] CRITICAL/HIGH findings include suggested fixes
 - [ ] Rubric grading applied (5 criteria, STRONG/ADEQUATE/WEAK); WEAK criteria reported as slugs
-- [ ] **Quality** row is the `review-grade.sh` output on the `yes` finding counts (or `not scored ({reason})`)
+- [ ] **Quality** row is the `review-grade.py` output on the `yes` finding counts (or `not scored ({reason})`)
 - [ ] **Risk** row starts with the tier emoji (🟢/🟡/🔴), names the tier and the touched paths that set it
-- [ ] Every domain score has a `basis:` and passed `score-check.sh`, or carries a `Score flag:`
+- [ ] Every domain score has a `basis:` and passed `score-check.py`, or carries a `Score flag:`
 - [ ] Standards compliance checked (naming, style, testing, commit format)
 - [ ] Round 2 challenges exchanged between members (stay-alive: via SendMessage; hub: via re-spawn with consolidated context)
 - [ ] Mode selection followed the Mode Selection & Cost-Controlled Degradation section; any autonomous downgrade is disclosed in the verdict header

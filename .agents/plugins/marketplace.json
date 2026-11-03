@@ -18,6 +18,19 @@
       "category": "Coding"
     },
     {
+      "name": "ios-expert-toolkit",
+      "description": "iOS knowledge for Claude Code and Codex: a topic router, TCA and SwiftUI skills, pattern detection, vendored community and Xcode skills, the Xcode MCP, and five agents for Swift/SwiftUI/Xcode",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ios-expert-toolkit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Coding"
+    },
+    {
       "name": "avengers-council",
       "description": "Engineering advisory board (8 core members + Captain America orchestrator) for reviewing plans, code, and architecture through structured 3-round debate with domain scoring and security veto",
       "source": {
