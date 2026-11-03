@@ -35,7 +35,7 @@ NEW_SHA = {name: f"{i}" * 40 for i, name in zip("abc", COMMUNITY)}
 
 TOOLS = (
     "bash env seq sleep kill tar sed find cp mv ln rm mkdir mktemp cmp diff grep head tail cut sort cat "
-    "dirname basename tr awk ls date wc xargs uniq tee readlink chmod"
+    "dirname basename tr awk ls date wc xargs uniq tee readlink chmod gzip"
 ).split()
 
 CURL = """#!/bin/bash
