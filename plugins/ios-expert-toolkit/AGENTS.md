@@ -20,7 +20,7 @@ ios-expert-toolkit/
 │   ├── tca/                     # own skill
 │   ├── swiftui-pro/             # fork of twostraws/SwiftUI-Agent-Skill — see ios-skills.lock
 │   ├── community/               # vendored: swift-concurrency, swift-testing-expert, swiftdata-pro — do not edit
-│   └── xcode/                   # exported from Xcode, 11 skills listed in ios-skills.lock — do not edit
+│   └── xcode/                   # exported from Xcode, 9 skills listed in ios-skills.lock — do not edit
 ├── references/                  # topic references, each ≤ ~300 lines
 ├── scripts/
 │   └── sync-ios-skills.sh       # vendors community and Xcode skills (Phase 2.2)

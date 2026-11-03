@@ -6,7 +6,7 @@ iOS knowledge for Claude Code and Codex: a topic router, TCA and SwiftUI skills,
 
 - **Own skills**: `ios-expert` (router), `ios-conventions` (pattern detection), `ios-testing`, `ios-error-handling`, `tca`, and `swiftui-pro` (a fork of [twostraws/SwiftUI-Agent-Skill](https://github.com/twostraws/SwiftUI-Agent-Skill)).
 - **Community skills** (MIT, pinned commits): `swift-concurrency`, `swift-testing-expert`, `swiftdata-pro`.
-- **Xcode skills**: 11 skills exported from Xcode (© Apple). Their content depends on the Xcode build they were exported from.
+- **Xcode skills**: 9 skills exported from Xcode (© Apple). Their content depends on the Xcode build they were exported from.
 - **Xcode MCP**: `xcrun mcpbridge`, declared in `.mcp.json`.
 - **Agents**: `ios-architect`, `ios-developer`, `swiftui-expert`, `ios-testing-specialist`, `xcode-build-engineer`.
 
