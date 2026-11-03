@@ -34,7 +34,7 @@ OLD_SHA = {name: f"{i}" * 40 for i, name in zip("123", COMMUNITY)}
 NEW_SHA = {name: f"{i}" * 40 for i, name in zip("abc", COMMUNITY)}
 
 TOOLS = (
-    "bash env seq sleep kill tar sed find cp mv rm mkdir mktemp cmp diff grep head tail cut sort cat "
+    "bash env seq sleep kill tar sed find cp mv ln rm mkdir mktemp cmp diff grep head tail cut sort cat "
     "dirname basename tr awk ls date wc xargs uniq tee readlink chmod"
 ).split()
 
@@ -87,6 +87,8 @@ echo "Build version $STUB_XCODE_BUILD"
 #                        signals to the parent when MV_SIGNAL_LOCK=N)
 #   MV_FAIL_AFTER_N=n    call n does the real move, then exits 1
 #   MV_SIGNAL_ON_N=n     call n sends SIGINT to the parent, then moves for real
+#   MV_LINK_AFTER_N=n    after call n moves for real, $MV_LINK_DIR is moved to
+#                        $MV_LINK_ASIDE and replaced by a symlink to $MV_LINK_TO
 MV = """#!/bin/bash
 for a in "$@"; do last="$a"; done
 n=$(( $(cat "$STUB_LOG/mv.count" 2>/dev/null || echo 0) + 1 ))
@@ -100,6 +102,9 @@ case "$last" in
 esac
 [ "$n" = "$MV_SIGNAL_ON_N" ] && { kill -INT "$PPID"; sleep 0.2; }
 "$REAL_MV" "$@" || exit $?
+if [ "$n" = "$MV_LINK_AFTER_N" ]; then
+  "$REAL_MV" "$MV_LINK_DIR" "$MV_LINK_ASIDE" && ln -s "$MV_LINK_TO" "$MV_LINK_DIR"
+fi
 [ "$n" = "$MV_FAIL_AFTER_N" ] && exit 1
 exit 0
 """
@@ -711,3 +716,35 @@ def test_symlinked_skill_dir_to_outside_directory_is_refused(env):
     proc = env.run("--community-ref", "main")
     assert_failed_unchanged(env, before, proc)
     assert snapshot(outside) == out_before
+
+
+def test_parent_replaced_by_symlink_mid_run_stops_the_next_swap(env):
+    # After the first skill is swapped in, skills/community is replaced by a
+    # symlink to an outside directory. The next swap must refuse and nothing may
+    # be written outside the plugin, not by the swap and not by the rollback.
+    outside = _outside_dir(env, list(COMMUNITY))
+    aside = env.tmp / "aside"
+    community = env.plugin / "skills" / "community"
+    _community_update(env)
+    before, out_before = snapshot(env.plugin), snapshot(outside)
+    proc = env.run("--community-ref", "main", mv_env={
+        "MV_LINK_AFTER_N": "2",
+        "MV_LINK_DIR": str(community),
+        "MV_LINK_ASIDE": str(aside),
+        "MV_LINK_TO": str(outside),
+    })
+    assert proc.returncode == 1, proc.stderr
+    assert snapshot(outside) == out_before
+    assert "symlink" in proc.stderr
+    assert community.is_symlink()
+    # The rollback refuses to follow the link, so the one swap that landed before
+    # the link appeared stays in the moved-aside directory. Put it back and check
+    # that everything else is exactly as before the run and the lock is untouched.
+    community.unlink()
+    shutil.move(str(aside), str(community))
+    after = snapshot(env.plugin)
+    changed = {k for k in set(before) | set(after) if before.get(k) != after.get(k)}
+    first = list(COMMUNITY)[0]
+    assert changed and all(k.startswith(f"skills/community/{first}") for k in changed), changed
+    assert after["ios-skills.lock"] == before["ios-skills.lock"]
+    assert not list(env.tmp.glob("tmp.*")), "temp dir leaked"

@@ -78,6 +78,7 @@ rollback() {
   for ((i = ${#swap_dests[@]} - 1; i >= 0; i--)); do
     d="${swap_dests[$i]}"
     b="${swap_backups[$i]}"
+    guard_dest "$d" 2>/dev/null || { echo "sync-ios-skills: not rolling back '$d': its path is no longer safe" >&2; continue; }
     if [ -n "$b" ]; then
       if [ -e "$b" ] || [ -L "$b" ]; then
         rm -rf "$d"
@@ -218,25 +219,37 @@ fi
 # is a symlink or resolves outside the plugin. A skill dir that is a symlink to
 # a directory is refused too; a dangling one is replaced as a link, never followed.
 plugin_phys="$(cd "$PLUGIN_ROOT" && pwd -P)" || die "cannot resolve plugin root '$PLUGIN_ROOT'"
-check_parent() { # dir
+check_parent() { # dir; prints the reason and returns 1 when unsafe
   [ -e "$1" ] || [ -L "$1" ] || return 0
   local phys
-  [ ! -L "$1" ] || die "refusing to write: '$1' is a symlink"
-  phys="$(cd "$1" && pwd -P)" || die "cannot resolve '$1'"
+  if [ -L "$1" ]; then echo "sync-ios-skills: refusing to write: '$1' is a symlink" >&2; return 1; fi
+  phys="$(cd "$1" && pwd -P)" || { echo "sync-ios-skills: cannot resolve '$1'" >&2; return 1; }
   case "$phys" in
     "$plugin_phys"/*) ;;
-    *) die "refusing to write: '$1' resolves outside the plugin ($phys)" ;;
+    *) echo "sync-ios-skills: refusing to write: '$1' resolves outside the plugin ($phys)" >&2; return 1 ;;
   esac
 }
 check_skill_dest() { # dir
-  if [ -L "$1" ] && [ -d "$1" ]; then die "refusing to replace '$1': it is a symlink to a directory"; fi
+  if [ -L "$1" ] && [ -d "$1" ]; then
+    echo "sync-ios-skills: refusing to replace '$1': it is a symlink to a directory" >&2
+    return 1
+  fi
 }
-check_parent "$PLUGIN_ROOT/skills"
-check_parent "$COMMUNITY_DIR"
-for entry in "${COMMUNITY[@]}"; do check_skill_dest "$COMMUNITY_DIR/${entry%%|*}"; done
+# Every directory from the plugin root down to dest's parent must be a real
+# directory inside the plugin, and dest must not be a symlink to a directory.
+# Run again right before each swap, because the tree can change after staging.
+guard_dest() { # dest
+  local d
+  d="$(dirname "$1")"
+  while [ "$d" != "$PLUGIN_ROOT" ] && [ "$d" != / ] && [ "$d" != . ]; do
+    check_parent "$d" || return 1
+    d="$(dirname "$d")"
+  done
+  check_skill_dest "$1"
+}
+for entry in "${COMMUNITY[@]}"; do guard_dest "$COMMUNITY_DIR/${entry%%|*}" || exit 1; done
 if [ "$update_xcode" -eq 1 ]; then
-  check_parent "$XCODE_DIR"
-  for name in "${XCODE_SKILLS[@]}"; do check_skill_dest "$XCODE_DIR/$name"; done
+  for name in "${XCODE_SKILLS[@]}"; do guard_dest "$XCODE_DIR/$name" || exit 1; done
 fi
 
 # --- Xcode build bookkeeping -------------------------------------------------
@@ -315,6 +328,7 @@ for pair in "${swaps[@]}"; do
   staged="${pair%%|*}"
   dest="${pair#*|}"
   if [ -d "$dest" ] && diff -r "$staged" "$dest" >/dev/null 2>&1; then continue; fi
+  guard_dest "$dest" || exit 1
   mkdir -p "$(dirname "$dest")"
   backup=""
   if [ -e "$dest" ] || [ -L "$dest" ]; then
