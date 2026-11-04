@@ -4,6 +4,14 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.6] - 2026-11-05
+
+### Added
+
+- `council-code-review --pr` checks failing CI checks and open review threads first, and asks whether to fix them before the review.
+- A re-review adds a **Since last run** table under the Consensus table: Quality, average score and each member whose score moved, with Last run, Now and Trend (📈 better · 📉 worse · ➖ same) columns, then a line with findings fixed, still open and new.
+- On a re-review, requests outside the original scope are follow-ups, not conditions.
+
 ## [5.0.5] - 2026-11-04
 
 ### Fixed

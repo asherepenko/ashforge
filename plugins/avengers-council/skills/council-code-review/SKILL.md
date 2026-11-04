@@ -48,6 +48,7 @@ Depending on the argument:
 1. Run `gh pr view <number>` to get PR metadata, including `baseRefName`
 2. Run `gh pr diff <number>` to get the diff
 3. Read the PR description for context
+4. **Clean up first:** run `gh pr checks <number>` and list unresolved review threads. If any check fails or a thread is open, show them and ask: fix them first (recommended), or review anyway. The council should not spend a run on problems already known.
 
 **`--diff` (default):**
 1. Run `git diff` for unstaged changes

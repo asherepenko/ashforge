@@ -104,7 +104,9 @@ Second question: "Would you like to update the plan based on findings?"
 2. Tell the user to make their changes
 3. Wait for user confirmation that changes are ready
 4. Re-invoke the same council skill with the original arguments
-5. The new review starts fresh (new debate)
+5. The new review starts fresh (new debate), with two additions:
+   - **Scope:** members judge the changes since the last run and the original scope. A request for new features, refactors or polish outside that scope is a follow-up, never a condition. A real defect the last run missed still counts at its severity.
+   - **Since last run:** read the previous verdict (the path saved in Phase 5). Add the **Since last run** table and its `Findings:` line under the Consensus table, in the format [verdict-template](../assets/verdict-template.md) sets: Quality, average score and each member whose score moved, as Last run, Now and Trend (📈 better · 📉 worse · ➖ same); then fixed, still open and new findings. Only a re-review adds them.
 
 ### "Apply suggested fixes" (council-code-review only)
 1. Collect all findings that include both a `file:line` reference and a suggested fix

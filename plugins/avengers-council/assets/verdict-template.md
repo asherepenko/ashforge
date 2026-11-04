@@ -50,6 +50,18 @@ Research: <member> (<status>), … | skipped — no web tools
 | **Vote** | [N approve · N concerns · N reject (N voters)] |
 | **Score** | [X.X/10 avg] |
 
+Since last run (re-review only — omit otherwise). Member rows list only members whose score moved:
+
+| | Last run | Now | Trend |
+|---|---|---|---|
+| Quality | [🟠 D] | [🟡 C] | [📈] |
+| Score | [6.1/10 avg] | [7.4/10 avg] | [📈] |
+| [Hulk] | [6] | [8] | [📈] |
+
+Trend means better or worse, not bigger or smaller: 📈 better · 📉 worse · ➖ same.
+
+Findings: [N fixed · N still open · N new]
+
 Vote adjustments (code reviews only): [none | one line per adjusted vote, e.g. `Thor: REJECT → APPROVE — basis thor#2, thor#4 are pre-existing`; see verdict-rules.md#votes-that-rest-on-pre-existing-findings]
 
 Headline emoji: ✅ APPROVED and APPROVED WITH CONDITIONS, ⚠️ NEEDS REVISION, ⛔ BLOCKED. Quality emoji: 🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored. Quality and Risk are info rows computed after the debate; neither changes the verdict. See @references/verdict-rules.md#quality-and-risk
