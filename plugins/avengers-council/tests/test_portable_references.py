@@ -53,6 +53,11 @@ def test_no_plugin_root_variable_anywhere():
     assert not hits, "use a skill-relative path or the root preflight prints:\n" + "\n".join(hits)
 
 
+def test_negative_control_root_vars_detected():
+    for var in ("${CLAUDE_PLUGIN_ROOT}", "$PLUGIN_ROOT", "ZCODE_PLUGIN_ROOT"):
+        assert ROOT_VARS.search(f"x {var}/scripts y"), var
+
+
 def _broken_links(path):
     broken = []
     for n, line in _prose_lines(path):

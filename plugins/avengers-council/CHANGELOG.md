@@ -4,6 +4,12 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.3] - 2026-11-04
+
+### Added
+
+- `tests/test_portable_references.py` has a negative control: it proves the plugin-root guard regex catches `${CLAUDE_PLUGIN_ROOT}`, `$PLUGIN_ROOT` and `ZCODE_PLUGIN_ROOT`, so a broken regex can no longer pass the guard silently.
+
 ## [5.0.2] - 2026-11-04
 
 ### Fixed
