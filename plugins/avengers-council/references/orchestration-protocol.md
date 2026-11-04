@@ -124,7 +124,7 @@ Agent({
   prompt: "You are [agent-name] on the Avengers Council reviewing: [topic summary]
 
 REVIEW CONTEXT:
-[full context OR 'Read the review context from .artifacts/tmp/council-context.md']
+[full context OR 'Read the review context from {context path}']
 
 STANDARDS IN EFFECT:
 [applicable standards list]
@@ -219,7 +219,7 @@ Follow the debate protocol from your agent definition for all rounds.",
 
 One two-tier rule governs how review context reaches agents:
 
-- **> 200 lines** (large diffs, multi-file PRs): write the full context to `.artifacts/tmp/council-context.md` and reference that path in the spawn prompt instead of embedding it in each prompt.
+- **> 200 lines** (large diffs, multi-file PRs): write the full context to `.artifacts/tmp/{YYYY-MM-DD-HHMMSS}-council-context-{slug}.md` (local time from one `date '+%Y-%m-%d-%H%M%S'` read; `{slug}` is a short kebab-case name for the review topic) and pass that exact path in every spawn prompt of the run, instead of embedding the context in each prompt. Never reuse a fixed name: two council runs at once, in different sessions or worktrees, would overwrite each other's context.
 - **> 500 lines** (large PR, lengthy plan): additionally summarize changes by file before distributing, and include the full-content path so agents can read sections on demand.
 
 Never paste entire large diffs into agent prompts — this wastes context and reduces analysis quality.
