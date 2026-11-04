@@ -4,6 +4,13 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.5] - 2026-11-04
+
+### Fixed
+
+- Round tables and the advise answer print as rendered markdown, never inside a code fence. Before every member is in, chat shows only the count line, never a partial table.
+- Symbols match one set: Scope Check uses 🟡 partial and 📋 deferred; findings in references and examples use their severity emoji (🟠 HIGH, 🟡 MEDIUM, 🟢 LOW) in place of ⚠️. The ⚠️ NEEDS REVISION headline stays.
+
 ## [5.0.4] - 2026-11-04
 
 ### Fixed

@@ -73,7 +73,7 @@ Impact: 1000 users = 1000 DB queries instead of 1
 
 **Recommend contract testing:**
 ```
-⚠️ MEDIUM: No contract tests between frontend and backend
+🟡 MEDIUM: No contract tests between frontend and backend
 Recommendation: Add Pact or OpenAPI schema validation
 Prevents: Breaking changes shipping to production
 ```

@@ -4,6 +4,12 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.3.2] - 2026-11-04
+
+### Fixed
+
+- The android-conventions pattern report prints as rendered markdown, never inside a code fence.
+
 ## [4.3.1] - 2026-11-04
 
 ### Added

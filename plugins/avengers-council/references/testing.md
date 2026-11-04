@@ -46,7 +46,7 @@ grep -q "turbine" build.gradle.kts 2>/dev/null && echo "✓ Turbine (Flow testin
 ```
 ❌ HIGH: Missing afterEach cleanup - mocks leak between tests
 ❌ MEDIUM: Snapshot tests use `.toMatchSnapshot()` - not reviewable in PR
-⚠️ LOW: Using `setTimeout` in tests instead of fake timers
+🟢 LOW: Using `setTimeout` in tests instead of fake timers
 ```
 
 ### React Testing Library
@@ -75,7 +75,7 @@ Reference: Testing Library guiding principles - test user behavior, not implemen
 **Common issues:**
 ```
 ❌ MEDIUM: Fixture has session scope but mutates state - will leak between tests
-⚠️ LOW: Single test case - should use parametrize for edge cases (None, "", 0, negative)
+🟢 LOW: Single test case - should use parametrize for edge cases (None, "", 0, negative)
 ```
 
 ### JUnit + Turbine (Android)

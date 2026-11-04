@@ -53,7 +53,7 @@ test -f fly.toml && echo "✓ Fly.io"
 
 **Example finding:**
 ```
-⚠️ MEDIUM: GitHub Actions has no dependency caching
+🟡 MEDIUM: GitHub Actions has no dependency caching
 Current: npm install takes 2m 30s on every run
 Recommendation: Add actions/cache@v3 with key: ${{ hashFiles('package-lock.json') }}
 Impact: Reduce CI time from 5min to 1.5min (save 3.5min per run)
@@ -94,7 +94,7 @@ Recommendation: Add resources.limits (CPU: 500m, memory: 512Mi) and requests
 
 **Health checks:**
 ```
-⚠️ MEDIUM: Missing readinessProbe
+🟡 MEDIUM: Missing readinessProbe
 Impact: Traffic routed to pod before app is ready
 Recommendation: Add HTTP probe on /health endpoint
 ```

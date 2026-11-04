@@ -24,7 +24,7 @@ def codex() -> dict:
 
 def test_manifest_names_and_versions_match():
     assert claude()["name"] == codex()["name"] == "ios-expert-toolkit"
-    assert claude()["version"] == codex()["version"] == "1.0.1"
+    assert claude()["version"] == codex()["version"] == "1.0.2"
 
 
 def test_claude_manifest_lists_skill_groups():

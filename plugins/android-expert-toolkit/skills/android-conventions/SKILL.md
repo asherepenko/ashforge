@@ -91,7 +91,7 @@ For each category, calculate the consistency percentage within that category:
 
 ### 4. Report Results
 
-Format output as:
+Format output as rendered markdown (real headings and tables, never inside a code fence; the fence below only shows the source):
 
 ```
 ## Pattern Detection Report

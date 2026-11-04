@@ -40,7 +40,7 @@ Metrics: 99.9% availability requires circuit breakers between services
 
 **Example finding:**
 ```
-⚠️ HIGH: No caching for getUserProfile() called on every page load
+🟠 HIGH: No caching for getUserProfile() called on every page load
 Current: 200ms DB query per request
 Recommendation: Add Redis cache-aside with 5-minute TTL
 Impact: Reduce latency from 200ms to 2ms, reduce DB load by 95%
@@ -69,7 +69,7 @@ Impact: Reduce latency from 200ms to 2ms, reduce DB load by 95%
 
 **Example finding:**
 ```
-⚠️ MEDIUM: Architecture assumes vertical scaling only
+🟡 MEDIUM: Architecture assumes vertical scaling only
 Current limit: 32 cores, 128GB RAM on single instance
 Recommendation: Design for horizontal scaling with stateless app servers
 Reference: 12-Factor App - Processes (scale out via process model)

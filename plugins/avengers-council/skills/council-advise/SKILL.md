@@ -76,7 +76,7 @@ Max 250 words. If the question is outside your domain, say so in one line and st
 
 ### Step 4 — Synthesize
 
-Write the answer in this shape:
+Write the answer in this shape, as rendered markdown (real headings and tables, never inside a code fence; the fence below only shows the source):
 
 ```
 ## Council advice: <question>

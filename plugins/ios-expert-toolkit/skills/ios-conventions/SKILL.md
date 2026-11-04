@@ -78,7 +78,7 @@ Use the preflight version facts before recommending an API. Check availability a
 
 ## Report
 
-State the architecture verdict and the rule it triggers first. Then one line per area: dominant pattern, share, recommendation. End with the version facts used.
+State the architecture verdict and the rule it triggers first. Then one rendered markdown table, never inside a code fence: `| Area | Dominant pattern | Share | Recommendation |`, one row per area. End with the version facts used.
 
 ## Done means
 

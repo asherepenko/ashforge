@@ -4,6 +4,12 @@ All notable changes to the iOS Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for removed or renamed skills and agents, minor for new ones, patch for docs and reference fixes.
 
+## [1.0.2] - 2026-11-04
+
+### Fixed
+
+- The ios-conventions report shows areas as one rendered markdown table, matching android-conventions.
+
 ## [1.0.1] - 2026-11-04
 
 ### Added

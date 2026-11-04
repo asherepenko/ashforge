@@ -98,7 +98,7 @@ private val context: Context  // Activity context captured!
 ❌ **MEDIUM**: Missing ProGuard rules for Retrofit models
 **Risk:** Release build will crash due to R8 minification
 
-⚠️ **MEDIUM**: No error handling for `feedApi.getPosts()` failures
+🟡 **MEDIUM**: No error handling for `feedApi.getPosts()` failures
 
 **Recommendation:** REJECT. Main thread blocking and memory leaks are showstoppers for mobile.
 
@@ -111,7 +111,7 @@ private val context: Context  // Activity context captured!
 ❌ **HIGH**: Test coverage 43% (target is 80%+)
 ❌ **MEDIUM**: No tests for error scenarios (network failure, empty response)
 ❌ **MEDIUM**: No Compose UI tests (FeedScreen untested)
-⚠️ **LOW**: Missing edge case tests (pagination edge, scroll to end)
+🟢 **LOW**: Missing edge case tests (pagination edge, scroll to end)
 
 **Recommendation:** REJECT. Insufficient test coverage for feature of this complexity.
 
@@ -124,7 +124,7 @@ private val context: Context  // Activity context captured!
 ✅ Material 3 implementation excellent
 ✅ Adaptive layout for tablets
 ✅ Accessibility semantics present
-⚠️ **LOW**: Pull-to-refresh could have haptic feedback
+🟢 **LOW**: Pull-to-refresh could have haptic feedback
 
 **Recommendation:** APPROVE from UX perspective. UI quality is high.
 
@@ -136,8 +136,8 @@ private val context: Context  // Activity context captured!
 
 ✅ Repository pattern clean
 ✅ Paging 3 integration proper
-⚠️ **MEDIUM**: No caching strategy for images (will re-download on every scroll)
-⚠️ **LOW**: Paging page size (20) may be small for high-scroll users
+🟡 **MEDIUM**: No caching strategy for images (will re-download on every scroll)
+🟢 **LOW**: Paging page size (20) may be small for high-scroll users
 
 **Recommendation:** CONCERNS. Performance could be better but not blocking.
 
@@ -148,7 +148,7 @@ private val context: Context  // Activity context captured!
 **Confidence:** LOW
 
 ✅ API integration looks standard
-⚠️ **LOW**: Error responses could be more structured
+🟢 **LOW**: Error responses could be more structured
 
 **Recommendation:** APPROVE. Backend interaction is reasonable.
 
@@ -158,9 +158,9 @@ private val context: Context  // Activity context captured!
 
 **Confidence:** MEDIUM
 
-⚠️ **MEDIUM**: Like action has no CSRF protection
-⚠️ **MEDIUM**: No rate limiting on like endpoint (could be abused)
-⚠️ **LOW**: User IDs in URLs (not a vulnerability but leaks enumeration)
+🟡 **MEDIUM**: Like action has no CSRF protection
+🟡 **MEDIUM**: No rate limiting on like endpoint (could be abused)
+🟢 **LOW**: User IDs in URLs (not a vulnerability but leaks enumeration)
 
 **Recommendation:** CONCERNS. Not CRITICAL but should add CSRF tokens and rate limits.
 
@@ -170,9 +170,9 @@ private val context: Context  // Activity context captured!
 
 **Confidence:** MEDIUM
 
-⚠️ **MEDIUM**: No error logging for failed API calls
-⚠️ **MEDIUM**: No analytics tracking (feed views, like actions)
-⚠️ **LOW**: Room queries not indexed (will slow down with large datasets)
+🟡 **MEDIUM**: No error logging for failed API calls
+🟡 **MEDIUM**: No analytics tracking (feed views, like actions)
+🟢 **LOW**: Room queries not indexed (will slow down with large datasets)
 
 **Recommendation:** CONCERNS. Observability gaps will make debugging hard.
 
@@ -183,7 +183,7 @@ private val context: Context  // Activity context captured!
 **Confidence:** MEDIUM
 
 ✅ Build configuration proper
-⚠️ **LOW**: Could add Detekt linting for code quality
+🟢 **LOW**: Could add Detekt linting for code quality
 
 **Recommendation:** APPROVE. CI/CD setup is adequate.
 
@@ -193,8 +193,8 @@ private val context: Context  // Activity context captured!
 
 **Confidence:** HIGH
 
-⚠️ **MEDIUM**: Code quality mixed (some functions 80+ lines)
-⚠️ **MEDIUM**: Missing architecture decision documentation
+🟡 **MEDIUM**: Code quality mixed (some functions 80+ lines)
+🟡 **MEDIUM**: Missing architecture decision documentation
 ✅ Feature implements user story completely
 
 **Recommendation:** CONCERNS. Meets functional requirements but quality issues.

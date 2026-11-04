@@ -73,7 +73,7 @@ Reference: Design systems best practices - token-based theming
 
 **Example finding format:**
 ```
-⚠️ MEDIUM: Component has 6 boolean props (isLoading, isError, isDisabled, etc.)
+🟡 MEDIUM: Component has 6 boolean props (isLoading, isError, isDisabled, etc.)
 Recommendation: Use compound component pattern per vercel-composition-patterns
 Reference: React composition patterns that scale
 ```
@@ -106,7 +106,7 @@ Reference: React composition patterns that scale
 
 **Example finding:**
 ```
-⚠️ MEDIUM: Client component could be server component (ProductCard.tsx)
+🟡 MEDIUM: Client component could be server component (ProductCard.tsx)
 Issue: Component marked 'use client' but has no interactivity
 Recommendation: Remove 'use client' directive, make it a server component
 Impact: Reduce bundle size, improve initial page load

@@ -168,7 +168,7 @@ Reference: OWASP A07:2021 - Identification and Authentication Failures
 
 **When tools NOT available:**
 ```
-⚠️ HIGH: No SAST configured in CI
+🟠 HIGH: No SAST configured in CI
 Recommendation: Add Semgrep or similar to .github/workflows/security.yml
 Example: semgrep --config=auto prevents 80% of common vulnerabilities
 ```

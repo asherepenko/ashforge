@@ -49,7 +49,7 @@ The authentication implementation contains multiple CRITICAL security vulnerabil
 |----------|----------|--------|
 | All auth code requires 90% test coverage | Mandatory | ❌ Violated — 0% test coverage |
 | Crypto code requires security review | Mandatory | ❌ Violated — no security review before PR |
-| Commit message: imperative mood, scope prefix | Mandatory | ⚠️ Partial — imperative mood but missing scope |
+| Commit message: imperative mood, scope prefix | Mandatory | 🟡 Partial — imperative mood but missing scope |
 | Error messages must not leak internals | Strong Guidance | ❌ Violated — "email not found" vs "wrong password" |
 | Rate limiting on public endpoints | Strong Guidance | ❌ Violated — no rate limiting |
 
@@ -107,7 +107,7 @@ data class UserEntity(
 
 ❌ **HIGH**: API returns 200 OK for failed login (should be 401)
 ❌ **MEDIUM**: Password validation too weak (min 6 chars, no complexity)
-⚠️ **LOW**: Error messages leak information ("email not found" vs "wrong password")
+🟢 **LOW**: Error messages leak information ("email not found" vs "wrong password")
 
 **Recommendation:** REJECT. API design violates HTTP semantics and security best practices.
 
@@ -119,7 +119,7 @@ data class UserEntity(
 
 ❌ **HIGH**: Synchronous bcrypt hashing blocks request thread
 ❌ **MEDIUM**: No connection pooling for database
-⚠️ **MEDIUM**: Auth service has no circuit breaker (cascading failures)
+🟡 **MEDIUM**: Auth service has no circuit breaker (cascading failures)
 
 **Recommendation:** REJECT. Will not scale under load, blocking crypto on request thread.
 
@@ -130,8 +130,8 @@ data class UserEntity(
 **Confidence:** MEDIUM
 
 ❌ **MEDIUM**: Zero tests for auth logic
-⚠️ **MEDIUM**: No tests for SQL injection scenarios
-⚠️ **LOW**: Missing edge case tests (empty email, long password, special chars)
+🟡 **MEDIUM**: No tests for SQL injection scenarios
+🟢 **LOW**: Missing edge case tests (empty email, long password, special chars)
 
 **Recommendation:** CONCERNS. Core security functionality is completely untested.
 
@@ -143,7 +143,7 @@ data class UserEntity(
 
 ❌ **MEDIUM**: No logging of auth events (success, failure, anomalies)
 ❌ **MEDIUM**: No metrics on auth attempts, failures, latency
-⚠️ **LOW**: Database query performance not measured
+🟢 **LOW**: Database query performance not measured
 
 **Recommendation:** CONCERNS. Cannot monitor or debug auth issues without observability.
 
@@ -153,7 +153,7 @@ data class UserEntity(
 
 **Confidence:** LOW
 
-⚠️ **LOW**: Login form doesn't show password requirements
+🟢 **LOW**: Login form doesn't show password requirements
 ✅ Error handling communicates issues to user (though messages leak info)
 
 **Recommendation:** APPROVE from UX perspective, but security issues are blocking.
@@ -165,7 +165,7 @@ data class UserEntity(
 **Confidence:** MEDIUM
 
 ✅ Mobile SDK integration looks reasonable
-⚠️ **LOW**: Should add biometric auth option (Face ID, fingerprint)
+🟢 **LOW**: Should add biometric auth option (Face ID, fingerprint)
 
 **Recommendation:** APPROVE. Mobile concerns are minor compared to security issues.
 
@@ -175,8 +175,8 @@ data class UserEntity(
 
 **Confidence:** MEDIUM
 
-⚠️ **MEDIUM**: No security scanning in CI (SAST, dependency check)
-⚠️ **MEDIUM**: Secrets management unclear (where are DB creds stored?)
+🟡 **MEDIUM**: No security scanning in CI (SAST, dependency check)
+🟡 **MEDIUM**: Secrets management unclear (where are DB creds stored?)
 
 **Recommendation:** CONCERNS. DevOps should catch security issues before review.
 

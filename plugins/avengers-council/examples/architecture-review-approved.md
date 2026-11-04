@@ -49,9 +49,9 @@ The proposed microservices migration plan is well-reasoned with clear service bo
 | Rollback plan mandatory for data operations | Mandatory | ✅ Met — per-phase rollback defined |
 | Performance targets: queries < 100ms | Mandatory | ✅ Met — p99 < 200ms target documented |
 | Breaking changes require deprecation period | Mandatory | ✅ Met — strangler fig pattern preserves compatibility |
-| API versioning required | Strong Guidance | ⚠️ Partial — versioning mentioned but not detailed |
-| Test coverage ≥ 80% | Strong Guidance | ⚠️ Not yet applicable (implementation phase) |
-| Security review for auth changes | Strong Guidance | ⚠️ Flagged — Black Widow raised service-to-service auth |
+| API versioning required | Strong Guidance | 🟡 Partial — versioning mentioned but not detailed |
+| Test coverage ≥ 80% | Strong Guidance | 🟡 Not yet applicable (implementation phase) |
+| Security review for auth changes | Strong Guidance | 🟡 Flagged — Black Widow raised service-to-service auth |
 
 **Result:** All mandatory standards met. Strong guidance items flagged as conditions.
 
@@ -79,8 +79,8 @@ The proposed microservices migration plan is well-reasoned with clear service bo
 ✅ Service boundaries well-defined (User, Order, Payment, Inventory)
 ✅ Incremental rollout reduces risk (1 service per sprint)
 ✅ Performance targets realistic (p99 < 200ms, 10K RPS)
-⚠️ MEDIUM: No circuit breakers specified — add Resilience4j
-⚠️ MEDIUM: Infrastructure cost projections missing
+🟡 MEDIUM: No circuit breakers specified — add Resilience4j
+🟡 MEDIUM: Infrastructure cost projections missing
 
 **Recommendation:** Approve with circuit breaker requirement.
 
@@ -89,7 +89,7 @@ The proposed microservices migration plan is well-reasoned with clear service bo
 
 ❌ HIGH: Service-to-service auth not specified
 ❌ HIGH: No security boundary documentation
-⚠️ MEDIUM: Rate limiting strategy unclear
+🟡 MEDIUM: Rate limiting strategy unclear
 ✅ Database isolation prevents cross-service data leakage
 
 **Condition for APPROVE:** Document auth propagation and security boundaries.
@@ -98,7 +98,7 @@ The proposed microservices migration plan is well-reasoned with clear service bo
 **Confidence:** HIGH
 
 ❌ HIGH: No distributed tracing — debugging will be impossible
-⚠️ MEDIUM: Logging strategy unclear
+🟡 MEDIUM: Logging strategy unclear
 ✅ Service ownership defined
 
 **Condition for APPROVE:** Add OpenTelemetry or equivalent.

@@ -250,6 +250,8 @@ Agents self-start Round 1 immediately from their spawn prompt — no broadcast n
    Veto: none · Waiting on: doctor-strange, ant-man
    ```
 
+   Print the block as rendered markdown: a heading, a real table and a plain line. Never wrap it in a code fence; the fence above only shows the source. Before every member is in, print only the count line, never a partial table.
+
    One row per spawned member, in spawn order. Fill Score, Verdict and Findings from the member's Round-1 report; Top concern is its highest-severity finding in under 10 words. Write `🚫 VETO` in Status for a black-widow veto, and `⌛ silent` for a member past the timeout.
 3. Mark Round 1 task as completed
 
@@ -335,7 +337,7 @@ After collecting Round 1 responses:
    (bare score: "Give the basis for your score.")]
    ```
 
-   **Round tables (both transports).** Each later round ends the same way as Round 1: count lines while members report, then one table in chat when the round is done. Never only a file write or a prose recap. One row per member, in spawn order; `⌛ silent` for a member past the timeout. Cells are under 10 words.
+   **Round tables (both transports).** Each later round ends the same way as Round 1: count lines while members report, then one table in chat when the round is done. Never only a file write or a prose recap. Print each table as rendered markdown, never inside a code fence; the fences below only show the source. One row per member, in spawn order; `⌛ silent` for a member past the timeout. Cells are under 10 words.
 
    After the Round-2 challenge pass:
 
@@ -359,7 +361,7 @@ After collecting Round 1 responses:
 
    | Member | Status | Received | Conceded | Held | Score flag | Main response |
    |--------|--------|----------|----------|------|------------|---------------|
-   | 🦾 iron-man | ✅ done | 3 | 1 | 2 | ⚠️ cap 6 | Keep browser overwrite, add pin per replace |
+   | 🦾 iron-man | ✅ done | 3 | 1 | 2 | 🔔 cap 6 | Keep browser overwrite, add pin per replace |
    | 🐜 ant-man | ✅ done | 0 | — | — | ok | no received challenges |
    ```
 
@@ -412,7 +414,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    python3 "<plugin root from preflight>/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
    ```
 
-   **Scope Check (plan reviews):** count each `❌ missing` row as one HIGH finding and each `⚠️ partial` row as one MEDIUM finding before grading. An underlying gap already raised by a member or in AC Validation counts once, at the highest severity, and its Scope Check row cites that finding.
+   **Scope Check (plan reviews):** count each `❌ missing` row as one HIGH finding and each `🟡 partial` row as one MEDIUM finding before grading. An underlying gap already raised by a member or in AC Validation counts once, at the highest severity, and its Scope Check row cites that finding.
 
    **Grade quality and set risk:** run `review-grade.py` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Put the script output, without its leading `Quality: `, in the **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) of the Consensus table and append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error the row reads `not scored ({reason})`. Put Risk in the **Risk** row as `<emoji> <level> — <basis>`. Both are info only (@references/verdict-rules.md#quality-and-risk).
 

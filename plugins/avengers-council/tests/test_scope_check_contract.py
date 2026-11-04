@@ -13,7 +13,7 @@ NEW_SECTIONS = [
     "## Acceptance Criteria Validation",
     "## Standards Compliance",
 ]
-LEGEND = "✅ covered · ⚠️ partial · ❌ missing · ⏸ deferred"
+LEGEND = "✅ covered · 🟡 partial · ❌ missing · 📋 deferred"
 TABLE_HEAD = "| # | Requested item | Covered | Where |"
 
 
@@ -36,7 +36,7 @@ def test_scope_check_table_and_legend():
 
 
 def test_severity_mapping_text():
-    for text in ("❌ = one HIGH finding", "⚠️ = one MEDIUM finding", "⏸ = no finding"):
+    for text in ("❌ = one HIGH finding", "🟡 = one MEDIUM finding", "📋 = no finding"):
         assert text in TEMPLATE
     assert "Source not readable: <path>" in TEMPLATE
     assert "partial" in TEMPLATE and "defers a source requirement on its own" in TEMPLATE

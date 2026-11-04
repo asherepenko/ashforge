@@ -58,7 +58,7 @@ Reference: Prometheus naming best practices
 
 **Cardinality checks:**
 ```
-⚠️ HIGH: Metric has unbounded label cardinality (user_id as label)
+🟠 HIGH: Metric has unbounded label cardinality (user_id as label)
 Issue: 1M users = 1M metric series (memory explosion)
 Recommendation: Use aggregated metrics, log individual user events separately
 ```
@@ -89,7 +89,7 @@ Reference: OpenTelemetry semantic conventions
 
 **Example finding:**
 ```
-⚠️ MEDIUM: Sentry configured but no release tracking
+🟡 MEDIUM: Sentry configured but no release tracking
 Recommendation: Add `sentry-cli releases new` in deployment pipeline
 Benefit: Track which deploy introduced each error
 ```
@@ -172,7 +172,7 @@ Benefit: Field failures become queryable instead of invisible
 
 **Example finding:**
 ```
-⚠️ MEDIUM: Logging via print() — not captured in production
+🟡 MEDIUM: Logging via print() — not captured in production
 Recommendation: Use OSLog/Logger with structured fields; mark user data .private
 Benefit: Queryable, redacted logs visible in Console and Organizer
 ```

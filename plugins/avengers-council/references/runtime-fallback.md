@@ -28,7 +28,7 @@ Typical causes: session restrictions remove spawn tools, or pi lacks a subagent 
 Tell the user explicitly before any review work begins:
 
 ```
-⚠ No subagent spawning available on this runtime (SPAWN=none). Falling back to
+🔔 No subagent spawning available on this runtime (SPAWN=none). Falling back to
   single-orchestrator review. The full council is unavailable — members cannot be
   dispatched in parallel, and no debate rounds are possible without peer instances.
   This run produces a sequential persona-walk review instead.

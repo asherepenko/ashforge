@@ -89,7 +89,7 @@ Follow [orchestration-protocol](../../references/orchestration-protocol.md#phase
   - Check if acceptance criteria are testable and measurable
   - If major criteria missing → downgrade to "NEEDS REVISION" minimum
   - Add Scope Check, Acceptance Criteria Validation and Standards Compliance sections to saved verdict
-  - **Scope Check:** mark each Requested Scope item ✅ covered, ⚠️ partial, ❌ missing or ⏸ deferred. ❌ is one HIGH finding and ⚠️ is one MEDIUM finding; ⏸ is no finding, and only when the source itself defers the item (a plan that defers a source requirement on its own is ⚠️ partial). Count them before grading. One underlying gap counts once across Scope Check, AC Validation and member findings; the highest severity wins. The Scope Check row cites the finding it shares. An unreadable linked source is disclosed as `Source not readable: <path>`.
+  - **Scope Check:** mark each Requested Scope item ✅ covered, 🟡 partial, ❌ missing or 📋 deferred. ❌ is one HIGH finding and 🟡 is one MEDIUM finding; 📋 is no finding, and only when the source itself defers the item (a plan that defers a source requirement on its own is 🟡 partial). Count them before grading. One underlying gap counts once across Scope Check, AC Validation and member findings; the highest severity wins. The Scope Check row cites the finding it shares. An unreadable linked source is disclosed as `Source not readable: <path>`.
   - Add a Diagrams section after Standards Compliance: Iron Man's architecture diagram, Hulk's flow diagram and `PATH → TEST:` list. A member not in the Quick roster reads `not drawn — <member> not in Quick roster`.
   - Collect each member's `CONCERN FOR THE USER` from Round 3. Per [orchestration-protocol](../../references/orchestration-protocol.md) Phase 4, a concern that meets a severity definition or a red line is a finding: move it into the findings before grading. List only a residual trade-off under Concerns for the User (advisory, never a condition, not counted in Quality)
   - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
@@ -148,7 +148,7 @@ After council review completes, confirm:
 - [ ] Round 2 challenges were exchanged (stay-alive: via SendMessage; hub: via re-spawn with consolidated context)
 - [ ] Mode selection followed the Mode Selection & Cost-Controlled Degradation section; any autonomous downgrade is disclosed in the verdict header
 - [ ] Final verdict includes Standards Compliance section
-- [ ] Final verdict includes a Scope Check table, with each ❌/⚠️ row counted once before grading
+- [ ] Final verdict includes a Scope Check table, with each ❌/🟡 row counted once before grading
 - [ ] Acceptance criteria validated as testable and measurable
 - [ ] Each Round 1 position includes a `Pre-mortem:` line with 1–2 failure modes tied to plan sections
 - [ ] Iron Man's Round 1 position includes an `ARCHITECTURE DIAGRAM:` field; Hulk's includes `FLOW DIAGRAM:` and `PATH → TEST:` (or the Diagrams section reads `not drawn — <member> not in Quick roster`)
