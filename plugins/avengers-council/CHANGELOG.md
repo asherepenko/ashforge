@@ -4,6 +4,12 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.4] - 2026-11-04
+
+### Fixed
+
+- Each council run writes its own context file, `.artifacts/tmp/{YYYY-MM-DD-HHMMSS}-council-context-{slug}.md`. The old fixed `council-context.md` let concurrent runs overwrite each other.
+
 ## [5.0.3] - 2026-11-04
 
 ### Added
