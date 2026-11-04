@@ -4,6 +4,20 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.3.1] - 2026-11-04
+
+### Added
+
+- `references/coroutines.md`: dispatchers, scopes, Flow sharing, cancellation, exceptions, testing. The coroutine bullets moved out of `architecture.md`.
+
+### Changed
+
+- `android-expert` router uses the iOS router shape: "Rules up front" (now including a minSdk/targetSdk/compileSdk availability check) and trigger-phrase rows with no phrase in two rows.
+
+### Fixed
+
+- Plugin file references are relative links, so skills and agents resolve on Codex, Cursor, Pi and Zcode; shell snippets use the cache-fallback root resolver.
+
 ## [4.3.0] - 2026-11-03
 
 ### Changed

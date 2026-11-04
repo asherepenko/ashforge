@@ -50,12 +50,7 @@ Check for cycles with `./gradlew :app:dependencies` or the project's module-grap
 
 ## Coroutines and Flow
 
-- `viewModelScope` for UI work; never `GlobalScope`.
-- Convert cold flows to state with `stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), initial)`.
-- Inject a `CoroutineDispatcher` only into classes that switch dispatchers **and** are unit-tested; ViewModels using `viewModelScope` are covered by `Dispatchers.setMain`.
-- Every catch-all `catch` in a suspend function rethrows `CancellationException` — see `android-error-handling`.
-- Prefer `combine` over nested `collect`; `distinctUntilChanged` before expensive mapping.
-- Cancellation-safe cleanup goes in `finally` or `onCompletion`, not after the suspend call.
+Scopes, dispatchers, `stateIn`, cancellation, and coroutine tests → `coroutines.md`.
 
 ## Kotlin modelling
 

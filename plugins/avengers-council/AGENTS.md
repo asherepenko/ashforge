@@ -40,7 +40,7 @@ tests/                     — Script and contract tests
 The council was built around Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`). Other runtimes map onto capability axes — SPAWN (registry / prompt-embed / none) and TRANSPORT (stay-alive / hub) — owned by `references/runtime-adapters.md`; the dual-annotated `references/orchestration-protocol.md` and `references/debate-protocol.md` describe the stay-alive and hub substitutions:
 
 - Team setup → skip on every runtime (Claude's session team is implicit; `team_name` is deprecated and ignored, `TeamCreate`/`TeamDelete` no longer exist)
-- `Agent({subagent_type, name})` → `spawn_agent(prompt)` with persona inlined from `agents/<name>.md` on prompt-embed runtimes (rewrite `${CLAUDE_PLUGIN_ROOT}` in the persona to the resolved root); Zcode keeps `Agent(subagent_type)` but collects results per spawn
+- `Agent({subagent_type, name})` → `spawn_agent(prompt)` with persona inlined from `agents/<name>.md` on prompt-embed runtimes (rewrite each relative link `../<path>` to `<resolved plugin root>/<path>`, since the spawned worker has no file location); Zcode keeps `Agent(subagent_type)` but collects results per spawn
 - `SendMessage` (per-teammate DMs, lead addressed as `team-lead`) → hub-mediated context propagation on hub runtimes (Captain consolidates each round's verdicts and dispatches bounded batches or continued workers for the next round with the consolidated context inlined)
 - `TaskCreate` / `TaskUpdate` → `update_plan` (Codex) or `TodoWrite` (Zcode)
 - `AskUserQuestion` → plain prompt with numbered options + free-form reply parsing on plain-text runtimes

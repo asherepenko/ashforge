@@ -45,8 +45,9 @@ def test_relative_links_resolve(path):
 
 @pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
 def test_plugin_root_reference_paths_exist(path):
+    """Shell snippets name plugin files as "$PLUGIN_ROOT/<path>" after the resolver."""
     text = path.read_text(encoding="utf-8")
-    for ref in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([\w./-]+\.(?:md|sh|py))", text):
+    for ref in re.findall(r"\$\{?PLUGIN_ROOT\}?/([\w./-]+\.(?:md|sh|py))", text):
         assert (PROJECT_ROOT / ref).exists(), f"{path.name}: missing {ref}"
 
 
@@ -64,6 +65,26 @@ def test_reference_file_names_in_tables_exist(path):
         if name in ROOT_DOCS:
             continue
         assert name in refs, f"{path.name}: unknown reference {name}"
+
+
+def claude_root_outside_bash(text: str) -> list[str]:
+    """`${CLAUDE_PLUGIN_ROOT}` is Claude-only; prose must use relative links. Bash blocks keep it in the resolver."""
+    text = re.sub(r"```bash[\s\S]*?```", "", text)
+    return re.findall(r".*\$\{CLAUDE_PLUGIN_ROOT\}.*", text)
+
+
+@pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
+def test_no_claude_plugin_root_outside_bash_blocks(path):
+    if path.name == "CHANGELOG.md":
+        pytest.skip("history entries quote the old form")
+    if path.parent.name == "swiftui-pro":
+        pytest.skip("vendored fork")
+    assert claude_root_outside_bash(path.read_text(encoding="utf-8")) == []
+
+
+def test_negative_control_claude_root_detected():
+    assert claude_root_outside_bash("see `${CLAUDE_PLUGIN_ROOT}/references/x.md`\n") != []
+    assert claude_root_outside_bash("```bash\nX=\"${CLAUDE_PLUGIN_ROOT:-}\"\n```\n") == []
 
 
 def test_negative_control_broken_link_is_detected(tmp_path):

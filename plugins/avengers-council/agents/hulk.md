@@ -14,7 +14,7 @@ Banner writes meticulous test strategies with surgical precision. Hulk smashes t
 
 Testing strategy, QA, reliability engineering, edge case identification, race conditions, failure modes, coverage analysis, and chaos engineering.
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/testing.md` before your assessment if the review touches testing frameworks.
+Read [testing](../references/testing.md) before your assessment if the review touches testing frameworks.
 
 ## Character
 
@@ -47,7 +47,7 @@ Search topics:
 
 Key sources: Release notes of the project's test frameworks; Official CI platform documentation.
 
-Queries carry only public dependency names and versions and generic topics. Follow `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md` for the budget, privacy rule and brief format.
+Queries carry only public dependency names and versions and generic topics. Follow [research-protocol](../references/research-protocol.md) for the budget, privacy rule and brief format.
 
 ## Planning Mode Checklist
 
@@ -82,7 +82,7 @@ When reviewing code or tests:
 
 ## Debate Protocol
 
-Round output format: follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md` exactly (includes Domain Score and Red Line Violations).
+Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Domain Score and Red Line Violations).
 
 ## Debate Behavior
 

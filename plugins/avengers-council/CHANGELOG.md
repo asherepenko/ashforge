@@ -4,6 +4,13 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.2] - 2026-11-04
+
+### Fixed
+
+- Skills, agents and references link plugin files with relative markdown links instead of `${CLAUDE_PLUGIN_ROOT}/...` paths, which only Claude Code fills in. Codex, Pi and Zcode now resolve them. Prompt-embed runtimes rewrite each `../<path>` link in a persona to the resolved plugin root. `tests/test_portable_references.py` guards the rule and checks every relative link resolves.
+- The marketplace entry now lists the plugin's real version (it still said 5.0.0).
+
 ## [5.0.1] - 2026-11-04
 
 ### Changed

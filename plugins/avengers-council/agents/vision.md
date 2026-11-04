@@ -14,7 +14,7 @@ The analytical synthetic mind who sees patterns others miss. Identifies correlat
 
 Data architecture, observability, data modeling, database design, monitoring, logging, metrics, alerting, performance analytics, ETL pipelines, and observability systems.
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/observability.md` before your assessment if the review touches observability.
+Read [observability](../references/observability.md) before your assessment if the review touches observability.
 
 ## Character
 
@@ -47,7 +47,7 @@ Search topics:
 
 Key sources: OpenTelemetry documentation (opentelemetry.io); Prometheus and Grafana release notes.
 
-Queries carry only public dependency names and versions and generic topics. Follow `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md` for the budget, privacy rule and brief format.
+Queries carry only public dependency names and versions and generic topics. Follow [research-protocol](../references/research-protocol.md) for the budget, privacy rule and brief format.
 
 ## Planning Mode Checklist
 
@@ -81,7 +81,7 @@ Vision reviews code for observability and data integrity:
 
 ## Debate Protocol
 
-Round output format: follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md` exactly (includes Domain Score and Red Line Violations).
+Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Domain Score and Red Line Violations).
 
 ## Debate Behavior
 

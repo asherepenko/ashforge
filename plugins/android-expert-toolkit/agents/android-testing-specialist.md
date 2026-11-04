@@ -23,12 +23,12 @@ Follow the `android-testing` skill exactly: map the attack surface, list break v
 | Topic | Load |
 |-------|------|
 | Method, break vectors, redundancy rule, fakes vs mocks | `android-testing` skill |
-| Fakes, ViewModel/Flow/Compose test code, integration tests | `${CLAUDE_PLUGIN_ROOT}/references/testing-patterns.md` |
+| Fakes, ViewModel/Flow/Compose test code, integration tests | [testing-patterns](../references/testing-patterns.md) |
 | Error variants to cover | `android-error-handling` skill |
-| States to cover in UI tests | `${CLAUDE_PLUGIN_ROOT}/references/compose-ui.md` (preview matrix) |
-| Accessibility assertions | `${CLAUDE_PLUGIN_ROOT}/references/accessibility.md` |
+| States to cover in UI tests | [compose-ui](../references/compose-ui.md) (preview matrix) |
+| Accessibility assertions | [accessibility](../references/accessibility.md) |
 | Test infrastructure, screenshot, E2E setup | `testing-setup` skill |
-| Benchmarks | `${CLAUDE_PLUGIN_ROOT}/references/performance.md` |
+| Benchmarks | [performance](../references/performance.md) |
 
 ## Rules
 

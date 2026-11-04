@@ -34,10 +34,10 @@ def test_relative_links_resolve(path):
 
 
 @pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
-def test_plugin_root_reference_paths_exist(path):
-    text = path.read_text(encoding="utf-8")
-    for ref in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([\w./-]+\.(?:md|sh|py))", text):
-        assert (PROJECT_ROOT / ref).exists(), f"{path.name}: missing {ref}"
+def test_no_claude_plugin_root_outside_bash_blocks(path):
+    """Only Claude Code fills in ${CLAUDE_PLUGIN_ROOT}; prose must use relative links."""
+    text = re.sub(r"```bash\n[\s\S]*?```", "", path.read_text(encoding="utf-8"))
+    assert "${CLAUDE_PLUGIN_ROOT}" not in text, f"{path.name}: use a relative link, not ${{CLAUDE_PLUGIN_ROOT}}"
 
 
 @pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))

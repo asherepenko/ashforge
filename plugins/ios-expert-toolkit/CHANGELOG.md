@@ -4,6 +4,24 @@ All notable changes to the iOS Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for removed or renamed skills and agents, minor for new ones, patch for docs and reference fixes.
 
+## [1.0.1] - 2026-11-04
+
+### Added
+
+- `references/rubric-swiftui.md` and `references/rubric-ios-architecture.md`: Strong/Weak grading criteria, used as the quality bar by `swiftui-expert` and `ios-architect`.
+- `references/persisted-state-review.md`, `offline-sync.md`, `observability.md`, routed from `ios-expert` and loaded by `ios-developer`.
+- `ios-conventions` runs `scripts/preflight.py` first: deployment targets, Swift mode, strict concurrency, TCA and package versions, test framework and observation counts.
+
+### Changed
+
+- `ios-expert` router: rows for the new references; the `ios-developer` row now matches the agent's scope.
+- `ios-testing-specialist` routes test target and UI test setup to `xcode-build-engineer` and simulator checks to `device-interaction`.
+
+### Fixed
+
+- Plugin file references are relative links, so skills and agents resolve on Codex, Cursor, Pi and Zcode; shell snippets use the cache-fallback root resolver.
+
+
 ## [1.0.0] - 2026-11-03
 
 Live check: Claude lists all skills and the `xcode` MCP connects. Routing signed off by the maintainer ("routing OK", 2026-11-03).

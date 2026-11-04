@@ -8,7 +8,7 @@ argument-hint: "[type or file under test]"
 
 Write tests as an adversary paid to make the code produce a wrong answer, crash, hang, or corrupt its state. Assume a bug is there; find the input, ordering, or collaborator response that exposes it.
 
-**Framework: Swift Testing first.** Use `@Test`, `#expect`, `#require`, parameterized `arguments:`, traits and tags. Use XCTest only for UI tests (`XCUIApplication`), performance metrics, and files in a legacy XCTest-only target. Follow the module's existing style when it is mixed (`ios-conventions testing`). API detail (expectations, traits, parameterization, `confirmation`, parallelism, XCTest migration) lives in [swift-testing-expert](../community/swift-testing-expert/SKILL.md); read it instead of working from memory. Code samples for this method: `${CLAUDE_PLUGIN_ROOT}/references/testing-patterns.md`. TCA reducers: [tca](../tca/SKILL.md) owns `TestStore`.
+**Framework: Swift Testing first.** Use `@Test`, `#expect`, `#require`, parameterized `arguments:`, traits and tags. Use XCTest only for UI tests (`XCUIApplication`), performance metrics, and files in a legacy XCTest-only target. Follow the module's existing style when it is mixed (`ios-conventions testing`). API detail (expectations, traits, parameterization, `confirmation`, parallelism, XCTest migration) lives in [swift-testing-expert](../community/swift-testing-expert/SKILL.md); read it instead of working from memory. Code samples for this method: [testing-patterns](../../references/testing-patterns.md). TCA reducers: [tca](../tca/SKILL.md) owns `TestStore`.
 
 ## Method
 

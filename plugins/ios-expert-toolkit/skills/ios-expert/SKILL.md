@@ -10,13 +10,13 @@ A router. Find the topic, load only what it names, then answer or act.
 
 **Rules up front.**
 
-1. On existing code, run `ios-conventions` first: it reads the architecture, `Package.resolved`, the deployment target and the Swift language mode. Then follow `${CLAUDE_PLUGIN_ROOT}/references/pragmatics.md`: user instructions, then codebase consistency, then constraints, then best practice.
+1. On existing code, run `ios-conventions` first: it reads the architecture, `Package.resolved`, the deployment target and the Swift language mode. Then follow [pragmatics](../../references/pragmatics.md): user instructions, then codebase consistency, then constraints, then best practice.
 2. Check API availability against the deployment target and the Swift language mode before recommending anything. `@Observable` and SwiftData need iOS 17. Anything from a `*-whats-new-27` skill needs iOS 27. Below the target, give the API the project can compile.
 3. Verify API claims you are unsure of with the Xcode `DocumentationSearch` tool or `/doc-lookup`, not memory.
 
 ## Topic → load
 
-Each row owns its trigger phrases; no phrase appears in two rows. References live in `${CLAUDE_PLUGIN_ROOT}/references/`. Skills are loaded by name.
+Each row owns its trigger phrases; no phrase appears in two rows. References live in [references](../../references/). Skills are loaded by name.
 
 | Triggers | Load |
 |----------|------|
@@ -49,6 +49,11 @@ Each row owns its trigger phrases; no phrase appears in two rows. References liv
 | architecture detection sweep, 80/20 rule, sweep patterns | `pattern-detection.md` |
 | test code mechanics, fakes and spies, test fixtures, async test helpers | `testing-patterns.md` |
 | TCA reference detail, dependency clients, TCA navigation, SwiftData behind @Dependency | `tca.md` |
+| changing data already on devices, schema migration, renaming a stored key, VersionedSchema | `persisted-state-review.md` |
+| offline queue, pending changes, conflict resolution, BGTaskScheduler, NWPathMonitor | `offline-sync.md` |
+| logging, os.Logger, signposts, crash reporting, analytics | `observability.md` |
+| grade this SwiftUI screen, UI quality bar | `rubric-swiftui.md` |
+| grade this architecture, architecture quality bar | `rubric-ios-architecture.md` |
 
 ## Xcode MCP
 
@@ -75,7 +80,7 @@ Delegate a scoped task with a plain brief — goal, acceptance criteria, files, 
 | Agent | Give it |
 |-------|---------|
 | `ios-architect` | structure, placement, layering, ADRs, architecture review |
-| `ios-developer` | view models, services, repositories, persistence and networking wiring |
+| `ios-developer` | reducers and view models, dependency clients, repositories, SwiftData and persistence, networking, concurrency |
 | `swiftui-expert` | screens, components, previews, accessibility, adaptive layout |
 | `ios-testing-specialist` | tests and test review using the `ios-testing` method |
 | `xcode-build-engineer` | targets, schemes, build settings, Swift packages, signing, CI build steps |

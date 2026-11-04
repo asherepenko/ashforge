@@ -28,11 +28,12 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 | Review, best practices | `swiftui-pro` skill |
 | `@Observable`, `@Environment`, `ForEach` identity, deprecated API | `swiftui-specialist` skill |
 | iOS 27 SwiftUI APIs | `swiftui-whats-new-27` skill |
-| State, view composition, UIKit interop | `${CLAUDE_PLUGIN_ROOT}/references/swiftui.md` |
-| VoiceOver, Dynamic Type, reduce motion | `${CLAUDE_PLUGIN_ROOT}/references/accessibility.md` |
+| State, view composition, UIKit interop | [swiftui](../references/swiftui.md) |
+| VoiceOver, Dynamic Type, reduce motion | [accessibility](../references/accessibility.md) |
 | Resizable windows, multi-window | `app-resizability` skill |
-| Navigation | `${CLAUDE_PLUGIN_ROOT}/references/navigation.md` |
-| Scroll hitches, view cost | `${CLAUDE_PLUGIN_ROOT}/references/performance.md` |
+| Navigation | [navigation](../references/navigation.md) |
+| Scroll hitches, view cost | [performance](../references/performance.md) |
+| Quality bar | [rubric-swiftui](../references/rubric-swiftui.md) |
 
 ## Rules
 

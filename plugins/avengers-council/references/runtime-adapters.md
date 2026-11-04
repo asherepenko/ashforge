@@ -23,8 +23,8 @@ Read the preflight's `== Runtime capability ==` section, then resolve each axis 
 | Value | Dispatch | Used by |
 |-------|----------|---------|
 | `registry` | `Agent({subagent_type: 'avengers-council:<name>', name: '<name>', prompt: ...})` — personas come from the agent registry; pass `name` so the stage is labelled. Never pass `team_name` (deprecated and ignored). | Claude Code, Zcode |
-| `prompt-embed` | `spawn_agent(prompt)` — read `agents/<name>.md` and paste the persona body verbatim above the `REVIEW CONTEXT` block (no `subagent_type` registry exists). **Rewrite every `${CLAUDE_PLUGIN_ROOT}` in the persona text to the resolved plugin root** — member bodies reference `${CLAUDE_PLUGIN_ROOT}/references/*.md`, and the var is not exported to spawned workers on these runtimes. Discard persona frontmatter (`tools:`, `model:` — Claude-only registry metadata). | Codex (spawn tool exposed), pi (subagent skill/extension installed) |
-| `none` | No subagent dispatch available. **Read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md`** and run the single-orchestrator persona walk. Do NOT attempt any spawn — it fails at the tool layer. | Codex (no spawn tool exposed), pi (no subagent skill) |
+| `prompt-embed` | `spawn_agent(prompt)` — read `agents/<name>.md` and paste the persona body verbatim above the `REVIEW CONTEXT` block (no `subagent_type` registry exists). **In the persona text, rewrite each relative link `../<path>` to `<resolved plugin root>/<path>`** — member bodies link `../references/*.md` relative to `agents/`, and the spawned worker has no file location to resolve them from. Discard persona frontmatter (`tools:`, `model:` — Claude-only registry metadata). | Codex (spawn tool exposed), pi (subagent skill/extension installed) |
+| `none` | No subagent dispatch available. **Read [runtime-fallback](runtime-fallback.md)** and run the single-orchestrator persona walk. Do NOT attempt any spawn — it fails at the tool layer. | Codex (no spawn tool exposed), pi (no subagent skill) |
 | `unknown` | Discover available tools; if absent use the disclosed fallback. | undetected runtimes |
 
 ### TRANSPORT — how findings move between members
@@ -77,7 +77,7 @@ Managed/sandboxed worktrees (Codex App and any runtime that blocks branch creati
 
 | Value | Meaning |
 |-------|---------|
-| `available` | The session exposes `WebSearch` and `WebFetch`, or the runtime's equivalent search and fetch tools. Research runs per `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md`. |
+| `available` | The session exposes `WebSearch` and `WebFetch`, or the runtime's equivalent search and fetch tools. Research runs per [research-protocol](research-protocol.md). |
 | `none` | No such tools are exposed. Skip research and add one line under Run Mode: `Research: skipped — no web tools`. Disclosure only: it never caps or changes the verdict. |
 
 Discover `WEB` from the tools actually exposed, as with SPAWN. Exposed tools are authoritative; a profile row or config hint never overrides them.
@@ -142,7 +142,7 @@ Round 3 — Final Position
 
 The orchestration protocol's **Mode Selection & Cost-Controlled Degradation** section applies its capability trigger only after the actual tools require a fresh-worker schedule for all four passes. Hub transport with continuation does not by itself imply 4M spawns or satisfy that trigger. Autonomous Quick Mode still requires all three triggers and disclosure of the chosen schedule.
 
-**Persona embedding:** before each spawn on a `prompt-embed` runtime, Captain reads `agents/<member>.md` and pastes the full persona text into the spawn prompt (with `${CLAUDE_PLUGIN_ROOT}` rewritten to the resolved root — see SPAWN axis). Personas stay a single source of truth across runtimes. (Captain America is never spawned — the orchestrator role is defined in `references/captain-america-orchestrator.md`.)
+**Persona embedding:** before each spawn on a `prompt-embed` runtime, Captain reads `agents/<member>.md` and pastes the full persona text into the spawn prompt (with each relative link `../<path>` rewritten to `<resolved plugin root>/<path>` — see SPAWN axis). Personas stay a single source of truth across runtimes. (Captain America is never spawned — the orchestrator role is defined in `references/captain-america-orchestrator.md`.)
 
 On `registry` + `hub` runtimes (Zcode): use `Agent({subagent_type: ...})` for dispatch and collect results as tool results — no persona embedding needed, but Rounds 2–3 still flow through the Captain (fresh spawns, or `SendMessage` resume by agent id where supported).
 

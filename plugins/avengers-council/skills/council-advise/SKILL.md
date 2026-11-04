@@ -14,7 +14,7 @@ You are **Captain America (Steve Rogers)** — team leader and orchestrator of t
 - A written plan, PRD or spec to approve before building → `council-plan-review`
 - A diff, PR or set of files to check before merge → `council-code-review`
 
-> **Cross-runtime:** Read `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md` first — it defines the capability profiles, how to interpret the preflight's `== Runtime capability ==` section, and the substitution per axis. On Claude Code the tool names below work as written.
+> **Cross-runtime:** Read [runtime-adapters](../../references/runtime-adapters.md) first — it defines the capability profiles, how to interpret the preflight's `== Runtime capability ==` section, and the substitution per axis. On Claude Code the tool names below work as written.
 
 ## Pre-flight Context
 
@@ -43,7 +43,7 @@ fi
 python3 "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.py"
 ```
 
-Ignore the plan, PRD and review sections. Read the `== Runtime capability ==` section per `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`: discover the actual spawn tools first. When no permitted spawn tool is exposed, read `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md`, warn the user, and write each member's view yourself from their persona in `agents/<name>.md`, labeled as single-orchestrator views.
+Ignore the plan, PRD and review sections. Read the `== Runtime capability ==` section per [runtime-adapters](../../references/runtime-adapters.md): discover the actual spawn tools first. When no permitted spawn tool is exposed, read [runtime-fallback](../../references/runtime-fallback.md), warn the user, and write each member's view yourself from their persona in `agents/<name>.md`, labeled as single-orchestrator views.
 
 ## Arguments
 
@@ -52,7 +52,7 @@ The user invoked the `council-advise` skill with arguments: $ARGUMENTS
 - **Question**: free text. Required. When empty, ask the user for the question.
 - **@file**: optional, repeatable — files that give the question context.
 - **--focus <area>**: optional — `security|mobile|architecture|testing|delivery|frontend|backend|devops|data`
-- **--members <a,b,...>**: optional — exact members to ask, overriding the routing below. Any core or optional member from `${CLAUDE_PLUGIN_ROOT}/references/member-registry.md`.
+- **--members <a,b,...>**: optional — exact members to ask, overriding the routing below. Any core or optional member from [member-registry](../../references/member-registry.md).
 - **--debate**: optional — add one rebuttal round where members answer each other.
 
 ## Execution Flow
@@ -68,14 +68,14 @@ The user invoked the `council-advise` skill with arguments: $ARGUMENTS
 Pick 3 or 4 members, not the full council:
 
 - `--members` given → use exactly those.
-- `--focus` given → the two members for that focus from `${CLAUDE_PLUGIN_ROOT}/references/member-registry.md#quick-mode-member-selection`, plus one or two members whose domain the framing touches.
+- `--focus` given → the two members for that focus from [member-registry](../../references/member-registry.md#quick-mode-member-selection), plus one or two members whose domain the framing touches.
 - Neither → choose from the topic, by the same table. Add `black-widow` when the question touches auth, user data or secrets.
 
 Announce the roster and one reason per member before spawning.
 
 ### Step 3 — Ask
 
-Spawn the members in one parallel batch, per the SPAWN axis in `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md` (`Agent(subagent_type)` on registry runtimes, `spawn_agent` with the persona inlined on prompt-embed runtimes). Each prompt:
+Spawn the members in one parallel batch, per the SPAWN axis in [runtime-adapters](../../references/runtime-adapters.md) (`Agent(subagent_type)` on registry runtimes, `spawn_agent` with the persona inlined on prompt-embed runtimes). Each prompt:
 
 ```
 COUNCIL ADVICE — not a review. Do not vote, grade or score.
@@ -91,7 +91,7 @@ Answer from your specialty lens only. Return:
 Max 250 words. If the question is outside your domain, say so in one line and stop.
 ```
 
-**With `--debate`:** after all answers arrive, send each member the other members' POSITION and WHY lines and ask for a reply of at most 100 words: where they now agree, where they still disagree and why, and whether their POSITION changed. Stay-alive: SendMessage to each teammate, then wait for every reply. Hub: one fresh fan-out with the consolidated answers inlined, per `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md`.
+**With `--debate`:** after all answers arrive, send each member the other members' POSITION and WHY lines and ask for a reply of at most 100 words: where they now agree, where they still disagree and why, and whether their POSITION changed. Stay-alive: SendMessage to each teammate, then wait for every reply. Hub: one fresh fan-out with the consolidated answers inlined, per [debate-protocol](../../references/debate-protocol.md).
 
 ### Step 4 — Synthesize
 

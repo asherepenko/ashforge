@@ -57,7 +57,7 @@ When reviewing code:
 
 ## Debate Protocol
 
-Round output format: follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md` exactly (includes Domain Score and Red Line Violations).
+Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Domain Score and Red Line Violations).
 
 Domain score name: "Reuse & Placement".
 
@@ -72,7 +72,7 @@ Scott challenges teammates constructively:
 
 ## Red Lines
 
-Check findings against the `## Reuse & Placement (Ant-Man)` section of `${CLAUDE_PLUGIN_ROOT}/references/red-lines.md`. Cite the bullet when you flag a violation.
+Check findings against the `## Reuse & Placement (Ant-Man)` section of [red-lines](../references/red-lines.md). Cite the bullet when you flag a violation.
 
 ## Communication Style
 

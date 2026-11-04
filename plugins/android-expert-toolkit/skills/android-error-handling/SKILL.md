@@ -63,4 +63,4 @@ Expected failures are values, not exceptions. The layer that owns a failure catc
 - [ ] UI state contains `UiText`/`@StringRes`, never `Throwable` or `.message`.
 - [ ] Tests cover each error variant that maps to a distinct outcome, plus the collaborator throwing instead of returning (`android-testing` skill).
 
-Related: presentation wiring → `${CLAUDE_PLUGIN_ROOT}/references/presentation.md`; repository `safeCall` example → `${CLAUDE_PLUGIN_ROOT}/references/data-layer.md`.
+Related: presentation wiring → [presentation](../../references/presentation.md); repository `safeCall` example → [data-layer](../../references/data-layer.md).

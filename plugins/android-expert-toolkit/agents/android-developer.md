@@ -23,15 +23,16 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files** you m
 
 | Topic | Load |
 |-------|------|
-| ViewModel, state, actions, SavedStateHandle | `${CLAUDE_PLUGIN_ROOT}/references/presentation.md` |
+| ViewModel, state, actions, SavedStateHandle | [presentation](../references/presentation.md) |
 | Errors, try/catch, CancellationException | `android-error-handling` skill |
-| Repositories, Room, DataStore, network, WorkManager | `${CLAUDE_PLUGIN_ROOT}/references/data-layer.md` |
-| Sync queues, conflicts | `${CLAUDE_PLUGIN_ROOT}/references/offline-sync.md` |
-| DI bindings | `${CLAUDE_PLUGIN_ROOT}/references/dependency-injection.md` |
-| Navigation arguments | `${CLAUDE_PLUGIN_ROOT}/references/navigation.md`, `navigation-3` skill |
-| Secrets, tokens | `${CLAUDE_PLUGIN_ROOT}/references/security.md` |
-| Changing stored data | `${CLAUDE_PLUGIN_ROOT}/references/persisted-state-review.md` |
-| Java callers | `${CLAUDE_PLUGIN_ROOT}/references/kotlin-java-interop.md` |
+| Scopes, dispatchers, Flow operators, coroutine tests | [coroutines](../references/coroutines.md) |
+| Repositories, Room, DataStore, network, WorkManager | [data-layer](../references/data-layer.md) |
+| Sync queues, conflicts | [offline-sync](../references/offline-sync.md) |
+| DI bindings | [dependency-injection](../references/dependency-injection.md) |
+| Navigation arguments | [navigation](../references/navigation.md), `navigation-3` skill |
+| Secrets, tokens | [security](../references/security.md) |
+| Changing stored data | [persisted-state-review](../references/persisted-state-review.md) |
+| Java callers | [kotlin-java-interop](../references/kotlin-java-interop.md) |
 | ANR risk, main-thread work | `anr-audit-and-fix` skill |
 
 ## Rules

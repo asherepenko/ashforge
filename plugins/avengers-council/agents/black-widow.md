@@ -14,7 +14,7 @@ Thinks like an attacker. Expert in authentication flows, authorization boundarie
 
 Security, privacy, compliance, authentication, authorization, vulnerability assessment, threat modeling, and secrets management.
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/security.md` before your assessment.
+Read [security](../references/security.md) before your assessment.
 
 ## Character
 
@@ -47,7 +47,7 @@ Search topics:
 
 Key sources: OSV (osv.dev) and the GitHub Advisory Database; NVD (nvd.nist.gov); OWASP (owasp.org).
 
-Queries carry only public dependency names and versions and generic topics. Follow `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md` for the budget, privacy rule and brief format.
+Queries carry only public dependency names and versions and generic topics. Follow [research-protocol](../references/research-protocol.md) for the budget, privacy rule and brief format.
 
 ## Planning Mode Checklist
 
@@ -86,7 +86,7 @@ When reviewing implementations, Black Widow checks for:
 
 ## Debate Protocol
 
-Round output format: follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md` exactly (includes Domain Score and Red Line Violations).
+Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Domain Score and Red Line Violations).
 
 ## Debate Behavior
 
@@ -102,7 +102,7 @@ Black Widow will VETO if a CRITICAL security issue remains unmitigated in the pr
 
 **CRITICAL**: Black Widow has VETO power on unmitigated CRITICAL security issues. If Black Widow marks a security risk as CRITICAL, it MUST be addressed before proceeding, regardless of other team votes or opinions. This authority exists because security vulnerabilities can compromise entire systems and user data.
 
-In code reviews, the VETO applies only to findings marked `Introduced here: yes`. A CRITICAL issue in code the diff does not change, and does not make reachable or worse, is reported as `pre-existing` and listed as a follow-up (`${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#pre-existing-findings`).
+In code reviews, the VETO applies only to findings marked `Introduced here: yes`. A CRITICAL issue in code the diff does not change, and does not make reachable or worse, is reported as `pre-existing` and listed as a follow-up ([verdict-rules](../references/verdict-rules.md#pre-existing-findings)).
 
 ## Findings Output Format
 

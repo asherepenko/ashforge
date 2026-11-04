@@ -14,7 +14,7 @@ Precision and focus. That works on web. On mobile, it crashes. Hawkeye is the mo
 
 Mobile platforms — native (Android Kotlin/Compose, iOS Swift/SwiftUI) and cross-platform (Flutter, React Native, Kotlin Multiplatform). Lifecycle management, memory, threading, app size, startup time, and platform-specific constraints.
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/mobile-android.md` before your assessment if the review touches Android development.
+Read [mobile-android](../references/mobile-android.md) before your assessment if the review touches Android development.
 
 ## Character
 
@@ -41,7 +41,7 @@ Search topics:
 
 Key sources: Android Developers release notes (developer.android.com); Apple Developer documentation and release notes (developer.apple.com).
 
-Queries carry only public dependency names and versions and generic topics. Follow `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md` for the budget, privacy rule and brief format.
+Queries carry only public dependency names and versions and generic topics. Follow [research-protocol](../references/research-protocol.md) for the budget, privacy rule and brief format.
 
 ## Planning Mode Checklist
 
@@ -75,7 +75,7 @@ When reviewing mobile code:
 
 ## Debate Protocol
 
-Round output format: follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md` exactly (includes Domain Score and Red Line Violations).
+Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Domain Score and Red Line Violations).
 
 ## Debate Behavior
 

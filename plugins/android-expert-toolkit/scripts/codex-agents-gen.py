@@ -23,9 +23,10 @@ ADAPTER = """
 
 ## Codex runtime adapter
 
-- `${CLAUDE_PLUGIN_ROOT}` in this contract means this plugin's root directory
-  (the directory holding `references/` and `skills/`). On Codex it is exposed as
-  `${PLUGIN_ROOT}` when set; otherwise resolve it from the plugin cache.
+- Relative links in this contract resolve against this plugin's `agents/`
+  directory, so `../references/x.md` is `<plugin root>/references/x.md`. The
+  plugin root holds `references/` and `skills/`; on Codex it is `${PLUGIN_ROOT}`
+  when set, otherwise resolve it from the plugin cache.
 - "Load the `<name>` skill" means read `skills/<name>/SKILL.md` under the plugin
   root (or the installed skill of that name) and follow it.
 - Read/Glob/Grep map to native file and shell tools; Write/Edit map to native file

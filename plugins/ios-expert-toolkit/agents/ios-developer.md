@@ -24,14 +24,17 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 
 | Topic | Load |
 |-------|------|
-| Reducers, `@Dependency`, `@Shared` | `tca` skill, `${CLAUDE_PLUGIN_ROOT}/references/tca.md` |
-| View model and state shape | `${CLAUDE_PLUGIN_ROOT}/references/swiftui.md` |
-| Repositories, persistence | `${CLAUDE_PLUGIN_ROOT}/references/data-layer.md` |
+| Reducers, `@Dependency`, `@Shared` | `tca` skill, [tca](../references/tca.md) |
+| View model and state shape | [swiftui](../references/swiftui.md) |
+| Repositories, persistence | [data-layer](../references/data-layer.md) |
 | SwiftData | `swiftdata-pro` skill |
-| async/await, actors, Sendable | `${CLAUDE_PLUGIN_ROOT}/references/concurrency.md`, `swift-concurrency` skill |
+| async/await, actors, Sendable | [concurrency](../references/concurrency.md), `swift-concurrency` skill |
 | Errors | `ios-error-handling` skill |
-| Keychain, networking security | `${CLAUDE_PLUGIN_ROOT}/references/security.md` |
-| Layering questions | `${CLAUDE_PLUGIN_ROOT}/references/architecture.md` |
+| Keychain, networking security | [security](../references/security.md) |
+| Changes to data already on devices (migrations, key renames) | [persisted-state-review](../references/persisted-state-review.md) |
+| Pending-change queue, background sync, conflicts | [offline-sync](../references/offline-sync.md) |
+| Logging, signposts, MetricKit, crash reporting, analytics | [observability](../references/observability.md) |
+| Layering questions | [architecture](../references/architecture.md) |
 
 ## Rules
 

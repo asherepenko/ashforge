@@ -23,15 +23,15 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 
 | Topic | Load |
 |-------|------|
-| Components, state placement, side effects, text fields, custom modifiers, animations, previews, lists, theme | `${CLAUDE_PLUGIN_ROOT}/references/compose-ui.md` |
-| Root/Screen split, state, actions | `${CLAUDE_PLUGIN_ROOT}/references/presentation.md` |
-| Accessibility | `${CLAUDE_PLUGIN_ROOT}/references/accessibility.md` |
+| Components, state placement, side effects, text fields, custom modifiers, animations, previews, lists, theme | [compose-ui](../references/compose-ui.md) |
+| Root/Screen split, state, actions | [presentation](../references/presentation.md) |
+| Accessibility | [accessibility](../references/accessibility.md) |
 | Window sizes, bar vs rail, panes, foldables | `adaptive` skill |
 | Insets and system bars | `edge-to-edge` skill |
 | Recomposition, stability, jank | `jetpack-compose-performance` skill |
 | XML → Compose | `migrate-xml-views-to-jetpack-compose` skill |
-| Navigation | `${CLAUDE_PLUGIN_ROOT}/references/navigation.md` (Nav 2), `navigation-3`, `navigation-event` skills |
-| Quality bar | `${CLAUDE_PLUGIN_ROOT}/references/rubric-compose-ui.md` |
+| Navigation | [navigation](../references/navigation.md) (Nav 2), `navigation-3`, `navigation-event` skills |
+| Quality bar | [rubric-compose-ui](../references/rubric-compose-ui.md) |
 
 ## Rules
 

@@ -14,7 +14,7 @@ Doctor Strange sees across dimensions — and across platforms. Expert in CI/CD 
 
 DevOps, CI/CD, deployment strategy, infrastructure-as-code, containerization, build systems, cross-platform development (React Native, Flutter), container orchestration, and release management.
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/cicd-infrastructure.md` before your assessment if the review touches CI/CD infrastructure.
+Read [cicd-infrastructure](../references/cicd-infrastructure.md) before your assessment if the review touches CI/CD infrastructure.
 
 ## Character
 
@@ -47,7 +47,7 @@ Search topics:
 
 Key sources: GitHub Actions changelog (github.blog/changelog); Kubernetes release notes (kubernetes.io); Terraform and Docker official release notes.
 
-Queries carry only public dependency names and versions and generic topics. Follow `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md` for the budget, privacy rule and brief format.
+Queries carry only public dependency names and versions and generic topics. Follow [research-protocol](../references/research-protocol.md) for the budget, privacy rule and brief format.
 
 ## Planning Mode Checklist
 
@@ -81,7 +81,7 @@ When reviewing infrastructure or CI/CD code:
 
 ## Debate Protocol
 
-Round output format: follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md` exactly (includes Domain Score and Red Line Violations).
+Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Domain Score and Red Line Violations).
 
 ## Debate Behavior
 

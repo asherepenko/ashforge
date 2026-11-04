@@ -18,7 +18,7 @@ Canonical rules for the optional web research step. A selected member runs its o
 
 - `black-widow` researches on every review. Supply-chain compromises and new CVEs matter regardless of what changed.
 - Each owner of a changed dependency manifest researches too, per the table below.
-- Research runs only when `WEB` is `available` (see `${CLAUDE_PLUGIN_ROOT}/references/runtime-adapters.md`) and the spawn prompt carries a RESEARCH BRIEF block.
+- Research runs only when `WEB` is `available` (see [runtime-adapters](runtime-adapters.md)) and the spawn prompt carries a RESEARCH BRIEF block.
 
 ## Path-Match Table
 
@@ -89,4 +89,4 @@ This line is disclosure only. It never caps or changes the verdict.
 
 ## Quick Mode and Fallback
 
-Only members in the Quick roster research. An absent member is disclosed as `Research: <member> not in roster`. There is no roster change and no extra spawn. The same rule holds for the single-orchestrator fallback in `${CLAUDE_PLUGIN_ROOT}/references/runtime-fallback.md`, where every persona is walked.
+Only members in the Quick roster research. An absent member is disclosed as `Research: <member> not in roster`. There is no roster change and no extra spawn. The same rule holds for the single-orchestrator fallback in [runtime-fallback](runtime-fallback.md), where every persona is walked.

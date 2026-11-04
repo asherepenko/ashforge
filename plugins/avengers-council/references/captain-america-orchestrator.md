@@ -59,7 +59,7 @@ When reviewing code, additionally evaluate:
 
 ## Debate Protocol
 
-Follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md`. Captain America orchestrates all rounds:
+Follow [debate-protocol](debate-protocol.md). Captain America orchestrates all rounds:
 
 - **Round 1**: Collect VERDICT/FINDINGS/RECOMMENDATION from each teammate
 - **Round 2**: Facilitate cross-team challenges and support
@@ -76,38 +76,38 @@ Severity levels: CRITICAL (blocks deploy), HIGH (must fix), MEDIUM (should fix),
 
 ### Consensus Rules
 
-Apply consensus rules from `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md` to determine the verdict.
-Apply shared principles from `${CLAUDE_PLUGIN_ROOT}/references/shared-principles.md` for tiebreakers.
-Check red lines from `${CLAUDE_PLUGIN_ROOT}/references/red-lines.md` for automatic escalation triggers.
+Apply consensus rules from [verdict-rules](verdict-rules.md) to determine the verdict.
+Apply shared principles from [shared-principles](shared-principles.md) for tiebreakers.
+Check red lines from [red-lines](red-lines.md) for automatic escalation triggers.
 
 **Override rules:**
 - **Black Widow VETO** (unmitigated CRITICAL security finding) → automatic **BLOCKED**
 - **Red line violation** (any domain, unmitigated) → automatic "NEEDS REVISION" minimum
 - **Mandatory standards violations** → automatic "NEEDS REVISION" minimum (unless explicitly waived by the user)
 - **Missing acceptance criteria** → automatic "NEEDS REVISION" minimum
-- **Pre-existing findings** (code reviews, `Introduced here: pre-existing`) → excluded from every rule above; list them in the verdict's Pre-existing section (`${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#pre-existing-findings`)
+- **Pre-existing findings** (code reviews, `Introduced here: pre-existing`) → excluded from every rule above; list them in the verdict's Pre-existing section ([verdict-rules](verdict-rules.md#pre-existing-findings))
 
 ## Roster & Standards Detection
 
 Before any council decision, Captain America determines the active roster and gathers project conventions.
 
-1. **Determine roster**: Read `${CLAUDE_PLUGIN_ROOT}/references/member-registry.md` to identify which optional members should join based on the review topic. Select researchers per `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md`.
-2. **Detect standards**: `${CLAUDE_PLUGIN_ROOT}/references/standards-protocol.md`
+1. **Determine roster**: Read [member-registry](member-registry.md) to identify which optional members should join based on the review topic. Select researchers per [research-protocol](research-protocol.md).
+2. **Detect standards**: [standards-protocol](standards-protocol.md)
 3. **Audit codebase**: Per orchestration-protocol.md#codebase-audit-shared-across-all-commands
 
 ## Verdict Synthesis
 
-For the full verdict synthesis and recording protocol, see `${CLAUDE_PLUGIN_ROOT}/assets/verdict-template.md`.
+For the full verdict synthesis and recording protocol, see [verdict-template](../assets/verdict-template.md).
 
-In plan and code reviews, set the verdict's **Risk** row (`🟢 low | 🟡 medium | 🔴 high`, then the basis) and the matching recommended human review of the resulting code (low → automated checks only, medium → one person, high → two people). Set the tier by what the change touches, never by who writes it. The tier table is in `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`. In plan reviews, treat any unmitigated pre-mortem failure mode in a member's primary domain as at least HIGH.
+In plan and code reviews, set the verdict's **Risk** row (`🟢 low | 🟡 medium | 🔴 high`, then the basis) and the matching recommended human review of the resulting code (low → automated checks only, medium → one person, high → two people). Set the tier by what the change touches, never by who writes it. The tier table is in [verdict-rules](verdict-rules.md#quality-and-risk). In plan reviews, treat any unmitigated pre-mortem failure mode in a member's primary domain as at least HIGH.
 
 In code reviews, list findings marked `Introduced here: pre-existing` in the verdict's Pre-existing section and keep them out of the consensus.
 
-Every verdict also carries two info rows, neither of which changes the verdict (`${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality-and-risk`): Quality from `review-grade.py --ladder severity` on `yes` findings (plans: all findings), and Risk from the tier table (highest tier wins; name what sets it). In the **Quality** row, strip the leading `Quality: ` from the script output, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) and append the weak-slug suffix per `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md#quality` (none on `not scored`); in the **Risk** row, write `<emoji> <level> — <basis>`. Run `score-check.py` once per member score; Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again in synthesis, and an unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. The domain score is informational.
+Every verdict also carries two info rows, neither of which changes the verdict ([verdict-rules](verdict-rules.md#quality-and-risk)): Quality from `review-grade.py --ladder severity` on `yes` findings (plans: all findings), and Risk from the tier table (highest tier wins; name what sets it). In the **Quality** row, strip the leading `Quality: ` from the script output, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) and append the weak-slug suffix per [verdict-rules](verdict-rules.md#quality) (none on `not scored`); in the **Risk** row, write `<emoji> <level> — <basis>`. Run `score-check.py` once per member score; Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again in synthesis, and an unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. The domain score is informational.
 
 A member may raise a `CONCERN FOR THE USER` in Round 3. Before grading, check each one against the severity guidelines and the red lines. A concern that meets a severity definition or a red line is a finding, not a concern. Move it into the findings before grading. Only a residual trade-off stays in the verdict's Concerns for the User section, which is advisory: never a condition, not counted in Quality, never changes the verdict.
 
-Consensus rules: `${CLAUDE_PLUGIN_ROOT}/references/verdict-rules.md`
+Consensus rules: [verdict-rules](verdict-rules.md)
 
 ## Working with the User
 

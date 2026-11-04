@@ -93,7 +93,7 @@ Read @references/member-registry.md to build the active roster:
 
 1. **Core members**: Always included — all 8 core members from the registry.
 2. **Optional members**: Scan the review topic against each optional member's `Invoke When` criteria and focus tags. If the topic matches, include that member (for example Ant-Man, when the change adds or moves code; the invoke rule is in the Optional Members row of @references/member-registry.md).
-3. **Select researchers**: When `WEB=available` (runtime-adapters.md `### WEB`), apply `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md`. Code reviews: read the preflight section `== Dependency manifests changed ==` and take the owners from its path-match table. Plan reviews: read the plan text for named new or upgraded dependencies. `black-widow` researches on every review. With `WEB=none`, select no one and plan the Run Mode line `Research: skipped — no web tools`.
+3. **Select researchers**: When `WEB=available` (runtime-adapters.md `### WEB`), apply [research-protocol](research-protocol.md). Code reviews: read the preflight section `== Dependency manifests changed ==` and take the owners from its path-match table. Plan reviews: read the plan text for named new or upgraded dependencies. `black-widow` researches on every review. With `WEB=none`, select no one and plan the Run Mode line `Research: skipped — no web tools`.
 4. **Announce**: If any optional members are joining, state which ones and why. Name the selected researchers too.
 5. **Calculate thresholds**:
    - Let **N** = total active voters (core + optional + Captain America)
@@ -198,7 +198,7 @@ Follow the debate protocol from your agent definition for all rounds.",
 })
 ```
 
-**Hub (result-returning spawns — Codex `spawn_agent`, Zcode `Agent(subagent_type)`, prompt-embed pi/Antigravity):** Same prompt template, dispatched per the SPAWN axis in @references/runtime-adapters.md — `prompt-embed` runtimes paste the persona text from `agents/<name>.md` (with `${CLAUDE_PLUGIN_ROOT}` rewritten to the resolved root) above the `REVIEW CONTEXT` block; `registry` runtimes pass `subagent_type`. Drop the trailing lines about sharing findings with teammates and waiting for `team-lead` to signal Round 2 and Round 3 — hub workers return results; Captain closes and replaces them when close is exposed, or continues the bounded pool with the next pass's full persona and context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
+**Hub (result-returning spawns — Codex `spawn_agent`, Zcode `Agent(subagent_type)`, prompt-embed pi/Antigravity):** Same prompt template, dispatched per the SPAWN axis in @references/runtime-adapters.md — `prompt-embed` runtimes paste the persona text from `agents/<name>.md` (with each relative link `../<path>` rewritten to `<resolved plugin root>/<path>`) above the `REVIEW CONTEXT` block; `registry` runtimes pass `subagent_type`. Drop the trailing lines about sharing findings with teammates and waiting for `team-lead` to signal Round 2 and Round 3 — hub workers return results; Captain closes and replaces them when close is exposed, or continues the bounded pool with the next pass's full persona and context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
 
 **Core agent roster** (always spawned):
 
@@ -409,7 +409,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    **Check each score:** run `score-check.py` once per member with their own counts. Full mode already checked the Round-1 scores and sent any FLAG back in the Round 3 trigger; this run covers the final scores. Exit 1 is a FLAG: a FLAG still present after Round 3, or any FLAG in Quick and fallback modes (no Round 3), is printed as `Score flag:` under the member in the verdict. A FLAG never changes the verdict.
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
+   python3 "$PLUGIN_ROOT/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
    ```
 
    **Scope Check (plan reviews):** count each `❌ missing` row as one HIGH finding and each `⚠️ partial` row as one MEDIUM finding before grading. An underlying gap already raised by a member or in AC Validation counts once, at the highest severity, and its Scope Check row cites that finding.
@@ -417,7 +417,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    **Grade quality and set risk:** run `review-grade.py` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Put the script output, without its leading `Quality: `, in the **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) of the Consensus table and append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error the row reads `not scored ({reason})`. Put Risk in the **Risk** row as `<emoji> <level> — <basis>`. Both are info only (@references/verdict-rules.md#quality-and-risk).
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-grade.py" --ladder severity --critical N --high N --medium N --low N
+   python3 "$PLUGIN_ROOT/scripts/review-grade.py" --ladder severity --critical N --high N --medium N --low N
    ```
 
 5. **Apply consensus rules** per @references/verdict-rules.md (single source of truth — do not restate here)
@@ -475,7 +475,7 @@ For `--quick` flag, use abbreviated flow. This section is also the landing path 
 
 ### Member Selection
 
-Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (Captain America) = 3. Use the routing tables in @references/member-registry.md#quick-mode-member-selection to determine which members to pick. Optional members are NOT included in Quick Mode (cost control). Researchers follow `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md` (Quick Mode and Fallback): only a selected member in this roster researches, and an absent one is disclosed as `Research: <member> not in roster`.
+Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (Captain America) = 3. Use the routing tables in @references/member-registry.md#quick-mode-member-selection to determine which members to pick. Optional members are NOT included in Quick Mode (cost control). Researchers follow [research-protocol](research-protocol.md) (Quick Mode and Fallback): only a selected member in this roster researches, and an absent one is disclosed as `Research: <member> not in roster`.
 
 ### Quick Flow
 

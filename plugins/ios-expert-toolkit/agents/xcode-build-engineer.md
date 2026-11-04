@@ -24,10 +24,10 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files and tar
 
 | Topic | Load |
 |-------|------|
-| Targets, modules, dependency rules | `${CLAUDE_PLUGIN_ROOT}/references/architecture.md` |
+| Targets, modules, dependency rules | [architecture](../references/architecture.md) |
 | Security build settings | `audit-xcode-security-settings` skill |
-| Launch time, build and runtime profiling | `${CLAUDE_PLUGIN_ROOT}/references/performance.md`, `xctrace` skill |
-| Secrets, privacy manifest | `${CLAUDE_PLUGIN_ROOT}/references/security.md` |
+| Launch time, build and runtime profiling | [performance](../references/performance.md), `xctrace` skill |
+| Secrets, privacy manifest | [security](../references/security.md) |
 | Run on simulator or device | `device-interaction` skill |
 
 ## Rules

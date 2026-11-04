@@ -63,7 +63,7 @@ def test_no_research_focus_section():
 
 def test_debate_protocol_one_liner():
     body = _section(AGENT.read_text(), "Debate Protocol")
-    assert "${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md" in body
+    assert "[debate-protocol](../references/debate-protocol.md)" in body
 
 
 @pytest.mark.parametrize(

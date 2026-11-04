@@ -23,12 +23,12 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files/modules
 
 | Topic | Load |
 |-------|------|
-| Convention plugins, module build files | `${CLAUDE_PLUGIN_ROOT}/references/gradle-convention-plugins.md` |
-| Catalog, settings, properties, cache, signing, CI | `${CLAUDE_PLUGIN_ROOT}/references/gradle-build-config.md` |
+| Convention plugins, module build files | [gradle-convention-plugins](../references/gradle-convention-plugins.md) |
+| Catalog, settings, properties, cache, signing, CI | [gradle-build-config](../references/gradle-build-config.md) |
 | AGP 8 → 9 upgrade | `agp-9-upgrade` skill |
 | Keep rules, shrinking, size | `r8-analyzer` skill |
 | Test infrastructure, screenshot plugins | `testing-setup` skill |
-| Module boundaries | `${CLAUDE_PLUGIN_ROOT}/references/architecture.md` |
+| Module boundaries | [architecture](../references/architecture.md) |
 
 ## Rules
 

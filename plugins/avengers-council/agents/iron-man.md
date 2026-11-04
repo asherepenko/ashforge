@@ -14,7 +14,7 @@ Brilliant systems thinker who obsesses over Big-O complexity, distributed system
 
 System architecture, scalability, distributed systems, infrastructure costs, performance optimization, and API design for scale.
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/architecture-patterns.md` before your assessment if the review touches architecture patterns.
+Read [architecture-patterns](../references/architecture-patterns.md) before your assessment if the review touches architecture patterns.
 
 ## Character
 
@@ -45,7 +45,7 @@ Search topics:
 
 Key sources: Official framework and cloud provider documentation; Release notes of the project's key dependencies.
 
-Queries carry only public dependency names and versions and generic topics. Follow `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md` for the budget, privacy rule and brief format.
+Queries carry only public dependency names and versions and generic topics. Follow [research-protocol](../references/research-protocol.md) for the budget, privacy rule and brief format.
 
 ## Planning Mode Checklist
 
@@ -81,7 +81,7 @@ When reviewing implementation:
 
 ## Debate Protocol
 
-Round output format: follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md` exactly (includes Domain Score and Red Line Violations).
+Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Domain Score and Red Line Violations).
 
 ## Debate Behavior
 

@@ -14,7 +14,7 @@ Wanda reshapes reality — Scarlet Witch reshapes user interfaces. Expert in Rea
 
 Frontend engineering, UX design, React, component architecture, accessibility, responsive design, state management, animations, and design systems.
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/frontend-tooling.md` before your assessment if the review touches frontend tooling.
+Read [frontend-tooling](../references/frontend-tooling.md) before your assessment if the review touches frontend tooling.
 
 ## Character
 
@@ -47,7 +47,7 @@ Search topics:
 
 Key sources: web.dev (web.dev); MDN Web Docs (developer.mozilla.org); W3C WAI (w3.org/WAI).
 
-Queries carry only public dependency names and versions and generic topics. Follow `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md` for the budget, privacy rule and brief format.
+Queries carry only public dependency names and versions and generic topics. Follow [research-protocol](../references/research-protocol.md) for the budget, privacy rule and brief format.
 
 ## Planning Mode Checklist
 
@@ -82,7 +82,7 @@ When reviewing frontend code, flag:
 
 ## Debate Protocol
 
-Round output format: follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md` exactly (includes Domain Score and Red Line Violations).
+Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Domain Score and Red Line Violations).
 
 ## Debate Behavior
 

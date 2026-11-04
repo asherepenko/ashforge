@@ -6,7 +6,7 @@ argument-hint: "[state | di | testing | architecture | security | performance | 
 
 # Android Expert Pattern Check
 
-Run pattern detection from `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` against the current codebase. Reports consistency percentages and applies the 80/20 decision matrix.
+Run pattern detection from [pattern-detection](../../references/pattern-detection.md) against the current codebase. Reports consistency percentages and applies the 80/20 decision matrix.
 
 > **Platform notes:** Read-only apart from the cache file — uses Grep, Glob, Read, and shell. No subagent dispatch, no interactive prompts. Works the same on every runtime (Claude Code, Codex, and others); substitute the runtime's shell tool where this says Bash.
 
@@ -15,7 +15,25 @@ Run pattern detection from `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.m
 Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-${ZCODE_PLUGIN_ROOT:-}}}"
+if [ -z "$PLUGIN_ROOT" ]; then
+  # Runtimes without a plugin-root env var install into a versioned cache:
+  # resolve the newest cached copy.
+  for base in \
+    "$HOME/.zcode/cli/plugins/cache"/*/android-expert-toolkit \
+    "$HOME/.claude/plugins/cache"/*/android-expert-toolkit \
+    "$HOME/.claude/plugins/cache/android-expert-toolkit" \
+    "$HOME/.codex/plugins/cache"/*/android-expert-toolkit \
+    "$HOME/.codex/plugins/cache/android-expert-toolkit"; do
+    [ -d "$base" ] || continue
+    latest="$(ls -1 "$base" 2>/dev/null | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
+    [ -n "$latest" ] && PLUGIN_ROOT="$base/$latest" && break
+  done
+fi
+if [ -z "$PLUGIN_ROOT" ]; then
+  echo "ERROR: cannot locate the android-expert-toolkit plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, ZCODE_PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
+  exit 1
+fi
 python3 "$PLUGIN_ROOT/skills/android-conventions/scripts/preflight.py"
 ```
 
@@ -65,7 +83,7 @@ Before running detection, check for a valid cache at `.artifacts/aet/cache/detec
    - If both match: **cache hit** — use cached patterns, skip to Step 4 (Report Results)
    - If either differs: **cache stale** — proceed to Step 2
 
-After detection completes (Step 3), write results to `.artifacts/aet/cache/detected-patterns.json` following the schema in `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` (section *Pattern Detection Cache*). The path and keys are a stable contract read by other tools; don't change them.
+After detection completes (Step 3), write results to `.artifacts/aet/cache/detected-patterns.json` following the schema in [pattern-detection](../../references/pattern-detection.md) (section *Pattern Detection Cache*). The path and keys are a stable contract read by other tools; don't change them.
 
 ### 2. Run Detection
 
@@ -81,7 +99,7 @@ For each category (or all), use the Grep tool to count pattern occurrences. Summ
 | `performance` | Baseline Profiles, missing `remember`, Lazy lists without stable `key`, `GlobalScope`, `stateIn` sharing policy |
 | `accessibility` | `contentDescription` coverage, `Modifier.semantics`, touch target sizes, `mergeDescendants` |
 
-Canonical sweep definitions (exact grep patterns, file globs, and counting rules): `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` — read it before running detection; do not improvise patterns from this table.
+Canonical sweep definitions (exact grep patterns, file globs, and counting rules): [pattern-detection](../../references/pattern-detection.md) — read it before running detection; do not improvise patterns from this table.
 
 ### 3. Calculate Consistency
 
@@ -126,7 +144,7 @@ Modern best practice recommendations:
 - DI: Hilt (Android-only apps); Koin is reasonable for KMP
 - Testing: fakes first; mocks only for final framework classes
 - Architecture: Compose + MVVM/MVI
-- Security: flag `androidx.security:security-crypto` (`EncryptedSharedPreferences`, `EncryptedFile`) as deprecated; see `${CLAUDE_PLUGIN_ROOT}/references/security.md`
+- Security: flag `androidx.security:security-crypto` (`EncryptedSharedPreferences`, `EncryptedFile`) as deprecated; see [security](../../references/security.md)
 
 ### 6. Summary
 
@@ -134,4 +152,4 @@ End with an overall summary:
 - Categories checked
 - Patterns with conflicts
 - Recommended actions
-- Reference to `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md` for full decision framework
+- Reference to [pattern-detection](../../references/pattern-detection.md) for full decision framework

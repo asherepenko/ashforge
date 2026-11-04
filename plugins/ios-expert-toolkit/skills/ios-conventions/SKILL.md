@@ -8,7 +8,41 @@ argument-hint: "[architecture | di | testing | persistence | concurrency | navig
 
 Detect what the codebase already does, then decide whether new code follows it or starts with TCA. Read-only: uses `rg`, `jq`, and file reads. Works the same on every runtime.
 
-Sweep definitions (exact patterns, exclusions, counting rules) live in `${CLAUDE_PLUGIN_ROOT}/references/pattern-detection.md`. Read it before running a sweep; do not improvise patterns from this page.
+Sweep definitions (exact patterns, exclusions, counting rules) live in [pattern-detection](../../references/pattern-detection.md). Read it before running a sweep; do not improvise patterns from this page.
+
+## Preflight
+
+Run this first, from the project root:
+
+```bash
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-${ZCODE_PLUGIN_ROOT:-}}}"
+if [ -z "$PLUGIN_ROOT" ]; then
+  # Runtimes without a plugin-root env var install into a versioned cache:
+  # resolve the newest cached copy.
+  for base in \
+    "$HOME/.zcode/cli/plugins/cache"/*/ios-expert-toolkit \
+    "$HOME/.claude/plugins/cache"/*/ios-expert-toolkit \
+    "$HOME/.claude/plugins/cache/ios-expert-toolkit" \
+    "$HOME/.codex/plugins/cache"/*/ios-expert-toolkit \
+    "$HOME/.codex/plugins/cache/ios-expert-toolkit"; do
+    [ -d "$base" ] || continue
+    latest="$(ls -1 "$base" 2>/dev/null | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
+    [ -n "$latest" ] && PLUGIN_ROOT="$base/$latest" && break
+  done
+fi
+if [ -z "$PLUGIN_ROOT" ]; then
+  echo "ERROR: cannot locate the ios-expert-toolkit plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, ZCODE_PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
+  exit 1
+fi
+python3 "$PLUGIN_ROOT/skills/ios-conventions/scripts/preflight.py"
+```
+
+It is read-only and prints `NOT_FOUND` or `NONE` for anything missing. It reports: deployment targets (`IPHONEOS_DEPLOYMENT_TARGET`), `Package.swift` platforms, `swift-tools-version`, Swift language mode (`SWIFT_VERSION`, `swiftLanguageModes`), strict concurrency setting, TCA version from `Package.resolved`, all resolved packages, `import Testing` vs `import XCTest` file counts, and `@Observable` vs `ObservableObject` file counts. It skips `.build/`, `Pods/`, `Carthage/`, `SourcePackages/`, and `DerivedData/`.
+
+Use the output to:
+1. Answer the `version` area directly. Do not re-run that sweep by hand.
+2. Pre-bias the `testing` and `concurrency` sweeps from the counts and settings.
+3. Read the `@Observable` and `ObservableObject` counts as a first hint for the architecture sweep. The verdict still comes from the architecture sweep below.
 
 ## Sweeps
 
@@ -24,10 +58,10 @@ Count files, not matches. Exclude `Pods/`, `Carthage/`, `.build/`, `SourcePackag
 | `navigation` | `NavigationStack` vs coordinators (`Coordinator`, `UINavigationController`) |
 | `version` | `Package.resolved` (TCA version), `IPHONEOS_DEPLOYMENT_TARGET`, `SWIFT_VERSION` / `swiftLanguageModes` |
 
-For the architecture verdict, run the reference implementation when the plugin checkout is available:
+For the architecture verdict, run the reference implementation when the plugin checkout is available (`PLUGIN_ROOT` as resolved in Preflight):
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/tests/fixtures/run-sweeps.py" <project-dir>
+python3 "$PLUGIN_ROOT/tests/fixtures/run-sweeps.py" <project-dir>
 ```
 
 It prints one of `NEW`, `TCA`, `MVVM`, `MIXED`. Without the script, apply the same counts by hand with the patterns from the reference.
@@ -59,7 +93,7 @@ Modern choices: Swift Testing for new tests, SwiftData for new persistence on iO
 
 ## Version awareness
 
-Run the version sweep before recommending an API. Check availability against the deployment target: `@Observable` and SwiftData need iOS 17, and the `*-whats-new-27` skills need iOS 27. Flag legacy TCA APIs only when the resolved TCA version deprecates them. Match the Swift language mode already in use.
+Use the preflight version facts before recommending an API. Check availability against the deployment target: `@Observable` and SwiftData need iOS 17, and the `*-whats-new-27` skills need iOS 27. Flag legacy TCA APIs only when the resolved TCA version deprecates them. Match the Swift language mode already in use.
 
 ## Report
 

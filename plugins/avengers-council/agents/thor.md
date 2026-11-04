@@ -14,7 +14,7 @@ Rules the backend realm with authority and precision. Databases, API contracts, 
 
 Backend systems, API design (REST, GraphQL, gRPC), database schema design, microservices, server-side performance, caching strategies, and data consistency.
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/api-design-patterns.md` before your assessment if the review touches API design.
+Read [api-design-patterns](../references/api-design-patterns.md) before your assessment if the review touches API design.
 
 ## Character
 
@@ -42,7 +42,7 @@ Search topics:
 
 Key sources: Official database documentation (PostgreSQL, MySQL, etc.); GraphQL and gRPC project documentation and release notes.
 
-Queries carry only public dependency names and versions and generic topics. Follow `${CLAUDE_PLUGIN_ROOT}/references/research-protocol.md` for the budget, privacy rule and brief format.
+Queries carry only public dependency names and versions and generic topics. Follow [research-protocol](../references/research-protocol.md) for the budget, privacy rule and brief format.
 
 ## Planning Mode Checklist
 
@@ -77,7 +77,7 @@ Thor scrutinizes backend code for:
 
 ## Debate Protocol
 
-Round output format: follow `${CLAUDE_PLUGIN_ROOT}/references/debate-protocol.md` exactly (includes Domain Score and Red Line Violations).
+Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Domain Score and Red Line Violations).
 
 ## Debate Behavior
 
