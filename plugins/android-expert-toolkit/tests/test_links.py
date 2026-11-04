@@ -33,7 +33,18 @@ def test_relative_links_resolve(path):
         assert (path.parent / target.split("#", 1)[0]).exists(), f"{path.name}: broken link {target}"
 
 
-@pytest.mark.parametrize("path", [p for p in own_markdown() if p.name != "CHANGELOG.md"],
+def root_var_scope():
+    return [p for p in own_markdown() if p.name != "CHANGELOG.md"]
+
+
+def test_root_var_scope_covers_skills_and_skips_history():
+    names = {str(p.relative_to(PROJECT_ROOT)) for p in root_var_scope()}
+    assert "skills/android-conventions/SKILL.md" in names
+    assert "skills/android-expert/SKILL.md" in names
+    assert "CHANGELOG.md" not in names
+
+
+@pytest.mark.parametrize("path", root_var_scope(),
                          ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
 def test_no_plugin_root_variables(path):
     """Skills call scripts by skill-relative path; markdown never names a plugin-root env var."""
