@@ -95,7 +95,7 @@ def test_skills_resolve_plugin_root_without_env_var():
         "skills/council-code-review/SKILL.md",
     ]:
         text = read(skill)
-        assert "ZCODE_PLUGIN_ROOT" in text, skill
+        assert "ZCODE_PLUGIN_ROOT" not in text, skill
         assert ".zcode/cli/plugins/cache" in text, skill
 
 

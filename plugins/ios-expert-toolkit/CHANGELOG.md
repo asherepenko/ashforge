@@ -20,7 +20,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 ### Fixed
 
 - Plugin file references are relative links, so skills and agents resolve on Codex, Cursor, Pi and Zcode; shell snippets use the cache-fallback root resolver.
-
+- The plugin-root resolver no longer reads `ZCODE_PLUGIN_ROOT`: Zcode documents no such variable. Zcode installs are found through the `~/.zcode/cli/plugins/cache` search.
 
 ## [1.0.0] - 2026-11-03
 

@@ -22,7 +22,7 @@ def test_skill_reuses_runtime_scaffolding():
     assert "references/runtime-adapters.md" in text
     assert "references/runtime-fallback.md" in text
     assert "== Runtime capability ==" in text
-    assert "ZCODE_PLUGIN_ROOT" in text
+    assert "ZCODE_PLUGIN_ROOT" not in text
     assert ".zcode/cli/plugins/cache" in text
     assert "skills/council-plan-review/scripts/preflight.py" in text
 

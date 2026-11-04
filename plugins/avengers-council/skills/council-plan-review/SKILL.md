@@ -18,7 +18,7 @@ Read [orchestration-protocol](../../references/orchestration-protocol.md) before
 Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-${ZCODE_PLUGIN_ROOT:-}}}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
 if [ -z "$PLUGIN_ROOT" ]; then
   # Runtimes without a plugin-root env var install into a versioned cache —
   # resolve the newest cached copy (see references/runtime-adapters.md).
@@ -34,7 +34,7 @@ if [ -z "$PLUGIN_ROOT" ]; then
   done
 fi
 if [ -z "$PLUGIN_ROOT" ]; then
-  echo "ERROR: cannot locate the avengers-council plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, ZCODE_PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
+  echo "ERROR: cannot locate the avengers-council plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
   exit 1
 fi
 python3 "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.py"

@@ -56,7 +56,6 @@ Read the preflight's `== Runtime capability ==` section, then resolve each axis 
 |-------|----------|
 | `CLAUDE_PLUGIN_ROOT` | Claude Code |
 | `PLUGIN_ROOT` | Codex |
-| `ZCODE_PLUGIN_ROOT` | Zcode (expected; if unset, the [cache-glob fallback](#plugin-root-resolution) resolves the root) |
 | none | Use the cache-glob fallback below, or fail fast with instructions. |
 
 `allowed-tools` skill frontmatter is Claude-only — other runtimes inherit whatever the session permits.
@@ -180,7 +179,7 @@ No debate rounds. Same UX everywhere. This is also the shape cost-controlled deg
 Skill bodies resolve the plugin root with this chain (order matters — the first hit wins):
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-${ZCODE_PLUGIN_ROOT:-}}}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
 ```
 
 If still empty, fall back to the newest cached copy (runtimes without a plugin-root env var install into a versioned cache):
