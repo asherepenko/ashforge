@@ -37,23 +37,23 @@ Each row owns its trigger phrases; no phrase appears in two rows. References liv
 | Xcode security settings, hardened build settings, audit the project settings | `audit-xcode-security-settings` |
 | resizable window, multiple windows, Stage Manager, split-screen layout | `app-resizability` |
 | run on the simulator, screenshot the app, tap through the UI, check behavior on device | `device-interaction` |
-| layers, modules, dependency injection, where should this live | `architecture.md` |
-| UIViewRepresentable, hosting controller, UIKit interop, SwiftUI state and view composition | `swiftui.md` |
-| repositories, persistence layer, Core Data coexistence, migrate Core Data to SwiftData, CloudKit sync | `data-layer.md` |
-| async/await patterns, Task lifetime, AsyncStream, structured concurrency basics | `concurrency.md` |
-| NavigationStack, deep links, universal links, onOpenURL, apple-app-site-association | `navigation.md` |
-| launch time, hangs, MetricKit, memory growth, scroll hitches | `performance.md` |
-| Keychain, App Transport Security, secrets in the bundle, privacy manifest basics | `security.md` |
-| VoiceOver, Dynamic Type, accessibility labels, reduce motion | `accessibility.md` |
-| matching vs changing existing patterns, scope discipline | `pragmatics.md` |
-| architecture detection sweep, 80/20 rule, sweep patterns | `pattern-detection.md` |
-| test code mechanics, fakes and spies, test fixtures, async test helpers | `testing-patterns.md` |
-| TCA reference detail, dependency clients, TCA navigation, SwiftData behind @Dependency | `tca.md` |
-| changing data already on devices, schema migration, renaming a stored key, VersionedSchema | `persisted-state-review.md` |
-| offline queue, pending changes, conflict resolution, BGTaskScheduler, NWPathMonitor | `offline-sync.md` |
-| logging, os.Logger, signposts, crash reporting, analytics | `observability.md` |
-| grade this SwiftUI screen, UI quality bar | `rubric-swiftui.md` |
-| grade this architecture, architecture quality bar | `rubric-ios-architecture.md` |
+| layers, modules, dependency injection, where should this live | [architecture](../../references/architecture.md) |
+| UIViewRepresentable, hosting controller, UIKit interop, SwiftUI state and view composition | [swiftui](../../references/swiftui.md) |
+| repositories, persistence layer, Core Data coexistence, migrate Core Data to SwiftData, CloudKit sync | [data-layer](../../references/data-layer.md) |
+| async/await patterns, Task lifetime, AsyncStream, structured concurrency basics | [concurrency](../../references/concurrency.md) |
+| NavigationStack, deep links, universal links, onOpenURL, apple-app-site-association | [navigation](../../references/navigation.md) |
+| launch time, hangs, MetricKit, memory growth, scroll hitches | [performance](../../references/performance.md) |
+| Keychain, App Transport Security, secrets in the bundle, privacy manifest basics | [security](../../references/security.md) |
+| VoiceOver, Dynamic Type, accessibility labels, reduce motion | [accessibility](../../references/accessibility.md) |
+| matching vs changing existing patterns, scope discipline | [pragmatics](../../references/pragmatics.md) |
+| architecture detection sweep, 80/20 rule, sweep patterns | [pattern-detection](../../references/pattern-detection.md) |
+| test code mechanics, fakes and spies, test fixtures, async test helpers | [testing-patterns](../../references/testing-patterns.md) |
+| TCA reference detail, dependency clients, TCA navigation, SwiftData behind @Dependency | [tca](../../references/tca.md) |
+| changing data already on devices, schema migration, renaming a stored key, VersionedSchema | [persisted-state-review](../../references/persisted-state-review.md) |
+| offline queue, pending changes, conflict resolution, BGTaskScheduler, NWPathMonitor | [offline-sync](../../references/offline-sync.md) |
+| logging, os.Logger, signposts, crash reporting, analytics | [observability](../../references/observability.md) |
+| grade this SwiftUI screen, UI quality bar | [rubric-swiftui](../../references/rubric-swiftui.md) |
+| grade this architecture, architecture quality bar | [rubric-ios-architecture](../../references/rubric-ios-architecture.md) |
 
 ## Xcode MCP
 

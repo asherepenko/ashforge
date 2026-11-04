@@ -62,7 +62,7 @@ def test_negative_control_skill_script_ref_detected():
 
 @pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
 def test_reference_file_names_in_tables_exist(path):
-    """Router tables name references by bare file name (`navigation.md`)."""
+    """Every backticked `x.md` named in a doc exists (skills link plugin references; see test_skills_link_plugin_references)."""
     if path.parent.name == "swiftui-pro":
         pytest.skip("swiftui-pro names upstream files (api.md, data.md) that its fork replaces; owned by the fork test")
     text = path.read_text(encoding="utf-8")
@@ -107,3 +107,12 @@ def test_negative_control_broken_link_is_detected(tmp_path):
     doc = tmp_path / "doc.md"
     doc.write_text("[gone](missing.md) and [ok](doc.md)\n", encoding="utf-8")
     assert unresolved_links(doc) == ["missing.md"]
+
+
+@pytest.mark.parametrize("skill", OWN_SKILLS)
+def test_skills_link_plugin_references(skill):
+    """A plugin reference named in an own skill is a relative link, not a bare `x.md`."""
+    refs = {p.name for p in (PROJECT_ROOT / "references").glob("*.md")}
+    text = re.sub(r"```[\s\S]*?```", "", (PROJECT_ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8"))
+    bare = [n for n in re.findall(r"`([a-z0-9-]+\.md)`", text) if n in refs]
+    assert bare == [], f"{skill}: link these as [name](../../references/name.md): {bare}"

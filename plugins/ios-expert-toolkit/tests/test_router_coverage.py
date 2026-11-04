@@ -55,10 +55,12 @@ def routes(text: str) -> list[tuple[list[str], str]]:
             if cells[0] in ("Triggers", "Agent"):
                 continue
             name_cell, other = (cells[0], cells[1]) if agents else (cells[1], cells[0])
-            target = re.fullmatch(r"`([^`]+)`", name_cell)
-            assert target, f"route target must be one backticked name: {line}"
+            link = re.fullmatch(r"\[([a-z0-9-]+)\]\(\.\./\.\./references/\1\.md\)", name_cell)
+            target = link or re.fullmatch(r"`([^`]+)`", name_cell)
+            assert target, f"route target must be one backticked skill or agent, or a references link: {line}"
+            name = f"{target.group(1)}.md" if link else target.group(1)
             triggers = [other.lower()] if agents else [t.strip().lower() for t in other.split(",")]
-            rows.append((triggers, target.group(1)))
+            rows.append((triggers, name))
     return rows
 
 
