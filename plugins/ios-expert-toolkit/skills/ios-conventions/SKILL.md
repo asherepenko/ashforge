@@ -12,29 +12,10 @@ Sweep definitions (exact patterns, exclusions, counting rules) live in [pattern-
 
 ## Preflight
 
-Run this first, from the project root:
+Run this first, from the project root. The script lives in this skill's folder (the folder holding this SKILL.md):
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
-if [ -z "$PLUGIN_ROOT" ]; then
-  # Runtimes without a plugin-root env var install into a versioned cache:
-  # resolve the newest cached copy.
-  for base in \
-    "$HOME/.zcode/cli/plugins/cache"/*/ios-expert-toolkit \
-    "$HOME/.claude/plugins/cache"/*/ios-expert-toolkit \
-    "$HOME/.claude/plugins/cache/ios-expert-toolkit" \
-    "$HOME/.codex/plugins/cache"/*/ios-expert-toolkit \
-    "$HOME/.codex/plugins/cache/ios-expert-toolkit"; do
-    [ -d "$base" ] || continue
-    latest="$(ls -1 "$base" 2>/dev/null | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
-    [ -n "$latest" ] && PLUGIN_ROOT="$base/$latest" && break
-  done
-fi
-if [ -z "$PLUGIN_ROOT" ]; then
-  echo "ERROR: cannot locate the ios-expert-toolkit plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
-  exit 1
-fi
-python3 "$PLUGIN_ROOT/skills/ios-conventions/scripts/preflight.py"
+python3 <this skill's folder>/scripts/preflight.py
 ```
 
 It is read-only and prints `NOT_FOUND` or `NONE` for anything missing. It reports: deployment targets (`IPHONEOS_DEPLOYMENT_TARGET`), `Package.swift` platforms, `swift-tools-version`, Swift language mode (`SWIFT_VERSION`, `swiftLanguageModes`), strict concurrency setting, TCA version from `Package.resolved`, all resolved packages, `import Testing` vs `import XCTest` file counts, and `@Observable` vs `ObservableObject` file counts. It skips `.build/`, `Pods/`, `Carthage/`, `SourcePackages/`, and `DerivedData/`.
@@ -58,10 +39,10 @@ Count files, not matches. Exclude `Pods/`, `Carthage/`, `.build/`, `SourcePackag
 | `navigation` | `NavigationStack` vs coordinators (`Coordinator`, `UINavigationController`) |
 | `version` | `Package.resolved` (TCA version), `IPHONEOS_DEPLOYMENT_TARGET`, `SWIFT_VERSION` / `swiftLanguageModes` |
 
-For the architecture verdict, run the reference implementation when the plugin checkout is available (`PLUGIN_ROOT` as resolved in Preflight):
+For the architecture verdict, run the reference implementation when the plugin checkout includes `tests/`. Its path is relative to this skill's folder:
 
 ```bash
-python3 "$PLUGIN_ROOT/tests/fixtures/run-sweeps.py" <project-dir>
+python3 <this skill's folder>/../../tests/fixtures/run-sweeps.py <project-dir>
 ```
 
 It prints one of `NEW`, `TCA`, `MVVM`, `MIXED`. Without the script, apply the same counts by hand with the patterns from the reference.

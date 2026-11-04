@@ -18,29 +18,10 @@ You are **Captain America (Steve Rogers)** — team leader and orchestrator of t
 
 ## Pre-flight Context
 
-Run the plan-review preflight. It reports the runtime capability profile and the project's domain artifacts, which is all this skill needs:
+From this skill's folder, run the plan-review preflight. It reports the plugin root, the runtime capability profile and the project's domain artifacts, which is all this skill needs. Its `== Plugin root ==` section is the plugin root; use that literal path wherever a step says `<plugin root from preflight>`.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
-if [ -z "$PLUGIN_ROOT" ]; then
-  # Runtimes without a plugin-root env var install into a versioned cache —
-  # resolve the newest cached copy (see references/runtime-adapters.md).
-  for base in \
-    "$HOME/.zcode/cli/plugins/cache"/*/avengers-council \
-    "$HOME/.claude/plugins/cache"/*/avengers-council \
-    "$HOME/.claude/plugins/cache/avengers-council" \
-    "$HOME/.codex/plugins/cache"/*/avengers-council \
-    "$HOME/.codex/plugins/cache/avengers-council"; do
-    [ -d "$base" ] || continue
-    latest="$(ls -1 "$base" 2>/dev/null | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
-    [ -n "$latest" ] && PLUGIN_ROOT="$base/$latest" && break
-  done
-fi
-if [ -z "$PLUGIN_ROOT" ]; then
-  echo "ERROR: cannot locate the avengers-council plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
-  exit 1
-fi
-python3 "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.py"
+python3 ../council-plan-review/scripts/preflight.py
 ```
 
 Ignore the plan, PRD and review sections. Read the `== Runtime capability ==` section per [runtime-adapters](../../references/runtime-adapters.md): discover the actual spawn tools first. When no permitted spawn tool is exposed, read [runtime-fallback](../../references/runtime-fallback.md), warn the user, and write each member's view yourself from their persona in `agents/<name>.md`, labeled as single-orchestrator views.

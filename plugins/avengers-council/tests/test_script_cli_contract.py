@@ -128,6 +128,7 @@ def test_plan_review_preflight_sections(tmp_path):
     r = run("skills/council-plan-review/scripts/preflight", cwd=repo, env=env)
     assert r.returncode == 0
     assert r.stdout == (
+        f"== Plugin root ==\n{ROOT}\n"
         "== Local plans dir ==\n.claude/plans/l.md\n"
         f"== Global plans dir ==\n{home}/.claude/plans/g.md\n"
         "== Artifact specs (PRDs) ==\nNO_PRDS\n"

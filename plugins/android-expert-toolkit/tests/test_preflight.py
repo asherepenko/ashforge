@@ -2,6 +2,7 @@
 """Behavior pins for the android-conventions pre-flight script."""
 
 import hashlib
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -81,3 +82,11 @@ def test_hash_with_only_build_file(tmp_path):
     (tmp_path / "build.gradle.kts").write_text("a\n", encoding="utf-8")
     parsed = sections(run(tmp_path).stdout)
     assert parsed[HEADERS[0]] == [hashlib.sha256(b"a\n").hexdigest()]
+
+
+def test_runs_from_other_cwd_without_plugin_root_env(tmp_path):
+    env = {k: v for k, v in os.environ.items() if not k.endswith("PLUGIN_ROOT")}
+    result = subprocess.run([sys.executable, str(SCRIPT)], cwd=tmp_path, env=env,
+                            capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    assert list(sections(result.stdout)) == HEADERS

@@ -11,7 +11,6 @@ Read the preflight's `== Runtime capability ==` section, then resolve each axis 
 - [Hub-Mediated Debate](#hub-mediated-debate) — the 3-round fan-out for result-returning runtimes
 - [`update_plan` example](#update_plan-example) — plan-tool runtimes
 - [`--quick` mode](#--quick-mode-single-round) — single fan-out on every runtime
-- [Plugin Root Resolution](#plugin-root-resolution) — works without a plugin-root env var
 - [Read-Only Environments](#read-only-environments) — sandboxed runtimes
 - [Fallback Verdict Cap](#fallback-verdict-cap) — pointer to runtime-fallback.md
 - [What Stays Identical](#what-stays-identical-across-runtimes)
@@ -23,7 +22,7 @@ Read the preflight's `== Runtime capability ==` section, then resolve each axis 
 | Value | Dispatch | Used by |
 |-------|----------|---------|
 | `registry` | `Agent({subagent_type: 'avengers-council:<name>', name: '<name>', prompt: ...})` — personas come from the agent registry; pass `name` so the stage is labelled. Never pass `team_name` (deprecated and ignored). | Claude Code, Zcode |
-| `prompt-embed` | `spawn_agent(prompt)` — read `agents/<name>.md` and paste the persona body verbatim above the `REVIEW CONTEXT` block (no `subagent_type` registry exists). **In the persona text, rewrite each relative link `../<path>` to `<resolved plugin root>/<path>`** — member bodies link `../references/*.md` relative to `agents/`, and the spawned worker has no file location to resolve them from. Discard persona frontmatter (`tools:`, `model:` — Claude-only registry metadata). | Codex (spawn tool exposed), pi (subagent skill/extension installed) |
+| `prompt-embed` | `spawn_agent(prompt)` — read `agents/<name>.md` and paste the persona body verbatim above the `REVIEW CONTEXT` block (no `subagent_type` registry exists). **In the persona text, rewrite each relative link `../<path>` to `<plugin root from preflight>/<path>`** — member bodies link `../references/*.md` relative to `agents/`, and the spawned worker has no file location to resolve them from. Discard persona frontmatter (`tools:`, `model:` — Claude-only registry metadata). | Codex (spawn tool exposed), pi (subagent skill/extension installed) |
 | `none` | No subagent dispatch available. **Read [runtime-fallback](runtime-fallback.md)** and run the single-orchestrator persona walk. Do NOT attempt any spawn — it fails at the tool layer. | Codex (no spawn tool exposed), pi (no subagent skill) |
 | `unknown` | Discover available tools; if absent use the disclosed fallback. | undetected runtimes |
 
@@ -50,13 +49,9 @@ Read the preflight's `== Runtime capability ==` section, then resolve each axis 
 | `structured` | `AskUserQuestion({questions: [{options: [...]}]})` (Claude Code, Zcode) |
 | `plain-text` | Print the question and numbered options as plain text; wait for and parse the free-form reply (Codex, pi, most others). |
 
-### ROOT_ENV — plugin root variable
+### Plugin root
 
-| Value | Variable |
-|-------|----------|
-| `CLAUDE_PLUGIN_ROOT` | Claude Code |
-| `PLUGIN_ROOT` | Codex |
-| none | Use the cache-glob fallback below, or fail fast with instructions. |
+Preflight prints the plugin root in its `== Plugin root ==` section, computed from the script's own location. No env var and no cache search.
 
 `allowed-tools` skill frontmatter is Claude-only — other runtimes inherit whatever the session permits.
 
@@ -141,7 +136,7 @@ Round 3 — Final Position
 
 The orchestration protocol's **Mode Selection & Cost-Controlled Degradation** section applies its capability trigger only after the actual tools require a fresh-worker schedule for all four passes. Hub transport with continuation does not by itself imply 4M spawns or satisfy that trigger. Autonomous Quick Mode still requires all three triggers and disclosure of the chosen schedule.
 
-**Persona embedding:** before each spawn on a `prompt-embed` runtime, Captain reads `agents/<member>.md` and pastes the full persona text into the spawn prompt (with each relative link `../<path>` rewritten to `<resolved plugin root>/<path>` — see SPAWN axis). Personas stay a single source of truth across runtimes. (Captain America is never spawned — the orchestrator role is defined in `references/captain-america-orchestrator.md`.)
+**Persona embedding:** before each spawn on a `prompt-embed` runtime, Captain reads `agents/<member>.md` and pastes the full persona text into the spawn prompt (with each relative link `../<path>` rewritten to `<plugin root from preflight>/<path>` — see SPAWN axis). Personas stay a single source of truth across runtimes. (Captain America is never spawned — the orchestrator role is defined in `references/captain-america-orchestrator.md`.)
 
 On `registry` + `hub` runtimes (Zcode): use `Agent({subagent_type: ...})` for dispatch and collect results as tool results — no persona embedding needed, but Rounds 2–3 still flow through the Captain (fresh spawns, or `SendMessage` resume by agent id where supported).
 
@@ -173,31 +168,6 @@ Every runtime collapses to a single fan-out:
 - `prompt-embed` runtimes: parallel `spawn_agent` × 3 → `wait_agent` × 3 → Captain aggregates.
 
 No debate rounds. Same UX everywhere. This is also the shape cost-controlled degraded runs take (see orchestration-protocol.md → Mode Selection).
-
-## Plugin Root Resolution
-
-Skill bodies resolve the plugin root with this chain (order matters — the first hit wins):
-
-```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
-```
-
-If still empty, fall back to the newest cached copy (runtimes without a plugin-root env var install into a versioned cache):
-
-```bash
-for base in \
-  "$HOME/.zcode/cli/plugins/cache"/*/avengers-council \
-  "$HOME/.claude/plugins/cache"/*/avengers-council \
-  "$HOME/.claude/plugins/cache/avengers-council" \
-  "$HOME/.codex/plugins/cache"/*/avengers-council \
-  "$HOME/.codex/plugins/cache/avengers-council"; do
-  [ -d "$base" ] || continue
-  latest="$(ls -1 "$base" 2>/dev/null | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
-  [ -n "$latest" ] && PLUGIN_ROOT="$base/$latest" && break
-done
-```
-
-Only fail when every option is exhausted — and then say WHICH variables/paths were tried, so the fix is obvious. Note the cached copy may trail the repo source; surface `PLUGIN_ROOT` in preflight output when the fallback resolved it.
 
 ## Read-Only Environments
 

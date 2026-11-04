@@ -25,8 +25,7 @@ ADAPTER = """
 
 - Relative links in this contract resolve against this plugin's `agents/`
   directory, so `../references/x.md` is `<plugin root>/references/x.md`. The
-  plugin root holds `references/` and `skills/`; on Codex it is `${PLUGIN_ROOT}`
-  when set, otherwise resolve it from the plugin cache.
+  plugin root is the parent of `agents/` and holds `references/` and `skills/`.
 - "Load the `<name>` skill" means read `skills/<name>/SKILL.md` under the plugin
   root (or the installed skill of that name) and follow it.
 - Read/Glob/Grep map to native file and shell tools; Write/Edit map to native file

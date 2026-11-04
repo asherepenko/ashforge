@@ -99,7 +99,7 @@ A bare score is missing. Captain America asks the member for the basis once. If 
 Captain America runs `scripts/score-check.py` once per score, passing the member's own counts:
 
 ```bash
-python3 "$PLUGIN_ROOT/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
+python3 "<plugin root from preflight>/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
 ```
 
 Exit 0 is ok. Exit 1 is FLAG: the score is above the cap its findings allow, or a clean-domain score is below 7. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger, to fix the score or the labels; a bare score is asked for its basis in the same slot. Final scores are checked again in synthesis. Whatever the member answers, the verdict is unaffected; an unresolved FLAG (or any FLAG in Quick/fallback modes, which have no Round 3) becomes `Score flag:` in the verdict.
@@ -127,7 +127,7 @@ Quality and Risk are two rows of the Consensus table in every verdict, computed 
 Assign every severity label first, then grade. Never move a label to move the grade. Count `yes` findings only — pre-existing findings are excluded (see [Pre-existing Findings](#pre-existing-findings)). Plan reviews have no attribution, so every finding counts.
 
 ```bash
-python3 "$PLUGIN_ROOT/scripts/review-grade.py" --ladder severity \
+python3 "<plugin root from preflight>/scripts/review-grade.py" --ladder severity \
   --critical N --high N --medium N --low N
 ```
 

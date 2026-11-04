@@ -15,29 +15,10 @@ Read [orchestration-protocol](../../references/orchestration-protocol.md) before
 
 ## Pre-flight Context
 
-Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
+From this skill's folder, run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers. Its `== Plugin root ==` section is the plugin root; use that literal path wherever a step says `<plugin root from preflight>`.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
-if [ -z "$PLUGIN_ROOT" ]; then
-  # Runtimes without a plugin-root env var install into a versioned cache —
-  # resolve the newest cached copy (see references/runtime-adapters.md).
-  for base in \
-    "$HOME/.zcode/cli/plugins/cache"/*/avengers-council \
-    "$HOME/.claude/plugins/cache"/*/avengers-council \
-    "$HOME/.claude/plugins/cache/avengers-council" \
-    "$HOME/.codex/plugins/cache"/*/avengers-council \
-    "$HOME/.codex/plugins/cache/avengers-council"; do
-    [ -d "$base" ] || continue
-    latest="$(ls -1 "$base" 2>/dev/null | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
-    [ -n "$latest" ] && PLUGIN_ROOT="$base/$latest" && break
-  done
-fi
-if [ -z "$PLUGIN_ROOT" ]; then
-  echo "ERROR: cannot locate the avengers-council plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
-  exit 1
-fi
-python3 "$PLUGIN_ROOT/skills/council-code-review/scripts/preflight.py"
+python3 scripts/preflight.py
 ```
 
 The script collects: current branch, working tree status, diff stat vs the merge base, commits ahead of base, and project markers.
@@ -134,11 +115,11 @@ Follow [orchestration-protocol](../../references/orchestration-protocol.md#phase
   - Collect each member's `CONCERN FOR THE USER` from Round 3. Per [orchestration-protocol](../../references/orchestration-protocol.md) Phase 4, a concern that meets a severity definition or a red line is a finding: move it into the findings before grading. List only a residual trade-off under Concerns for the User (advisory, never a condition, not counted in Quality)
   - Run `score-check.py` once per member score with that member's own counts (`yes` findings only), per [verdict-rules](../../references/verdict-rules.md#checking-the-score). Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. Exit 1 is a FLAG: an unresolved one (or any FLAG in Quick/fallback modes) is printed as `Score flag:` under the member. A FLAG never changes the verdict:
     ```bash
-    python3 "$PLUGIN_ROOT/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
+    python3 "<plugin root from preflight>/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
     ```
   - Grade Quality: count the `yes` findings by severity (pre-existing excluded) and run the script. Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored), then append the weak-slug suffix per [verdict-rules](../../references/verdict-rules.md#quality) (none on `not scored`). On a script error the row reads `not scored ({reason})`. Never write the letter by hand:
     ```bash
-    python3 "$PLUGIN_ROOT/scripts/review-grade.py" --ladder severity --critical N --high N --medium N --low N
+    python3 "<plugin root from preflight>/scripts/review-grade.py" --ladder severity --critical N --high N --medium N --low N
     ```
   - Set Risk from the tier table in [verdict-rules](../../references/verdict-rules.md#quality-and-risk), applied to the diff's touched paths. Highest tier wins. Put `<emoji> <level> — <basis>` in the **Risk** row (🟢 low, 🟡 medium, 🔴 high) and name the paths that set it
   - Quality, Risk and the average domain score are informational. The verdict comes from the consensus rules

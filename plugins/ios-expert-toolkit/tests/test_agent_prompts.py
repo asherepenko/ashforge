@@ -108,11 +108,10 @@ class TestAgentReferences:
     def test_no_broken_template_refs(self, agent_file):
         content = agent_file.read_text(encoding='utf-8')
         # Check for template variable patterns that weren't filled in
-        # Plugin files are relative links; ${PLUGIN_ROOT} may appear in prose
-        # that names the root env var (Codex adapter).
+        # Agent bodies use relative links; any ${...} counts as unresolved.
         template_patterns = [
             r'\{\{[^}]+\}\}',  # {{variable}}
-            r'\$\{(?!PLUGIN_ROOT\})[^}]+\}',   # ${variable} (but not in code blocks)
+            r'\$\{[^}]+\}',   # ${variable} (but not in code blocks)
         ]
         body = get_body_after_frontmatter(content)
         # Skip code blocks

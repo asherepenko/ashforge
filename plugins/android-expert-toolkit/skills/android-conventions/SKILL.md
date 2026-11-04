@@ -12,29 +12,10 @@ Run pattern detection from [pattern-detection](../../references/pattern-detectio
 
 ## Pre-flight Context
 
-Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
+Run `python3 scripts/preflight.py` from this skill's folder (the folder holding this SKILL.md), with the project root as the working directory. All probes emit labeled `== section ==` headers:
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
-if [ -z "$PLUGIN_ROOT" ]; then
-  # Runtimes without a plugin-root env var install into a versioned cache:
-  # resolve the newest cached copy.
-  for base in \
-    "$HOME/.zcode/cli/plugins/cache"/*/android-expert-toolkit \
-    "$HOME/.claude/plugins/cache"/*/android-expert-toolkit \
-    "$HOME/.claude/plugins/cache/android-expert-toolkit" \
-    "$HOME/.codex/plugins/cache"/*/android-expert-toolkit \
-    "$HOME/.codex/plugins/cache/android-expert-toolkit"; do
-    [ -d "$base" ] || continue
-    latest="$(ls -1 "$base" 2>/dev/null | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
-    [ -n "$latest" ] && PLUGIN_ROOT="$base/$latest" && break
-  done
-fi
-if [ -z "$PLUGIN_ROOT" ]; then
-  echo "ERROR: cannot locate the android-expert-toolkit plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
-  exit 1
-fi
-python3 "$PLUGIN_ROOT/skills/android-conventions/scripts/preflight.py"
+python3 <this-skill-folder>/scripts/preflight.py
 ```
 
 The script collects: project hash (shasum over settings.gradle.kts + build.gradle.kts), cached patterns, Kotlin file count, DI fingerprint, state fingerprint, and testing fingerprint.

@@ -198,7 +198,7 @@ Follow the debate protocol from your agent definition for all rounds.",
 })
 ```
 
-**Hub (result-returning spawns — Codex `spawn_agent`, Zcode `Agent(subagent_type)`, prompt-embed pi/Antigravity):** Same prompt template, dispatched per the SPAWN axis in @references/runtime-adapters.md — `prompt-embed` runtimes paste the persona text from `agents/<name>.md` (with each relative link `../<path>` rewritten to `<resolved plugin root>/<path>`) above the `REVIEW CONTEXT` block; `registry` runtimes pass `subagent_type`. Drop the trailing lines about sharing findings with teammates and waiting for `team-lead` to signal Round 2 and Round 3 — hub workers return results; Captain closes and replaces them when close is exposed, or continues the bounded pool with the next pass's full persona and context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
+**Hub (result-returning spawns — Codex `spawn_agent`, Zcode `Agent(subagent_type)`, prompt-embed pi/Antigravity):** Same prompt template, dispatched per the SPAWN axis in @references/runtime-adapters.md — `prompt-embed` runtimes paste the persona text from `agents/<name>.md` (with each relative link `../<path>` rewritten to `<plugin root from preflight>/<path>`) above the `REVIEW CONTEXT` block; `registry` runtimes pass `subagent_type`. Drop the trailing lines about sharing findings with teammates and waiting for `team-lead` to signal Round 2 and Round 3 — hub workers return results; Captain closes and replaces them when close is exposed, or continues the bounded pool with the next pass's full persona and context inlined. Update the `ROUND 1 INSTRUCTIONS` block to end with: *"Return your assessment as the result of this spawn. Do not broadcast — Captain America will distribute consolidated findings into the Round 2 spawn prompt."*
 
 **Core agent roster** (always spawned):
 
@@ -409,7 +409,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    **Check each score:** run `score-check.py` once per member with their own counts. Full mode already checked the Round-1 scores and sent any FLAG back in the Round 3 trigger; this run covers the final scores. Exit 1 is a FLAG: a FLAG still present after Round 3, or any FLAG in Quick and fallback modes (no Round 3), is printed as `Score flag:` under the member in the verdict. A FLAG never changes the verdict.
 
    ```bash
-   python3 "$PLUGIN_ROOT/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
+   python3 "<plugin root from preflight>/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
    ```
 
    **Scope Check (plan reviews):** count each `❌ missing` row as one HIGH finding and each `⚠️ partial` row as one MEDIUM finding before grading. An underlying gap already raised by a member or in AC Validation counts once, at the highest severity, and its Scope Check row cites that finding.
@@ -417,7 +417,7 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
    **Grade quality and set risk:** run `review-grade.py` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Put the script output, without its leading `Quality: `, in the **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) of the Consensus table and append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error the row reads `not scored ({reason})`. Put Risk in the **Risk** row as `<emoji> <level> — <basis>`. Both are info only (@references/verdict-rules.md#quality-and-risk).
 
    ```bash
-   python3 "$PLUGIN_ROOT/scripts/review-grade.py" --ladder severity --critical N --high N --medium N --low N
+   python3 "<plugin root from preflight>/scripts/review-grade.py" --ladder severity --critical N --high N --medium N --low N
    ```
 
 5. **Apply consensus rules** per @references/verdict-rules.md (single source of truth — do not restate here)

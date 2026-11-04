@@ -43,12 +43,21 @@ def test_relative_links_resolve(path):
     assert unresolved_links(path) == [], f"{path.name}: broken links"
 
 
-@pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
-def test_plugin_root_reference_paths_exist(path):
-    """Shell snippets name plugin files as "$PLUGIN_ROOT/<path>" after the resolver."""
-    text = path.read_text(encoding="utf-8")
-    for ref in re.findall(r"\$\{?PLUGIN_ROOT\}?/([\w./-]+\.(?:md|sh|py))", text):
-        assert (PROJECT_ROOT / ref).exists(), f"{path.name}: missing {ref}"
+def skill_script_refs(text: str) -> list[str]:
+    """Skills run their scripts by a path relative to the skill folder: `scripts/<x>.py`."""
+    return re.findall(r"(?<![\w./-])(scripts/[\w.-]+\.(?:py|sh))", text)
+
+
+@pytest.mark.parametrize("skill", OWN_SKILLS)
+def test_skill_relative_script_paths_exist(skill):
+    folder = PROJECT_ROOT / "skills" / skill
+    for ref in skill_script_refs((folder / "SKILL.md").read_text(encoding="utf-8")):
+        assert (folder / ref).exists(), f"{skill}: missing {ref}"
+
+
+def test_negative_control_skill_script_ref_detected():
+    assert skill_script_refs("Run `python3 scripts/preflight.py`") == ["scripts/preflight.py"]
+    assert skill_script_refs("see ../../scripts/gen.py") == []
 
 
 @pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
@@ -67,24 +76,31 @@ def test_reference_file_names_in_tables_exist(path):
         assert name in refs, f"{path.name}: unknown reference {name}"
 
 
-def claude_root_outside_bash(text: str) -> list[str]:
-    """`${CLAUDE_PLUGIN_ROOT}` is Claude-only; prose must use relative links. Bash blocks keep it in the resolver."""
-    text = re.sub(r"```bash[\s\S]*?```", "", text)
-    return re.findall(r".*\$\{CLAUDE_PLUGIN_ROOT\}.*", text)
+ROOT_VARS = re.compile(r"(?:CLAUDE_|ZCODE_)?PLUGIN_ROOT")
+
+
+def skips_root_var_check(path: Path) -> bool:
+    return path.name == "CHANGELOG.md" or path.parent.name == "swiftui-pro"
 
 
 @pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
-def test_no_claude_plugin_root_outside_bash_blocks(path):
-    if path.name == "CHANGELOG.md":
-        pytest.skip("history entries quote the old form")
-    if path.parent.name == "swiftui-pro":
-        pytest.skip("vendored fork")
-    assert claude_root_outside_bash(path.read_text(encoding="utf-8")) == []
+def test_no_plugin_root_variables_in_markdown(path):
+    """Skills call scripts by skill-relative path; scripts find the root from __file__."""
+    if skips_root_var_check(path):
+        pytest.skip("history entries or vendored fork")
+    assert ROOT_VARS.findall(path.read_text(encoding="utf-8")) == []
 
 
-def test_negative_control_claude_root_detected():
-    assert claude_root_outside_bash("see `${CLAUDE_PLUGIN_ROOT}/references/x.md`\n") != []
-    assert claude_root_outside_bash("```bash\nX=\"${CLAUDE_PLUGIN_ROOT:-}\"\n```\n") == []
+def test_root_var_skip_covers_only_history_and_vendored_fork():
+    assert skips_root_var_check(PROJECT_ROOT / "skills" / "swiftui-pro" / "SKILL.md")
+    assert skips_root_var_check(PROJECT_ROOT / "CHANGELOG.md")
+    assert not skips_root_var_check(PROJECT_ROOT / "skills" / "ios-conventions" / "SKILL.md")
+    assert not skips_root_var_check(PROJECT_ROOT / "README.md")
+
+
+def test_negative_control_root_vars_detected():
+    for var in ("${CLAUDE_PLUGIN_ROOT}", "$PLUGIN_ROOT", "ZCODE_PLUGIN_ROOT"):
+        assert ROOT_VARS.findall(f"x {var} y") != []
 
 
 def test_negative_control_broken_link_is_detected(tmp_path):

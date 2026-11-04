@@ -112,3 +112,12 @@ def test_bad_package_resolved_does_not_crash(tmp_path):
     parsed = sections(result.stdout)
     assert parsed[HEADERS[5]] == ["NOT_FOUND"]
     assert parsed[HEADERS[6]] == ["NONE"]
+
+
+def test_runs_from_other_cwd_without_env(tmp_path):
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT)], cwd=tmp_path, env={"PATH": "/usr/bin:/bin"},
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert list(sections(result.stdout)) == HEADERS

@@ -10,7 +10,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 - Skills, agents and references link plugin files with relative markdown links instead of `${CLAUDE_PLUGIN_ROOT}/...` paths, which only Claude Code fills in. Codex, Pi and Zcode now resolve them. Prompt-embed runtimes rewrite each `../<path>` link in a persona to the resolved plugin root. `tests/test_portable_references.py` guards the rule and checks every relative link resolves.
 - The marketplace entry now lists the plugin's real version (it still said 5.0.0).
-- The plugin-root resolver no longer reads `ZCODE_PLUGIN_ROOT`: Zcode documents no such variable. Zcode installs are found through the `~/.zcode/cli/plugins/cache` search.
+- Skills run their scripts by a path relative to the skill's own folder. Preflight prints the plugin root, computed from its own file, in a `== Plugin root ==` section, and later steps use that path. No env vars and no plugin-cache search.
 
 ## [5.0.1] - 2026-11-04
 

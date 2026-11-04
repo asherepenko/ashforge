@@ -33,11 +33,21 @@ def test_relative_links_resolve(path):
         assert (path.parent / target.split("#", 1)[0]).exists(), f"{path.name}: broken link {target}"
 
 
-@pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
-def test_no_claude_plugin_root_outside_bash_blocks(path):
-    """Only Claude Code fills in ${CLAUDE_PLUGIN_ROOT}; prose must use relative links."""
-    text = re.sub(r"```bash\n[\s\S]*?```", "", path.read_text(encoding="utf-8"))
-    assert "${CLAUDE_PLUGIN_ROOT}" not in text, f"{path.name}: use a relative link, not ${{CLAUDE_PLUGIN_ROOT}}"
+@pytest.mark.parametrize("path", [p for p in own_markdown() if p.name != "CHANGELOG.md"],
+                         ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
+def test_no_plugin_root_variables(path):
+    """Skills call scripts by skill-relative path; markdown never names a plugin-root env var."""
+    text = path.read_text(encoding="utf-8")
+    for var in ("CLAUDE_PLUGIN_ROOT", "ZCODE_PLUGIN_ROOT", "PLUGIN_ROOT"):
+        assert var not in text, f"{path.name} mentions {var}"
+
+
+@pytest.mark.parametrize("skill", OWN_SKILLS)
+def test_skill_scripts_exist(skill):
+    folder = PROJECT_ROOT / "skills" / skill
+    text = (folder / "SKILL.md").read_text(encoding="utf-8")
+    for rel in re.findall(r"scripts/[\w.-]+\.py", text):
+        assert (folder / rel).is_file(), f"{skill}: missing {rel}"
 
 
 @pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))

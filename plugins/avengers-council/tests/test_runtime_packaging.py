@@ -88,15 +88,17 @@ def test_verdict_template_has_run_mode_disclosure():
     assert "Single-orchestrator fallback" in text
 
 
-def test_skills_resolve_plugin_root_without_env_var():
-    """Runtimes without a plugin-root env var install into a versioned cache."""
+def test_skills_run_preflight_by_skill_relative_path():
+    """Skills call their scripts relative to their own folder; no resolver."""
     for skill in [
         "skills/council-plan-review/SKILL.md",
         "skills/council-code-review/SKILL.md",
     ]:
         text = read(skill)
-        assert "ZCODE_PLUGIN_ROOT" not in text, skill
-        assert ".zcode/cli/plugins/cache" in text, skill
+        assert "python3 scripts/preflight.py" in text, skill
+        assert "plugins/cache" not in text, skill
+        assert "PLUGIN_ROOT" not in text, skill
+        assert "<plugin root from preflight>/scripts/" in text, skill
 
 
 def test_manifest_versions_match():

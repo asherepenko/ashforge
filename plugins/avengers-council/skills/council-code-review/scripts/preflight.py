@@ -12,6 +12,10 @@ import os
 import re
 import subprocess
 import sys
+from pathlib import Path
+
+# scripts/ -> <skill>/ -> skills/ -> plugin root
+PLUGIN_ROOT = Path(__file__).resolve().parents[3]
 
 HOME = os.environ.get("HOME", "")
 
@@ -176,6 +180,7 @@ def probe_runtime():
 
 def main():
     sys.stdout.reconfigure(encoding="utf-8", errors="surrogateescape")
+    sys.stdout.write(f"== Plugin root ==\n{PLUGIN_ROOT}\n")
     base = resolve_base()
     probes = [
         ("Current branch", branch),

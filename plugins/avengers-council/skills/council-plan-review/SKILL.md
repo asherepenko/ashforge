@@ -15,29 +15,10 @@ Read [orchestration-protocol](../../references/orchestration-protocol.md) before
 
 ## Pre-flight Context
 
-Run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers:
+From this skill's folder, run the pre-flight script — all probes parallelize and emit labeled `== section ==` headers. Its `== Plugin root ==` section is the plugin root; use that literal path wherever a step says `<plugin root from preflight>`.
 
 ```bash
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}"
-if [ -z "$PLUGIN_ROOT" ]; then
-  # Runtimes without a plugin-root env var install into a versioned cache —
-  # resolve the newest cached copy (see references/runtime-adapters.md).
-  for base in \
-    "$HOME/.zcode/cli/plugins/cache"/*/avengers-council \
-    "$HOME/.claude/plugins/cache"/*/avengers-council \
-    "$HOME/.claude/plugins/cache/avengers-council" \
-    "$HOME/.codex/plugins/cache"/*/avengers-council \
-    "$HOME/.codex/plugins/cache/avengers-council"; do
-    [ -d "$base" ] || continue
-    latest="$(ls -1 "$base" 2>/dev/null | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
-    [ -n "$latest" ] && PLUGIN_ROOT="$base/$latest" && break
-  done
-fi
-if [ -z "$PLUGIN_ROOT" ]; then
-  echo "ERROR: cannot locate the avengers-council plugin directory. Tried CLAUDE_PLUGIN_ROOT, PLUGIN_ROOT, and the runtime plugin caches under ~. Set one of those variables to the plugin root and retry." >&2
-  exit 1
-fi
-python3 "$PLUGIN_ROOT/skills/council-plan-review/scripts/preflight.py"
+python3 scripts/preflight.py
 ```
 
 The script collects: local plans dir listing, global plans dir, artifact specs (PRDs), recent reviews, domain glossary presence (DOMAIN-MAP.md / DOMAIN.md), and the 20 most-recent ADRs under `docs/adr/`.
@@ -117,7 +98,7 @@ Follow [orchestration-protocol](../../references/orchestration-protocol.md#phase
   - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored), then append the weak-slug suffix per [verdict-rules](../../references/verdict-rules.md#quality) (none on `not scored`). On a script error the row reads `not scored ({reason})`:
 
     ```bash
-    python3 "$PLUGIN_ROOT/scripts/review-grade.py" --ladder severity \
+    python3 "<plugin root from preflight>/scripts/review-grade.py" --ladder severity \
       --critical N --high N --medium N --low N
     ```
   - **Set the risk tier** from the tier table in [verdict-rules](../../references/verdict-rules.md#quality-and-risk) and put it in the **Risk** row as `<emoji> <level> — <basis>` (🟢 low, 🟡 medium, 🔴 high). State the basis: name what the plan touches that sets the tier. Highest tier wins. Quality and Risk are info only; neither changes the verdict.
