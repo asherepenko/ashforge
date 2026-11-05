@@ -35,6 +35,7 @@ Parse the arguments:
 - **--files <paths>**: review specific files (comma-separated)
 - **--focus <area>**: optional filter — `security|mobile|architecture|testing|delivery|frontend|backend|devops|data`
 - **--quick**: optional — run 3-member quorum instead of full council
+- **--handoff**: another skill (such as `/pr-review`) started this review and owns what happens next. Skip Step 1's clean-up question and the post-verdict menu. Save and show the verdict, clean up, and return.
 
 If no arguments are provided, default to `--diff` (uncommitted changes: staged + unstaged).
 
@@ -48,7 +49,7 @@ Depending on the argument:
 1. Run `gh pr view <number>` to get PR metadata, including `baseRefName`
 2. Run `gh pr diff <number>` to get the diff
 3. Read the PR description for context
-4. **Clean up first:** run `gh pr checks <number>` and list unresolved review threads. If any check fails or a thread is open, show them and ask: fix them first (recommended), or review anyway. The council should not spend a run on problems already known.
+4. **Clean up first** (skip with `--handoff`): run `gh pr checks <number>` and list unresolved review threads. If any check fails or a thread is open, show them and ask: fix them first (recommended), or review anyway. The council should not spend a run on problems already known.
 
 **`--diff` (default):**
 1. Run `git diff` for unstaged changes

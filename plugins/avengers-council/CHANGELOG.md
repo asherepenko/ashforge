@@ -4,6 +4,12 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.7] - 2026-11-05
+
+### Added
+
+- `council-code-review --handoff`: another skill (such as `/pr-review`) started the review and owns what happens next. The council saves and shows its verdict, then returns without its clean-up question or post-verdict menu.
+
 ## [5.0.6] - 2026-11-05
 
 ### Added

@@ -11,6 +11,8 @@ After printing the verdict (including the `> **Verdict saved to:** ...` path lin
 
 ## Protocol
 
+With `--handoff` (council-code-review started by another skill), skip this menu: clean up and return to the caller.
+
 1. Determine which options to show based on the **consensus verdict**
 2. Present options to the user:
    - **Claude:** use `AskUserQuestion` with verdict-dependent choices
