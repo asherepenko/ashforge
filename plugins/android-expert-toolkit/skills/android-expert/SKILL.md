@@ -33,6 +33,8 @@ Each row owns its trigger phrases; no phrase appears in two rows. References are
 | accessibility, TalkBack, content descriptions | [accessibility](../../references/accessibility.md) |
 | window sizes, nav bar vs rail, list-detail, foldables, keyboard and mouse | `adaptive` skill |
 | edge-to-edge, insets, system bars | `edge-to-edge` skill |
+| home screen widget layout, Glance canonical layouts, widget UI | `glance-canonical-layouts` skill |
+| widget updates, updateAll, Glance background sync, RemoteViews bitmap memory | `glance-appwidget-updates-and-memory` skill |
 | recomposition, stability, Compose jank | `jetpack-compose-performance` skill |
 | XML layout to Compose | `migrate-xml-views-to-jetpack-compose` skill |
 | Navigation 2, NavHost, deep links, App Links | [navigation](../../references/navigation.md) |

@@ -8,7 +8,7 @@ Android knowledge for Claude Code and Codex: a topic router, focused skills, the
 - **`android-testing`** — adversarial unit testing: break vectors from the contract, one distinct angle per test, fakes first.
 - **`android-error-handling`** — closed typed errors, `CancellationException`-safe catches, string-resource errors in UI state.
 - **`android-conventions`** — read-only 80/20 pattern detection (DI, state, testing, architecture, security, performance, accessibility). Caches results at `.artifacts/aet/cache/detected-patterns.json`.
-- **Official Android skills** vendored from [android/skills](https://github.com/android/skills) (Apache-2.0): `navigation-3`, `navigation-event`, `edge-to-edge`, `adaptive`, `jetpack-compose-performance`, `migrate-xml-views-to-jetpack-compose`, `agp-9-upgrade`, `r8-analyzer`, `anr-audit-and-fix`, `android-profiler`, `testing-setup`, `android-intent-security`, `android-permissions-security`. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- **Official Android skills** vendored from [android/skills](https://github.com/android/skills) (Apache-2.0): `navigation-3`, `navigation-event`, `edge-to-edge`, `adaptive`, `jetpack-compose-performance`, `migrate-xml-views-to-jetpack-compose`, `agp-9-upgrade`, `r8-analyzer`, `anr-audit-and-fix`, `android-profiler`, `testing-setup`, `android-intent-security`, `android-permissions-security`, `glance-appwidget-updates-and-memory`, `glance-canonical-layouts`. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 - **Agents** that work from a plain brief (goal, acceptance criteria, files):
 
 | Agent | Scope |

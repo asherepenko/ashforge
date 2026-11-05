@@ -32,6 +32,8 @@ SKILLS=(
   testing-setup
   android-intent-security
   android-permissions-security
+  glance-appwidget-updates-and-memory
+  glance-canonical-layouts
 )
 
 locked_ref() {

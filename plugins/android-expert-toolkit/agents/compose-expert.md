@@ -28,6 +28,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 | Accessibility | [accessibility](../references/accessibility.md) |
 | Window sizes, bar vs rail, panes, foldables | `adaptive` skill |
 | Insets and system bars | `edge-to-edge` skill |
+| Home screen widgets (Glance) | `glance-canonical-layouts` (layout), `glance-appwidget-updates-and-memory` (updates, bitmap memory) skills |
 | Recomposition, stability, jank | `jetpack-compose-performance` skill |
 | XML → Compose | `migrate-xml-views-to-jetpack-compose` skill |
 | Navigation | [navigation](../references/navigation.md) (Nav 2), `navigation-3`, `navigation-event` skills |
