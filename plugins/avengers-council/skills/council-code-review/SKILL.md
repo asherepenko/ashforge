@@ -111,6 +111,7 @@ Follow [orchestration-protocol](../../references/orchestration-protocol.md#phase
     Considered but not flagged: 1–3 near-misses with reasoning, or "Nothing material — diff too narrow"
     ```
 - **Verdict synthesis additions:**
+  - First, print the Round 3 table in chat (`### Council — Round 3: Final positions`, per [orchestration-protocol](../../references/orchestration-protocol.md) Phase 3 "Round tables"), same as Rounds 1 and 2. Quick Mode prints its one round table instead (`### Council — Quick round`, [Quick Flow](../../references/orchestration-protocol.md#quick-flow) step 4). Then grade and save
   - Check naming conventions, style/organization standards, testing coverage, commit message format
   - Group findings by severity (CRITICAL first)
   - Move every `Introduced here: pre-existing` finding to the verdict's Pre-existing section. Exclude these findings from the consensus rules, the unmitigated-CRITICAL rules, and Black Widow's VETO
@@ -158,6 +159,7 @@ Follow [orchestration-protocol](../../references/orchestration-protocol.md#phase
 - `REVIEW.md` read from the change under review instead of the base ref
 - Writing the Quality letter by hand instead of running `review-grade.py`
 - A domain score without a `basis:`, or a score treated as able to override or re-open the verdict
+- A council (Full or Quick) ended with only a file write and a prose recap, no round table in chat
 
 ## Verification
 
@@ -173,6 +175,7 @@ After code review completes, confirm:
 - [ ] Every domain score has a `basis:` and passed `score-check.py`, or carries a `Score flag:`
 - [ ] Standards compliance checked (naming, style, testing, commit format)
 - [ ] Round 2 challenges exchanged between members (stay-alive: via SendMessage; hub: via re-spawn with consolidated context)
+- [ ] A table printed in chat after each round (Full: Rounds 1, 2, 3; Quick: its one round)
 - [ ] Mode selection followed the Mode Selection & Cost-Controlled Degradation section; any autonomous downgrade is disclosed in the verdict header
 - [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — diff too narrow")
 - [ ] Research brief present for every selected member, or the skip disclosed

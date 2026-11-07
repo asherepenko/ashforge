@@ -385,7 +385,8 @@ After collecting Round 1 responses:
    - **Stay-alive:** Wait until all active members send their final position to `team-lead`.
    - **Hub:** Wait for all Round-3 spawn results to return (`wait_agent` per call on Codex).
    Apply same timeout policy — if members don't return, proceed after receiving results from the quorum.
-4. Mark task as completed
+4. **Print the Round 3 table** (`### Council — Round 3: Final positions`, format under Round tables above) in chat before any grading, file write or Phase 4 work. A file write or a prose recap does not replace it.
+5. Mark task as completed
 
 ## Phase 4 — Synthesize Verdict
 
@@ -499,8 +500,9 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
    - Recommendation: 1-2 sentences
    ```
 3. Collect 2 positions + add your own = 3 votes (stay-alive: messages arrive automatically; hub: results return per spawn — `wait_agent` on each, Codex)
-4. Quick consensus per @references/verdict-rules.md Quick Mode section. Then grade, as in Phase 4 step 4: run `score-check.py` per member (any FLAG becomes `Score flag:` in the verdict; Quick has no Round 3), run `review-grade.py --ladder severity` on the `yes` findings (plans: all findings) for the **Quality** row, and set the **Risk** row from the tier table (@references/verdict-rules.md#quality-and-risk). Fill both rows as Phase 4 describes
-5. Format abbreviated verdict (3 positions only)
-6. Save verdict (same Phase 5)
-7. Interactive follow-up (Phase 6)
-8. Cleanup (Phase 7)
+4. **Print the round table**, same as Full mode's Round 1 (Phase 2 step 2): a count line per report (`Quick round: 1/2 in. Waiting on hulk.`), then once all are in, `### Council — Quick round (3/3 in)` with the Phase 2 columns, one row per member plus Captain America, and the `Veto:` line. Rendered markdown, never a code fence. Print it before grading or saving; a file write or a prose recap does not replace it.
+5. Quick consensus per @references/verdict-rules.md Quick Mode section. Then grade, as in Phase 4 step 4: run `score-check.py` per member (any FLAG becomes `Score flag:` in the verdict; Quick has no Round 3), run `review-grade.py --ladder severity` on the `yes` findings (plans: all findings) for the **Quality** row, and set the **Risk** row from the tier table (@references/verdict-rules.md#quality-and-risk). Fill both rows as Phase 4 describes
+6. Format abbreviated verdict (3 positions only)
+7. Save verdict (same Phase 5)
+8. Interactive follow-up (Phase 6)
+9. Cleanup (Phase 7)

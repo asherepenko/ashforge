@@ -4,6 +4,14 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.8] - 2026-11-07
+
+### Fixed
+
+- Round 3 now ends with its table in chat, like Rounds 1 and 2. Both review skills print it as the first synthesis step, before grading and saving, and the completion gate in `orchestration-protocol.md` requires it.
+- Quick Mode now prints count lines and a `Council — Quick round` table in chat before grading, in the same format as Full mode's Round 1.
+- `council-advise` shows count lines while answers arrive, and a `--debate` round ends with a Debate table (position before → after, who still disagrees) before the synthesis.
+
 ## [5.0.7] - 2026-11-05
 
 ### Added

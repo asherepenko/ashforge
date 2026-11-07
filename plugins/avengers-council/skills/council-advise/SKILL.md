@@ -72,7 +72,19 @@ Answer from your specialty lens only. Return:
 Max 250 words. If the question is outside your domain, say so in one line and stop.
 ```
 
+While answers arrive, show one short count line per answer (`Advice: 2/4 in. Waiting on thor, vision.`), never a partial table.
+
 **With `--debate`:** after all answers arrive, send each member the other members' POSITION and WHY lines and ask for a reply of at most 100 words: where they now agree, where they still disagree and why, and whether their POSITION changed. Stay-alive: SendMessage to each teammate, then wait for every reply. Hub: one fresh fan-out with the consolidated answers inlined, per [debate-protocol](../../references/debate-protocol.md).
+
+Show count lines while replies arrive. When the round is done, print one table in chat, as rendered markdown (never a code fence), before synthesizing. One row per member, cells under 10 words:
+
+```
+### Council advice — Debate (4/4 in)
+
+| Member | Position before → after | Changed | Still disagrees with |
+|--------|-------------------------|---------|----------------------|
+| 🦾 iron-man | Queue → Queue | no | thor: retry cost |
+```
 
 ### Step 4 — Synthesize
 
@@ -86,7 +98,7 @@ Asked: <member> (<one-line reason>), …
 
 ### Positions
 | Member | Position | Confidence |
-|---|---|---|
+|--------|----------|------------|
 
 ### Where they agree
 ### Where they split
@@ -106,7 +118,7 @@ End with one next step, for example: run `council-plan-review` once the chosen o
 ## Common Rationalizations
 
 | Rationalization | Reality |
-|---|---|
+|-----------------|---------|
 | "This is a big question, spawn the full council" | Advice is cheap by design. 3–4 members cover it; the user can rerun with `--members`. |
 | "The members agree, skip the split section" | Write "No split" explicitly. Agreement among similar lenses can still miss a domain nobody was asked about — name it under Open questions. |
 | "I'll add a verdict so the answer feels decisive" | This skill gives a recommendation, not a verdict. Grading belongs in `council-plan-review` and `council-code-review`. |
@@ -118,11 +130,13 @@ End with one next step, for example: run `council-plan-review` once the chosen o
 - More than 4 members without `--members`
 - A recommendation that doesn't say which member positions it overrides
 - A member's answer reworded so that its trade-off disappears
+- A `--debate` round that ends with no Debate table in chat
 
 ## Verification
 
 - [ ] Roster announced with a reason per member
 - [ ] Every member returned the five fields, or said the question is outside their domain
 - [ ] `--debate` ran one rebuttal round when passed, and no round otherwise
+- [ ] Count lines shown while answers arrived; the Debate table printed after a `--debate` round
 - [ ] Answer has Positions, Where they agree, Where they split, Captain's recommendation and Open questions
 - [ ] Fallback or missing members disclosed

@@ -86,6 +86,7 @@ Follow [orchestration-protocol](../../references/orchestration-protocol.md#phase
   - Iron Man's Round 1 response must include an `ARCHITECTURE DIAGRAM:` field (mermaid or ASCII: components, data flow, dependencies, boundaries). Hulk's must include a `FLOW DIAGRAM:` field (user/state flow with happy, error and edge paths) and a `PATH → TEST:` list of `<path> → <planned test | unmapped>`. Each `unmapped` path is a Hulk finding. These fields go only in those members' prompts, per [debate-protocol](../../references/debate-protocol.md#member-specific-fields-plan-review-only); in Quick Mode and fallback they apply when the member is present.
   - Each member's `DOMAIN SCORE` line must carry a basis: `basis: <own finding numbers | weak: <slugs> | none>`. Pick the band per [verdict-rules](../../references/verdict-rules.md#domain-scoring). A score without a basis is sent back once, then reported as `n/a`.
 - **Verdict synthesis additions:**
+  - First, print the Round 3 table in chat (`### Council — Round 3: Final positions`, per [orchestration-protocol](../../references/orchestration-protocol.md) Phase 3 "Round tables"), same as Rounds 1 and 2. Quick Mode prints its one round table instead (`### Council — Quick round`, [Quick Flow](../../references/orchestration-protocol.md#quick-flow) step 4). Then grade and save
   - Check if acceptance criteria are testable and measurable
   - If major criteria missing → downgrade to "NEEDS REVISION" minimum
   - Add Scope Check, Acceptance Criteria Validation and Standards Compliance sections to saved verdict
@@ -111,7 +112,7 @@ Follow [orchestration-protocol](../../references/orchestration-protocol.md#phase
 ## Common Rationalizations
 
 | Rationalization | Reality |
-|---|---|
+|-----------------|---------|
 | "The plan looks reasonable, approve it quickly" | Rubber-stamping defeats the purpose. Every council member must evaluate against their checklist — even if the plan seems straightforward. |
 | "Only 2-3 members need to weigh in on this" | Use `--quick` explicitly, or the Mode Selection section's cost-controlled degradation (capability + proportionality + user-unavailable — all three, disclosed in the verdict). "Looks simple" alone never justifies a downgrade. Default is full council — each member catches domain-specific issues others miss. |
 | "The acceptance criteria are implied, no need to list them" | Missing acceptance criteria → downgrade to NEEDS REVISION minimum. Implied criteria are untestable criteria. |
@@ -139,6 +140,7 @@ Follow [orchestration-protocol](../../references/orchestration-protocol.md#phase
 - Plan verdict without the architecture or flow diagram, or an `unmapped` path not raised as a Hulk finding
 - Writing the Quality letter by hand
 - A domain score with no basis, or a score-check FLAG neither fixed nor noted
+- A council (Full or Quick) ended with only a file write and a prose recap, no round table in chat
 
 ## Verification
 
@@ -146,6 +148,7 @@ After council review completes, confirm:
 
 - [ ] All required council members provided Round 1 assessment
 - [ ] Round 2 challenges were exchanged (stay-alive: via SendMessage; hub: via re-spawn with consolidated context)
+- [ ] A table printed in chat after each round (Full: Rounds 1, 2, 3; Quick: its one round)
 - [ ] Mode selection followed the Mode Selection & Cost-Controlled Degradation section; any autonomous downgrade is disclosed in the verdict header
 - [ ] Final verdict includes Standards Compliance section
 - [ ] Final verdict includes a Scope Check table, with each ❌/🟡 row counted once before grading
