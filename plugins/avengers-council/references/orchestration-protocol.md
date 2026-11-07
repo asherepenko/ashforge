@@ -239,7 +239,7 @@ Agents self-start Round 1 immediately from their spawn prompt — no broadcast n
 2. Collect responses (apply timeout policy from Phase 1 Step 4). While members report, show one short count line per report (`Round 1: 3/5 in. Waiting on doctor-strange, ant-man.`). When every member is in (or the timeout ends the round), show the progress block below in chat, once.
 
    ```
-   ### Council — Round 1 (3/5 reported)
+   ### Council — Round 1 (3/5 in)
 
    | Member | Status | Score | Verdict | Findings | Top concern |
    |--------|--------|-------|---------|----------|-------------|
@@ -500,7 +500,7 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
    - Recommendation: 1-2 sentences
    ```
 3. Collect 2 positions + add your own = 3 votes (stay-alive: messages arrive automatically; hub: results return per spawn — `wait_agent` on each, Codex)
-4. **Print the round table**, same as Full mode's Round 1 (Phase 2 step 2): a count line per report (`Quick round: 1/2 in. Waiting on hulk.`), then once all are in, `### Council — Quick round (3/3 in)` with the Phase 2 columns, one row per member plus Captain America, and the `Veto:` line. Rendered markdown, never a code fence. Print it before grading or saving; a file write or a prose recap does not replace it.
+4. **Print the round table**, in the Round 1 format (Phase 2 step 2). Count all 3 voters, Captain America's own vote included: a count line per report (`Quick round: 2/3 in. Waiting on hulk.`), then once all are in, `### Council — Quick round (3/3 in)` with the Phase 2 columns and the `Veto:` line. One row per spawned member, then a last row for Captain America: Status `👑 lead`, and his own Score, Verdict, Findings and Top concern. Rendered markdown, never a code fence. Print it before grading or saving; a file write or a prose recap does not replace it.
 5. Quick consensus per @references/verdict-rules.md Quick Mode section. Then grade, as in Phase 4 step 4: run `score-check.py` per member (any FLAG becomes `Score flag:` in the verdict; Quick has no Round 3), run `review-grade.py --ladder severity` on the `yes` findings (plans: all findings) for the **Quality** row, and set the **Risk** row from the tier table (@references/verdict-rules.md#quality-and-risk). Fill both rows as Phase 4 describes
 6. Format abbreviated verdict (3 positions only)
 7. Save verdict (same Phase 5)

@@ -9,7 +9,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 ### Fixed
 
 - Round 3 now ends with its table in chat, like Rounds 1 and 2. Both review skills print it as the first synthesis step, before grading and saving, and the completion gate in `orchestration-protocol.md` requires it.
-- Quick Mode now prints count lines and a `Council — Quick round` table in chat before grading, in the same format as Full mode's Round 1.
+- Quick Mode now prints count lines and a `Council — Quick round` table in chat before grading, in the same format as Full mode's Round 1. Captain America's vote gets its own row and counts toward the total.
+- The Round 1 table heading ends in `in` (`Round 1 (3/5 in)`), like every other round table.
 - `council-advise` shows count lines while answers arrive, and a `--debate` round ends with a Debate table (position before → after, who still disagrees) before the synthesis.
 
 ## [5.0.7] - 2026-11-05
