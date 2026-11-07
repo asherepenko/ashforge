@@ -7,7 +7,7 @@ A personal plugin marketplace by [Andrew Sherepenko](https://github.com/asherepe
 ## Plugins
 
 | Plugin | What It Does |
-| --- | --- |
+|--------|--------------|
 | [`android-expert-toolkit`](./plugins/android-expert-toolkit) | Android knowledge: router skill, adversarial testing and error-handling skills, vendored official Android skills, 80/20 pattern detection, 5 standalone agents (architect, developer, compose, gradle, testing) |
 | [`ios-expert-toolkit`](./plugins/ios-expert-toolkit) | iOS knowledge: router skill, TCA and SwiftUI skills, pattern detection, vendored community and Xcode 27.2 skills, the Xcode MCP, 5 standalone agents (architect, developer, SwiftUI, build, testing) |
 | [`avengers-council`](./plugins/avengers-council) | 8-member engineering advisory board (+ Captain America orchestrator) for plan and code review through structured 3-round debate with domain scoring and security veto |

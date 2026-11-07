@@ -9,7 +9,7 @@ Comprehensive reference for Avengers Council skills: `council-plan-review` and `
 ## Skill Comparison
 
 | Feature | `council-plan-review` | `council-code-review` |
-|---------|-------------------------|--------------------------------|
+|---------|-----------------------|-----------------------|
 | **Purpose** | Review plans, design specs, PRDs, plan-mode plan files | Review code changes, diffs, PRs |
 | **Input** | Topic, file path, or auto-detects the runtime plans dirs (`.claude/plans/`, `.zcode/plans/`, `.pi/plans/`, `.codex/plans/`) | Diff, PR number, or files |
 | **Review Type** | Design, architecture & plan completeness | Code & implementation |

@@ -71,7 +71,7 @@ After detection completes (Step 3), write results to `.artifacts/aet/cache/detec
 For each category (or all), use the Grep tool to count pattern occurrences. Summary of what each category sweeps:
 
 | Category | Patterns counted (summary) |
-|----------|---------------------------|
+|----------|----------------------------|
 | `state` | StateFlow vs LiveData/MutableLiveData vs Flow vs RxJava markers |
 | `di` | Hilt vs Koin vs Dagger vs manual DI (`ViewModelProvider.Factory`) markers |
 | `testing` | Mockito vs MockK vs test doubles (`Test*`/`Fake*`) vs Turbine usage |
@@ -98,7 +98,7 @@ Format output as rendered markdown (real headings and tables, never inside a cod
 
 ### State Management
 | Pattern | Count | Percentage |
-|---------|-------|-----------|
+|---------|-------|------------|
 | StateFlow | 45 | 82% |
 | LiveData | 10 | 18% |
 
@@ -106,7 +106,7 @@ Consistency: 82% → **Match existing pattern (StateFlow)**
 
 ### Dependency Injection
 | Pattern | Count | Percentage |
-|---------|-------|-----------|
+|---------|-------|------------|
 | Hilt | 30 | 55% |
 | Koin | 25 | 45% |
 

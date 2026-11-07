@@ -53,7 +53,7 @@ Research: <member> (<status>), … | skipped — no web tools
 Since last run (re-review only — omit otherwise). Member rows list only members whose score moved:
 
 | | Last run | Now | Trend |
-|---|---|---|---|
+|---|--------|-----|-------|
 | Quality | [🟠 D] | [🟡 C] | [📈] |
 | Score | [6.1/10 avg] | [7.4/10 avg] | [📈] |
 | [Hulk] | [6] | [8] | [📈] |

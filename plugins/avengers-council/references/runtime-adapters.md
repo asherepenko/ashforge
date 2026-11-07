@@ -93,7 +93,7 @@ Advisory only — the preflight detection wins over this table. The WEB column i
 Before each round, inspect the available tools and current worker inventory. Do not manufacture missing tools or treat returned workers as closed.
 
 | Operation | Codex CLI shape, when exposed | Collaboration namespace shape, when exposed |
-|---|---|---|
+|-----------|-------------------------------|---------------------------------------------|
 | Spawn | `spawn_agent` | `collaboration.spawn_agent` |
 | Continue completed worker | `resume_agent` then `send_input`, following actual schema | `collaboration.followup_task` |
 | Send to running worker | `send_input` | `collaboration.send_message` |

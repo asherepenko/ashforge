@@ -16,7 +16,7 @@ Canonical rules for determining council verdict outcomes. Referenced by assets/v
 Let **N** = total active voters (core members + optional members + Captain America). Thresholds adjust automatically when optional members join. See @references/member-registry.md for roster determination.
 
 | N | Majority (floor(N/2)+1) | BLOCKED threshold (floor(N*0.45)) | Default (8 core + Cap) |
-|---|------------------------|-----------------------------------|----------------------|
+|---|-------------------------|-----------------------------------|------------------------|
 | 9 | 5 | 4 | Yes |
 | 10 | 6 | 4 | 9 + 1 optional |
 | 11 | 6 | 4 | 9 + 2 optional |
@@ -71,7 +71,7 @@ Each council member gives a domain score from 1-10 for how the proposal performs
 Pick the band that matches your own findings and WEAK criteria, then a score inside it.
 
 | Band | Defined by the member's own findings and WEAK criteria |
-|------|-------------------------------------------------------|
+|------|--------------------------------------------------------|
 | 9–10 | No finding above LOW, and no WEAK criterion |
 | 7–8 | No CRITICAL or HIGH. At most 2 MEDIUM or WEAK criteria combined (none is also fine) |
 | 5–6 | A HIGH, or 3+ MEDIUM and WEAK combined. No CRITICAL |
@@ -112,7 +112,7 @@ Exit 0 is ok. Exit 1 is FLAG: the score is above the cap its findings allow, or 
 ### Score Interpretation
 
 | Average | Interpretation |
-|---------|---------------|
+|---------|----------------|
 | 8.0-10 | Excellent |
 | 6.0-7.9 | Good |
 | 5.0-5.9 | Marginal |

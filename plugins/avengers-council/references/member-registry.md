@@ -14,7 +14,7 @@ Single source of truth for the Avengers Council roster. The orchestration protoc
 Core members participate in every full council session. They define the council's identity.
 
 | Name | subagent_type | Domain | Focus Tags |
-|------|--------------|--------|------------|
+|------|---------------|--------|------------|
 | iron-man | avengers-council:iron-man | Architecture & Scalability | architecture, scalability, distributed-systems, infrastructure-costs |
 | thor | avengers-council:thor | Backend & API | backend, api, database, microservices, caching |
 | scarlet-witch | avengers-council:scarlet-witch | Frontend & UX | frontend, react, ux, accessibility, design-systems |
@@ -52,7 +52,7 @@ invoke_when: "Short description of when to invoke this member"
 -->
 
 | Name | subagent_type | Domain | Invoke When | Focus Tags |
-|------|--------------|--------|-------------|------------|
+|------|---------------|--------|-------------|------------|
 | ant-man | avengers-council:ant-man | Reuse & Placement | Code review: `== Code files added or moved ==` has `COUNT` > 0 or `ADDED_DEFS` > 0; `UNKNOWN` means Captain reads the diff to decide. Plan review: the File Structure Map has Create rows for code, or the plan adds or moves functions or modules. Never triggered by docs-only or config-only changes. | reuse, duplication, placement, ownership, abstraction |
 
 ## Quick Mode Member Selection
@@ -77,7 +77,7 @@ Quick Mode picks 2 relevant core members + Captain America = 3 voters. Optional 
 ### Code Review Auto-Selection (by affected files)
 
 | Affected Area | Members |
-|--------------|---------|
+|---------------|---------|
 | API routes | thor + black-widow |
 | UI components | scarlet-witch + hulk |
 | Infrastructure/CI | doctor-strange + iron-man |

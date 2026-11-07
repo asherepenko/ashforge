@@ -112,7 +112,7 @@ Only after both Round-2 completion barriers, when Cap sends a separate Round-3 t
 Each member provides a score from 1-10 in their domain of expertise. Scores reflect how well the proposal performs in that domain specifically, independent of the overall verdict.
 
 | Member | Domain Score |
-|--------|-------------|
+|--------|--------------|
 | Iron Man | Architecture & Scalability |
 | Thor | Backend & API |
 | Scarlet Witch | Frontend & UX |
@@ -132,7 +132,7 @@ Score interpretation (informational): see @references/verdict-rules.md#domain-sc
 Canonical definitions with full examples: see @references/verdict-rules.md.
 
 | Level | Definition |
-|-------|-----------|
+|-------|------------|
 | **CRITICAL** | Blocks deployment. Security vulnerability, data loss risk, or architectural flaw that cannot ship. |
 | **HIGH** | Must address before merge. Significant bug, performance issue, or design problem. |
 | **MEDIUM** | Should address. Code quality, maintainability, or minor correctness issue. |

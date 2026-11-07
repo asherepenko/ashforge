@@ -26,7 +26,7 @@ Controls bolted on without a threat model are guesses. Before judging or recomme
 3. **Run STRIDE over each boundary** — a quick lens, not a ceremony:
 
 | Threat | Ask | Typical mitigation |
-|---|---|---|
+|--------|-----|--------------------|
 | **S**poofing | Can someone impersonate a user/service? | Authentication, signature verification |
 | **T**ampering | Can data be altered in transit or at rest? | Integrity checks, parameterized queries, TLS |
 | **R**epudiation | Can an action be denied later? | Audit logging of security events |
@@ -91,7 +91,7 @@ grep -q "helmet\|cors\|csp" package.json 2>/dev/null && echo "✓ Security middl
 **Detect the dependency manifest first, then pick the right audit tool:**
 
 | Stack | Manifest | Audit command |
-|---|---|---|
+|-------|----------|---------------|
 | Node | `package.json` | `npm audit --audit-level=moderate`, `snyk test` |
 | Python | `pyproject.toml` / `requirements.txt` | `pip-audit` |
 | Android/JVM | `build.gradle(.kts)` | `./gradlew dependencyCheckAnalyze` (OWASP dependency-check), Gradle version-catalog audit |

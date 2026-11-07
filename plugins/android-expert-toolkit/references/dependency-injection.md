@@ -66,7 +66,7 @@ An `AppContainer` holding `by lazy` singletons, created in `Application`. ViewMo
 ## Comparison
 
 | | Hilt | Dagger | Koin | Manual |
-|-|------|--------|------|--------|
+|---|----|--------|------|--------|
 | Graph checked at | compile time | compile time | runtime (test with `verify`) | compile time (plain code) |
 | Build cost | KSP | KSP | none | none |
 | KMP | no | yes | yes | yes |
