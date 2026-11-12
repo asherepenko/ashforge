@@ -60,7 +60,7 @@ Each row owns its trigger phrases; no phrase appears in two rows. References are
 | test infrastructure, screenshot tests, E2E setup | `/testing-setup` skill |
 | Java to Kotlin interop, Java callers | [kotlin-java-interop](../../references/kotlin-java-interop.md) |
 | grade architecture or Compose work | [rubric-android-architecture](../../references/rubric-android-architecture.md), [rubric-compose-ui](../../references/rubric-compose-ui.md) |
-| matching vs changing existing patterns, scope discipline | [pragmatics](../../references/pragmatics.md) |
+| matching vs changing existing patterns, scope discipline, editing an existing file, member order | [pragmatics](../../references/pragmatics.md) |
 | detection sweep, 80/20 rule | [pattern-detection](../../references/pattern-detection.md) |
 
 ## Agents

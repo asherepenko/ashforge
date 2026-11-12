@@ -20,6 +20,14 @@ Codebase uses manual DI → don't introduce Hilt in a feature PR. Legacy API is 
 - Don't refactor working code without tests around it; write characterization tests first.
 - Big migrations go module by module behind an adapter, with the app working at every step.
 
+## Editing an existing file
+
+Read the whole file before the first edit, and keep its layout:
+
+- **Order:** follow the file's existing order. If it has none, put top-level constants first (public, then private `const val`s, then private `val`s such as adapters and lazy singletons), then the public API, then private helpers. In a class, the `companion object` stays at the bottom. A new member goes next to its siblings. Never wedge a helper inside a run of related declarations, and never append to the end of the file by default.
+- **Modifiers and style:** keep what the siblings use (`inline val`, `internal`, `@JvmStatic`, `get() =` on its own line). If a public `inline` member must call a private helper, mark the helper `@PublishedApi internal` instead of dropping `inline`.
+- **Edits:** use targeted edits. Don't splice a file with a script that cuts regions and appends text; it breaks the layout without anyone seeing it.
+
 ## Examples
 
 ```kotlin

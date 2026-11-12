@@ -4,6 +4,12 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.5.1] - 2026-11-13
+
+### Added
+
+- `pragmatics.md` has an "Editing an existing file" section: read the whole file first, follow its existing member order (with a fallback order when it has none), keep sibling modifiers, use `@PublishedApi internal` instead of dropping `inline`, and use targeted edits instead of splice scripts. The android-expert router row for pragmatics now lists "editing an existing file, member order".
+
 ## [4.5.0] - 2026-11-12
 
 ### Added
