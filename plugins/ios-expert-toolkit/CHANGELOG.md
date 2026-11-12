@@ -4,6 +4,12 @@ All notable changes to the iOS Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for removed or renamed skills and agents, minor for new ones, patch for docs and reference fixes.
 
+## [1.1.0] - 2026-11-12
+
+### Added
+
+- Review mode (`references/review-rules.md`): reviews use fixed rows (C1–C5 from rubric-swiftui, A1–A6 from rubric-ios-architecture, reference checklist items), PASS/FAIL/N/A per row, one verdict rule, and one output template. On a diff, problems in untouched code are listed as `PRE-EXISTING` and do not change the verdict. The output block lives in `assets/review-template.md`, matching the avengers-council verdict block. The ios-expert router and the ios-architect agent point to it; `swiftui-pro` supplies line-level evidence.
+
 ## [1.0.2] - 2026-11-04
 
 ### Fixed

@@ -14,6 +14,10 @@ A router. Find the topic, load only what it names, then answer or act.
 2. Check API availability against the deployment target and the Swift language mode before recommending anything. `@Observable` and SwiftData need iOS 17. Anything from a `*-whats-new-27` skill needs iOS 27. Below the target, give the API the project can compile.
 3. Verify API claims you are unsure of with the Xcode `DocumentationSearch` tool or `/doc-lookup`, not memory.
 
+## Review mode
+
+For any review of iOS code (a file, screen, diff or PR), follow [review-rules](../../references/review-rules.md): fixed rows from the rubrics, PASS/FAIL/N/A per row, one verdict rule, one output template. `swiftui-pro` supplies the line-level rule checks for SwiftUI rows. Test review stays with `ios-testing`.
+
 ## Topic → load
 
 Each row owns its trigger phrases; no phrase appears in two rows. References live in [references](../../references/). Skills are loaded by name.
@@ -26,6 +30,7 @@ Each row owns its trigger phrases; no phrase appears in two rows. References liv
 | write tests for, unit test this view model, fake repository, what edge cases am I missing | `ios-testing` |
 | #expect, #require, traits and tags, parameterized tests, flaky Swift Testing test | `swift-testing-expert` |
 | migrate XCTest to Swift Testing, modernize this test suite | `modernize-tests` |
+| review this iOS code, review this PR, audit this view, review findings format | [review-rules](../../references/review-rules.md) |
 | review my SwiftUI, build a SwiftUI screen, SwiftUI best practices | `swiftui-pro` |
 | @Observable, @Environment, ForEach identity, deprecated SwiftUI API, @Animatable | `swiftui-specialist` |
 | what's new in SwiftUI 27, iOS 27 SwiftUI APIs, @State macro compile error | `swiftui-whats-new-27` |
