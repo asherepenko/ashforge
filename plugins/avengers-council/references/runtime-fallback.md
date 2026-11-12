@@ -1,6 +1,6 @@
 ## When to use
 
-Read this after exposed tool discovery confirms no spawn capability and the `council-plan-review` or `council-code-review` skill's preflight reports `SPAWN=none` in the `== Runtime capability ==` section. No subagent dispatch is available on this runtime — `Agent` / `spawn_agent` / `wait_agent` / `close_agent` calls would fail at the tool layer. Do NOT attempt any spawn.
+Read this after exposed tool discovery confirms no spawn capability and the `/council-plan-review` or `/council-code-review` skill's preflight reports `SPAWN=none` in the `== Runtime capability ==` section. No subagent dispatch is available on this runtime — `Agent` / `spawn_agent` / `wait_agent` / `close_agent` calls would fail at the tool layer. Do NOT attempt any spawn.
 
 Typical causes: session restrictions remove spawn tools, or pi lacks a subagent extension. Modern Codex `[agents] enabled` defaults true; legacy `features.multi_agent` and preflight config are hints, not proof. Exposed working spawn tools use the normal flow even if a stale hint reports none.
 

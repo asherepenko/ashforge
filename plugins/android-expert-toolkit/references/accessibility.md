@@ -21,7 +21,7 @@ Read when building or reviewing UI for TalkBack, Switch Access, keyboard, or lar
 - **Forms:** `OutlinedTextField(label = …, supportingText = …, isError = …)`; error text in `supportingText` so it's announced with the field.
 - **Dialogs and sheets:** Material dialogs move focus correctly; custom overlays must too (`paneTitle`).
 - **Lists:** `collectionInfo`/`collectionItemInfo` come free with `LazyColumn`; don't break them by flattening into a `Column` with many children.
-- **Keyboard/focus:** focus order follows layout order; fix with `Modifier.focusProperties` only when layout order is wrong. Keyboard shortcuts and pointer support → `adaptive` skill.
+- **Keyboard/focus:** focus order follows layout order; fix with `Modifier.focusProperties` only when layout order is wrong. Keyboard shortcuts and pointer support → `/adaptive` skill.
 
 ## Example
 

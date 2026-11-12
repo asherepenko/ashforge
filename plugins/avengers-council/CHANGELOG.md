@@ -4,6 +4,12 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.9] - 2026-11-12
+
+### Changed
+
+- Skills are referenced as `/{name}` in skills, agents and references, and as `/avengers-council:{name}` in README and docs. The rule is in `AGENTS.md`.
+
 ## [5.0.8] - 2026-11-07
 
 ### Fixed

@@ -1,6 +1,6 @@
 # Swift Testing Patterns
 
-Code samples for the `ios-testing` method. Swift Testing API detail (expectations, traits, tags, parameterization, `confirmation`, migration from XCTest) is in the vendored `swift-testing-expert` skill under `skills/community/swift-testing-expert/references/`; this page only shows how the method uses it. TCA `TestStore` is covered by the `tca` skill.
+Code samples for the `/ios-testing` method. Swift Testing API detail (expectations, traits, tags, parameterization, `confirmation`, migration from XCTest) is in the vendored `/swift-testing-expert` skill under `skills/community/swift-testing-expert/references/`; this page only shows how the method uses it. TCA `TestStore` is covered by the `/tca` skill.
 
 ## Contents
 
@@ -168,7 +168,7 @@ func makeContainer() throws -> ModelContainer {
 }
 ```
 
-One container per test; never share it through a static. For model design and migration rules see the `swiftdata-pro` skill.
+One container per test; never share it through a static. For model design and migration rules see the `/swiftdata-pro` skill.
 
 ## Stale response and double-tap
 

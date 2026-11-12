@@ -10,13 +10,13 @@ A router. Find the topic, load only what it names, then answer or act.
 
 **Rules up front.**
 
-1. On existing code, run `android-conventions` first: it reads the architecture, DI, state and testing patterns. Then follow [pragmatics](../../references/pragmatics.md): user instructions, then codebase consistency, then constraints, then best practice.
+1. On existing code, run `/android-conventions` first: it reads the architecture, DI, state and testing patterns. Then follow [pragmatics](../../references/pragmatics.md): user instructions, then codebase consistency, then constraints, then best practice.
 2. Check API availability before recommending an API. Read `minSdk`, `targetSdk` and `compileSdk` from the build files, and the Compose BOM and AGP versions from the version catalog. Below `minSdk`, give the compat API (AndroidX, `*Compat`) or an `if (Build.VERSION.SDK_INT >= ...)` guard.
 3. Verify API claims you are unsure of with `android docs search "<query>"`, not memory. For Kotlin language and stdlib facts, use the `kotlinlang` MCP (`search_kotlinlang`, then `get_kotlinlang_page`).
 
 ## Review mode
 
-For any review of Android code (a file, screen, diff or PR), follow [review-rules](../../references/review-rules.md): fixed rows from the rubrics and review checklists, PASS/FAIL/N/A per row, one verdict rule, one output template. Test review stays with `android-testing`.
+For any review of Android code (a file, screen, diff or PR), follow [review-rules](../../references/review-rules.md): fixed rows from the rubrics and review checklists, PASS/FAIL/N/A per row, one verdict rule, one output template. Test review stays with `/android-testing`.
 
 ## Topic → load
 
@@ -24,40 +24,40 @@ Each row owns its trigger phrases; no phrase appears in two rows. References are
 
 | Triggers | Load |
 |----------|------|
-| which patterns does this codebase use, check patterns, which DI is used, Android conventions | `android-conventions` skill |
+| which patterns does this codebase use, check patterns, which DI is used, Android conventions | `/android-conventions` skill |
 | layers, modules, dependency rules, where should this live | [architecture](../../references/architecture.md) |
 | viewModelScope, dispatchers, stateIn, shareIn, WhileSubscribed, structured concurrency, runTest, StandardTestDispatcher | [coroutines](../../references/coroutines.md) |
 | ViewModel, UI state, actions, one-off events, SavedStateHandle, Route/Screen split | [presentation](../../references/presentation.md) |
-| error types, try/catch, CancellationException, error message in UI | `android-error-handling` skill |
+| error types, try/catch, CancellationException, error message in UI | `/android-error-handling` skill |
 | repositories, Room, DataStore, Retrofit, Ktor, WorkManager, Paging | [data-layer](../../references/data-layer.md) |
 | sync queue, conflict resolution | [offline-sync](../../references/offline-sync.md) |
 | changing data already stored on devices, schema migration | [persisted-state-review](../../references/persisted-state-review.md) |
 | Hilt, Koin, Dagger, manual DI | [dependency-injection](../../references/dependency-injection.md) |
 | Compose components, state placement, side effects, text fields, custom modifiers, animations, previews, lists, theme, View interop | [compose-ui](../../references/compose-ui.md) |
 | accessibility, TalkBack, content descriptions | [accessibility](../../references/accessibility.md) |
-| window sizes, nav bar vs rail, list-detail, foldables, keyboard and mouse | `adaptive` skill |
-| edge-to-edge, insets, system bars | `edge-to-edge` skill |
-| home screen widget layout, Glance canonical layouts, widget UI | `glance-canonical-layouts` skill |
-| widget updates, updateAll, Glance background sync, RemoteViews bitmap memory | `glance-appwidget-updates-and-memory` skill |
-| recomposition, stability, Compose jank | `jetpack-compose-performance` skill |
-| XML layout to Compose | `migrate-xml-views-to-jetpack-compose` skill |
+| window sizes, nav bar vs rail, list-detail, foldables, keyboard and mouse | `/adaptive` skill |
+| edge-to-edge, insets, system bars | `/edge-to-edge` skill |
+| home screen widget layout, Glance canonical layouts, widget UI | `/glance-canonical-layouts` skill |
+| widget updates, updateAll, Glance background sync, RemoteViews bitmap memory | `/glance-appwidget-updates-and-memory` skill |
+| recomposition, stability, Compose jank | `/jetpack-compose-performance` skill |
+| XML layout to Compose | `/migrate-xml-views-to-jetpack-compose` skill |
 | Navigation 2, NavHost, deep links, App Links | [navigation](../../references/navigation.md) |
-| Navigation 3, NavDisplay, Nav 2 to 3 migration, scenes | `navigation-3` skill |
-| predictive back, back-gesture handling | `navigation-event` skill |
+| Navigation 3, NavDisplay, Nav 2 to 3 migration, scenes | `/navigation-3` skill |
+| predictive back, back-gesture handling | `/navigation-event` skill |
 | convention plugins, module build files | [gradle-convention-plugins](../../references/gradle-convention-plugins.md) |
 | version catalog, gradle.properties, build cache, signing, CI | [gradle-build-config](../../references/gradle-build-config.md) |
-| upgrade to AGP 9 | `agp-9-upgrade` skill |
-| R8 keep rules, shrinking, app size | `r8-analyzer` skill |
+| upgrade to AGP 9 | `/agp-9-upgrade` skill |
+| R8 keep rules, shrinking, app size | `/r8-analyzer` skill |
 | network trust, secrets, token storage, release hardening | [security](../../references/security.md) |
-| exported components, intents, PendingIntent | `android-intent-security` skill |
-| runtime permissions, component protection | `android-permissions-security` skill |
+| exported components, intents, PendingIntent | `/android-intent-security` skill |
+| runtime permissions, component protection | `/android-permissions-security` skill |
 | startup time, Baseline Profiles, Macrobenchmark, vitals targets | [performance](../../references/performance.md) |
-| traces, heap dumps, profiling | `android-profiler` skill |
-| ANR, main-thread blocking | `anr-audit-and-fix` skill |
+| traces, heap dumps, profiling | `/android-profiler` skill |
+| ANR, main-thread blocking | `/anr-audit-and-fix` skill |
 | logging, crash reporting, analytics, custom traces | [observability](../../references/observability.md) |
-| write tests for, review these tests, what edge cases am I missing | `android-testing` skill |
+| write tests for, review these tests, what edge cases am I missing | `/android-testing` skill |
 | test code mechanics, fakes, Turbine, Compose tests, Room tests | [testing-patterns](../../references/testing-patterns.md) |
-| test infrastructure, screenshot tests, E2E setup | `testing-setup` skill |
+| test infrastructure, screenshot tests, E2E setup | `/testing-setup` skill |
 | Java to Kotlin interop, Java callers | [kotlin-java-interop](../../references/kotlin-java-interop.md) |
 | grade architecture or Compose work | [rubric-android-architecture](../../references/rubric-android-architecture.md), [rubric-compose-ui](../../references/rubric-compose-ui.md) |
 | matching vs changing existing patterns, scope discipline | [pragmatics](../../references/pragmatics.md) |
@@ -73,7 +73,7 @@ Delegate a scoped task with a plain brief — goal, acceptance criteria, files, 
 | `android-developer` | ViewModels, repositories, persistence, networking, DI wiring |
 | `compose-expert` | screens, components, previews, accessibility, adaptive UI |
 | `gradle-build-engineer` | modules, convention plugins, catalog, build performance |
-| `android-testing-specialist` | tests and test review using the `android-testing` method |
+| `android-testing-specialist` | tests and test review using the `/android-testing` method |
 
 Typical order for a new feature: architect (if structure changes) → gradle (if new modules) → developer → compose → testing. Skip any step the change doesn't need.
 

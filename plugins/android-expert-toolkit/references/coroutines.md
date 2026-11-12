@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when writing or reviewing suspend functions, scopes, dispatchers, or `Flow` pipelines. Layer placement → `architecture.md`. Typed errors and `catch` blocks → `android-error-handling` skill. Test mechanics (Turbine, fakes) → `testing-patterns.md`.
+Read when writing or reviewing suspend functions, scopes, dispatchers, or `Flow` pipelines. Layer placement → `architecture.md`. Typed errors and `catch` blocks → `/android-error-handling` skill. Test mechanics (Turbine, fakes) → `testing-patterns.md`.
 
 ## Dispatchers
 

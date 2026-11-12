@@ -4,7 +4,7 @@ A fixed procedure and output for reviewing iOS code, so two reviews of the same 
 
 ## When to use
 
-Any review request: "review this iOS code", "review this screen", "audit this view", "is this reducer right", a PR or diff review, or an agent brief that asks for review findings. Not for test review (`ios-testing` skill) or writing new code (use the rubrics as generation targets instead).
+Any review request: "review this iOS code", "review this screen", "audit this view", "is this reducer right", a PR or diff review, or an agent brief that asks for review findings. Not for test review (`/ios-testing` skill) or writing new code (use the rubrics as generation targets instead).
 
 ## Pick the rows
 
@@ -12,7 +12,7 @@ Build the row list before reading the code closely. Include a row only when its 
 
 | Lens | Applies when the code touches | Rows |
 |------|-------------------------------|------|
-| SwiftUI | any `View` | C1–C5 from [rubric-swiftui](rubric-swiftui.md); load `swiftui-pro` and cite its rule hits as evidence for these rows |
+| SwiftUI | any `View` | C1–C5 from [rubric-swiftui](rubric-swiftui.md); load `/swiftui-pro` and cite its rule hits as evidence for these rows |
 | Architecture | view models, reducers, clients, packages, DI, data flow | A1–A6 from [rubric-ios-architecture](rubric-ios-architecture.md) |
 | Checklist | a topic whose reference ends with `## Review checklist` | one row per checklist item, id `<reference>.<n>` (e.g. `persisted-state-review.2`); references in alphabetical order |
 

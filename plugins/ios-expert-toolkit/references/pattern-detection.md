@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read this before deciding whether new iOS code should match the codebase's existing architecture or follow the toolkit default. The `ios-conventions` skill runs these sweeps. This file is the single source for the sweep patterns; `tests/fixtures/run-sweeps.py` implements the architecture sweep and a test keeps it identical to the table below.
+Read this before deciding whether new iOS code should match the codebase's existing architecture or follow the toolkit default. The `/ios-conventions` skill runs these sweeps. This file is the single source for the sweep patterns; `tests/fixtures/run-sweeps.py` implements the architecture sweep and a test keeps it identical to the table below.
 
 ## Architecture sweep (counts files)
 

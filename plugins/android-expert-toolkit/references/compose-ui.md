@@ -6,12 +6,12 @@ Read when building or reviewing composables below the Root/Screen level, theming
 
 | Topic | Skill |
 |-------|-------|
-| Window sizes, nav bar vs rail, list-detail, foldables, keyboard/mouse | `adaptive` |
-| Insets, system bars, IME padding | `edge-to-edge` |
-| Recomposition, stability, lazy-list jank, `remember` keys | `jetpack-compose-performance` |
-| Effect API catalogue (`SideEffect`, `snapshotFlow`, `produceState`), `Modifier.Node` internals, animation phase deferral | `jetpack-compose-performance` (its effects, custom-modifier and animation references) |
-| Porting an XML layout to Compose | `migrate-xml-views-to-jetpack-compose` |
-| Screenshot test setup | `testing-setup` |
+| Window sizes, nav bar vs rail, list-detail, foldables, keyboard/mouse | `/adaptive` |
+| Insets, system bars, IME padding | `/edge-to-edge` |
+| Recomposition, stability, lazy-list jank, `remember` keys | `/jetpack-compose-performance` |
+| Effect API catalogue (`SideEffect`, `snapshotFlow`, `produceState`), `Modifier.Node` internals, animation phase deferral | `/jetpack-compose-performance` (its effects, custom-modifier and animation references) |
+| Porting an XML layout to Compose | `/migrate-xml-views-to-jetpack-compose` |
+| Screenshot test setup | `/testing-setup` |
 
 ## Component rules
 
@@ -21,7 +21,7 @@ Read when building or reviewing composables below the Root/Screen level, theming
 - Colors, type and shapes from `MaterialTheme`; no literal `Color(0xFF…)` in feature code. Wrap Material 3 components in design-system components when the project has a design system — reuse those first.
 - Size with constraints (`fillMaxWidth`, `weight`, `widthIn(max = …)`), not fixed dp for containers, so components fit any pane.
 - Slot parameters (`content: @Composable () -> Unit`) instead of boolean flags that switch layouts.
-- Animations that change every frame read state in `graphicsLayer { }` / lambda modifiers, not in composition (`jetpack-compose-performance`).
+- Animations that change every frame read state in `graphicsLayer { }` / lambda modifiers, not in composition (`/jetpack-compose-performance`).
 
 ## State placement
 
@@ -99,7 +99,7 @@ private fun ItemCardLongTitlePreview() = AppTheme {
 }
 ```
 
-Wrap previews in the app theme with realistic data. Previews double as screenshot-test inputs when the project uses Compose Preview Screenshot Testing (`testing-setup`). Render them from the CLI with `android` (`android-cli` skill, if installed).
+Wrap previews in the app theme with realistic data. Previews double as screenshot-test inputs when the project uses Compose Preview Screenshot Testing (`/testing-setup`). Render them from the CLI with `android` (`android-cli` skill, if installed).
 
 ## Lists
 
@@ -170,17 +170,17 @@ Composables read `MaterialTheme.typography` and `MaterialTheme.colorScheme`; a r
 
 ## Adaptive layouts
 
-Don't hand-roll `when (windowSizeClass)` branches that swap a `NavigationBar` for a `NavigationRail`. Use the library components the `adaptive` skill describes:
+Don't hand-roll `when (windowSizeClass)` branches that swap a `NavigationBar` for a `NavigationRail`. Use the library components the `/adaptive` skill describes:
 
 - Top-level navigation chrome: `NavigationSuiteScaffold` (Material 3 adaptive) — it picks bar, rail, or drawer from the window size.
-- List-detail and supporting panes: Navigation 3 scene strategies (`navigation-3` + `adaptive` skills), or `ListDetailPaneScaffold` in Nav 2 projects.
-- Size queries inside components: the Compose MediaQuery API covered by the `adaptive` skill.
+- List-detail and supporting panes: Navigation 3 scene strategies (`/navigation-3` + `/adaptive` skills), or `ListDetailPaneScaffold` in Nav 2 projects.
+- Size queries inside components: the Compose MediaQuery API covered by the `/adaptive` skill.
 
 ## Views interop
 
 - Compose inside Views: `ComposeView` with `setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)` in Fragments.
 - Views inside Compose: `AndroidView(factory = { … }, update = { … })`; keep `factory` free of state reads, push state in `update`.
-- Full screen migrations → `migrate-xml-views-to-jetpack-compose`.
+- Full screen migrations → `/migrate-xml-views-to-jetpack-compose`.
 
 ## Review checklist
 

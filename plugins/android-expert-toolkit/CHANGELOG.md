@@ -8,6 +8,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ### Added
 
+- Skills are referenced as `/{name}` in skills, agents, references and router tables, and as `/{plugin}:{name}` in README and install docs. The rule is in `AGENTS.md`.
 - Review mode (`references/review-rules.md`): reviews use fixed rows (C1–C5, A1–A5, reference checklist items), PASS/FAIL/N/A per row, one verdict rule, and one output block in `assets/review-template.md`, matching the avengers-council verdict block. On a diff, problems in untouched code are listed as pre-existing and do not change the verdict. The android-expert router and the android-architect agent point to it.
 - `kotlinlang` MCP server (`https://mcp.kotlinlang.org/mcp`) in `.mcp.json` for Kotlin language and stdlib lookups. The android-expert router names it next to `android docs`.
 - Kotlin rules adapted from ECC `kotlin-patterns` and `kotlin-coroutines-flows`: `remember` a Flow built in a composable, no in-place mutation of `StateFlow` collections (`coroutines.md`), no `!!` in production code, and flat safe-call chains (`architecture.md`).

@@ -12,9 +12,9 @@ The sha256 of every reference kept byte for byte is in `ios-skills.lock` (`fork.
 
 | Upstream file | Review step now loads |
 |---|---|
-| `references/api.md` | `swiftui-specialist` `soft-deprecation.md` + `soft-deprecated-apis.md`; iOS 27 toolbar rules: `swiftui-whats-new-27` `references/toolbar.md` |
-| `references/data.md` | `swiftui-specialist` `dataflow.md` + `environment.md` + `foreach.md` |
-| `references/localization.md` | `swiftui-specialist` `localization.md` |
+| `references/api.md` | `/swiftui-specialist` `soft-deprecation.md` + `soft-deprecated-apis.md`; iOS 27 toolbar rules: `/swiftui-whats-new-27` `references/toolbar.md` |
+| `references/data.md` | `/swiftui-specialist` `dataflow.md` + `environment.md` + `foreach.md` |
+| `references/localization.md` | `/swiftui-specialist` `localization.md` |
 
 Kept references still mention `api.md` (`resizability.md`, toolbar rules) and `views.md`.
 They stay unedited so the lock hashes hold; `SKILL.md` maps those names to the replacements.
@@ -33,7 +33,7 @@ They stay unedited so the lock hashes hold; `SKILL.md` maps those names to the r
 | `@Animatable` macro, `AnimatableModifier` deprecation | Dropped. `animations.md` and `soft-deprecated-apis.md` cover them. |
 | `animation(_:)` needs `value:`; chain with `withAnimation` completion | Kept. Apple does not cover them. |
 | Reordering (`reorderable`, `reorderContainer`) | Kept. Apple does not cover it. |
-| Swipe actions in scroll views | Replaced with a pointer to `swiftui-whats-new-27` `swipe-actions.md`. |
+| Swipe actions in scroll views | Replaced with a pointer to `/swiftui-whats-new-27` `swipe-actions.md`. |
 | Conditional modifiers (not in upstream `views.md`) | Not needed here; `modifiers.md` owns it. |
 
 ## Known coverage loss

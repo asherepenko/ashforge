@@ -20,7 +20,7 @@ For every key, attribute or file the diff touches, write a row: the name, the va
 - List all versions in a `SchemaMigrationPlan`, in order, and pass the plan to the `ModelContainer`.
 - Use `MigrationStage.lightweight` only for changes SwiftData can infer: an added optional or defaulted property, a removed property, a rename with `@Attribute(originalName:)`. Anything that transforms or de-duplicates values needs `MigrationStage.custom` with `willMigrate` / `didMigrate`.
 - Adding `@Attribute(.unique)` to a property that already holds duplicates fails the migration. De-duplicate in `willMigrate` first.
-- Model rules (`@Model`, relationships, CloudKit limits) are in the `swiftdata-pro` skill.
+- Model rules (`@Model`, relationships, CloudKit limits) are in the `/swiftdata-pro` skill.
 
 ## 3. Core Data model changes
 
@@ -57,7 +57,7 @@ For every key, attribute or file the diff touches, write a row: the name, the va
 
 - The production schema is additive only. Once deployed, record types and fields cannot be deleted or renamed, and a field's type cannot change.
 - Old app versions keep reading and writing records. A new field must be optional for them, and new code must handle records that lack it.
-- With `NSPersistentCloudKitContainer` or a SwiftData CloudKit store, the local model is limited the same way: no unique constraints, every attribute optional or defaulted, every relationship optional. Details are in `swiftdata-pro`.
+- With `NSPersistentCloudKitContainer` or a SwiftData CloudKit store, the local model is limited the same way: no unique constraints, every attribute optional or defaulted, every relationship optional. Details are in `/swiftdata-pro`.
 - Deploy schema changes from the development environment to production before the build that needs them ships.
 
 ## Evidence rungs

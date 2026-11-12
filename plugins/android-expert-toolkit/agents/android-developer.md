@@ -16,7 +16,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files** you m
 
 ## Before writing
 
-1. Read the files in scope and their neighbours. Match the module's patterns (`android-conventions` skill or its cache at `.artifacts/aet/cache/detected-patterns.json`): DI framework, state style, result type, serialization library.
+1. Read the files in scope and their neighbours. Match the module's patterns (`/android-conventions` skill or its cache at `.artifacts/aet/cache/detected-patterns.json`): DI framework, state style, result type, serialization library.
 2. Verify any API you aren't sure of for the project's library versions with `android docs search` / `android docs fetch`.
 
 ## Load as needed
@@ -24,16 +24,16 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files** you m
 | Topic | Load |
 |-------|------|
 | ViewModel, state, actions, SavedStateHandle | [presentation](../references/presentation.md) |
-| Errors, try/catch, CancellationException | `android-error-handling` skill |
+| Errors, try/catch, CancellationException | `/android-error-handling` skill |
 | Scopes, dispatchers, Flow operators, coroutine tests | [coroutines](../references/coroutines.md) |
 | Repositories, Room, DataStore, network, WorkManager | [data-layer](../references/data-layer.md) |
 | Sync queues, conflicts | [offline-sync](../references/offline-sync.md) |
 | DI bindings | [dependency-injection](../references/dependency-injection.md) |
-| Navigation arguments | [navigation](../references/navigation.md), `navigation-3` skill |
+| Navigation arguments | [navigation](../references/navigation.md), `/navigation-3` skill |
 | Secrets, tokens | [security](../references/security.md) |
 | Changing stored data | [persisted-state-review](../references/persisted-state-review.md) |
 | Java callers | [kotlin-java-interop](../references/kotlin-java-interop.md) |
-| ANR risk, main-thread work | `anr-audit-and-fix` skill |
+| ANR risk, main-thread work | `/anr-audit-and-fix` skill |
 
 ## Rules
 
@@ -42,7 +42,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files** you m
 - Form input that must survive process death goes through `SavedStateHandle`; text fields as `TextFieldState` saved with `saveable`.
 - Messages and navigate-after-result are state plus an action, not a new event `Channel`.
 - No `GlobalScope`; no blocking I/O on the main thread.
-- Write or update unit tests for the behavior you change when the brief includes tests; apply the `android-testing` skill's method.
+- Write or update unit tests for the behavior you change when the brief includes tests; apply the `/android-testing` skill's method.
 
 ## Scope Boundaries
 

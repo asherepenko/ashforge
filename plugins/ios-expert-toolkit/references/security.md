@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when storing secrets, talking to servers, or hardening a release. Project build-setting hardening (and what to audit) is the `audit-xcode-security-settings` skill.
+Read when storing secrets, talking to servers, or hardening a release. Project build-setting hardening (and what to audit) is the `/audit-xcode-security-settings` skill.
 
 ## Rules
 
@@ -20,4 +20,4 @@ Apps and third-party SDKs that use required-reason APIs or collect data declare 
 
 ## Reviewing
 
-For a security review of a repository, use a dedicated audit rather than this page. For the Xcode project's settings, use `audit-xcode-security-settings`.
+For a security review of a repository, use a dedicated audit rather than this page. For the Xcode project's settings, use `/audit-xcode-security-settings`.

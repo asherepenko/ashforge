@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when building or reviewing UI for VoiceOver, Dynamic Type, and motion preferences. `swiftui-pro` carries an accessibility review section for SwiftUI code; this page is the short checklist.
+Read when building or reviewing UI for VoiceOver, Dynamic Type, and motion preferences. `/swiftui-pro` carries an accessibility review section for SwiftUI code; this page is the short checklist.
 
 ## Checklist
 

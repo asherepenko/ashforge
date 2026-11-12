@@ -1,6 +1,6 @@
 # Avengers Council Skill Reference
 
-Comprehensive reference for Avengers Council skills: `council-plan-review` and `council-code-review`.
+Comprehensive reference for Avengers Council skills: `/avengers-council:council-plan-review` and `/avengers-council:council-code-review`.
 
 > Invoke by intent (the Skill tool on Claude / natural-language prompt on Codex). The slash-command form (`/avengers-council:plan-review`) was retired in version 3.0.0.
 
@@ -8,7 +8,7 @@ Comprehensive reference for Avengers Council skills: `council-plan-review` and `
 
 ## Skill Comparison
 
-| Feature | `council-plan-review` | `council-code-review` |
+| Feature | `/avengers-council:council-plan-review` | `/avengers-council:council-code-review` |
 |---------|-----------------------|-----------------------|
 | **Purpose** | Review plans, design specs, PRDs, plan-mode plan files | Review code changes, diffs, PRs |
 | **Input** | Topic, file path, or auto-detects the runtime plans dirs (`.claude/plans/`, `.zcode/plans/`, `.pi/plans/`, `.codex/plans/`) | Diff, PR number, or files |
@@ -21,7 +21,7 @@ Comprehensive reference for Avengers Council skills: `council-plan-review` and `
 
 ## When to Use Each Command
 
-### Use `council-plan-review` when:
+### Use `/avengers-council:council-plan-review` when:
 - Evaluating a design decision before implementation begins
 - Reviewing architectural specs, PRDs, or technical proposals
 - Discussing framework choices, system design, or patterns
@@ -30,14 +30,14 @@ Comprehensive reference for Avengers Council skills: `council-plan-review` and `
 - Manually reviewing a generated `.claude/plans/` file
 - Need broader perspective on "should we build this?" or "is this plan complete?"
 
-### Use `council-code-review` when:
+### Use `/avengers-council:council-code-review` when:
 - Reviewing code changes before merging
 - Auditing security-sensitive code
 - Checking PRs for quality, correctness, and standards
 - Validating implementation against plan
 - Need feedback on "is this code ready to ship?"
 
-### Use `council-advise` when:
+### Use `/avengers-council:council-advise` when:
 - You have a question during development, not a finished plan or diff
 - You want several expert views on a trade-off: "Room or SQLDelight?", "split this module or not?"
 - You want a recommendation fast, without votes, grades or a saved verdict
@@ -50,7 +50,7 @@ It asks 3–4 members (picked by `--focus` or topic, or exactly `--members`). Ea
 
 ---
 
-## `council-plan-review`
+## `/avengers-council:council-plan-review`
 
 ### Purpose
 
@@ -375,7 +375,7 @@ When `--quick` is specified, Captain America selects the 2 most relevant members
 
 ---
 
-## `council-code-review`
+## `/avengers-council:council-code-review`
 
 ### Purpose
 
@@ -548,7 +548,7 @@ council-code-review --files app/ProfileViewModel.kt,app/SettingsScreen.kt --quic
 
 ### Output Format
 
-Same structure as `council-plan-review`, including the Risk Tier section (for code, the tier comes from the paths the diff touches), plus a `Vote adjustments` line and these code-specific details:
+Same structure as `/avengers-council:council-plan-review`, including the Risk Tier section (for code, the tier comes from the paths the diff touches), plus a `Vote adjustments` line and these code-specific details:
 
 ```markdown
 ## Key Findings
@@ -586,7 +586,7 @@ Same structure as `council-plan-review`, including the Risk Tier section (for co
 
 ### Consensus Rules
 
-Same as `council-plan-review` command (see above).
+Same as `/avengers-council:council-plan-review` command (see above).
 
 ### Performance Notes
 
@@ -679,7 +679,7 @@ council-code-review --pr 456 --focus security
 
 ### "No plan file found"
 
-**Problem:** `council-plan-review` can't auto-detect a plan file
+**Problem:** `/avengers-council:council-plan-review` can't auto-detect a plan file
 
 **Solution:**
 ```bash
@@ -716,17 +716,17 @@ council-plan-review @file.md --quick --focus security
 **Decision tree:**
 
 1. **Reviewing a design/plan before coding?**
-   - Use `council-plan-review`
+   - Use `/avengers-council:council-plan-review`
 
 2. **Reviewing code changes?**
-   - Use `council-code-review`
+   - Use `/avengers-council:council-code-review`
 
 3. **Just exited plan mode?**
-   - Use `council-plan-review` with no args (auto-detects plan files across the runtime plans dirs)
+   - Use `/avengers-council:council-plan-review` with no args (auto-detects plan files across the runtime plans dirs)
 
 4. **Not sure?**
    - Plans/specs/design/`.claude/plans/` → `plan`
-   - Code/diff/PR → `council-code-review`
+   - Code/diff/PR → `/avengers-council:council-code-review`
 
 ---
 
@@ -944,7 +944,7 @@ council-code-review [--pr <number>] [--diff] [--files <paths>] [--focus <area>] 
 
 ### Key Takeaways
 
-1. **Use the right command:** Plans/specs/design → `plan`, Code → `council-code-review`
+1. **Use the right command:** Plans/specs/design → `plan`, Code → `/avengers-council:council-code-review`
 2. **Quick mode for speed:** 5-10 min instead of 30-60 min
 3. **Focus for specificity:** `--focus security` prioritizes security findings
 4. **Read the verdict:** APPROVED (ship), CONDITIONS (fix then ship), REVISION (fix then re-review), BLOCKED (stop)

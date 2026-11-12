@@ -6,10 +6,10 @@ Read when setting performance goals, adding Baseline Profiles or Macrobenchmarks
 
 | Problem | Skill |
 |---------|-------|
-| Compose recomposition, stability, lazy-list jank, `remember` misuse | `jetpack-compose-performance` |
-| Recording and reading traces, heap dumps, CPU/memory profiles | `android-profiler` |
-| ANR risk audit, ANR stack dumps | `anr-audit-and-fix` |
-| APK size, keep rules, shrinking | `r8-analyzer` |
+| Compose recomposition, stability, lazy-list jank, `remember` misuse | `/jetpack-compose-performance` |
+| Recording and reading traces, heap dumps, CPU/memory profiles | `/android-profiler` |
+| ANR risk audit, ANR stack dumps | `/anr-audit-and-fix` |
+| APK size, keep rules, shrinking | `/r8-analyzer` |
 
 ## Targets that matter
 
@@ -23,7 +23,7 @@ Use Google Play's Android vitals thresholds as the floor (developer.android.com,
 
 Product targets should sit well inside these. Set them per app from measured baselines (Macrobenchmark on a mid-range device, Play vitals percentiles), not from generic numbers.
 
-Compose: don't chase a recomposition count or a per-recomposition millisecond budget. Strong skipping mode is the default; follow the `jetpack-compose-performance` rules (defer state reads, stable lazy keys, avoid backwards writes, don't sprinkle `@Stable`/`ImmutableList`) and judge results by frame timing in a release build.
+Compose: don't chase a recomposition count or a per-recomposition millisecond budget. Strong skipping mode is the default; follow the `/jetpack-compose-performance` rules (defer state reads, stable lazy keys, avoid backwards writes, don't sprinkle `@Stable`/`ImmutableList`) and judge results by frame timing in a release build.
 
 ## Baseline Profiles
 
@@ -87,4 +87,4 @@ Configuration cache, build cache, parallel execution, KSP instead of kapt, conve
 
 ## Monitoring
 
-Watch Play vitals (crash, ANR, startup, excessive wake-ups) per release and per device model; alert on a regression against the previous release, not against a fixed number. Crash/ANR traces → `anr-audit-and-fix`; local investigation → `android-profiler`.
+Watch Play vitals (crash, ANR, startup, excessive wake-ups) per release and per device model; alert on a regression against the previous release, not against a fixed number. Crash/ANR traces → `/anr-audit-and-fix`; local investigation → `/android-profiler`.

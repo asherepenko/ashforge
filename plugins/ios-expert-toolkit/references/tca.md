@@ -151,7 +151,7 @@ extension TodoStore: DependencyKey {
 - Map `@Model` classes to plain `Sendable` structs at the client boundary. `@Model` types are not `Sendable` and do not belong in `State`.
 - Do all `ModelContext` work in one actor (`@ModelActor`) inside the live client. Tests use the closure stubs or an in-memory `ModelConfiguration(isStoredInMemoryOnly: true)`.
 - Views may still use `@Query` for read-only lists in a non-TCA leaf view; keep writes in the client.
-- For SwiftData API detail use `swiftdata-pro`; for Core Data coexistence see `data-layer`.
+- For SwiftData API detail use `/swiftdata-pro`; for Core Data coexistence see `data-layer`.
 
 ## TestStore
 

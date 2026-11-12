@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read for test code mechanics: fakes, ViewModel and Flow tests, integration tests, Compose UI tests. **What** to test (break vectors, distinct angles, unit = behavior) is the `android-testing` skill — apply it first. Test infrastructure, instrumented runners, screenshot and E2E setup → `testing-setup` skill. Benchmarks → `performance.md`.
+Read for test code mechanics: fakes, ViewModel and Flow tests, integration tests, Compose UI tests. **What** to test (break vectors, distinct angles, unit = behavior) is the `/android-testing` skill — apply it first. Test infrastructure, instrumented runners, screenshot and E2E setup → `/testing-setup` skill. Benchmarks → `performance.md`.
 
 Use the project's libraries (`android-conventions testing`). Samples use JUnit 4 + Truth + Turbine; swap for the module's equivalents.
 
@@ -13,7 +13,7 @@ Use the project's libraries (`android-conventions testing`). Samples use JUnit 4
 | Unit | JVM, ms | ViewModels, validators, mappers, reducers, repositories with fakes | JUnit + coroutines-test |
 | Integration | JVM (Robolectric) or device | Room DAOs + migrations, network mapping over `MockWebServer`, WorkManager | Room in-memory, `MigrationTestHelper`, `WorkManagerTestInitHelper` |
 | UI | device/emulator or Robolectric | Screen behavior from state; navigation | Compose test rule |
-| Screenshot | JVM | visual regressions per preview/state | per `testing-setup` |
+| Screenshot | JVM | visual regressions per preview/state | per `/testing-setup` |
 
 Coverage targets are a signal, not a goal; a missing break vector matters more than a percentage.
 
@@ -118,4 +118,4 @@ Test the stateless Screen with fixed state; no ViewModel or DI needed.
 
 ## Screenshot tests
 
-Tool choice depends on the project and AGP version (Compose Preview Screenshot Testing, Roborazzi, Paparazzi). Follow the `testing-setup` skill: it detects what the project uses, prefers AGP test suites on new enough AGP, and notes Paparazzi issues on AGP 9. Don't add a second screenshot tool next to an existing one.
+Tool choice depends on the project and AGP version (Compose Preview Screenshot Testing, Roborazzi, Paparazzi). Follow the `/testing-setup` skill: it detects what the project uses, prefers AGP test suites on new enough AGP, and notes Paparazzi issues on AGP 9. Don't add a second screenshot tool next to an existing one.

@@ -26,12 +26,12 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 | Components, state placement, side effects, text fields, custom modifiers, animations, previews, lists, theme | [compose-ui](../references/compose-ui.md) |
 | Root/Screen split, state, actions | [presentation](../references/presentation.md) |
 | Accessibility | [accessibility](../references/accessibility.md) |
-| Window sizes, bar vs rail, panes, foldables | `adaptive` skill |
-| Insets and system bars | `edge-to-edge` skill |
-| Home screen widgets (Glance) | `glance-canonical-layouts` (layout), `glance-appwidget-updates-and-memory` (updates, bitmap memory) skills |
-| Recomposition, stability, jank | `jetpack-compose-performance` skill |
-| XML → Compose | `migrate-xml-views-to-jetpack-compose` skill |
-| Navigation | [navigation](../references/navigation.md) (Nav 2), `navigation-3`, `navigation-event` skills |
+| Window sizes, bar vs rail, panes, foldables | `/adaptive` skill |
+| Insets and system bars | `/edge-to-edge` skill |
+| Home screen widgets (Glance) | `/glance-canonical-layouts` (layout), `/glance-appwidget-updates-and-memory` (updates, bitmap memory) skills |
+| Recomposition, stability, jank | `/jetpack-compose-performance` skill |
+| XML → Compose | `/migrate-xml-views-to-jetpack-compose` skill |
+| Navigation | [navigation](../references/navigation.md) (Nav 2), `/navigation-3`, `/navigation-event` skills |
 | Quality bar | [rubric-compose-ui](../references/rubric-compose-ui.md) |
 
 ## Rules
@@ -41,7 +41,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 - Strings, colors, type, and shapes from resources and `MaterialTheme`.
 - Text input is state-based (`TextFieldState`); effects key on every value they read or use `rememberUpdatedState`; custom modifiers never use `composed { }`.
 - Adaptive navigation via `NavigationSuiteScaffold` and scene strategies, not hand-rolled size-class branches.
-- Performance changes follow the `jetpack-compose-performance` rules and come with frame-timing evidence, not recomposition counts.
+- Performance changes follow the `/jetpack-compose-performance` rules and come with frame-timing evidence, not recomposition counts.
 
 ## Scope Boundaries
 

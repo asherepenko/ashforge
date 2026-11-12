@@ -25,9 +25,9 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files/modules
 |-------|------|
 | Convention plugins, module build files | [gradle-convention-plugins](../references/gradle-convention-plugins.md) |
 | Catalog, settings, properties, cache, signing, CI | [gradle-build-config](../references/gradle-build-config.md) |
-| AGP 8 → 9 upgrade | `agp-9-upgrade` skill |
-| Keep rules, shrinking, size | `r8-analyzer` skill |
-| Test infrastructure, screenshot plugins | `testing-setup` skill |
+| AGP 8 → 9 upgrade | `/agp-9-upgrade` skill |
+| Keep rules, shrinking, size | `/r8-analyzer` skill |
+| Test infrastructure, screenshot plugins | `/testing-setup` skill |
 | Module boundaries | [architecture](../references/architecture.md) |
 
 ## Rules
@@ -35,7 +35,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files/modules
 - Every `version.ref` resolves to a `[versions]` key; don't hard-code versions in module files.
 - Don't pin versions from memory. Use the project's catalog, or look up the current stable release and say where the number came from.
 - New modules apply convention plugins, not copied blocks.
-- No kapt on AGP 9; KSP or `legacy-kapt` per the `agp-9-upgrade` skill.
+- No kapt on AGP 9; KSP or `legacy-kapt` per the `/agp-9-upgrade` skill.
 - Keep rules are minimal and scoped; no package-wide `-keep`.
 - Gradle runs without a lingering daemon (`--no-daemon` or the project's setting); verify with `./gradlew help` then the narrowest task that proves the change (`:module:assembleDebug`, `build --dry-run`). Don't run `clean` to verify.
 

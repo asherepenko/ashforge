@@ -10,7 +10,7 @@ Pinned to `ComposableArchitecture 1.26` (swift-composable-architecture 1.26.2, r
 
 **Policy.** A new project uses TCA. An existing codebase keeps the style it has. The detection rule and the 80% threshold live in [ios-conventions](../ios-conventions/SKILL.md); do not restate them here.
 
-**Version first.** Read the project's TCA version from `Package.resolved` (`ios-conventions` does this) before advising. Flag a legacy API only when the project's version is at or above the version that deprecated it (see Deprecated). Older projects get the API they can compile.
+**Version first.** Read the project's TCA version from `Package.resolved` (`/ios-conventions` does this) before advising. Flag a legacy API only when the project's version is at or above the version that deprecated it (see Deprecated). Older projects get the API they can compile.
 
 ## Core shape
 
@@ -36,7 +36,7 @@ Pinned to `ComposableArchitecture 1.26` (swift-composable-architecture 1.26.2, r
 
 - **Exhaustive (default).** `TestStore(initialState:) { Feature() }`. Every state change must be asserted in the `send`/`receive` closure, every effect must finish, and unasserted received actions fail the test. Use for leaf features.
 - **Non-exhaustive.** `store.exhaustivity = .off` (or `.off(showSkippedAssertions: true)`). Assert only the slice you care about. Use for integration tests across composed features. `skipReceivedActions()`, `skipInFlightEffects()` and `finish()` control leftovers.
-- Receive with case key paths: `await store.receive(\.response.success) { ... }`. Mark tests and suites `@MainActor` and `async`. Test-framework rules: `ios-testing`.
+- Receive with case key paths: `await store.receive(\.response.success) { ... }`. Mark tests and suites `@MainActor` and `async`. Test-framework rules: `/ios-testing`.
 
 ## Navigation
 
@@ -69,4 +69,4 @@ Flag these only when the project's TCA version is the listed one or newer. Repla
 
 - Cited API names match the pinned version in [tca](../../references/tca.md).
 - Any flagged legacy API names its replacement and the project version that deprecates it.
-- For code changes: `ios-testing` tests cover the reducer, and the named test command exits 0.
+- For code changes: `/ios-testing` tests cover the reducer, and the named test command exits 0.

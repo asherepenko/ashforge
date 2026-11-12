@@ -15,14 +15,14 @@ Include deprecated API in review findings. During feature work or bug fixes, com
 
 Review process:
 
-1. Check for deprecated API: load the `swiftui-specialist` skill's [soft-deprecation](../xcode/swiftui-specialist/references/soft-deprecation.md) and look symbols up in [soft-deprecated-apis](../xcode/swiftui-specialist/references/soft-deprecated-apis.md). For iOS 27 toolbar APIs use the `swiftui-whats-new-27` skill's `references/toolbar.md`.
-1. Check that views, modifiers, and animations have been written optimally using `references/views.md`, together with `swiftui-specialist` `structure.md` and `modifiers.md`.
-1. Validate that data flow is configured correctly: load the `swiftui-specialist` skill's [dataflow](../xcode/swiftui-specialist/references/dataflow.md), [environment](../xcode/swiftui-specialist/references/environment.md) and [foreach](../xcode/swiftui-specialist/references/foreach.md).
+1. Check for deprecated API: load the `/swiftui-specialist` skill's [soft-deprecation](../xcode/swiftui-specialist/references/soft-deprecation.md) and look symbols up in [soft-deprecated-apis](../xcode/swiftui-specialist/references/soft-deprecated-apis.md). For iOS 27 toolbar APIs use the `/swiftui-whats-new-27` skill's `references/toolbar.md`.
+1. Check that views, modifiers, and animations have been written optimally using `references/views.md`, together with `/swiftui-specialist` `structure.md` and `modifiers.md`.
+1. Validate that data flow is configured correctly: load the `/swiftui-specialist` skill's [dataflow](../xcode/swiftui-specialist/references/dataflow.md), [environment](../xcode/swiftui-specialist/references/environment.md) and [foreach](../xcode/swiftui-specialist/references/foreach.md).
 1. Ensure navigation is updated and performant using `references/navigation.md`.
 1. Ensure the code uses designs that are accessible and compliant with Apple's Human Interface Guidelines using `references/design.md`.
 1. Review layout behavior as windows resize, including iPad multitasking and folding iPhone Duo, using `references/resizability.md`.
 1. Validate accessibility compliance including Dynamic Type, VoiceOver, and Reduce Motion using `references/accessibility.md`.
-1. Check localized text, formatting, and resource handling: load the `swiftui-specialist` skill's [localization](../xcode/swiftui-specialist/references/localization.md).
+1. Check localized text, formatting, and resource handling: load the `/swiftui-specialist` skill's [localization](../xcode/swiftui-specialist/references/localization.md).
 1. Ensure the code is able to run efficiently using `references/performance.md`.
 1. Quick validation of Swift code using `references/swift.md`.
 1. Final code hygiene check using `references/hygiene.md`.
@@ -31,7 +31,7 @@ If doing a partial review, load only the relevant reference files.
 
 Keep `references/performance-plus.md` out of routine reviews. Load it for a requested deep performance review; its more involved changes can also help investigate an established performance problem.
 
-Where a reference below points at `api.md` (toolbar rules), `data.md` or `localization.md`, use the matching `swiftui-specialist` or `swiftui-whats-new-27` file named in the steps above.
+Where a reference below points at `api.md` (toolbar rules), `data.md` or `localization.md`, use the matching `/swiftui-specialist` or `/swiftui-whats-new-27` file named in the steps above.
 
 
 ## Core Instructions

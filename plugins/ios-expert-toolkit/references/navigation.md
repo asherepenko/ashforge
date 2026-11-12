@@ -10,7 +10,7 @@ Read when choosing how screens connect, restoring navigation state, or handling 
 - Register destinations with `.navigationDestination(for:)` on the stack content, one per route type.
 - Route values are small `Hashable` value types holding identifiers, not models.
 - Present sheets and alerts from optional or enum state (`.sheet(item:)`), not a boolean per sheet.
-- Use `NavigationSplitView` for sidebar and list-detail layouts that must adapt to window size (`app-resizability`).
+- Use `NavigationSplitView` for sidebar and list-detail layouts that must adapt to window size (`/app-resizability`).
 
 ## Deep links and universal links
 

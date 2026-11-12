@@ -16,7 +16,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 
 ## Before editing
 
-1. Read the files in scope and one neighbouring feature of the same kind; copy its shape. Run `ios-conventions` if you don't know whether the code uses TCA or `@Observable` view models.
+1. Read the files in scope and one neighbouring feature of the same kind; copy its shape. Run `/ios-conventions` if you don't know whether the code uses TCA or `@Observable` view models.
 2. Check the deployment target and the Swift language mode (Swift 5 or Swift 6) before using an API. Below the target, use the API the project can compile.
 3. Verify APIs you aren't sure of with the Xcode `DocumentationSearch` tool or `/doc-lookup`.
 
@@ -24,12 +24,12 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 
 | Topic | Load |
 |-------|------|
-| Reducers, `@Dependency`, `@Shared` | `tca` skill, [tca](../references/tca.md) |
+| Reducers, `@Dependency`, `@Shared` | `/tca` skill, [tca](../references/tca.md) |
 | View model and state shape | [swiftui](../references/swiftui.md) |
 | Repositories, persistence | [data-layer](../references/data-layer.md) |
-| SwiftData | `swiftdata-pro` skill |
-| async/await, actors, Sendable | [concurrency](../references/concurrency.md), `swift-concurrency` skill |
-| Errors | `ios-error-handling` skill |
+| SwiftData | `/swiftdata-pro` skill |
+| async/await, actors, Sendable | [concurrency](../references/concurrency.md), `/swift-concurrency` skill |
+| Errors | `/ios-error-handling` skill |
 | Keychain, networking security | [security](../references/security.md) |
 | Changes to data already on devices (migrations, key renames) | [persisted-state-review](../references/persisted-state-review.md) |
 | Pending-change queue, background sync, conflicts | [offline-sync](../references/offline-sync.md) |

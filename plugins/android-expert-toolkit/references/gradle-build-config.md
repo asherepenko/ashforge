@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when editing the version catalog, `settings.gradle.kts`, `gradle.properties`, build caching, flavors, signing, or CI build steps. Convention plugins → `gradle-convention-plugins.md`. AGP upgrades → `agp-9-upgrade` skill. Release shrinking → `r8-analyzer` skill.
+Read when editing the version catalog, `settings.gradle.kts`, `gradle.properties`, build caching, flavors, signing, or CI build steps. Convention plugins → `gradle-convention-plugins.md`. AGP upgrades → `/agp-9-upgrade` skill. Release shrinking → `/r8-analyzer` skill.
 
 ## Version catalog
 
@@ -71,7 +71,7 @@ org.gradle.configuration-cache=true
 android.nonTransitiveRClass=true
 ```
 
-After an AGP 9 migration, remove `android.builtInKotlin`, `android.newDsl`, `android.uniquePackageNames` and `android.enableAppCompileTimeRClass` (per the `agp-9-upgrade` skill). Don't add flags whose defaults already match; check each against the AGP release notes for the project's version.
+After an AGP 9 migration, remove `android.builtInKotlin`, `android.newDsl`, `android.uniquePackageNames` and `android.enableAppCompileTimeRClass` (per the `/agp-9-upgrade` skill). Don't add flags whose defaults already match; check each against the AGP release notes for the project's version.
 
 ## Remote build cache
 

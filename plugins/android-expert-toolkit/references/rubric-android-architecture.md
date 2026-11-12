@@ -26,7 +26,7 @@ Read this reference when designing a feature or module (to aim at the "Strong" c
 
 ## 4. State Predictability
 
-**Strong**: UI state modeled with sealed interfaces (Loading, Error, Success). State transitions are explicit and traceable from user action to UI update. Error is state, not an exception thrown to the caller: failures arrive as closed typed errors and reach the UI as string resources (`android-error-handling`). A single StateFlow per screen carries all UI-relevant state.
+**Strong**: UI state modeled with sealed interfaces (Loading, Error, Success). State transitions are explicit and traceable from user action to UI update. Error is state, not an exception thrown to the caller: failures arrive as closed typed errors and reach the UI as string resources (`/android-error-handling`). A single StateFlow per screen carries all UI-relevant state.
 
 **Weak**: Multiple independent boolean flags (isLoading, isError, hasData) that can enter impossible combinations. Error handling via try-catch in the UI layer. State scattered across multiple LiveData/StateFlow properties that can go out of sync.
 

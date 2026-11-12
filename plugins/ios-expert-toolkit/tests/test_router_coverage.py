@@ -56,7 +56,7 @@ def routes(text: str) -> list[tuple[list[str], str]]:
                 continue
             name_cell, other = (cells[0], cells[1]) if agents else (cells[1], cells[0])
             link = re.fullmatch(r"\[([a-z0-9-]+)\]\(\.\./\.\./references/\1\.md\)", name_cell)
-            target = link or re.fullmatch(r"`([^`]+)`", name_cell)
+            target = link or re.fullmatch(r"`/?([^`]+)`", name_cell)
             assert target, f"route target must be one backticked skill or agent, or a references link: {line}"
             name = f"{target.group(1)}.md" if link else target.group(1)
             triggers = [other.lower()] if agents else [t.strip().lower() for t in other.split(",")]
@@ -145,9 +145,9 @@ def test_router_has_codex_interface_metadata():
 def test_negative_control_duplicate_route_fails():
     text = router_text()
     broken = text.replace(
-        "| @Reducer, TestStore, @ObservableState, @Shared, swift-composable-architecture | `tca` |",
-        "| @Reducer, TestStore, @ObservableState, @Shared, swift-composable-architecture | `tca` |\n"
-        "| an extra phrase | `tca` |",
+        "| @Reducer, TestStore, @ObservableState, @Shared, swift-composable-architecture | `/tca` |",
+        "| @Reducer, TestStore, @ObservableState, @Shared, swift-composable-architecture | `/tca` |\n"
+        "| an extra phrase | `/tca` |",
     )
     assert broken != text
     with pytest.raises(AssertionError, match="more than once"):
@@ -156,7 +156,7 @@ def test_negative_control_duplicate_route_fails():
 
 def test_negative_control_missing_skill_fails():
     text = router_text()
-    broken = "\n".join(l for l in text.splitlines() if not l.rstrip().endswith("| `xctrace` |"))
+    broken = "\n".join(l for l in text.splitlines() if not l.rstrip().endswith("| `/xctrace` |"))
     assert broken != text
     with pytest.raises(AssertionError, match="not routed"):
         check_exactly_once(broken, inventory())

@@ -2,7 +2,7 @@
 
 ## Routing
 
-- **Skills** (Skill tool / natural-language invocation): `council-code-review`, `council-plan-review` — orchestrate council sessions on both Claude Code and Codex. `council-advise` asks 3–4 members a development question and returns their views plus a recommendation — no verdict, grade or saved review.
+- **Skills** (Skill tool / natural-language invocation): `/council-code-review`, `/council-plan-review` — orchestrate council sessions on both Claude Code and Codex. `/council-advise` asks 3–4 members a development question and returns their views plus a recommendation — no verdict, grade or saved review.
 - **Agents** (Agent tool on Claude / `spawn_agent` on Codex): `hulk`, `iron-man`, `thor`, `scarlet-witch`, `black-widow`, `hawkeye`, `vision`, `doctor-strange` — spawned by the skills during orchestration. `ant-man` is an optional agent (reuse and placement), spawned only when the roster rules in `references/member-registry.md` select it.
 - `captain-america` — reference only, never spawned. The orchestrating session plays this role on both platforms. On Claude Code its wire name on the team channel is `team-lead` (harness-owned, not configurable) — teammates must address the lead as `to: "team-lead"`; `captain-america` is not a routable recipient.
 - Never spawn a skill as an agent `subagent_type`.
@@ -51,6 +51,7 @@ Exposed tools are authoritative. Modern Codex `[agents] enabled` defaults true; 
 
 ## Key Conventions
 
+- **Skill references.** Name a skill as `/{name}` in skills, agents, references and router tables, so every runtime resolves it. README and install docs show the command a person types: `/{plugin}:{name}`. Agents stay plain backticked names (`{agent}`): they are not slash commands.
 - Skills use explicit `Read @references/...` — not bare `@references/` lines.
 - Agents include a domain score (1-10) with a `basis:` in every assessment. The score is informational: it never changes the verdict. `scripts/score-check.py` flags scores that contradict the member's own findings.
 - Every verdict shows **Quality** (A-F, from `scripts/review-grade.py`) and **Risk** (low | medium | high). Both are info rows; votes and findings decide the verdict.

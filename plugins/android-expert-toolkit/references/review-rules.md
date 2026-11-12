@@ -4,7 +4,7 @@ A fixed procedure and output for reviewing Android code, so two reviews of the s
 
 ## When to use
 
-Any review request: "review this Android code", "review this screen", "audit this composable", "is this ViewModel right", a PR or diff review, or an agent brief that asks for review findings. Not for test review (`android-testing` skill) or writing new code (use the rubrics as generation targets instead).
+Any review request: "review this Android code", "review this screen", "audit this composable", "is this ViewModel right", a PR or diff review, or an agent brief that asks for review findings. Not for test review (`/android-testing` skill) or writing new code (use the rubrics as generation targets instead).
 
 ## Pick the rows
 

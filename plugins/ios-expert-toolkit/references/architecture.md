@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when deciding where code lives, how layers depend on each other, or how dependencies are injected. Which architecture a codebase already uses is decided by `ios-conventions`; TCA detail is in [tca](tca.md).
+Read when deciding where code lives, how layers depend on each other, or how dependencies are injected. Which architecture a codebase already uses is decided by `/ios-conventions`; TCA detail is in [tca](tca.md).
 
 ## Layers
 
@@ -12,7 +12,7 @@ View (SwiftUI)  →  state holder (@Observable class or TCA Store)  →  service
 
 - Dependencies point one way, toward the clients. A view never talks to a client.
 - Domain types are plain `struct`/`enum` values with no UI or framework imports beyond `Foundation`.
-- Each layer converts the errors it catches into its own error type (`ios-error-handling`).
+- Each layer converts the errors it catches into its own error type (`/ios-error-handling`).
 - Mark UI-facing state holders `@MainActor`; keep services off the main actor and let `async` calls hop.
 
 ## Modules
@@ -26,7 +26,7 @@ View (SwiftUI)  →  state holder (@Observable class or TCA Store)  →  service
 | Style | Use when |
 |-------|----------|
 | Initializer parameters | Default for non-TCA code; protocols at the seams that tests replace |
-| `@Environment` with `@Entry` | Values the view tree needs (theme, a client for previews). Defaults must be cheap and stable; see `swiftui-specialist` |
+| `@Environment` with `@Entry` | Values the view tree needs (theme, a client for previews). Defaults must be cheap and stable; see `/swiftui-specialist` |
 | `@Dependency` | TCA features; see [tca](tca.md) |
 | Singletons | Avoid for anything with state or I/O; they block tests |
 
@@ -40,4 +40,4 @@ A manual composition root (one place that builds the object graph) beats a DI fr
 
 ## Concurrency
 
-Isolation and Sendable rules live in `swift-concurrency`; patterns in [concurrency](concurrency.md).
+Isolation and Sendable rules live in `/swift-concurrency`; patterns in [concurrency](concurrency.md).

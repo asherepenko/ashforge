@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when structuring SwiftUI views, choosing state wrappers, or bridging UIKit. Reviews and new screens go to `swiftui-pro`; observation, environment, `ForEach` identity and deprecations go to `swiftui-specialist`; iOS 27 APIs go to `swiftui-whats-new-27`. This page keeps only the structure advice they share.
+Read when structuring SwiftUI views, choosing state wrappers, or bridging UIKit. Reviews and new screens go to `/swiftui-pro`; observation, environment, `ForEach` identity and deprecations go to `/swiftui-specialist`; iOS 27 APIs go to `/swiftui-whats-new-27`. This page keeps only the structure advice they share.
 
 ## View structure
 

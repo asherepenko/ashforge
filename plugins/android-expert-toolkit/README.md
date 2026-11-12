@@ -4,11 +4,11 @@ Android knowledge for Claude Code and Codex: a topic router, focused skills, the
 
 ## What it ships
 
-- **`android-expert`** — a router skill: topic → the reference, skill, or agent to load.
-- **`android-testing`** — adversarial unit testing: break vectors from the contract, one distinct angle per test, fakes first.
-- **`android-error-handling`** — closed typed errors, `CancellationException`-safe catches, string-resource errors in UI state.
-- **`android-conventions`** — read-only 80/20 pattern detection (DI, state, testing, architecture, security, performance, accessibility). Caches results at `.artifacts/aet/cache/detected-patterns.json`.
-- **Official Android skills** vendored from [android/skills](https://github.com/android/skills) (Apache-2.0): `navigation-3`, `navigation-event`, `edge-to-edge`, `adaptive`, `jetpack-compose-performance`, `migrate-xml-views-to-jetpack-compose`, `agp-9-upgrade`, `r8-analyzer`, `anr-audit-and-fix`, `android-profiler`, `testing-setup`, `android-intent-security`, `android-permissions-security`, `glance-appwidget-updates-and-memory`, `glance-canonical-layouts`. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- **`/android-expert-toolkit:android-expert`** — a router skill: topic → the reference, skill, or agent to load.
+- **`/android-expert-toolkit:android-testing`** — adversarial unit testing: break vectors from the contract, one distinct angle per test, fakes first.
+- **`/android-expert-toolkit:android-error-handling`** — closed typed errors, `CancellationException`-safe catches, string-resource errors in UI state.
+- **`/android-expert-toolkit:android-conventions`** — read-only 80/20 pattern detection (DI, state, testing, architecture, security, performance, accessibility). Caches results at `.artifacts/aet/cache/detected-patterns.json`.
+- **Official Android skills** vendored from [android/skills](https://github.com/android/skills) (Apache-2.0): `/android-expert-toolkit:navigation-3`, `/android-expert-toolkit:navigation-event`, `/android-expert-toolkit:edge-to-edge`, `/android-expert-toolkit:adaptive`, `/android-expert-toolkit:jetpack-compose-performance`, `/android-expert-toolkit:migrate-xml-views-to-jetpack-compose`, `/android-expert-toolkit:agp-9-upgrade`, `/android-expert-toolkit:r8-analyzer`, `/android-expert-toolkit:anr-audit-and-fix`, `/android-expert-toolkit:android-profiler`, `/android-expert-toolkit:testing-setup`, `/android-expert-toolkit:android-intent-security`, `/android-expert-toolkit:android-permissions-security`, `/android-expert-toolkit:glance-appwidget-updates-and-memory`, `/android-expert-toolkit:glance-canonical-layouts`. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 - **Kotlin docs MCP**: `kotlinlang` (`https://mcp.kotlinlang.org/mcp`, read-only kotlinlang.org search), declared in `.mcp.json`.
 - **Agents** that work from a plain brief (goal, acceptance criteria, files):
 
@@ -18,7 +18,7 @@ Android knowledge for Claude Code and Codex: a topic router, focused skills, the
 | `android-developer` | ViewModels, repositories, Room/DataStore, networking, WorkManager, DI |
 | `compose-expert` | screens, components, previews per state, accessibility, adaptive UI |
 | `gradle-build-engineer` | modules, convention plugins (AGP 9), version catalog, build performance |
-| `android-testing-specialist` | tests and test review using the `android-testing` method |
+| `android-testing-specialist` | tests and test review using the `/android-expert-toolkit:android-testing` method |
 
 - **References** (`references/`, each ≤ ~300 lines) on architecture, presentation, data layer, offline sync, DI, Compose UI, accessibility, navigation (Nav 2), Gradle, security, performance, observability, testing mechanics, and Kotlin–Java interop.
 
@@ -53,12 +53,12 @@ Cursor has no plugin route for these agents, but it loads user subagents from `~
 
 ## Usage
 
-Ask an Android question or name the task; the `android-expert` router picks what to load. Examples:
+Ask an Android question or name the task; the `/android-expert-toolkit:android-expert` router picks what to load. Examples:
 
-- "How should this ViewModel expose errors?" → `presentation.md` + `android-error-handling`
-- "Write tests for `LoginValidator`" → `android-testing`
-- "Upgrade to AGP 9" → `agp-9-upgrade`
-- "Make the home screen work on tablets" → `adaptive`
+- "How should this ViewModel expose errors?" → `presentation.md` + `/android-expert-toolkit:android-error-handling`
+- "Write tests for `LoginValidator`" → `/android-expert-toolkit:android-testing`
+- "Upgrade to AGP 9" → `/android-expert-toolkit:agp-9-upgrade`
+- "Make the home screen work on tablets" → `/android-expert-toolkit:adaptive`
 - "Which DI does this project use?" → `android-conventions di`
 
 Delegate implementation to an agent with a brief:

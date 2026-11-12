@@ -7,9 +7,9 @@ Read when adding a destination or deep link to a project on **Navigation 2** (Na
 | Project has | Load |
 |-------------|------|
 | `androidx.navigation:navigation-compose`, `NavHost`, `composable<T>` | this file (Navigation 2, type-safe routes, 2.8+) |
-| `androidx.navigation3`, `NavDisplay`, `NavBackStack`, `entryProvider` | `navigation-3` skill |
-| Migrating Nav 2 → Nav 3, or multi-pane scenes | `navigation-3` skill (its migration guide), plus `adaptive` for scenes |
-| Predictive back, back-gesture interception | `navigation-event` skill |
+| `androidx.navigation3`, `NavDisplay`, `NavBackStack`, `entryProvider` | `/navigation-3` skill |
+| Migrating Nav 2 → Nav 3, or multi-pane scenes | `/navigation-3` skill (its migration guide), plus `/adaptive` for scenes |
+| Predictive back, back-gesture interception | `/navigation-event` skill |
 
 Don't introduce Navigation 3 into a Nav 2 project as a side effect of a feature; it's a migration.
 
@@ -53,7 +53,7 @@ NavHost(navController, startDestination = ItemsRoute) {
 - Plain click navigation goes through composable callbacks, not ViewModel events (see `presentation.md`).
 - Single-top for bottom-level destinations: `navigate(route) { popUpTo(graph.findStartDestination().id) { saveState = true }; launchSingleTop = true; restoreState = true }`.
 
-Adaptive navigation chrome (bar vs rail) is `NavigationSuiteScaffold` — see `compose-ui.md` and the `adaptive` skill.
+Adaptive navigation chrome (bar vs rail) is `NavigationSuiteScaffold` — see `compose-ui.md` and the `/adaptive` skill.
 
 ## Deep links and App Links
 
@@ -70,7 +70,7 @@ Adaptive navigation chrome (bar vs rail) is `NavigationSuiteScaffold` — see `c
 
 - App Links need `/.well-known/assetlinks.json` on the host with the release signing SHA-256 (Play App Signing key when Play signs the app).
 - Custom schemes (`myapp://`) aren't verified; any app can claim them. Never put auth tokens in a deep link.
-- Validate every deep-link argument as untrusted input — exported entry points are covered by `android-intent-security`.
+- Validate every deep-link argument as untrusted input — exported entry points are covered by `/android-intent-security`.
 - `NavController` handles deep-link intents passed to `setContent`'s activity; with `launchMode="singleTop"`, forward `onNewIntent` to `navController.handleDeepLink(intent)`.
 - Test with `adb shell am start -W -a android.intent.action.VIEW -d "https://www.example.com/items/42"`.
 

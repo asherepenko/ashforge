@@ -26,12 +26,12 @@ Read this reference when building SwiftUI screens (to aim at the "Strong" column
 
 ## 4. Performance
 
-**Strong**: Follows the `swiftui-pro` skill and [performance](performance.md). `body` does no sorting, filtering, or formatting. `ForEach` uses stable identity. Views read only the state they need, so a change redraws a small part of the tree. Hitch and slow-view claims are backed by a trace from the `xctrace` skill on a release build.
+**Strong**: Follows the `/swiftui-pro` skill and [performance](performance.md). `body` does no sorting, filtering, or formatting. `ForEach` uses stable identity. Views read only the state they need, so a change redraws a small part of the tree. Hitch and slow-view claims are backed by a trace from the `/xctrace` skill on a release build.
 
 **Weak**: Expensive work in `body` on every update. `ForEach` over indices or with an `id` that changes. One large observed object read by every view, so any change redraws the screen. `AnyView` used to silence type errors. "Fixed" jank with no trace before or after.
 
 ## 5. Adaptive Layout
 
-**Strong**: Layout works in compact and regular size classes, in portrait and landscape, and in resizable windows on iPad (see the `app-resizability` skill). Split views use `NavigationSplitView` where the content fits it. Content reflows rather than stretching. Selection and scroll position survive size changes. Keyboard and pointer input work on iPad.
+**Strong**: Layout works in compact and regular size classes, in portrait and landscape, and in resizable windows on iPad (see the `/app-resizability` skill). Split views use `NavigationSplitView` where the content fits it. Content reflows rather than stretching. Selection and scroll position survive size changes. Keyboard and pointer input work on iPad.
 
 **Weak**: An iPhone layout stretched across an iPad. Fixed frame widths. Hand-written size checks that duplicate screen code. Selection lost when the window resizes or the device rotates.

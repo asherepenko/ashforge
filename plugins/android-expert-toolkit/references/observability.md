@@ -23,7 +23,7 @@ class CrashReportingTree : Timber.Tree() {
 }
 ```
 
-- Log once, where the error is caught and typed (`android-error-handling`); attach the throwable.
+- Log once, where the error is caught and typed (`/android-error-handling`); attach the throwable.
 - Never log tokens, credentials, full request/response bodies, or PII. Release builds drop `DEBUG`/`VERBOSE`.
 - Don't record a non-fatal for expected failures (offline, 404 on a missing item); they drown real problems. Record them as typed-error counts in analytics if the product needs them.
 - `CancellationException` is not an error; never report it.
@@ -32,7 +32,7 @@ class CrashReportingTree : Timber.Tree() {
 
 - Set user-independent custom keys that help triage (screen, feature flag variant, build flavor); no personal data.
 - Upload the R8 mapping file per release so stack traces deobfuscate.
-- ANR traces and clusters → `anr-audit-and-fix` skill.
+- ANR traces and clusters → `/anr-audit-and-fix` skill.
 
 ## Performance traces
 
@@ -45,7 +45,7 @@ inline fun <T> trace(name: String, block: () -> T): T {
 
 - Measure durations with a monotonic clock (`SystemClock.elapsedRealtime()` / `System.nanoTime()`), never `System.currentTimeMillis()` — wall time can jump backwards.
 - Screen "time to content": start in the Route when it enters composition, stop on the first `Success` state; call `reportFullyDrawn()` for the launch screen.
-- `androidx.tracing` `trace("section") { }` sections show up in system traces for the `android-profiler` skill.
+- `androidx.tracing` `trace("section") { }` sections show up in system traces for the `/android-profiler` skill.
 - Production monitoring of startup, ANR, and crash rates: Play vitals (`performance.md`).
 
 ## Analytics events

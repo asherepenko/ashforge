@@ -27,7 +27,7 @@ Use the output to bound review scope before Step 1: if `git status -s` is empty 
 
 ## Arguments
 
-The user invoked the `council-code-review` skill with arguments: $ARGUMENTS
+The user invoked the `/council-code-review` skill with arguments: $ARGUMENTS
 
 Parse the arguments:
 - **--pr <number>**: review a GitHub pull request

@@ -44,7 +44,7 @@ actor SyncEngine {
 - Process oldest first. Stop at the first retryable failure so later changes don't overtake earlier ones.
 - Collapse redundant changes (create then delete of the same id) before pushing.
 - Send a client-generated id or idempotency key. A retry after a timeout may be a duplicate.
-- `CancellationError` leaves the change in the queue. It is not a failure (`ios-error-handling`).
+- `CancellationError` leaves the change in the queue. It is not a failure (`/ios-error-handling`).
 - One `actor` owns the drain so two triggers can't push the same change twice.
 
 ## Retries and backoff
@@ -88,10 +88,10 @@ actor SyncEngine {
 
 - SwiftData with CloudKit (iOS 17+) and `NSPersistentCloudKitContainer` (iOS 13+) sync to the user's private database. They give no conflict callback: the merge is last-writer-wins per record, done by the system.
 - Sync timing is not under your control. Do not show "saved to server" based on a local save.
-- Model limits (no unique constraints, optional or defaulted attributes, optional relationships) and schema rules are in `swiftdata-pro` and [persisted-state-review](persisted-state-review.md).
+- Model limits (no unique constraints, optional or defaulted attributes, optional relationships) and schema rules are in `/swiftdata-pro` and [persisted-state-review](persisted-state-review.md).
 - The user can be signed out of iCloud or have iCloud off for the app. Check `CKContainer.accountStatus()` and keep the app usable without sync.
 - For your own server, or for custom conflict handling in CloudKit, use `CKSyncEngine` (iOS 17+) or your own queue as above.
 
 ## Testing
 
-Fake the API with scripted responses per call and drive the sync engine directly: success, retryable failure mid-queue (order kept), fatal failure, duplicate delivery, clock going backwards, cancellation mid-queue (nothing marked done), relaunch with a non-empty queue. The break vectors in the `ios-testing` skill apply.
+Fake the API with scripted responses per call and drive the sync engine directly: success, retryable failure mid-queue (order kept), fatal failure, duplicate delivery, clock going backwards, cancellation mid-queue (nothing marked done), relaunch with a non-empty queue. The break vectors in the `/ios-testing` skill apply.

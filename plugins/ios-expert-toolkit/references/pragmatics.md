@@ -7,7 +7,7 @@ Read when a best practice conflicts with what the codebase already does, when te
 ## Priority order
 
 1. **User instructions**: the task, and the project's `AGENTS.md` or `CLAUDE.md`. "Use ObservableObject" means ObservableObject.
-2. **Codebase consistency**: match the pattern the module already uses (`ios-conventions`; 80% prevalence decides, see [pattern-detection](pattern-detection.md)).
+2. **Codebase consistency**: match the pattern the module already uses (`/ios-conventions`; 80% prevalence decides, see [pattern-detection](pattern-detection.md)).
 3. **Constraints**: deployment target, Swift language mode, library versions, legacy dependencies, deadlines, team expertise.
 4. **Best practice**: the patterns in this plugin and the vendored skills.
 

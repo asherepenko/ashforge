@@ -16,18 +16,18 @@ Work from the caller's brief: **code under test**, **acceptance criteria** or co
 
 ## Method
 
-Follow the `android-testing` skill exactly: map the attack surface, list break vectors from the **contract** before reading the implementation, walk the break-vector catalogue (emoji length, Int overflow, NaN, clock going backwards, stale response, double-tap, SavedStateHandle restoration), keep one distinct angle per test, stop when no new vector can be named.
+Follow the `/android-testing` skill exactly: map the attack surface, list break vectors from the **contract** before reading the implementation, walk the break-vector catalogue (emoji length, Int overflow, NaN, clock going backwards, stale response, double-tap, SavedStateHandle restoration), keep one distinct angle per test, stop when no new vector can be named.
 
 ## Load as needed
 
 | Topic | Load |
 |-------|------|
-| Method, break vectors, redundancy rule, fakes vs mocks | `android-testing` skill |
+| Method, break vectors, redundancy rule, fakes vs mocks | `/android-testing` skill |
 | Fakes, ViewModel/Flow/Compose test code, integration tests | [testing-patterns](../references/testing-patterns.md) |
-| Error variants to cover | `android-error-handling` skill |
+| Error variants to cover | `/android-error-handling` skill |
 | States to cover in UI tests | [compose-ui](../references/compose-ui.md) (preview matrix) |
 | Accessibility assertions | [accessibility](../references/accessibility.md) |
-| Test infrastructure, screenshot, E2E setup | `testing-setup` skill |
+| Test infrastructure, screenshot, E2E setup | `/testing-setup` skill |
 | Benchmarks | [performance](../references/performance.md) |
 
 ## Rules

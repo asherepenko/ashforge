@@ -10,7 +10,7 @@ Read when deciding layers, module boundaries, or data flow for a feature, or whe
 |-------|-------|-------|
 | UI | Composables, ViewModels | ViewModel exposes one `StateFlow<State>`; composables are stateless below the Route/Root. |
 | Domain (optional) | Use cases | Add only for logic reused across ViewModels or combining several repositories. Plain CRUD goes straight to the repository. |
-| Data | Repositories, data sources | Repository is the single source of truth. Expose `Flow` for observed data; one-shot operations are `suspend`. Map exceptions to a typed error here (`android-error-handling` skill). |
+| Data | Repositories, data sources | Repository is the single source of truth. Expose `Flow` for observed data; one-shot operations are `suspend`. Map exceptions to a typed error here (`/android-error-handling` skill). |
 
 Data flows down as state, events flow up as actions (unidirectional data flow).
 
@@ -76,4 +76,4 @@ Record significant decisions (new module, DI change, state-management change) as
 - [ ] UI state holds no `Throwable`, raw exception message, `Context`, or lambdas.
 - [ ] Errors are typed at the layer that catches them; `CancellationException` is rethrown.
 - [ ] Persisted-state change on installed devices → `persisted-state-review.md`.
-- [ ] Navigation keys live in `api` modules; Nav 3 work uses the `navigation-3` skill.
+- [ ] Navigation keys live in `api` modules; Nav 3 work uses the `/navigation-3` skill.

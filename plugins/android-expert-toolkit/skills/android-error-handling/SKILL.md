@@ -8,7 +8,7 @@ argument-hint: "[file, layer, or error type]"
 
 Expected failures are values, not exceptions. The layer that owns a failure catches it once, converts it into a **closed, typed error**, and every layer above works with that type. The UI shows a **string resource** chosen from the error, never `Throwable.message`.
 
-**Detect, don't impose.** Use the result type the project already has — a custom `Result<T, E>`, `kotlin.Result`, Arrow `Either`, or a sealed outcome per call (`android-conventions`). Introduce a new wrapper only when there is none and the user agrees. The rules below hold for all of them.
+**Detect, don't impose.** Use the result type the project already has — a custom `Result<T, E>`, `kotlin.Result`, Arrow `Either`, or a sealed outcome per call (`/android-conventions`). Introduce a new wrapper only when there is none and the user agrees. The rules below hold for all of them.
 
 ## Rules
 
@@ -61,6 +61,6 @@ Expected failures are values, not exceptions. The layer that owns a failure catc
 - [ ] Each catch converts to a named error variant; nothing returns `null` or `emptyList()` to mean "failed".
 - [ ] `when` over error types has no `else`.
 - [ ] UI state contains `UiText`/`@StringRes`, never `Throwable` or `.message`.
-- [ ] Tests cover each error variant that maps to a distinct outcome, plus the collaborator throwing instead of returning (`android-testing` skill).
+- [ ] Tests cover each error variant that maps to a distinct outcome, plus the collaborator throwing instead of returning (`/android-testing` skill).
 
 Related: presentation wiring → [presentation](../../references/presentation.md); repository `safeCall` example → [data-layer](../../references/data-layer.md).

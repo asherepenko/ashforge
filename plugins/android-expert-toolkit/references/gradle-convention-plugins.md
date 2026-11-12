@@ -2,11 +2,11 @@
 
 ## When to use
 
-Read when creating or editing `build-logic` convention plugins or a module's `build.gradle.kts`. Upgrading an existing project from AGP 8 → 9 is a migration: load the `agp-9-upgrade` skill instead. Match the project's AGP version first — the code below targets AGP 9 with built-in Kotlin.
+Read when creating or editing `build-logic` convention plugins or a module's `build.gradle.kts`. Upgrading an existing project from AGP 8 → 9 is a migration: load the `/agp-9-upgrade` skill instead. Match the project's AGP version first — the code below targets AGP 9 with built-in Kotlin.
 
 ## AGP 9 rules that change convention plugins
 
-Source: `agp-9-upgrade` skill (`references/android/build/migrate-to-built-in-kotlin.md`, `references/android/build/releases/agp-9-0-0-release-notes.md`).
+Source: `/agp-9-upgrade` skill (`references/android/build/migrate-to-built-in-kotlin.md`, `references/android/build/releases/agp-9-0-0-release-notes.md`).
 
 - **Built-in Kotlin.** AGP 9 compiles Kotlin itself. Do not apply `org.jetbrains.kotlin.android` (`kotlin-android`); applying it fails the build. KMP modules are the exception (use `org.jetbrains.kotlin.multiplatform` + `com.android.kotlin.multiplatform.library`).
 - **`kotlinOptions {}` is gone.** Use `kotlin { compilerOptions { … } }`. `jvmTarget` defaults to `android.compileOptions.targetCompatibility`, so don't set it.
@@ -76,7 +76,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 }
 ```
 
-Libraries don't minify themselves; ship consumer keep rules (`consumerProguardFiles`) only for what reflection actually needs. Keep-rule review → `r8-analyzer` skill.
+Libraries don't minify themselves; ship consumer keep rules (`consumerProguardFiles`) only for what reflection actually needs. Keep-rule review → `/r8-analyzer` skill.
 
 ## Compose plugin
 

@@ -16,21 +16,21 @@ Work from the caller's brief: **code under test**, **acceptance criteria**, **fi
 
 ## Before writing
 
-1. Load the `ios-testing` skill and follow its method.
+1. Load the `/ios-testing` skill and follow its method.
 2. Read the code under test and the existing tests next to it; match the framework in use. Check the deployment target and the Swift language mode: Swift Testing needs Xcode 16 and Swift 6 toolchain, and old targets may keep XCTest.
-3. Run `ios-conventions` (`testing`) if you don't know which framework or fakes the project uses.
+3. Run `/ios-conventions` (`testing`) if you don't know which framework or fakes the project uses.
 
 ## Load as needed
 
 | Topic | Load |
 |-------|------|
-| Method, break vectors | `ios-testing` skill |
-| `#expect`, `#require`, traits, parameterized tests | `swift-testing-expert` skill |
-| XCTest to Swift Testing | `modernize-tests` skill |
-| TestStore, `@Dependency` overrides | `tca` skill, [tca](../references/tca.md) |
+| Method, break vectors | `/ios-testing` skill |
+| `#expect`, `#require`, traits, parameterized tests | `/swift-testing-expert` skill |
+| XCTest to Swift Testing | `/modernize-tests` skill |
+| TestStore, `@Dependency` overrides | `/tca` skill, [tca](../references/tca.md) |
 | Fakes, spies, fixtures, async helpers | [testing-patterns](../references/testing-patterns.md) |
 | Test targets, test plans, UI test and snapshot setup | hand off to `xcode-build-engineer` agent |
-| Check behavior on a simulator, screenshots | `device-interaction` skill |
+| Check behavior on a simulator, screenshots | `/device-interaction` skill |
 
 ## Rules
 

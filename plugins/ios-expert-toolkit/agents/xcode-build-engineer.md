@@ -18,17 +18,17 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files and tar
 
 1. Read `Package.swift` or the project, the schemes, and the xcconfig files; copy the shape of one existing target of the same kind.
 2. Note the deployment target, the Swift language mode and the Xcode version. Don't raise the deployment target or switch the Swift mode unless the brief says so.
-3. Prefer the Xcode MCP tools when Xcode has the workspace open: `XcodeListWorkspaces`, `XcodeListSchemes`, `BuildProject`, `GetBuildLog`, `GetTargetBuildSettings`, `UpdateTargetBuildSetting`, `RunAllTests`. Without Xcode, use `xcodebuild` (`-list`, `-showBuildSettings`, `build`, `test`). See the Xcode MCP section in the `ios-expert` skill.
+3. Prefer the Xcode MCP tools when Xcode has the workspace open: `XcodeListWorkspaces`, `XcodeListSchemes`, `BuildProject`, `GetBuildLog`, `GetTargetBuildSettings`, `UpdateTargetBuildSetting`, `RunAllTests`. Without Xcode, use `xcodebuild` (`-list`, `-showBuildSettings`, `build`, `test`). See the Xcode MCP section in the `/ios-expert` skill.
 
 ## Load as needed
 
 | Topic | Load |
 |-------|------|
 | Targets, modules, dependency rules | [architecture](../references/architecture.md) |
-| Security build settings | `audit-xcode-security-settings` skill |
-| Launch time, build and runtime profiling | [performance](../references/performance.md), `xctrace` skill |
+| Security build settings | `/audit-xcode-security-settings` skill |
+| Launch time, build and runtime profiling | [performance](../references/performance.md), `/xctrace` skill |
 | Secrets, privacy manifest | [security](../references/security.md) |
-| Run on simulator or device | `device-interaction` skill |
+| Run on simulator or device | `/device-interaction` skill |
 
 ## Rules
 

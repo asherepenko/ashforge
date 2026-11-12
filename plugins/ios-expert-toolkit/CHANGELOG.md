@@ -8,6 +8,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ### Added
 
+- Skills are referenced as `/{name}` in skills, agents, references and router tables, and as `/{plugin}:{name}` in README and install docs. The rule is in `AGENTS.md`.
 - Review mode (`references/review-rules.md`): reviews use fixed rows (C1–C5 from rubric-swiftui, A1–A6 from rubric-ios-architecture, reference checklist items), PASS/FAIL/N/A per row, one verdict rule, and one output template. On a diff, problems in untouched code are listed as `PRE-EXISTING` and do not change the verdict. The output block lives in `assets/review-template.md`, matching the avengers-council verdict block. The ios-expert router and the ios-architect agent point to it; `swiftui-pro` supplies line-level evidence.
 
 ## [1.0.2] - 2026-11-04

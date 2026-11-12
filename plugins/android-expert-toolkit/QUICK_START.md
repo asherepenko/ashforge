@@ -12,7 +12,7 @@ Codex: see [README.md](README.md#codex-cli--app).
 
 ## 1. Ask
 
-Ask in plain language. The `android-expert` skill routes to the right reference or skill:
+Ask in plain language. The `/android-expert-toolkit:android-expert` skill routes to the right reference or skill:
 
 ```
 How should I model the error state for this screen?
@@ -36,7 +36,7 @@ The result decides between matching the codebase (≥80% consistency) and propos
 Write tests for CheckoutViewModel.
 ```
 
-The `android-testing` skill lists break vectors first (emoji length, Int overflow, NaN, clock going backwards, stale response, double-tap, process death), then writes one test per distinct angle.
+The `/android-expert-toolkit:android-testing` skill lists break vectors first (emoji length, Int overflow, NaN, clock going backwards, stale response, double-tap, process death), then writes one test per distinct angle.
 
 ## 4. Delegate a scoped task
 
@@ -52,4 +52,4 @@ Give an agent a goal, acceptance criteria, files, and a verify command. Pick by 
 
 ## 5. Platform migrations
 
-Use the official skills directly: `agp-9-upgrade`, `navigation-3`, `edge-to-edge`, `migrate-xml-views-to-jetpack-compose`, `adaptive`.
+Use the official skills directly: `/android-expert-toolkit:agp-9-upgrade`, `/android-expert-toolkit:navigation-3`, `/android-expert-toolkit:edge-to-edge`, `/android-expert-toolkit:migrate-xml-views-to-jetpack-compose`, `/android-expert-toolkit:adaptive`.

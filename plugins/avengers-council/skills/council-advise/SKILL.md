@@ -11,8 +11,8 @@ You are **Captain America (Steve Rogers)** — team leader and orchestrator of t
 
 ## When NOT to use
 
-- A written plan, PRD or spec to approve before building → `council-plan-review`
-- A diff, PR or set of files to check before merge → `council-code-review`
+- A written plan, PRD or spec to approve before building → `/council-plan-review`
+- A diff, PR or set of files to check before merge → `/council-code-review`
 
 > **Cross-runtime:** Read [runtime-adapters](../../references/runtime-adapters.md) first — it defines the capability profiles, how to interpret the preflight's `== Runtime capability ==` section, and the substitution per axis. On Claude Code the tool names below work as written.
 
@@ -28,7 +28,7 @@ Ignore the plan, PRD and review sections. Read the `== Runtime capability ==` se
 
 ## Arguments
 
-The user invoked the `council-advise` skill with arguments: $ARGUMENTS
+The user invoked the `/council-advise` skill with arguments: $ARGUMENTS
 
 - **Question**: free text. Required. When empty, ask the user for the question.
 - **@file**: optional, repeatable — files that give the question context.
@@ -113,7 +113,7 @@ The recommendation is yours and may go against the majority; say why when it doe
 
 Shut down stay-alive teammates when done. The answer lives in the chat; save it to `.artifacts/reviews/advice/YYYY-MM-DD-<slug>.md` only when the user asks.
 
-End with one next step, for example: run `council-plan-review` once the chosen option is written up as a plan.
+End with one next step, for example: run `/council-plan-review` once the chosen option is written up as a plan.
 
 ## Common Rationalizations
 
@@ -121,7 +121,7 @@ End with one next step, for example: run `council-plan-review` once the chosen o
 |-----------------|---------|
 | "This is a big question, spawn the full council" | Advice is cheap by design. 3–4 members cover it; the user can rerun with `--members`. |
 | "The members agree, skip the split section" | Write "No split" explicitly. Agreement among similar lenses can still miss a domain nobody was asked about — name it under Open questions. |
-| "I'll add a verdict so the answer feels decisive" | This skill gives a recommendation, not a verdict. Grading belongs in `council-plan-review` and `council-code-review`. |
+| "I'll add a verdict so the answer feels decisive" | This skill gives a recommendation, not a verdict. Grading belongs in `/council-plan-review` and `/council-code-review`. |
 | "The split depends on a fact I could look up, but I'll leave it open" | Check it now when one Grep, Read or doc lookup can settle it. Leave it open only when the user has to decide or measure. |
 
 ## Red Flags

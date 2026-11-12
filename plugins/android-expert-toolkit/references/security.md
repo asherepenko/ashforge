@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when handling network trust, storing secrets or tokens, or configuring release hardening. Deeper audits have official skills: exported components and IPC → `android-intent-security`; runtime permissions and component protection → `android-permissions-security`; keep rules → `r8-analyzer`.
+Read when handling network trust, storing secrets or tokens, or configuring release hardening. Deeper audits have official skills: exported components and IPC → `/android-intent-security`; runtime permissions and component protection → `/android-permissions-security`; keep rules → `/r8-analyzer`.
 
 ## Network trust
 
@@ -76,7 +76,7 @@ Changing how an existing value is stored is a persisted-state change → `persis
 ## Release hardening
 
 - `isMinifyEnabled = true` and `isShrinkResources = true` for release (see `gradle-convention-plugins.md`).
-- Keep rules: start from none. Libraries that need rules (kotlinx.serialization, Retrofit, Room, Hilt) ship consumer rules. Add a rule only for reflection the build can't see, scoped to the exact class or member — never `-keep class com.example.** { *; }`. Audit existing rules with the `r8-analyzer` skill.
+- Keep rules: start from none. Libraries that need rules (kotlinx.serialization, Retrofit, Room, Hilt) ship consumer rules. Add a rule only for reflection the build can't see, scoped to the exact class or member — never `-keep class com.example.** { *; }`. Audit existing rules with the `/r8-analyzer` skill.
 - `FLAG_SECURE` on screens that show secrets or payment data.
 - Logs: no tokens, PII, or full request bodies in release builds.
 
@@ -85,5 +85,5 @@ Changing how an existing value is stored is a persisted-state change → `persis
 - [ ] No cleartext traffic in release; pins (if any) have a backup and an expiry plan.
 - [ ] Tokens encrypted with a Keystore key; no `security-crypto` in new code.
 - [ ] No secrets in source, resources, or `BuildConfig`.
-- [ ] Exported components reviewed (`android-intent-security`); permissions minimal (`android-permissions-security`).
+- [ ] Exported components reviewed (`/android-intent-security`); permissions minimal (`/android-permissions-security`).
 - [ ] R8 on for release; no package-wide keep rules.

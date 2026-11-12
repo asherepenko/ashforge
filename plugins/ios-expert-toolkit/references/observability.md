@@ -22,7 +22,7 @@ Logger.sync.error("Push failed for \(itemID, privacy: .private): \(error.localiz
 - One subsystem per app, one category per feature. Filter by them in Console.app and `log stream`.
 - Levels: `debug` is not kept in the log store, `info` is kept only briefly, `notice` (the default) and above are kept. Use `error` and `fault` for real failures.
 - Privacy: dynamic strings and objects are redacted (`<private>`) by default outside a debugger; numbers and booleans are public. Mark a value `privacy: .public` only when it is safe. Use `privacy: .private(mask: .hash)` to correlate a value without showing it. Never log tokens, credentials, or personal data ([security](security.md)).
-- Log once, where the error is caught and typed (`ios-error-handling`).
+- Log once, where the error is caught and typed (`/ios-error-handling`).
 - `CancellationError` is not an error; don't log it at `error` level or report it.
 - `print` goes to stdout only. Don't ship it.
 

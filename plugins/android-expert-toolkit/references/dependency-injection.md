@@ -37,9 +37,9 @@ class ItemsViewModel @Inject constructor(
 
 - `@Binds` in abstract modules for interface → impl; `@Provides` for third-party types.
 - Qualifiers (`@Dispatcher(IO)`) instead of named strings.
-- AGP 9 requires Hilt ≥ 2.59.2 and KSP (no kapt) — `agp-9-upgrade` skill.
+- AGP 9 requires Hilt ≥ 2.59.2 and KSP (no kapt) — `/agp-9-upgrade` skill.
 - Compose: `hiltViewModel()` in the Route/Root composable only.
-- Nav 3 + Hilt → `navigation-3` skill (`recipes/modular-hilt.md`).
+- Nav 3 + Hilt → `/navigation-3` skill (`recipes/modular-hilt.md`).
 
 ## Koin
 

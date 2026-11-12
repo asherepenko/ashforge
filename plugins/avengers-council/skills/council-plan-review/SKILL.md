@@ -29,7 +29,7 @@ Use the output to short-circuit Step 1 auto-detection: when no `@file` argument 
 
 ## Arguments
 
-The user invoked the `council-plan-review` skill with arguments: $ARGUMENTS
+The user invoked the `/council-plan-review` skill with arguments: $ARGUMENTS
 
 Parse the arguments:
 - **Topic or file**: free-text topic OR `@file-path` (plan file, PRD, spec, any .md) OR empty (auto-detect)

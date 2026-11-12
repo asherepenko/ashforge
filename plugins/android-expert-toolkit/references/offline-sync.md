@@ -67,4 +67,4 @@ class SyncManager @Inject constructor(
 
 ## Testing
 
-Fake the API with scripted responses per call and drive `SyncManager` directly: success, retryable failure mid-queue (order preserved), fatal failure, duplicate delivery, clock going backwards, cancellation mid-queue (nothing marked done). The break-vector list in the `android-testing` skill applies.
+Fake the API with scripted responses per call and drive `SyncManager` directly: success, retryable failure mid-queue (order preserved), fatal failure, duplicate delivery, clock going backwards, cancellation mid-queue (nothing marked done). The break-vector list in the `/android-testing` skill applies.

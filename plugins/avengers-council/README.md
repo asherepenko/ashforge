@@ -87,7 +87,7 @@ council-advise "Room or SQLDelight for offline sync?" # Ask a question, get seve
 council-advise "Split this module?" --debate          # Views plus one rebuttal round
 ```
 
-`council-advise` takes `--focus`, `--members <a,b>` and `--debate`. It returns positions, splits and a recommendation — no vote, grade or saved verdict.
+`/avengers-council:council-advise` takes `--focus`, `--members <a,b>` and `--debate`. It returns positions, splits and a recommendation — no vote, grade or saved verdict.
 
 Claude: the Skill tool auto-triggers on description match, or invoke explicitly with `Skill(skill="council-plan-review", args="@my-plan.md")`. Codex: state the intent in natural language.
 

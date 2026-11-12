@@ -33,6 +33,7 @@ Skill names live in `ios-skills.lock`. Tests read them from there; don't hardcod
 
 ## Rules
 
+- **Skill references.** Name a skill as `/{name}` in skills, agents, references and router tables, so every runtime resolves it. README and install docs show the command a person types: `/{plugin}:{name}`. Agents stay plain backticked names (`{agent}`): they are not slash commands.
 - **Thin skills, short agents.** Skills route or state rules; detail lives in `references/` or the vendored skills. Agents work from a plain brief (goal, acceptance criteria, files, verify command) and point at skills/references.
 - **Own skills via `/create-skill`.** Author or review every own skill and agent with it.
 - **Defer to vendored skills.** When a community or Xcode skill covers a topic, the reference keeps a one-line pointer, not a copy.

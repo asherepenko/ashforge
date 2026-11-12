@@ -1,6 +1,6 @@
 # Runtime Adapters — Capability Profiles for Council Skills
 
-Canonical cross-runtime scaffolding shared by `council-plan-review` and `council-code-review`. The council was built around Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`); every other runtime is supported by mapping the same **capability axes**, not by branching on runtime names.
+Canonical cross-runtime scaffolding shared by `/council-plan-review` and `/council-code-review`. The council was built around Claude Code's agent-team primitives (parallel `Agent`, peer-to-peer `SendMessage`); every other runtime is supported by mapping the same **capability axes**, not by branching on runtime names.
 
 Read the preflight's `== Runtime capability ==` section, then resolve each axis below. Shell output is advisory. Discover the exposed tools and inspect session restrictions before spawning; tool availability overrides stale configuration hints. Resolve reversible internal transport choices conservatively without asking the user. If no spawn tool exists, use the disclosed fallback.
 

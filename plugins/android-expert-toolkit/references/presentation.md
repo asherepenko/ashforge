@@ -2,7 +2,7 @@
 
 ## When to use
 
-Read when writing or reviewing a ViewModel, screen state, user actions, or the Route/Screen composable split. Error typing → `android-error-handling` skill. Composable components and previews → `compose-ui.md`. Testing → `android-testing` skill.
+Read when writing or reviewing a ViewModel, screen state, user actions, or the Route/Screen composable split. Error typing → `/android-error-handling` skill. Composable components and previews → `compose-ui.md`. Testing → `/android-testing` skill.
 
 Match the project's existing style (`android-conventions state`): sealed `UiState` (Loading/Error/Success) and single `data class State` + `Action` (MVI) are both fine; don't mix them in one feature.
 
@@ -119,8 +119,8 @@ class EditItemViewModel(private val handle: SavedStateHandle, private val repo: 
 ```
 
 - Save only what the user would lose (typed text, selections), not data that reloads from the repository.
-- Navigation arguments: `handle.toRoute<ItemDetailRoute>()` (Nav 2) or the Nav 3 key (`navigation-3` skill).
-- Test restoration by constructing `SavedStateHandle(mapOf(...))` directly — see the `android-testing` skill.
+- Navigation arguments: `handle.toRoute<ItemDetailRoute>()` (Nav 2) or the Nav 3 key (`/navigation-3` skill).
+- Test restoration by constructing `SavedStateHandle(mapOf(...))` directly — see the `/android-testing` skill.
 
 ## Route/Root and Screen
 

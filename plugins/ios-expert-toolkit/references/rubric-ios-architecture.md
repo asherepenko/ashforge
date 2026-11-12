@@ -8,13 +8,13 @@ Read this reference when designing a feature or module (to aim at the "Strong" c
 
 ## 1. Layering
 
-**Strong**: Dependencies point one way: view, then state holder, then service or repository, then client. A view never calls a client. Domain types are plain `struct`/`enum` values that import only `Foundation`. Each layer converts the errors it catches into its own error type (`ios-error-handling`). Package splits exist where a boundary needs compile-time enforcement, and features depend on domain protocols, not on other features.
+**Strong**: Dependencies point one way: view, then state holder, then service or repository, then client. A view never calls a client. Domain types are plain `struct`/`enum` values that import only `Foundation`. Each layer converts the errors it catches into its own error type (`/ios-error-handling`). Package splits exist where a boundary needs compile-time enforcement, and features depend on domain protocols, not on other features.
 
 **Weak**: A view calls `URLSession` or a `ModelContext` directly. Domain types import SwiftUI. One feature imports another feature's internals. Errors from the network layer reach the view unchanged. Packages split for their own sake, with no boundary they enforce.
 
 ## 2. Architecture Fit
 
-**Strong**: The pattern matches the `ios-conventions` decision. A `TCA` or `NEW` codebase gets TCA for new features. An `MVVM` codebase keeps MVVM, with `@Observable` view models on iOS 17 and `ObservableObject` below it. A `MIXED` codebase follows the pattern in the feature's folder. The choice is stated, with the detection result behind it.
+**Strong**: The pattern matches the `/ios-conventions` decision. A `TCA` or `NEW` codebase gets TCA for new features. An `MVVM` codebase keeps MVVM, with `@Observable` view models on iOS 17 and `ObservableObject` below it. A `MIXED` codebase follows the pattern in the feature's folder. The choice is stated, with the detection result behind it.
 
 **Weak**: TCA forced into an MVVM codebase. A plain view model added to a TCA codebase. `@Observable` used with a deployment target below iOS 17. Two patterns mixed in one feature with no reason given.
 
@@ -26,7 +26,7 @@ Read this reference when designing a feature or module (to aim at the "Strong" c
 
 ## 4. Concurrency Safety
 
-**Strong**: UI-facing state holders are `@MainActor`. Services run off the main actor. Types that cross isolation are `Sendable`. Child work uses structured concurrency so it is cancelled with its parent. Long-running TCA effects have cancel IDs. `CancellationError` is rethrown, never shown to the user. The project's strict concurrency mode is known and the code compiles clean under it. Detailed rules belong to the `swift-concurrency` skill.
+**Strong**: UI-facing state holders are `@MainActor`. Services run off the main actor. Types that cross isolation are `Sendable`. Child work uses structured concurrency so it is cancelled with its parent. Long-running TCA effects have cancel IDs. `CancellationError` is rethrown, never shown to the user. The project's strict concurrency mode is known and the code compiles clean under it. Detailed rules belong to the `/swift-concurrency` skill.
 
 **Weak**: `@unchecked Sendable` with no lock or actor behind it. `DispatchQueue.main.async` sprinkled to fix warnings. Unstructured `Task { }` with no handle that outlives its screen. `catch` blocks that turn cancellation into an error alert. The main actor blocked by a semaphore.
 
@@ -38,6 +38,6 @@ Read this reference when designing a feature or module (to aim at the "Strong" c
 
 ## 6. Testability
 
-**Strong**: State holders and reducers are tested without a UI. TCA features are tested with `TestStore` and exhaustive assertions. Non-TCA code is tested with fakes passed through the initializer. Clocks, UUIDs, and dates are injected, so tests are deterministic. Each test covers one behavior (`ios-testing`).
+**Strong**: State holders and reducers are tested without a UI. TCA features are tested with `TestStore` and exhaustive assertions. Non-TCA code is tested with fakes passed through the initializer. Clocks, UUIDs, and dates are injected, so tests are deterministic. Each test covers one behavior (`/ios-testing`).
 
 **Weak**: Logic only reachable through UI tests. Tests that sleep to wait for async work. Real network or disk in unit tests. `TestStore` with `exhaustivity = .off` to hide unasserted state changes.

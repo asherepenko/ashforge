@@ -6,9 +6,9 @@ Read when setting performance goals or choosing a tool. Measure before and after
 
 | Problem | Load |
 |---------|------|
-| Recording and reading Instruments traces from the command line | `xctrace` skill |
-| SwiftUI invalidation, animation cost, `ForEach` identity | `swiftui-specialist` skill |
-| Main-actor hangs, actor contention | `swift-concurrency` skill |
+| Recording and reading Instruments traces from the command line | `/xctrace` skill |
+| SwiftUI invalidation, animation cost, `ForEach` identity | `/swiftui-specialist` skill |
+| Main-actor hangs, actor contention | `/swift-concurrency` skill |
 
 ## Tools
 

@@ -26,12 +26,12 @@ Read this reference when building Compose UI (to aim at the "Strong" column) or 
 
 ## 4. Performance
 
-**Strong**: Follows the `jetpack-compose-performance` skill: LazyLists use stable keys and contentType; frequently changing state is read in layout/draw lambdas (`graphicsLayer`, `offset { }`) rather than in composition; `remember` only for heavy allocations, with all inputs as keys; no backwards writes. Relies on strong skipping instead of blanket `@Stable`/`ImmutableList`. Jank claims are backed by frame timing from a release build.
+**Strong**: Follows the `/jetpack-compose-performance` skill: LazyLists use stable keys and contentType; frequently changing state is read in layout/draw lambdas (`graphicsLayer`, `offset { }`) rather than in composition; `remember` only for heavy allocations, with all inputs as keys; no backwards writes. Relies on strong skipping instead of blanket `@Stable`/`ImmutableList`. Jank claims are backed by frame timing from a release build.
 
 **Weak**: LazyList items keyed by index. Expensive filtering/sorting runs in composition on every pass. Animated values read in composition. `@Immutable`/`ImmutableList` added everywhere to "fix" recomposition counts without a measured problem. Forgotten listeners leak.
 
 ## 5. Adaptive Layout
 
-**Strong**: Follows the `adaptive` skill. Top-level navigation uses `NavigationSuiteScaffold`, so bar/rail/drawer follows the window size without hand-written branches. Multi-pane layouts use Navigation 3 scene strategies (or `ListDetailPaneScaffold` in Nav 2 projects). Content reflows rather than stretching; state survives fold/unfold, rotation, and window resizing. Keyboard and pointer input work on large screens.
+**Strong**: Follows the `/adaptive` skill. Top-level navigation uses `NavigationSuiteScaffold`, so bar/rail/drawer follows the window size without hand-written branches. Multi-pane layouts use Navigation 3 scene strategies (or `ListDetailPaneScaffold` in Nav 2 projects). Content reflows rather than stretching; state survives fold/unfold, rotation, and window resizing. Keyboard and pointer input work on large screens.
 
 **Weak**: Phone layout stretched to tablet. Hand-rolled `when (windowSizeClass)` branches that swap a `NavigationBar` for a `NavigationRail` and duplicate screen code. Landscape shows the same single column with empty space. Selection or scroll position lost on fold/unfold.

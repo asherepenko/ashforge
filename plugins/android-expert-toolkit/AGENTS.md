@@ -28,11 +28,12 @@ android-expert-toolkit/
 
 ## Rules
 
+- **Skill references.** Name a skill as `/{name}` in skills, agents, references and router tables, so every runtime resolves it. README and install docs show the command a person types: `/{plugin}:{name}`. Agents stay plain backticked names (`{agent}`): they are not slash commands.
 - **Thin skills, short agents.** Skills route or state rules; detail lives in `references/` or the official skills. Agents work from a plain brief (goal, acceptance criteria, files, verify command) and point at skills/references instead of embedding pattern dumps. Every agent keeps a `## Scope Boundaries` section.
 - **Defer to official skills.** When an official skill covers a topic, the reference keeps a one-line pointer, not a copy.
-- **Stack-neutral.** Skills say "detect what the project uses (`android-conventions`)"; don't mandate a DI framework, assertion library, HTTP client, or result type.
+- **Stack-neutral.** Skills say "detect what the project uses (`/android-conventions`)"; don't mandate a DI framework, assertion library, HTTP client, or result type.
 - **Verify facts.** API claims are checked with `android docs search` / `android docs fetch` (Android) or the `kotlinlang` MCP from `.mcp.json` (Kotlin language and stdlib); cite the page when a reference states a deprecation or threshold.
-- **Cache contract.** `android-conventions` writes `.artifacts/aet/cache/detected-patterns.json`. External tools read it; don't move it or rename existing keys.
+- **Cache contract.** `/android-conventions` writes `.artifacts/aet/cache/detected-patterns.json`. External tools read it; don't move it or rename existing keys.
 
 ## Vendored official skills
 
