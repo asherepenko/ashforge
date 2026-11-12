@@ -8,6 +8,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ### Added
 
+- Third-party library facts point to a docs lookup tool when one is installed. `AGENTS.md` Agents section is runtime-neutral (no Claude model/tools copy).
 - `AGENTS.md` aligned with the other plugins: an own-skills-via-`/create-skill` rule and a Kotlin docs MCP section.
 - Skills are referenced as `/{name}` in skills, agents, references and router tables, and as `/{plugin}:{name}` in README and install docs. The rule is in `AGENTS.md`.
 - Review mode (`references/review-rules.md`): reviews use fixed rows (C1–C5, A1–A5, reference checklist items), PASS/FAIL/N/A per row, one verdict rule, and one output block in `assets/review-template.md`, matching the avengers-council verdict block. On a diff, problems in untouched code are listed as pre-existing and do not change the verdict. The android-expert router and the android-architect agent point to it.

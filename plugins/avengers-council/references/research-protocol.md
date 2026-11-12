@@ -18,6 +18,7 @@ Canonical rules for the optional web research step. A selected member runs its o
 
 - `black-widow` researches on every review. Supply-chain compromises and new CVEs matter regardless of what changed.
 - Each owner of a changed dependency manifest researches too, per the table below.
+- For a dependency's API or changelog facts, prefer a docs lookup tool (such as a doc-lookup skill or the Context7 MCP), if one is installed, over a raw web search. Its calls count toward the same budget and follow the privacy rule.
 - Research runs only when `WEB` is `available` (see [runtime-adapters](runtime-adapters.md)) and the spawn prompt carries a RESEARCH BRIEF block.
 
 ## Path-Match Table

@@ -37,7 +37,7 @@ Skill names live in `ios-skills.lock`. Tests read them from there; don't hardcod
 - **Thin skills, short agents.** Skills route or state rules; detail lives in `references/` or the vendored skills. Agents work from a plain brief (goal, acceptance criteria, files, verify command) and point at skills/references.
 - **Own skills via `/create-skill`.** Author or review every own skill and agent with it.
 - **Defer to vendored skills.** When a community or Xcode skill covers a topic, the reference keeps a one-line pointer, not a copy.
-- **Verify facts.** API claims are checked with the Xcode `DocumentationSearch` tool from the Xcode MCP; cite the page when a reference states a deprecation or an availability level.
+- **Verify facts.** API claims are checked with the Xcode `DocumentationSearch` tool from the Xcode MCP, and third-party packages with a docs lookup tool (such as a doc-lookup skill or the Context7 MCP), if one is installed; cite the page when a reference states a deprecation or an availability level.
 
 ## Vendored skills
 
@@ -55,15 +55,7 @@ Skill names live in `ios-skills.lock`. Tests read them from there; don't hardcod
 
 ## Agents
 
-| Agent | Model (Claude) | Tools |
-|-------|----------------|-------|
-| ios-architect | opus | read, write notes, web |
-| ios-developer | sonnet | read/write/edit, web |
-| swiftui-expert | sonnet | read/write/edit, web |
-| xcode-build-engineer | sonnet | read/write/edit (no web: build config shouldn't drift on web content) |
-| ios-testing-specialist | sonnet | read/write/edit (no web) |
-
-`model` and `tools` frontmatter apply on Claude Code only; Codex agents inherit the session model.
+Five agents in `agents/*.md`; their roles are in the Agents table of `skills/ios-expert/SKILL.md`. Each file's frontmatter sets the agent's model and tools for runtimes that read it. `codex-agents/*.toml` is generated from the same files.
 
 ## Tests
 

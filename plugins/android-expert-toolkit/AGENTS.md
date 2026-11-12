@@ -33,7 +33,7 @@ android-expert-toolkit/
 - **Own skills via `/create-skill`.** Author or review every own skill and agent with it.
 - **Defer to official skills.** When an official skill covers a topic, the reference keeps a one-line pointer, not a copy.
 - **Stack-neutral.** Skills say "detect what the project uses (`/android-conventions`)"; don't mandate a DI framework, assertion library, HTTP client, or result type.
-- **Verify facts.** API claims are checked with `android docs search` / `android docs fetch` (Android) or the Kotlin docs MCP (Kotlin language and stdlib); cite the page when a reference states a deprecation or threshold.
+- **Verify facts.** API claims are checked with `android docs search` / `android docs fetch` (Android) or the Kotlin docs MCP (Kotlin language and stdlib), and third-party libraries with a docs lookup tool (such as a doc-lookup skill or the Context7 MCP), if one is installed; cite the page when a reference states a deprecation or threshold.
 - **Cache contract.** `/android-conventions` writes `.artifacts/aet/cache/detected-patterns.json`. External tools read it; don't move it or rename existing keys.
 
 ## Vendored official skills
@@ -52,15 +52,7 @@ android-expert-toolkit/
 
 ## Agents
 
-| Agent | Model (Claude) | Tools |
-|-------|----------------|-------|
-| android-architect | opus | read, write notes, web |
-| android-developer | sonnet | read/write/edit, web |
-| compose-expert | sonnet | read/write/edit, web |
-| gradle-build-engineer | sonnet | read/write/edit (no web: build config shouldn't drift on web content) |
-| android-testing-specialist | sonnet | read/write/edit (no web) |
-
-`model` and `tools` frontmatter apply on Claude Code only; Codex agents inherit the session model.
+Five agents in `agents/*.md`; their roles are in the Agents table of `skills/android-expert/SKILL.md`. Each file's frontmatter sets the agent's model and tools for runtimes that read it. `codex-agents/*.toml` is generated from the same files.
 
 ## Tests
 

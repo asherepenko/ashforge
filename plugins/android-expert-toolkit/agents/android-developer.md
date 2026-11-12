@@ -17,7 +17,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files** you m
 ## Before writing
 
 1. Read the files in scope and their neighbours. Match the module's patterns (`/android-conventions` skill or its cache at `.artifacts/aet/cache/detected-patterns.json`): DI framework, state style, result type, serialization library.
-2. Verify any API you aren't sure of for the project's library versions with `android docs search` / `android docs fetch`.
+2. Verify any API you aren't sure of for the project's library versions with `android docs search` / `android docs fetch`; for third-party libraries, use a docs lookup tool (such as a doc-lookup skill or the Context7 MCP), if one is installed.
 
 ## Load as needed
 

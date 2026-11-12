@@ -19,7 +19,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 1. Read the files in scope and one existing screen of the same kind; copy its structure and design-system usage.
 2. Check the deployment target and the Swift language mode before using an API. `@Observable` needs iOS 17; anything marked iOS 27 needs that target. Below it, give the API the project can compile.
 3. Review with the `/swiftui-pro` skill; use `/swiftui-specialist` for modern-API and deprecation questions.
-4. Verify unsure API claims with the Xcode `DocumentationSearch` tool.
+4. Verify unsure API claims with the Xcode `DocumentationSearch` tool; for third-party packages, use a docs lookup tool (such as a doc-lookup skill or the Context7 MCP), if one is installed.
 
 ## Load as needed
 

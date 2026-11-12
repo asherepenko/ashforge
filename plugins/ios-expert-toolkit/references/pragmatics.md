@@ -40,4 +40,4 @@ final class NewFeatureViewModel: ObservableObject {
 
 ## Deferred topics
 
-Push notifications (APNs), networking stacks, privacy manifests and App Review, and background tasks have no reference here. Use the Xcode `DocumentationSearch` tool, and check the deployment target first.
+Push notifications (APNs), networking stacks, privacy manifests and App Review, and background tasks have no reference here. Use the Xcode `DocumentationSearch` tool (and a docs lookup tool (such as a doc-lookup skill or the Context7 MCP), if one is installed for third-party SDKs), and check the deployment target first.

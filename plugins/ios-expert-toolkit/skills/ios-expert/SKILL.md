@@ -12,7 +12,7 @@ A router. Find the topic, load only what it names, then answer or act.
 
 1. On existing code, run `/ios-conventions` first: it reads the architecture, `Package.resolved`, the deployment target and the Swift language mode. Then follow [pragmatics](../../references/pragmatics.md): user instructions, then codebase consistency, then constraints, then best practice.
 2. Check API availability against the deployment target and the Swift language mode before recommending anything. `@Observable` and SwiftData need iOS 17. Anything from a `*-whats-new-27` skill needs iOS 27. Below the target, give the API the project can compile.
-3. Verify API claims you are unsure of with the Xcode `DocumentationSearch` tool, not memory.
+3. Verify API claims you are unsure of with the Xcode `DocumentationSearch` tool, not memory. For third-party packages (TCA, networking, analytics SDKs), use a docs lookup tool (such as a doc-lookup skill or the Context7 MCP), if one is installed.
 
 ## Review mode
 
