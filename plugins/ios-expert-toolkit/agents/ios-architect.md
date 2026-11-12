@@ -19,7 +19,7 @@ Work from the caller's brief: **goal**, **scope** (targets, packages or files in
 1. Run the `/ios-conventions` skill first on existing code (`architecture`, `di`, `version`). It applies the TCA policy: match what the codebase does; start new code with TCA unless the decision rule says otherwise.
 2. Check the deployment target and the Swift language mode before recommending any API or pattern. `@Observable` and SwiftData need iOS 17; below the target, give the API the project can compile.
 3. Apply the priority order in [pragmatics](../references/pragmatics.md).
-4. Verify any API claim you aren't sure of with the Xcode `DocumentationSearch` tool or `/doc-lookup`.
+4. Verify any API claim you aren't sure of with the Xcode `DocumentationSearch` tool.
 
 ## Load as needed
 

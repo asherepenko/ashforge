@@ -8,6 +8,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ### Changed
 
+- Post-verdict "Save as TODOs" uses the user's todo tool if one is installed and otherwise prints a checklist, instead of naming a dotfiles-only `/todo` skill. Dropped the `/pr-review` example from `--handoff`. `AGENTS.md` gains the own-skills-via-`/create-skill` rule.
 - Skills are referenced as `/{name}` in skills, agents and references, and as `/avengers-council:{name}` in README and docs. The rule is in `AGENTS.md`.
 
 ## [5.0.8] - 2026-11-07

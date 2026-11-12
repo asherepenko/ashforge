@@ -27,13 +27,13 @@ With `--handoff` (council-code-review started by another skill), skip this menu:
 
 Present the user with (Claude: `AskUserQuestion`; Codex: plain prompt + numbered options):
 - **"Proceed"** (default) — Acknowledge verdict, continue to cleanup
-- **"Save action items as TODOs"** — Extract any minor suggestions from verdict, create via the `/todo` skill
+- **"Save action items as TODOs"** — Extract any minor suggestions from verdict, saved per [save-as-todos](#save-as-todos)
 
 ### APPROVED WITH CONDITIONS
 
 Present the user with (Claude: `AskUserQuestion`; Codex: plain prompt + numbered options):
 - **"Address conditions now"** (default) — Captain summarizes the top-priority conditions and begins working through them interactively
-- **"Save conditions as TODOs"** — Extract conditions from verdict as actionable items, create via the `/todo` skill
+- **"Save conditions as TODOs"** — Extract conditions from verdict as actionable items, saved per [save-as-todos](#save-as-todos)
 - **"Override — record why"** — Merge without fixing every condition. Ask the user for the reason, write it into the verdict file next to the unmet conditions, then continue to cleanup
 
 #### Conditions Tracking
@@ -48,14 +48,14 @@ When verdict is APPROVED WITH CONDITIONS:
 
 Present the user with (Claude: `AskUserQuestion`; Codex: plain prompt + numbered options):
 - **"Address findings now"** (default) — Captain summarizes the highest-severity findings and begins working through them interactively
-- **"Save action items as TODOs"** — Extract all findings as actionable items grouped by severity, create via the `/todo` skill
+- **"Save action items as TODOs"** — Extract all findings as actionable items grouped by severity, saved per [save-as-todos](#save-as-todos)
 - **"Re-review after changes"** — User makes changes, then Captain re-invokes the same council command with the same arguments
 
 ### BLOCKED
 
 Present the user with (Claude: `AskUserQuestion`; Codex: plain prompt + numbered options):
 - **"Address blocking issues now"** (default) — Captain summarizes CRITICAL/blocking findings and begins working through them interactively
-- **"Save action items as TODOs"** — Extract blocking issues and all findings as actionable items, create via the `/todo` skill
+- **"Save action items as TODOs"** — Extract blocking issues and all findings as actionable items, saved per [save-as-todos](#save-as-todos)
 - **"Re-review after changes"** — User makes changes, then Captain re-invokes the same council command with the same arguments
 
 ## Context-Specific Actions
@@ -86,8 +86,8 @@ Second question: "Would you like to update the plan based on findings?"
 ### "Save as TODOs"
 1. Parse the verdict for all actionable findings
 2. Group by severity (CRITICAL → HIGH → MEDIUM → LOW). Skip the Concerns for the User section unless the user asks to include it
-3. Create TODO items via the `/todo` skill with severity prefix: `[CRITICAL]`, `[HIGH]`, etc.
-4. Confirm to user how many TODOs were created
+3. Save each item with the user's todo tool if one is installed, prefixed with its severity (`[CRITICAL]`, `[HIGH]`, …). If none is installed, print the items as a checklist in chat instead.
+4. Tell the user how many items were saved, and where
 5. Fall through to cleanup
 
 ### "Override — record why"

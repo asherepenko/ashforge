@@ -37,7 +37,7 @@ Skill names live in `ios-skills.lock`. Tests read them from there; don't hardcod
 - **Thin skills, short agents.** Skills route or state rules; detail lives in `references/` or the vendored skills. Agents work from a plain brief (goal, acceptance criteria, files, verify command) and point at skills/references.
 - **Own skills via `/create-skill`.** Author or review every own skill and agent with it.
 - **Defer to vendored skills.** When a community or Xcode skill covers a topic, the reference keeps a one-line pointer, not a copy.
-- **Verify facts.** Check API claims with `/doc-lookup` before a reference states a deprecation or an availability level.
+- **Verify facts.** API claims are checked with the Xcode `DocumentationSearch` tool from the Xcode MCP; cite the page when a reference states a deprecation or an availability level.
 
 ## Vendored skills
 
@@ -52,6 +52,18 @@ Skill names live in `ios-skills.lock`. Tests read them from there; don't hardcod
 - Skills: `.codex-plugin/plugin.json` → `"skills": "./skills/"` (a string). Codex scans it recursively, so `skills/community/` and `skills/xcode/` load with no array. The Claude manifest does need the array.
 - Hooks: `"hooks": "./hooks/hooks-codex.json"`. The hook files arrive in Phase 4.2. Claude auto-discovers `hooks/hooks.json`.
 - Agents: Codex custom agents are TOML, generated from `agents/*.md`.
+
+## Agents
+
+| Agent | Model (Claude) | Tools |
+|-------|----------------|-------|
+| ios-architect | opus | read, write notes, web |
+| ios-developer | sonnet | read/write/edit, web |
+| swiftui-expert | sonnet | read/write/edit, web |
+| xcode-build-engineer | sonnet | read/write/edit (no web: build config shouldn't drift on web content) |
+| ios-testing-specialist | sonnet | read/write/edit (no web) |
+
+`model` and `tools` frontmatter apply on Claude Code only; Codex agents inherit the session model.
 
 ## Tests
 

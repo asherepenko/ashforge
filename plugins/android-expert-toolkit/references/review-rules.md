@@ -1,4 +1,4 @@
-# Review Mode
+# Review Rules
 
 A fixed procedure and output for reviewing Android code, so two reviews of the same code have the same shape.
 

@@ -35,7 +35,7 @@ Parse the arguments:
 - **--files <paths>**: review specific files (comma-separated)
 - **--focus <area>**: optional filter — `security|mobile|architecture|testing|delivery|frontend|backend|devops|data`
 - **--quick**: optional — run 3-member quorum instead of full council
-- **--handoff**: another skill (such as `/pr-review`) started this review and owns what happens next. Skip Step 1's clean-up question and the post-verdict menu. Save and show the verdict, clean up, and return.
+- **--handoff**: a calling skill started this review and owns what happens next. Skip Step 1's clean-up question and the post-verdict menu. Save and show the verdict, clean up, and return.
 
 If no arguments are provided, default to `--diff` (uncommitted changes: staged + unstaged).
 

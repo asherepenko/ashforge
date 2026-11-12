@@ -18,7 +18,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 
 1. Read the files in scope and one neighbouring feature of the same kind; copy its shape. Run `/ios-conventions` if you don't know whether the code uses TCA or `@Observable` view models.
 2. Check the deployment target and the Swift language mode (Swift 5 or Swift 6) before using an API. Below the target, use the API the project can compile.
-3. Verify APIs you aren't sure of with the Xcode `DocumentationSearch` tool or `/doc-lookup`.
+3. Verify APIs you aren't sure of with the Xcode `DocumentationSearch` tool.
 
 ## Load as needed
 

@@ -30,14 +30,19 @@ android-expert-toolkit/
 
 - **Skill references.** Name a skill as `/{name}` in skills, agents, references and router tables, so every runtime resolves it. README and install docs show the command a person types: `/{plugin}:{name}`. Agents stay plain backticked names (`{agent}`): they are not slash commands.
 - **Thin skills, short agents.** Skills route or state rules; detail lives in `references/` or the official skills. Agents work from a plain brief (goal, acceptance criteria, files, verify command) and point at skills/references instead of embedding pattern dumps. Every agent keeps a `## Scope Boundaries` section.
+- **Own skills via `/create-skill`.** Author or review every own skill and agent with it.
 - **Defer to official skills.** When an official skill covers a topic, the reference keeps a one-line pointer, not a copy.
 - **Stack-neutral.** Skills say "detect what the project uses (`/android-conventions`)"; don't mandate a DI framework, assertion library, HTTP client, or result type.
-- **Verify facts.** API claims are checked with `android docs search` / `android docs fetch` (Android) or the `kotlinlang` MCP from `.mcp.json` (Kotlin language and stdlib); cite the page when a reference states a deprecation or threshold.
+- **Verify facts.** API claims are checked with `android docs search` / `android docs fetch` (Android) or the Kotlin docs MCP (Kotlin language and stdlib); cite the page when a reference states a deprecation or threshold.
 - **Cache contract.** `/android-conventions` writes `.artifacts/aet/cache/detected-patterns.json`. External tools read it; don't move it or rename existing keys.
 
 ## Vendored official skills
 
 `scripts/sync-android-skills.sh [ref]` downloads android/skills at `ref` (default: the locked commit), replaces each listed skill directory under `skills/android/`, copies upstream `LICENSE.txt` into it, and rewrites `android-skills.lock`. `android-cli` is excluded on purpose: users often install their own and a same-named copy would shadow it. To add a skill, add it to `SKILLS` in the script, run it, list it in `THIRD_PARTY_NOTICES.md`, and route it in `skills/android-expert/SKILL.md`.
+
+## Kotlin docs MCP
+
+`.mcp.json` declares `kotlinlang` (`https://mcp.kotlinlang.org/mcp`, HTTP, no auth): `search_kotlinlang` and `get_kotlinlang_page` over kotlinlang.org. Claude Code picks it up from the plugin root. Offline, the server fails to connect; skills still load.
 
 ## Codex
 

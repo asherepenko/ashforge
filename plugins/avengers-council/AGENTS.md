@@ -52,6 +52,7 @@ Exposed tools are authoritative. Modern Codex `[agents] enabled` defaults true; 
 ## Key Conventions
 
 - **Skill references.** Name a skill as `/{name}` in skills, agents, references and router tables, so every runtime resolves it. README and install docs show the command a person types: `/{plugin}:{name}`. Agents stay plain backticked names (`{agent}`): they are not slash commands.
+- **Own skills via `/create-skill`.** Author or review every own skill and agent with it.
 - Skills use explicit `Read @references/...` — not bare `@references/` lines.
 - Agents include a domain score (1-10) with a `basis:` in every assessment. The score is informational: it never changes the verdict. `scripts/score-check.py` flags scores that contradict the member's own findings.
 - Every verdict shows **Quality** (A-F, from `scripts/review-grade.py`) and **Risk** (low | medium | high). Both are info rows; votes and findings decide the verdict.
