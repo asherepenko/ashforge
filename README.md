@@ -16,7 +16,7 @@ All three plugins ship dual manifests: `.claude-plugin/plugin.json` for Claude C
 
 ## Runtime support
 
-Beyond the two first-class runtimes, avengers-council detects the running harness at preflight and adapts via capability profiles (spawn model, transport, progress tool, ask style, plugin-root env) — see its `references/runtime-adapters.md`. android-expert-toolkit has no orchestration, so its skills run anywhere skills load:
+Beyond the two first-class runtimes, avengers-council detects the running harness at preflight and adapts via capability profiles (spawn model, transport, progress tool, ask style, plugin-root env) — see its `references/runtime-adapters.md`. android-expert-toolkit and ios-expert-toolkit have no orchestration, so their skills run anywhere skills load:
 
 - **Zcode** — plugin agents register by `subagent_type`; spawns are result-returning, so the council runs hub-mediated debate.
 - **pi** — no native subagent tool: install the skills into pi's skills directory; without a subagent skill/extension the council degrades to single-orchestrator mode.
@@ -31,6 +31,7 @@ On runtimes where no subagent spawning exists, plugins fall back to single-orche
 ```
 /plugin marketplace add asherepenko/ashforge
 /plugin install android-expert-toolkit@ashforge
+/plugin install ios-expert-toolkit@ashforge
 /plugin install avengers-council@ashforge
 /reload-plugins
 ```
@@ -49,6 +50,9 @@ Then enable in `~/.codex/config.toml`:
 [plugins."android-expert-toolkit@ashforge"]
 enabled = true
 
+[plugins."ios-expert-toolkit@ashforge"]
+enabled = true
+
 [plugins."avengers-council@ashforge"]
 enabled = true
 
@@ -62,7 +66,7 @@ enabled = true          # current Codex default; false disables subagents
 
 Older Codex releases use `[features] multi_agent = true` instead. The plugins check the tools exposed by the running session before choosing subagent dispatch; configuration files are capability hints. Worker batches respect the session's available slots and reuse agents when a close tool is unavailable.
 
-On first run, Codex will prompt to trust each plugin hook command — accept to record the `trusted_hash` entries. The avengers-council plugin ships no hooks, so only android-expert-toolkit's hooks need trust.
+On first run, Codex will prompt to trust each plugin hook command — accept to record the `trusted_hash` entries. The avengers-council plugin ships no hooks, so only the android-expert-toolkit and ios-expert-toolkit hooks need trust.
 
 For a live Claude council debate, enable `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` and use an interactive session. Other Claude sessions use reports passed through the orchestrator between rounds. Android stages use reports and validated handoff files in either mode.
 
@@ -91,11 +95,13 @@ Individual plugins auto-update on every commit unless their `plugin.json` pins a
 ```
 # Claude
 /plugin uninstall android-expert-toolkit
+/plugin uninstall ios-expert-toolkit
 /plugin uninstall avengers-council
 /plugin marketplace remove ashforge
 
 # Codex
 codex plugin remove android-expert-toolkit@ashforge
+codex plugin remove ios-expert-toolkit@ashforge
 codex plugin remove avengers-council@ashforge
 codex plugin marketplace remove ashforge
 ```
@@ -105,6 +111,7 @@ codex plugin marketplace remove ashforge
 Each plugin documents its own usage, Codex compatibility, and configuration:
 
 - [android-expert-toolkit/README.md](./plugins/android-expert-toolkit/README.md) and [QUICK_START.md](./plugins/android-expert-toolkit/QUICK_START.md)
+- [ios-expert-toolkit/README.md](./plugins/ios-expert-toolkit/README.md) and [QUICK_START.md](./plugins/ios-expert-toolkit/QUICK_START.md)
 - [avengers-council/README.md](./plugins/avengers-council/README.md)
 - Cross-runtime capability mapping (Claude Code, Codex, Zcode, pi, Antigravity): each plugin's `references/runtime-adapters.md`
 
@@ -117,6 +124,7 @@ Each plugin documents its own usage, Codex compatibility, and configuration:
   marketplace.json       # Codex marketplace manifest
 plugins/
   android-expert-toolkit/
+  ios-expert-toolkit/
   avengers-council/
 ```
 
