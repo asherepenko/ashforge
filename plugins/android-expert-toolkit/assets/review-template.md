@@ -19,8 +19,8 @@ The exact block a review prints. Rules (rows, grading, verdict) live in [review-
 
 | | |
 |---|---|
-| **Subject** | `FeedScreen.kt`, whole file |
-| **Rows** | ✅ 5 pass · ❌ 3 fail · ⏩ 4 n/a |
+| **Subject** | diff vs `main`: `FeedScreen.kt` |
+| **Rows** | ✅ 6 pass · ❌ 3 fail · ⏩ 4 n/a |
 | **Findings** | 2 fails · 1 pre-existing · 0 notes |
 
 | ID | Criterion | Evidence |
@@ -29,7 +29,7 @@ The exact block a review prints. Rules (rows, grading, verdict) live in [review-
 | C4 | Performance | `FeedScreen.kt:42` LazyColumn inside `verticalScroll` |
 | compose-ui.2 | No hardcoded strings, colors, sizes | `FeedScreen.kt:43` |
 
-✅ C2, C3, A4, A5, coroutines.1
+✅ C2, C3, A4, A5, coroutines.1, coroutines.2
 ⏩ C5 (no navigation chrome), A1 (single file), A3 (repository not in scope), coroutines.6 (no tests)
 
 #### ❌ Fails (2) — counted in the verdict

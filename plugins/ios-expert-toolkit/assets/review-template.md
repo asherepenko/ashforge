@@ -19,9 +19,9 @@ The exact block a review prints. Rules (rows, grading, verdict) live in [review-
 
 | | |
 |---|---|
-| **Subject** | `FeedView.swift`, whole file |
+| **Subject** | diff vs `main`: `FeedView.swift` |
 | **Rows** | ✅ 5 pass · ❌ 3 fail · ⏩ 3 n/a |
-| **Findings** | 2 fails · 1 pre-existing · 0 notes |
+| **Findings** | 3 fails · 1 pre-existing · 0 notes |
 
 | ID | Criterion | Evidence |
 |----|-----------|----------|
@@ -29,18 +29,20 @@ The exact block a review prints. Rules (rows, grading, verdict) live in [review-
 | C4 | Performance | `FeedView.swift:40` `ForEach(items.indices, id: \.self)` |
 | A3 | State and Data Flow | `FeedView.swift:12` view loads data in `onAppear` |
 
-✅ C2, C3, A1, A5, A6
-⏩ C5 (no size classes in scope), A2 (single file), A4 (no async code)
+✅ C2, C3, A4, A5, A6
+⏩ C5 (no size classes in scope), A1 (single file), A2 (single file)
 
-#### ❌ Fails (2) — counted in the verdict
+#### ❌ Fails (3) — counted in the verdict
 
 1. 🟠 **`ForEach` over indices loses row identity on insert and delete** — `FeedView.swift:40` · C4
     → `ForEach(items)` with `Identifiable` items
-2. 🟡 **Hardcoded title color and size; data load in the view** — `FeedView.swift:31` · C1, A3
-    → `.font(.title2)`, `.foregroundStyle(.primary)`, and load in the model
+2. 🟡 **Hardcoded title color and size** — `FeedView.swift:31` · C1
+    → `.font(.title2)` and `.foregroundStyle(.primary)`
+3. 🟡 **The view loads data in `onAppear`** — `FeedView.swift:12` · A3
+    → Load in the model from `.task { await model.load() }`
 
 #### 📋 Pre-existing (1) — not counted in the verdict
 
-3. 🟡 **`try?` hides a decoding error** — `SettingsClient.swift:88` · A4
+4. 🟡 **`try?` hides a decoding error** — `SettingsClient.swift:88` · A4
     → Catch and map the error in a follow-up change
 ```
