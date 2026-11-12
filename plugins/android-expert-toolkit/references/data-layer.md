@@ -77,11 +77,13 @@ abstract class AppDatabase : RoomDatabase() { abstract fun itemDao(): ItemDao }
 - Prefer `AutoMigration`; write a manual `Migration` for renames/splits. Never ship `fallbackToDestructiveMigration()` for user data.
 - Observed queries return `Flow`; writes are `suspend`. Room runs them off the main thread.
 - Room KSP processor (no kapt on AGP 9).
+- `@Index` the columns a growing table filters, sorts, or joins on. Not every column: each index slows writes.
 
 ## DataStore
 
 - Preferences DataStore for small key/value settings; Proto DataStore for typed settings objects.
 - One instance per file per process (`by preferencesDataStore(name)` at top level, or a DI singleton).
+- Never `runBlocking { dataStore.data.first() }` on the main thread; it blocks on disk and risks an ANR.
 - Read as `Flow`; catch `IOException` in `.catch { emit(emptyPreferences()) }` only — rethrow anything else.
 - Migrating from SharedPreferences: `SharedPreferencesMigration`, and review it with `persisted-state-review.md`.
 
@@ -130,7 +132,7 @@ class SyncWorker @AssistedInject constructor(
 
 ## Paging and images
 
-- Paging 3: `Pager(PagingConfig(pageSize = 20)) { dao.pagingSource() }.flow.cachedIn(viewModelScope)`; in Compose, `collectAsLazyPagingItems()` and `items(count = items.itemCount, key = items.itemKey { it.id })`.
+- Paging 3: `Pager(PagingConfig(pageSize = 20)) { dao.pagingSource() }.flow.cachedIn(viewModelScope)`; in Compose, `collectAsLazyPagingItems()` and `items(count = items.itemCount, key = items.itemKey { it.id })`. Render `loadState.refresh` and `loadState.append` too: loading, error with `retry()`, and an empty state; otherwise a failed load shows a blank list.
 - Images: Coil `AsyncImage` with `contentDescription` per `accessibility.md`.
 
 ## Third-party SDKs

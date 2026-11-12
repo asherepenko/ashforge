@@ -56,4 +56,4 @@ Return, in this order and briefly:
 2. **Interfaces** — public types and signatures the implementers need.
 3. **Trade-offs** — options considered, why this one.
 4. **Risks and follow-ups** — including persisted-state or migration concerns.
-5. **Review findings** (review briefs only) — severity, `file:line`, the issue, the fix.
+5. **Review findings** (review briefs only) — in the [review-rules](../references/review-rules.md) format: row table, verdict, numbered findings.

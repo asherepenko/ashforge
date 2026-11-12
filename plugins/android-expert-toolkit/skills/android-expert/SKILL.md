@@ -12,7 +12,11 @@ A router. Find the topic, load only what it names, then answer or act.
 
 1. On existing code, run `android-conventions` first: it reads the architecture, DI, state and testing patterns. Then follow [pragmatics](../../references/pragmatics.md): user instructions, then codebase consistency, then constraints, then best practice.
 2. Check API availability before recommending an API. Read `minSdk`, `targetSdk` and `compileSdk` from the build files, and the Compose BOM and AGP versions from the version catalog. Below `minSdk`, give the compat API (AndroidX, `*Compat`) or an `if (Build.VERSION.SDK_INT >= ...)` guard.
-3. Verify API claims you are unsure of with `android docs search "<query>"`, not memory.
+3. Verify API claims you are unsure of with `android docs search "<query>"`, not memory. For Kotlin language and stdlib facts, use the `kotlinlang` MCP (`search_kotlinlang`, then `get_kotlinlang_page`).
+
+## Review mode
+
+For any review of Android code (a file, screen, diff or PR), follow [review-rules](../../references/review-rules.md): fixed rows from the rubrics and review checklists, PASS/FAIL/N/A per row, one verdict rule, one output template. Test review stays with `android-testing`.
 
 ## Topic → load
 

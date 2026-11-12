@@ -57,6 +57,8 @@ Scopes, dispatchers, `stateIn`, cancellation, and coroutine tests → `coroutine
 - Sealed interfaces for closed hierarchies (errors, actions, navigation keys); exhaustive `when` without `else`.
 - `@JvmInline value class` for IDs and units (`UserId`, `Millis`) to stop argument mix-ups.
 - Data classes for state; no mutable collections in state.
+- No `!!` in production code: `?:` with a typed error, or `requireNotNull(x) { "why" }` when null is a bug.
+- One safe-call chain (`user?.address?.city`) instead of nested `?.let` blocks.
 - Java interop or legacy Java modules → `kotlin-java-interop.md`.
 
 ## Offline-first

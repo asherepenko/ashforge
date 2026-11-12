@@ -4,6 +4,15 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.5.0] - 2026-11-12
+
+### Added
+
+- Review mode (`references/review-rules.md`): reviews use fixed rows (C1–C5, A1–A5, reference checklist items), PASS/FAIL/N/A per row, one verdict rule, and one output block in `assets/review-template.md`, matching the avengers-council verdict block. On a diff, problems in untouched code are listed as pre-existing and do not change the verdict. The android-expert router and the android-architect agent point to it.
+- `kotlinlang` MCP server (`https://mcp.kotlinlang.org/mcp`) in `.mcp.json` for Kotlin language and stdlib lookups. The android-expert router names it next to `android docs`.
+- Kotlin rules adapted from ECC `kotlin-patterns` and `kotlin-coroutines-flows`: `remember` a Flow built in a composable, no in-place mutation of `StateFlow` collections (`coroutines.md`), no `!!` in production code, and flat safe-call chains (`architecture.md`).
+- Rules adapted from haidrrrry/compose-kotlin-agent-skills: no lazy list inside a same-axis scroll, theme tokens over raw sizes and colors (`compose-ui.md`); Room `@Index` on queried columns, no blocking DataStore reads on main, Paging `loadState` handling (`data-layer.md`).
+
 ## [4.4.0] - 2026-11-05
 
 ### Added

@@ -34,6 +34,8 @@ class FileStore @Inject constructor(
 - `flatMapLatest` for "latest query wins"; `debounce` for typed input.
 - `flowOn` changes the upstream dispatcher only. Do not call `withContext` inside `flow {}`.
 - Collect in Compose with `collectAsStateWithLifecycle()`.
+- A `Flow` built inside a composable goes in `remember(key) { }`; otherwise each recomposition builds and re-collects a new one.
+- `StateFlow` emits only when the new value is not `equals` to the old one. Mutating a list in place emits nothing; replace it: `_state.update { it.copy(items = it.items + item) }`.
 
 ## Cancellation
 
@@ -73,4 +75,5 @@ try {
 - [ ] `CancellationException` rethrown from every catch-all; no `runCatching` around suspend calls.
 - [ ] UI collects with `collectAsStateWithLifecycle` or `repeatOnLifecycle`.
 - [ ] `stateIn` uses `WhileSubscribed` with a timeout unless the stream must stay hot.
+- [ ] State holds read-only collections, replaced with `update { copy() }`, never mutated in place.
 - [ ] Tests use `runTest` and a shared `TestDispatcher`.

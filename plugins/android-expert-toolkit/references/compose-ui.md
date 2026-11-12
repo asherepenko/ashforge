@@ -113,6 +113,8 @@ LazyColumn(contentPadding = PaddingValues(vertical = 8.dp), verticalArrangement 
 
 Stable `key` for every list whose items can move, insert, or delete. Paging → `data-layer.md`.
 
+Never nest a lazy list inside a parent that scrolls on the same axis (`Column(Modifier.verticalScroll(…))` around a `LazyColumn`): it crashes on unbounded height. Use one lazy list with `item { }` for the header and footer.
+
 ## Common Material 3 patterns
 
 ```kotlin
@@ -163,6 +165,8 @@ fun AppTheme(darkTheme: Boolean = isSystemInDarkTheme(), dynamicColor: Boolean =
     MaterialTheme(colorScheme = colorScheme, typography = AppTypography, shapes = AppShapes, content = content)
 }
 ```
+
+Composables read `MaterialTheme.typography` and `MaterialTheme.colorScheme`; a raw `fontSize = 16.sp` or `Color(0xFF…)` bypasses dark mode, dynamic color, and the app's type scale.
 
 ## Adaptive layouts
 
