@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 FIXTURES = Path(__file__).parent / "fixtures"
-SCRIPT = FIXTURES / "run-sweeps.py"
+SCRIPT = FIXTURES.parent.parent / "skills" / "ios-conventions" / "scripts" / "run-sweeps.py"
 
 EXPECTED = {
     "tca-app": "TCA",

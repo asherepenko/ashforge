@@ -4,6 +4,12 @@ All notable changes to the iOS Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for removed or renamed skills and agents, minor for new ones, patch for docs and reference fixes.
 
+## [1.1.3] - 2026-11-21
+
+### Changed
+
+- `run-sweeps.py` moved from `tests/fixtures/` to `skills/ios-conventions/scripts/`, so installed copies of `/ios-conventions` always have the architecture-verdict script; the "when tests/ is included" fallback is gone.
+
 ## [1.1.2] - 2026-11-21
 
 ### Changed

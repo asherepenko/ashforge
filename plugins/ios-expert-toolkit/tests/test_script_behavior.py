@@ -13,7 +13,7 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent
 CODEX_LINK = PROJECT_ROOT / "hooks" / "link-codex-agents.py"
 CURSOR_LINK = PROJECT_ROOT / "hooks" / "link-cursor-agents.py"
-SWEEPS = PROJECT_ROOT / "tests" / "fixtures" / "run-sweeps.py"
+SWEEPS = PROJECT_ROOT / "skills" / "ios-conventions" / "scripts" / "run-sweeps.py"
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures"
 
 

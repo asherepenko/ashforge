@@ -39,13 +39,13 @@ Count files, not matches. Exclude `Pods/`, `Carthage/`, `.build/`, `SourcePackag
 | `navigation` | `NavigationStack` vs coordinators (`Coordinator`, `UINavigationController`) |
 | `version` | `Package.resolved` (TCA version), `IPHONEOS_DEPLOYMENT_TARGET`, `SWIFT_VERSION` / `swiftLanguageModes` |
 
-For the architecture verdict, run the reference implementation when the plugin checkout includes `tests/`. Its path is relative to this skill's folder:
+For the architecture verdict, run the bundled script:
 
 ```bash
-python3 <this skill's folder>/../../tests/fixtures/run-sweeps.py <project-dir>
+python3 <this skill's folder>/scripts/run-sweeps.py <project-dir>
 ```
 
-It prints one of `NEW`, `TCA`, `MVVM`, `MIXED`. Without the script, apply the same counts by hand with the patterns from the reference.
+It prints one of `NEW`, `TCA`, `MVVM`, `MIXED`.
 
 ## Decision rule
 
