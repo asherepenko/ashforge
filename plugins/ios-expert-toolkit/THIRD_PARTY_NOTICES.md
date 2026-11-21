@@ -11,7 +11,7 @@ Each skill keeps its upstream `LICENSE` file next to its `SKILL.md`.
 ### swift-concurrency
 
 - Repo: [AvdLee/Swift-Concurrency-Agent-Skill](https://github.com/AvdLee/Swift-Concurrency-Agent-Skill)
-- Commit: `d5770817d2622e1585b1f7eaebc791a9cb0959c8`
+- Commit: `3b1580d8398e0b5408b3bf0bada0e941a1cfc642`
 - Copyright (c) 2026 Antoine van der Lee. MIT License.
 
 ### swift-testing-expert

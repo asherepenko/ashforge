@@ -4,6 +4,17 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.6.0] - 2026-11-21
+
+### Added
+
+- Vendored official skill `ios-to-android` from android/skills, routed from `android-expert` for porting iOS/Swift apps or features to Android.
+
+### Changed
+
+- Refreshed the 15 vendored official skills to android/skills@c729425.
+- Codex manifest version now matches the Claude manifest.
+
 ## [4.5.1] - 2026-11-13
 
 ### Added

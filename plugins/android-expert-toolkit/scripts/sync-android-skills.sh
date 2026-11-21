@@ -34,6 +34,7 @@ SKILLS=(
   android-permissions-security
   glance-appwidget-updates-and-memory
   glance-canonical-layouts
+  ios-to-android
 )
 
 locked_ref() {
