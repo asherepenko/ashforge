@@ -18,7 +18,7 @@ Run `python3 scripts/preflight.py` from this skill's folder (the folder holding 
 python3 <this-skill-folder>/scripts/preflight.py
 ```
 
-The script collects: project hash (shasum over settings.gradle.kts + build.gradle.kts), cached patterns, Kotlin file count, DI fingerprint, state fingerprint, and testing fingerprint.
+The script collects: project hash (content hash of the scanned code and build files at any depth, the same value as `detect-patterns.py --hash`), cached patterns, Kotlin file count, DI fingerprint, state fingerprint, and testing fingerprint.
 
 Use the output to:
 1. Skip the cache compute step if the `Project hash` value matches cached `project_hash` (Step 1.5).

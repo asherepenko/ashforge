@@ -8,7 +8,7 @@ Use the output for the cache-hit check (project hash against the cached
 architecture sweeps.
 """
 
-import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -69,16 +69,17 @@ def resolved_pins():
     return pins
 
 
+def detect_patterns():
+    """The sibling detect-patterns.py module; the hyphen rules out a plain import."""
+    spec = importlib.util.spec_from_file_location("detect_patterns", Path(__file__).with_name("detect-patterns.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def project_hash():
-    """Same value detect-patterns.py writes to the cache: root Package.swift, then root project.pbxproj files."""
-    files = [Path("Package.swift")] if os.path.isfile("Package.swift") else []
-    files += sorted(p for p in Path(".").glob("*.xcodeproj/project.pbxproj") if p.is_file())
-    if not files:
-        return "NO_PROJECT_FILES"
-    digest = hashlib.sha256()
-    for path in files:
-        digest.update(path.read_bytes())
-    return digest.hexdigest()
+    """The cache key, computed by detect-patterns.py so both scripts always agree."""
+    return detect_patterns().project_hash(Path("."))
 
 
 def cached_patterns():
@@ -97,7 +98,8 @@ def count_files(pattern, sources):
 
 def main():
     pbx, pkg, pins = pbxproj_text(), package_text(), resolved_pins()
-    sources = [read(p) for p in walk(suffix=".swift") if not p.endswith("Package.swift")]
+    strip = detect_patterns().strip_code
+    sources = [strip(read(p)) for p in walk(suffix=".swift") if not p.endswith("Package.swift")]
 
     lang = [f"SWIFT_VERSION = {v}" for v in sorted(set(SWIFT_VERSION.findall(pbx)))]
     lang += sorted(set(LANG_MODES.findall(pkg)))

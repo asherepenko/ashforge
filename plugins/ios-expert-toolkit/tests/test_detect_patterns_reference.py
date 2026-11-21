@@ -190,3 +190,18 @@ def test_ere_translation_of_reference_quirks():
     assert rx(module.PAT_MVVM_OBJECT).search("final class A: Base, ObservableObject {")
     assert rx(r"@Dependency\b|DependencyKey").search("@Dependency(\\.x) var x")
     assert not rx(r"static let shared\b").search("static let sharedInstance = 1")
+
+
+def test_reference_documents_the_content_hash_key():
+    text = reference_text()
+    assert "root-level" not in text.split("### Computing `project_hash`")[1].split("## Report format")[0]
+    for needle in ("<relpath>", "sha256", "Package.resolved", "*.xcconfig", "--hash", "any depth", "`version`"):
+        assert needle in text, needle
+    assert "Only root-level files count" not in text
+
+
+def test_reference_has_a_pattern_audit_covering_every_sweep():
+    section = reference_text().split("### Audit: what each sweep can miscount")[1].split("\n### ", 1)[0]
+    for needle in ("@Reducer", "@Observable", "ObservableObject", "UIViewController", "DependencyKey", "static let shared",
+                   "Factories", "import Testing", "XCTestCase", "@Model", "NavigationStack", "Coordinator", "@MainActor"):
+        assert needle in section, needle

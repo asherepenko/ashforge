@@ -8,6 +8,20 @@ This file is the single source for the sweep patterns. `skills/android-conventio
 
 ## Detection Commands
 
+### Audit: raw or stripped text
+
+The manual commands below see comments and strings. `detect-patterns.py` blanks comments and string-literal contents in `.kt` and `.java` files before matching (`strip_code`: `//`, nested `/* */`, `"..."` with escapes, `"""` raw strings and text blocks, char literals; a Kotlin `"${...}"` template is blanked whole). `.xml` and Gradle files are never stripped. Line numbers are unchanged.
+
+| Sweep | Text | Why |
+|-------|------|-----|
+| `hardcoded_secrets` | raw | the target is a key inside a string literal. A key in a comment still counts |
+| `network_security_config`, `proguard_rules`, `xml_layout`, `baseline_profile_file` | file name | no content match |
+| `cleartext_traffic` | raw (`.xml`) | XML is never stripped |
+| every other sweep (state, DI, testing, architecture, certificate pinning, encrypted storage, performance, accessibility) | stripped | each names a type, annotation or call, so a comment or string mention is a false hit. Excludes (`contentDescription`, `Dispatchers.`, `WhileSubscribed`, `key =`) are matched against stripped lines too |
+
+Known limit: a Java text block containing `\"""` ends early. An unterminated `"` string ends at the line break.
+
+
 ### State Management Patterns
 
 ```bash
@@ -30,11 +44,11 @@ grep -r "Single<\|Observable<\|Completable\|CompositeDisposable\|subscribeOn\|ob
 ### Dependency Injection Patterns
 
 ```bash
-# Detect Hilt usage
-grep -r "@HiltAndroidApp\|@HiltViewModel\|@Inject" --include="*.kt" --include="*.java" . | wc -l
+# Detect Hilt usage (bare @Inject is plain Dagger / manual DI too, so it is not a marker)
+grep -r "@HiltAndroidApp\|@HiltViewModel\|@AndroidEntryPoint\|@InstallIn" --include="*.kt" --include="*.java" . | wc -l
 
-# Detect Dagger usage
-grep -r "@Component\|@Module\|@Provides" --include="*.kt" --include="*.java" . | wc -l
+# Detect Dagger usage (@Module/@Provides are Hilt too; the script also drops files that match the Hilt sweep)
+grep -r "@Component\|@Subcomponent" --include="*.kt" --include="*.java" . | wc -l
 
 # Detect Koin usage (refined to avoid false positives)
 grep -r "koinViewModel\|by inject()\|startKoin\|koinModule" --include="*.kt" . | wc -l
@@ -46,11 +60,11 @@ grep -r "ViewModelProvider.Factory\|ViewModelProvider.NewInstanceFactory\|class 
 ### Testing Patterns
 
 ```bash
-# Detect Mockito usage
-grep -r "@Mock\|mock(\|verify(" --include="*.kt" --include="*.java" . | wc -l
+# Detect Mockito usage (@Mock\b skips @MockK; the script also drops files that match the MockK sweep)
+grep -r "@Mock\b\|\bmock(\|\bverify(" --include="*.kt" --include="*.java" . | wc -l
 
-# Detect MockK usage
-grep -r "mockk<\|every\|verify" --include="*.kt" . | wc -l
+# Detect MockK usage (bare every/verify also match prose and other libraries)
+grep -r "mockk<\|mockk(\|@MockK\|every {\|coEvery {\|verify {\|coVerify {" --include="*.kt" . | wc -l
 
 # Detect test doubles
 grep -r "class Test.*Repository\|class Fake.*Repository\|class Test.*DataSource" --include="*.kt" . | wc -l
@@ -58,7 +72,7 @@ grep -r "class Test.*Repository\|class Fake.*Repository\|class Test.*DataSource"
 # Detect Turbine (Flow testing)
 grep -r "\.test\s*{" --include="*.kt" . | wc -l
 
-# Detect Truth assertions
+# Detect assertThat assertions (AssertJ, Hamcrest and Truth all use assertThat)
 grep -r "assertThat(" --include="*.kt" --include="*.java" . | wc -l
 
 # Detect JUnit assertions
@@ -68,8 +82,8 @@ grep -r "assertEquals\|assertTrue\|assertNotNull" --include="*.kt" --include="*.
 ### Architecture Patterns
 
 ```bash
-# Detect ViewModels
-grep -r "ViewModel()" --include="*.kt" --include="*.java" . | wc -l
+# Detect ViewModel classes (hiltViewModel() and viewModel() calls in composables do not count)
+grep -r ": ViewModel()\|: AndroidViewModel(\|extends ViewModel\|extends AndroidViewModel" --include="*.kt" --include="*.java" . | wc -l
 
 # Detect Compose usage
 grep -r "@Composable" --include="*.kt" . | wc -l
@@ -207,7 +221,7 @@ find . -name "*.java" -path "*/src/main/*" | wc -l
 | Testing Mocks | ≥80% MockK | Use MockK for new tests |
 | UI Framework | ≥80% Compose | Use Compose for new screens |
 | UI Framework | ≥80% XML | Use XML for new layouts |
-| Assertions | ≥80% Truth | Use Truth for new tests |
+| Assertions | ≥80% assertThat | Use the assertThat library already in the project (Truth, AssertJ or Hamcrest) |
 | Assertions | ≥80% JUnit | Use JUnit assertions |
 
 ### When to Propose Modern Alternatives (Mixed or <80%)
@@ -245,9 +259,9 @@ fi
 
 **Example for DI frameworks**:
 ```bash
-hilt_count=$(grep -r '@HiltViewModel\|@HiltAndroidApp' --include='*.kt' . | wc -l)
+hilt_count=$(grep -r '@HiltViewModel\|@HiltAndroidApp\|@AndroidEntryPoint\|@InstallIn' --include='*.kt' . | wc -l)
 koin_count=$(grep -r 'koinViewModel\|startKoin' --include='*.kt' . | wc -l)
-dagger_count=$(grep -r '@Component\|@Module.*@Provides' --include='*.kt' --include='*.java' . | wc -l)
+dagger_count=$(grep -r '@Component\|@Subcomponent' --include='*.kt' --include='*.java' . | wc -l)
 manual_count=$(grep -r 'ViewModelProvider.Factory' --include='*.kt' . | wc -l)
 total_di=$((hilt_count + koin_count + dagger_count + manual_count))
 
@@ -270,7 +284,7 @@ fi
 ```json
 {
   "timestamp": "2026-03-18T17:00:00Z",
-  "project_hash": "<hash of settings.gradle.kts + build.gradle.kts>",
+  "project_hash": "<content hash of scanned code and build files>",
   "patterns": {
     "di_framework": { "detected": "hilt", "confidence": 0.95, "evidence": ["app/build.gradle.kts:hilt-android"] },
     "state_management": { "detected": "stateflow", "confidence": 0.85, "evidence": ["ViewModel uses StateFlow"] },
@@ -281,18 +295,25 @@ fi
 
 ### Freshness Rules
 
-- Cache is valid if `project_hash` matches current build files AND `timestamp` is <24 hours old
-- Any change to `settings.gradle.kts` or root `build.gradle.kts` invalidates the cache (project structure changed)
+- Cache is valid if `project_hash` matches the current content hash AND `timestamp` is <24 hours old
+- Any change to a scanned source or layout file, or to a build file at any depth, invalidates the cache (a code change can move a pattern count; a build change can move the structure)
 - An explicit user choice overrides a cached value — record it with `confidence: 1.0`
 - To force re-detection: delete the cache file or pass `--fresh` to the check command
+- The detected value of `testing_assertions` is `assertthat` (it was `truth` in earlier caches); the key name is unchanged
 
 ### Computing `project_hash`
 
 ```bash
-cat settings.gradle.kts build.gradle.kts 2>/dev/null | shasum -a 256 | cut -d' ' -f1
+python3 skills/android-conventions/scripts/detect-patterns.py --hash <project-dir>
+# project_hash=<64 hex chars>   (or project_hash=NO_PROJECT_FILES)
 ```
 
-Only the root-level `settings.gradle.kts` and `build.gradle.kts` are included. Module-level build files are excluded — they change frequently without affecting which frameworks are in use.
+The hash is the SHA-256 of UTF-8 lines `"<relpath>\t<sha256 of the file bytes>\n"`, sorted by relpath (POSIX `/` separators), over:
+
+- every `.kt`, `.java` and `.xml` file the sweeps read, after the prune rules (`build`, `generated`, `.gradle`, `.git`, `.idea`, `.artifacts`, `node_modules`; symlinks skipped)
+- every build file at any depth that is not pruned: `settings.gradle(.kts)`, `build.gradle(.kts)`, any `*.versions.toml` (including `gradle/libs.versions.toml`) and `gradle.properties`
+
+With no such file the value is the literal `NO_PROJECT_FILES`. Projects whose Gradle files live in a subfolder hash correctly. `preflight.py` imports the same function, so its `== Project hash ==` value and `--hash` always agree.
 
 The cache path is a stable contract: other tools read `.artifacts/aet/cache/detected-patterns.json`. Don't rename it or change existing keys.
 

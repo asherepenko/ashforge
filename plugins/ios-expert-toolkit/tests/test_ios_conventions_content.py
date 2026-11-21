@@ -110,7 +110,7 @@ def test_pattern_agreement_negative_control():
 
 def test_skill_architecture_patterns_match_reference_ids():
     body = section(SKILL.read_text(), "Sweeps")
-    assert "@Reducer" in body and reference_patterns()["TCA"] == "@Reducer"
+    assert "@Reducer" in body and reference_patterns()["TCA"].startswith("@Reducer")
     assert "@Observable" in body and "ObservableObject" in body
 
 

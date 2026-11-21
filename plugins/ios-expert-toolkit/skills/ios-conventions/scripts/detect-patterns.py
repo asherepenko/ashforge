@@ -2,6 +2,7 @@
 """Count iOS pattern usage per category, apply the 80/20 matrix and the architecture verdict.
 
 Usage: detect-patterns.py [--write-cache] <project-dir> [category ...]
+       detect-patterns.py --hash <project-dir>
 Categories: architecture, di, testing, persistence, concurrency, navigation, version
 (default: all). Exit 2 on a usage error or a missing directory.
 
@@ -11,7 +12,8 @@ architecture patterns are POSIX ERE and the other sweeps are rg regexes, written
 as in the reference; `[[:space:]]` is translated to `\\s` when compiled.
 
 A count is the number of Swift files with at least one matching line (a file counts
-once). Every Swift sweep skips Pods, Carthage, .build, SourcePackages and any path
+once). Matching runs on code only: comments and the contents of string literals are
+blanked first (line structure kept), so `// @Reducer` and `"Factory"` never count. Every Swift sweep skips Pods, Carthage, .build, SourcePackages and any path
 component matching *Preview*; all but the testing sweeps also skip any *Tests path
 component. Directories pruned from everything: DerivedData, .git, .artifacts, node_modules.
 
@@ -26,9 +28,13 @@ ContentView.swift), TCA when TCA files are >= 80% of TCA + MVVM + UIKit, MVVM wh
 MVVM + UIKit files are >= 80%, MIXED otherwise. The version section prints
 key=value facts, no verdict.
 
-With --write-cache the architecture verdict and the dominant candidate of each
-decision are written to .artifacts/iet/cache/detected-patterns.json under the project
-directory.
+With --write-cache the architecture verdict, the dominant candidate of each
+decision and the version facts are written to .artifacts/iet/cache/detected-patterns.json
+under the project directory, keyed by project_hash: sha256 over the lines
+"<relpath>\t<sha256 of file bytes>\n", sorted by relpath, for every .swift file after
+pruning plus every Package.swift, Package.resolved, *.xcodeproj/project.pbxproj and
+*.xcconfig at any depth (NO_PROJECT_FILES when there are none). --hash prints only
+`project_hash=<hex>`; preflight.py imports project_hash from this file.
 """
 
 import argparse
@@ -49,10 +55,24 @@ Decision = namedtuple("Decision", "key candidates")
 MATCH_PERCENT = 80
 CONFLICT_PERCENT = 50
 
-PAT_TCA = "@Reducer"
-PAT_MVVM_OBSERVABLE = "@Observable([^A-Za-z]|$)"
-PAT_MVVM_OBJECT = "class[^{]*:[^{]*ObservableObject"
-PAT_UIKIT = "class[[:space:]]+[A-Za-z0-9_]+[[:space:]]*:[[:space:]]*UI[A-Za-z]*ViewController"
+PAT_TCA = "@Reducer([^A-Za-z0-9_]|$)"
+PAT_MVVM_OBSERVABLE = "@Observable([^A-Za-z0-9_]|$)"
+PAT_MVVM_OBJECT = "(^|[^A-Za-z0-9_])class[[:space:]]+[A-Za-z0-9_]+[[:space:]]*(<[^{]*>)?[[:space:]]*:([^{]*[^A-Za-z0-9_])?ObservableObject([^A-Za-z0-9_]|$)"
+PAT_UIKIT = "(^|[^A-Za-z0-9_])class[[:space:]]+[A-Za-z0-9_]+[[:space:]]*:[[:space:]]*UI[A-Za-z]*ViewController([^A-Za-z0-9_]|$)"
+
+PAT_DEPENDENCY = r"@Dependency\b|(^|[^A-Za-z0-9_])(Test)?DependencyKey([^A-Za-z0-9_]|$)"
+PAT_FACTORY = (
+    "Factory([^a-z]|$)|func make[A-Z][A-Za-z]*"
+    "(ViewModel|Service|Client|Repository|Manager|Provider|UseCase|Interactor|Presenter)\\("
+)
+PAT_SWIFT_TESTING = "import Testing([^A-Za-z0-9_]|$)"
+PAT_XCTEST = "XCTestCase([^A-Za-z0-9_]|$)"
+PAT_NAV_STACK = r"(^|[^A-Za-z0-9_])NavigationStack(Store)?([^A-Za-z0-9_]|$)|\.navigationDestination\("
+PAT_COORDINATOR = (
+    "(class|struct|actor)[[:space:]]+[A-Za-z0-9_]+Coordinator([^A-Za-z0-9_]|$)"
+    "|protocol[[:space:]]+[A-Za-z0-9_]*Coordinator([^A-Za-z0-9_]|$)"
+    "|UINavigationController([^A-Za-z0-9_]|$)"
+)
 
 SETTINGS_PATHS = ("Package.swift", "*.xcodeproj/project.pbxproj")
 
@@ -64,13 +84,13 @@ SWEEPS = {
         Grep("uikit", PAT_UIKIT),
     ),
     "di": (
-        Grep("tca_dependency", r"@Dependency\b|DependencyKey"),
+        Grep("tca_dependency", PAT_DEPENDENCY),
         Grep("singleton", r"static let shared\b"),
-        Grep("factory", r"Factory|func make[A-Z][A-Za-z]*\("),
+        Grep("factory", PAT_FACTORY),
     ),
     "testing": (
-        Grep("swift_testing", "import Testing", True),
-        Grep("xctest", "XCTestCase", True),
+        Grep("swift_testing", PAT_SWIFT_TESTING, True),
+        Grep("xctest", PAT_XCTEST, True),
     ),
     "persistence": (
         Grep("swiftdata", r"@Model\b"),
@@ -81,8 +101,8 @@ SWEEPS = {
         Grep("main_actor", "@MainActor"),
     ),
     "navigation": (
-        Grep("navigation_stack", "NavigationStack|navigationDestination"),
-        Grep("coordinator", "Coordinator|UINavigationController"),
+        Grep("navigation_stack", PAT_NAV_STACK),
+        Grep("coordinator", PAT_COORDINATOR),
     ),
     "version": (),
 }
@@ -124,16 +144,81 @@ def compile_pattern(pattern: str) -> "re.Pattern[str]":
     return re.compile(pattern.replace("[[:space:]]", r"\s"))
 
 
-def project_hash(root: Path) -> str:
-    files = []
-    if (root / "Package.swift").is_file():
-        files.append(root / "Package.swift")
-    files += sorted(p for p in root.glob("*.xcodeproj/project.pbxproj") if p.is_file())
-    if not files:
+def strip_code(text: str) -> str:
+    """Swift source with comments removed and string-literal contents emptied; newlines kept."""
+    out, i, n = [], 0, len(text)
+    while i < n:
+        two = text[i : i + 2]
+        if two == "//":
+            while i < n and text[i] != "\n":
+                i += 1
+        elif two == "/*":
+            depth, i = 1, i + 2
+            while i < n and depth:
+                if text.startswith("/*", i):
+                    depth, i = depth + 1, i + 2
+                elif text.startswith("*/", i):
+                    depth, i = depth - 1, i + 2
+                else:
+                    out.append("\n" if text[i] == "\n" else "")
+                    i += 1
+        elif text[i] in '#"':
+            j = i
+            while j < n and text[j] == "#":
+                j += 1
+            if j >= n or text[j] != '"':
+                out.append(text[i])
+                i += 1
+                continue
+            hashes = text[i:j]
+            multi = text.startswith('"""', j)
+            quote = '"""' if multi else '"'
+            out.append(quote)
+            i = j + len(quote)
+            closer = quote + hashes
+            while i < n and not text.startswith(closer, i):
+                if text[i] == "\\" and i + 1 < n and text[i + 1 : i + 1 + len(hashes)] == hashes:
+                    i += 1 + len(hashes)
+                if i < n and text[i] == "\n":
+                    if not multi:
+                        break
+                    out.append("\n")
+                i += 1
+            if text.startswith(closer, i):
+                i += len(closer)
+            out.append(quote)
+        else:
+            out.append(text[i])
+            i += 1
+    return "".join(out)
+
+
+def is_project_file(rel: str) -> bool:
+    parts = rel.split("/")
+    name = parts[-1]
+    return (
+        name in ("Package.swift", "Package.resolved")
+        or name.endswith(".xcconfig")
+        or (name == "project.pbxproj" and len(parts) > 1 and parts[-2].endswith(".xcodeproj"))
+    )
+
+
+def project_hash(root: Path, files: list = None) -> str:
+    """sha256 over sorted `<relpath>\\t<sha256 of bytes>\\n` lines of every scanned and project file."""
+    root = Path(root)
+    rows = []
+    for rel in files if files is not None else list_files(root):
+        if rel.endswith(".swift") or is_project_file(rel):
+            try:
+                content = (root / rel).read_bytes()
+            except OSError:
+                continue
+            rows.append((rel, hashlib.sha256(content).hexdigest()))
+    if not rows:
         return "NO_PROJECT_FILES"
     digest = hashlib.sha256()
-    for path in files:
-        digest.update(path.read_bytes())
+    for rel, sha in sorted(rows):
+        digest.update(f"{rel}\t{sha}\n".encode("utf-8", "surrogateescape"))
     return digest.hexdigest()
 
 
@@ -169,6 +254,14 @@ class Scanner:
         self.files = list_files(root)
         self.swift = [f for f in self.files if f.endswith(".swift")]
         self._text = {}
+        self._code = {}
+
+    def code(self, rel: str) -> str:
+        """Text the sweeps match against: Swift files with comments and strings blanked, others raw."""
+        if rel not in self._code:
+            text = self.text(rel)
+            self._code[rel] = strip_code(text) if rel.endswith(".swift") else text
+        return self._code[rel]
 
     def text(self, rel: str) -> str:
         if rel not in self._text:
@@ -179,7 +272,7 @@ class Scanner:
         return self._text[rel]
 
     def lines(self, rel: str) -> list:
-        return self.text(rel).splitlines()
+        return self.code(rel).splitlines()
 
     def matches(self, sweep) -> list:
         include = compile_pattern(sweep.pattern)
@@ -206,8 +299,24 @@ class Scanner:
             "tca_version": sorted(self._tca_versions(resolved)),
             "deployment_target": sorted({v for f in pbx for v in DEPLOY.findall(self.text(f))}),
             "swift_version": sorted({v for f in pbx for v in SWIFT_VERSION.findall(self.text(f))}),
-            "swift_language_modes": sorted({v for f in manifests for v in LANG_MODES.findall(self.text(f))}),
+            "swift_language_modes": sorted({v for f in manifests for v in LANG_MODES.findall(self.code(f))}),
         }
+
+    def version_sources(self) -> list:
+        """`path:kind` for each file a version fact came from, sorted."""
+        sources = set()
+        for rel in self.files:
+            name = rel.rsplit("/", 1)[-1]
+            if rel.endswith(".pbxproj"):
+                if DEPLOY.search(self.text(rel)):
+                    sources.add(f"{rel}:deployment_target")
+                if SWIFT_VERSION.search(self.text(rel)):
+                    sources.add(f"{rel}:swift_version")
+            elif name == "Package.swift" and LANG_MODES.search(self.code(rel)):
+                sources.add(f"{rel}:swift_language_modes")
+            elif name == "Package.resolved" and self._tca_versions([rel]):
+                sources.add(f"{rel}:tca_version")
+        return sorted(sources)
 
     def _tca_versions(self, resolved: list) -> set:
         versions = set()
@@ -299,10 +408,20 @@ def report_architecture(scanner: Scanner, found: dict, patterns: dict) -> list:
     return out
 
 
-def report_version(scanner: Scanner) -> list:
+def report_version(scanner: Scanner, patterns: dict) -> list:
     out = ["== version =="]
-    for key, values in scanner.version_facts().items():
+    facts = scanner.version_facts()
+    for key, values in facts.items():
         out.append(f"{key}={', '.join(values) if values else 'none'}")
+    joined = {key: ",".join(values) if values else "none" for key, values in facts.items()}
+    patterns["version"] = {
+        "detected": (
+            f"tca={joined['tca_version']};deployment={joined['deployment_target']};"
+            f"swift={joined['swift_version']};modes={joined['swift_language_modes']}"
+        ),
+        "confidence": 1.0,
+        "evidence": scanner.version_sources()[:EVIDENCE_LIMIT],
+    }
     return out
 
 
@@ -328,9 +447,8 @@ def report_category(category: str, found: dict, patterns: dict) -> list:
     return out
 
 
-def write_cache(root: Path, patterns: dict) -> None:
+def write_cache(root: Path, patterns: dict, digest: str) -> None:
     path = root / CACHE_PATH
-    digest = project_hash(root)
     merged = {}
     try:
         old = json.loads(path.read_text(encoding="utf-8"))
@@ -354,6 +472,7 @@ def main(argv: list) -> int:
     parser = argparse.ArgumentParser(prog=PROG, description="Count iOS patterns per category.")
     parser.add_argument("project_dir")
     parser.add_argument("categories", nargs="*", metavar="category", help="|".join(SWEEPS) + "|all")
+    parser.add_argument("--hash", action="store_true", help="print only project_hash=<hex> and exit")
     parser.add_argument("--write-cache", action="store_true", help="write .artifacts/iet/cache/detected-patterns.json")
     args = parser.parse_intermixed_args(argv)
 
@@ -365,13 +484,18 @@ def main(argv: list) -> int:
         print(f"{PROG}: {args.project_dir}: No such directory", file=sys.stderr)
         return 2
 
+    if args.hash:
+        print(f"project_hash={project_hash(root)}")
+        return 0
+
     wanted = set(args.categories)
     categories = [c for c in SWEEPS if not wanted or "all" in wanted or c in wanted]
     scanner = Scanner(root)
+    digest = project_hash(root, scanner.files)
     out = [
         "== project ==",
         f"dir={args.project_dir}",
-        f"project_hash={project_hash(root)}",
+        f"project_hash={digest}",
         f"files_scanned={len(scanner.swift)}",
     ]
     patterns = {}
@@ -380,12 +504,12 @@ def main(argv: list) -> int:
         if category == "architecture":
             out += report_architecture(scanner, found, patterns)
         elif category == "version":
-            out += report_version(scanner)
+            out += report_version(scanner, patterns)
         else:
             out += report_category(category, found, patterns)
     print("\n".join(out))
     if args.write_cache:
-        write_cache(root, patterns)
+        write_cache(root, patterns, digest)
     return 0
 
 

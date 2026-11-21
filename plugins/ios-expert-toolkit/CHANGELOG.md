@@ -4,6 +4,15 @@ All notable changes to the iOS Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for removed or renamed skills and agents, minor for new ones, patch for docs and reference fixes.
 
+## [1.1.5] - 2026-11-21
+
+### Fixed
+
+- Pattern audit: Coordinator, factory, `UIViewController`, `@Reducer`, `ObservableObject`, Testing/XCTest and navigation sweeps no longer match Representable coordinators, `makeUIView`/`makeBody`, look-alike type names or comments.
+- `project_hash` is now content-based and identical in both toolkits: sha256 over sorted `<path>\t<sha256>` lines for every scanned source file plus every build file at any depth (empty → `NO_PROJECT_FILES`). Code or build-file edits anywhere, including subfolder projects, refresh the cache. `detect-patterns.py --hash` prints it; `preflight.py` imports the same function.
+- Sweeps ignore matches inside comments and string literals (`strip_code`), except sweeps that target string contents.
+- The cache gains a `version` entry (TCA, deployment target, Swift), safe now that `Package.resolved` is in the key.
+
 ## [1.1.4] - 2026-11-21
 
 ### Changed

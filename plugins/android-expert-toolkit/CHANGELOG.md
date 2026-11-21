@@ -4,6 +4,15 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.6.3] - 2026-11-21
+
+### Fixed
+
+- Miscounting patterns: Hilt no longer matches bare `@Inject`; Dagger is `@Component`/`@Subcomponent` and yields to Hilt; MockK needs `every {`/`verify {`/`mockk<`/`@MockK` and wins over Mockito; Mockito's `@Mock` no longer matches `@MockK`; ViewModel counts class declarations, not `hiltViewModel()` calls.
+- `testing_assertions` reports `assertthat` instead of `truth` (AssertJ and Hamcrest share `assertThat`).
+- `project_hash` is now content-based and identical in both toolkits: sha256 over sorted `<path>\t<sha256>` lines for every scanned source file plus every build file at any depth (empty → `NO_PROJECT_FILES`). Code or build-file edits anywhere, including subfolder projects, refresh the cache. `detect-patterns.py --hash` prints it; `preflight.py` imports the same function.
+- Sweeps ignore matches inside comments and string literals (`strip_code`), except sweeps that target string contents.
+
 ## [4.6.2] - 2026-11-21
 
 ### Added

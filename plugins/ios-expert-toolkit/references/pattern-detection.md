@@ -6,16 +6,16 @@ Read this before deciding whether new iOS code should match the codebase's exist
 
 ## Architecture sweep (counts files)
 
-Count files, not matches. Exclude `Pods/`, `Carthage/`, `.build/`, `SourcePackages/`, any `*Tests` directory, and any `*Preview*` path.
+Count files, not matches. Match code only: the script blanks comments and the contents of string literals first, so `// @Reducer` and `"Factory"` never count (the `rg` commands below do not, so check their hits by eye). Exclude `Pods/`, `Carthage/`, `.build/`, `SourcePackages/`, any `*Tests` directory, and any `*Preview*` path.
 
 | Id | Meaning | Pattern (ERE) |
 |----|---------|---------------|
-| TCA | File declares a reducer | `@Reducer` |
-| MVVM_OBSERVABLE | File has an `@Observable` class (view state). `@ObservableState` is TCA and does not match | `@Observable([^A-Za-z]\|$)` |
-| MVVM_OBJECT | File has a class conforming to `ObservableObject` | `class[^{]*:[^{]*ObservableObject` |
-| UIKIT | File subclasses a `UIViewController` | `class[[:space:]]+[A-Za-z0-9_]+[[:space:]]*:[[:space:]]*UI[A-Za-z]*ViewController` |
+| TCA | File declares a reducer (`@ReducerBuilder` does not match) | `@Reducer([^A-Za-z0-9_]\|$)` |
+| MVVM_OBSERVABLE | File has an `@Observable` class (view state). `@ObservableState` is TCA and does not match | `@Observable([^A-Za-z0-9_]\|$)` |
+| MVVM_OBJECT | File declares a class conforming to `ObservableObject`. A generic constraint (`Box<T: ObservableObject>`), `ObservableObjectPublisher` and `class func` do not match | `(^\|[^A-Za-z0-9_])class[[:space:]]+[A-Za-z0-9_]+[[:space:]]*(<[^{]*>)?[[:space:]]*:([^{]*[^A-Za-z0-9_])?ObservableObject([^A-Za-z0-9_]\|$)` |
+| UIKIT | File subclasses a `UIViewController`. `UIViewControllerRepresentable` and `UIViewControllerTransitioningDelegate` do not match | `(^\|[^A-Za-z0-9_])class[[:space:]]+[A-Za-z0-9_]+[[:space:]]*:[[:space:]]*UI[A-Za-z]*ViewController([^A-Za-z0-9_]\|$)` |
 
-The `\|` in the MVVM_OBSERVABLE row is table escaping; the real pattern is `@Observable([^A-Za-z]|$)`.
+The `\|` in these rows is table escaping; the real pattern is, for example, `@Reducer([^A-Za-z0-9_]|$)`.
 
 MVVM = files matching MVVM_OBSERVABLE or MVVM_OBJECT (a file counts once). A class need not be named `*Model` or `*ViewModel`.
 
@@ -44,19 +44,40 @@ The 80% test is integer math (`TCA*10 >= 8*total`), so exactly 80% counts as dom
 
 Run with `rg` from the project root, with the same exclusions as above unless noted. `detect-patterns.py` runs the same patterns over `.swift` files.
 
+### Audit: what each sweep can miscount
+
+Patterns match single lines of code (comments and strings blanked). Risk is a match that is not the framework the sweep names.
+
+| Sweep | Risk before | Handling |
+|-------|-------------|----------|
+| `@Reducer` | comments and strings; `@ReducerBuilder` | fixed: code only, word boundary |
+| `@Observable` | comments; `@Observable2`-style suffixes | fixed: code only, full word boundary. `@ObservableState` already excluded |
+| `ObservableObject` class | `Box<T: ObservableObject>: NSObject`, `class func f(x: ObservableObject)`, `ObservableObjectPublisher`, comments | fixed: class name, optional generics, then conformance after the colon |
+| `UIViewController` subclass | `UIViewControllerRepresentable`, `...TransitioningDelegate`, comments | fixed: end boundary |
+| `@Dependency` / `DependencyKey` | comments; `...DependencyKey` suffix words | fixed: word boundary, `TestDependencyKey` allowed. `@DependencyClient` alone does not count |
+| `static let shared` | comments | fixed by code-only matching. `static var shared` is not counted |
+| Factories | `makeUIView`, `makeCoordinator`, `makeBody`, `makeIterator` (SwiftUI and stdlib requirements); `Factory` inside other words | fixed: `make<Name><Suffix>(` only for DI-style suffixes; `Factory` ends a camel word |
+| `import Testing` | `import TestingSupport`, comments | fixed: word boundary |
+| `XCTestCase` | `XCTestCaseEntry`, comments | fixed: word boundary. UI-test targets are XCTest by necessity and still count |
+| `@Model` / `NSManagedObject` | `@ModelActor` already excluded by `\b`; comments | fixed by code-only matching. `NSManagedObject` counts any Core Data type use (contexts, IDs), by design |
+| `NavigationStack` / `navigationDestination` | a property named `navigationDestination` in coordinator code; wrapper types such as `AppNavigationStack` | fixed: left word boundary, `.navigationDestination(` call only |
+| Coordinators | `Coordinator` class nested in every `UIViewRepresentable`, `makeCoordinator`, `NSPersistentStoreCoordinator`, `UINavigationControllerDelegate` (image pickers) | fixed: declarations named `<Name>Coordinator`, `protocol Coordinator`, `UINavigationController` as a whole word. A class named exactly `Coordinator` and representable coordinators with a prefixed name (`MapCoordinator`) stay ambiguous |
+| `@MainActor` | comments | fixed by code-only matching |
+| `swiftLanguageModes` / `SWIFT_VERSION` | commented-out manifest lines. Only root-level `Package.swift` and `*.xcodeproj` are searched | comments fixed; root-only scope kept |
+
 ### Dependency injection
 
 ```bash
-rg -l '@Dependency\b|DependencyKey' --glob '*.swift'          # TCA dependencies
+rg -l '@Dependency\b|(^|[^A-Za-z0-9_])(Test)?DependencyKey([^A-Za-z0-9_]|$)' --glob '*.swift'          # TCA dependencies
 rg -l 'static let shared\b' --glob '*.swift'                   # singletons
-rg -l 'Factory|func make[A-Z][A-Za-z]*\(' --glob '*.swift'     # factories
+rg -l 'Factory([^a-z]|$)|func make[A-Z][A-Za-z]*(ViewModel|Service|Client|Repository|Manager|Provider|UseCase|Interactor|Presenter)\(' --glob '*.swift'     # factories
 ```
 
 ### Tests
 
 ```bash
-rg -l 'import Testing' --glob '*.swift'      # Swift Testing
-rg -l 'XCTestCase' --glob '*.swift'          # XCTest
+rg -l 'import Testing([^A-Za-z0-9_]|$)' --glob '*.swift'      # Swift Testing
+rg -l 'XCTestCase([^A-Za-z0-9_]|$)' --glob '*.swift'          # XCTest
 ```
 
 This sweep scans test directories on purpose, so skip the `*Tests` exclusion.
@@ -80,8 +101,8 @@ Swift 6 language mode means strict concurrency errors; match it in new code. Bel
 ### Navigation
 
 ```bash
-rg -l 'NavigationStack|navigationDestination' --glob '*.swift'
-rg -l 'Coordinator|UINavigationController' --glob '*.swift'
+rg -l '(^|[^A-Za-z0-9_])NavigationStack(Store)?([^A-Za-z0-9_]|$)|\.navigationDestination\(' --glob '*.swift'
+rg -l '(class|struct|actor)[[:space:]]+[A-Za-z0-9_]+Coordinator([^A-Za-z0-9_]|$)|protocol[[:space:]]+[A-Za-z0-9_]*Coordinator([^A-Za-z0-9_]|$)|UINavigationController([^A-Za-z0-9_]|$)' --glob '*.swift'
 ```
 
 ## Decision matrix (80/20)
@@ -118,26 +139,32 @@ Package.resolved may live under `*.xcodeproj/project.xcworkspace/xcshareddata/sw
 ```json
 {
   "timestamp": "2026-11-21T17:00:00Z",
-  "project_hash": "<sha256 of Package.swift + project.pbxproj files>",
+  "project_hash": "<sha256 over path + content-hash lines, see Computing project_hash>",
   "patterns": {
     "architecture": { "detected": "TCA", "confidence": 0.9, "evidence": ["Sources/Features/CounterFeature.swift:tca"] },
     "di_style": { "detected": "tca_dependency", "confidence": 0.75, "evidence": ["Sources/Features/FeedFeature.swift:tca_dependency"] },
-    "testing_framework": { "detected": "swift_testing", "confidence": 1.0, "evidence": ["Tests/CounterTests.swift:swift_testing"] }
+    "testing_framework": { "detected": "swift_testing", "confidence": 1.0, "evidence": ["Tests/CounterTests.swift:swift_testing"] },
+    "version": { "detected": "tca=1.17.0;deployment=17.0;swift=6.0;modes=[.v6]", "confidence": 1.0, "evidence": ["Package.resolved:tca_version", "App.xcodeproj/project.pbxproj:deployment_target"] }
   }
 }
 ```
 
-Keys: `architecture`, `di_style`, `testing_framework`, `persistence_framework`, `navigation_style`. For `architecture`, `detected` is the verdict (`NEW`, `TCA`, `MVVM` or `MIXED`) and `confidence` is the share of the side that decided it (`NEW` is 1.0; `MIXED` is the larger side's share, 0.0 with no signal). For the other keys, `detected` is the dominant pattern id (or `none`) and `confidence` its share. `evidence` lists up to three `path:pattern` entries. `version` and `concurrency` facts are not cached; read them from `preflight.py`.
+Keys: `architecture`, `di_style`, `testing_framework`, `persistence_framework`, `navigation_style`, `version`. For `architecture`, `detected` is the verdict (`NEW`, `TCA`, `MVVM` or `MIXED`) and `confidence` is the share of the side that decided it (`NEW` is 1.0; `MIXED` is the larger side's share, 0.0 with no signal). For the other keys, `detected` is the dominant pattern id (or `none`) and `confidence` its share. `evidence` lists up to three `path:pattern` entries. `version` holds the version facts as `tca=<v>;deployment=<v>;swift=<v>;modes=<v>` (`none` for a missing fact, several values joined by `,`) with confidence 1.0; its evidence entries are `path:kind` for the files the facts came from (`tca_version`, `deployment_target`, `swift_version`, `swift_language_modes`, the keys of the script's `version` block). It is cacheable because `Package.resolved`, every `Package.swift` and every `project.pbxproj` are part of `project_hash`. The `concurrency` counts are not cached; read them from `preflight.py` or the script.
 
 ### Freshness Rules
 
-- The cache is valid while `project_hash` equals the current hash. A run for a subset of categories keeps the other entries while the hash is unchanged and drops them when it changes.
+- The cache is valid while `project_hash` equals the current hash (see below; every scanned file and project file counts). A run for a subset of categories keeps the other entries while the hash is unchanged and drops them when it changes.
 - An explicit user choice overrides a cached value; record it with `confidence: 1.0`.
 - To force re-detection, delete the cache file or ask for `--fresh`.
 
 ### Computing `project_hash`
 
-sha256 over the bytes of the root `Package.swift`, then each root-level `*.xcodeproj/project.pbxproj` in name order; `NO_PROJECT_FILES` when there are none. Only root-level files count; package manifests in subfolders change often without changing which patterns the app uses. `preflight.py` prints the same value under `== Project hash ==`.
+sha256 over UTF-8 lines `<relpath>\t<sha256 of the file bytes>\n`, sorted by `relpath` (POSIX `/`, plain string order), one per file in this set:
+
+- every `.swift` file the scan reads (all of them after pruning `Pods`, `Carthage`, `.build`, `SourcePackages`, `DerivedData`, `.git`, `.artifacts`, `node_modules`; symlinks skipped);
+- every project file at any depth that is not pruned: `Package.swift`, `Package.resolved`, `*.xcodeproj/project.pbxproj`, `*.xcconfig`.
+
+`NO_PROJECT_FILES` when the set is empty. The key follows the content, so editing a source file, the resolved packages or a project nested in a subfolder invalidates the cache; touching a pruned directory does not. `detect-patterns.py --hash <project-dir>` prints only `project_hash=<hex>`; `preflight.py` imports that same function and prints the value under `== Project hash ==`.
 
 The cache path is a stable contract: other tools read `.artifacts/iet/cache/detected-patterns.json`. Don't rename it or change existing keys.
 

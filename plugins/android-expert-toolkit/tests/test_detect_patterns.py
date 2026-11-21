@@ -106,8 +106,8 @@ def test_hilt_stateflow_app_testing_and_architecture():
     assert mocks["cands"] == {"mockito": (0, "0.0%"), "mockk": (0, "0.0%"), "test_doubles": (1, "100.0%")}
     assert (mocks["dominant"], mocks["verdict"]) == ("test_doubles", "match")
     asserts = report["testing"]["decisions"]["testing_assertions"]
-    assert asserts["cands"] == {"truth": (1, "100.0%"), "junit": (0, "0.0%")}
-    assert asserts["dominant"] == "truth"
+    assert asserts["cands"] == {"assertthat": (1, "100.0%"), "junit": (0, "0.0%")}
+    assert asserts["dominant"] == "assertthat"
     assert report["testing"]["counts"] == {"turbine": 1}
 
     ui = report["architecture"]["decisions"]["ui_framework"]
@@ -370,12 +370,21 @@ def read_cache(project: Path) -> dict:
     return json.loads((project / CACHE).read_text(encoding="utf-8"))
 
 
-def gradle_hash(project: Path) -> str:
-    digest = hashlib.sha256()
-    for name in ("settings.gradle.kts", "build.gradle.kts"):
-        if (project / name).is_file():
-            digest.update((project / name).read_bytes())
-    return digest.hexdigest()
+def expected_hash(project: Path) -> str:
+    """Independent restatement of the content-based key for the fixtures used here."""
+    keep = (".kt", ".java", ".xml")
+    names = {"settings.gradle", "settings.gradle.kts", "build.gradle", "build.gradle.kts", "gradle.properties"}
+    skip = {"build", "generated", ".gradle", ".git", ".idea", ".artifacts", "node_modules"}
+    lines = []
+    for path in project.rglob("*"):
+        rel = path.relative_to(project)
+        if not path.is_file() or path.is_symlink() or skip & set(rel.parts[:-1]):
+            continue
+        if path.suffix in keep or path.name in names or path.name.endswith(".versions.toml"):
+            lines.append(f"{rel.as_posix()}\t{hashlib.sha256(path.read_bytes()).hexdigest()}\n")
+    if not lines:
+        return "NO_PROJECT_FILES"
+    return hashlib.sha256("".join(sorted(lines)).encode("utf-8")).hexdigest()
 
 
 def test_no_cache_without_flag(tmp_path):
@@ -391,7 +400,7 @@ def test_write_cache_shape_and_keys(tmp_path):
     cache = read_cache(project)
     assert set(cache) == {"timestamp", "project_hash", "patterns"}
     assert re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ", cache["timestamp"])
-    assert cache["project_hash"] == gradle_hash(project)
+    assert cache["project_hash"] == expected_hash(project)
     patterns = cache["patterns"]
     assert {"di_framework", "state_management", "ui_framework"} <= set(patterns)
     for entry in patterns.values():
@@ -430,16 +439,9 @@ def test_cache_hash_matches_preflight(tmp_path):
     assert f"project_hash={read_cache(project)['project_hash']}" in run(project).stdout
 
 
-def test_cache_hash_without_gradle_files(tmp_path):
+def test_cache_hash_without_project_files(tmp_path):
     run(tmp_path, "--write-cache")
-    assert read_cache(tmp_path)["project_hash"] == "NO_GRADLE_FILES"
-
-
-def test_cache_hash_is_shasum_of_concatenated_files(tmp_path):
-    write(tmp_path / "settings.gradle.kts", "a\n")
-    write(tmp_path / "build.gradle.kts", "b\n")
-    run(tmp_path, "--write-cache")
-    assert read_cache(tmp_path)["project_hash"] == hashlib.sha256(b"a\nb\n").hexdigest()
+    assert read_cache(tmp_path)["project_hash"] == "NO_PROJECT_FILES"
 
 
 def test_cache_only_holds_requested_categories(tmp_path):
@@ -462,7 +464,7 @@ def test_cache_drops_old_entries_when_hash_changed(tmp_path):
     run(project, "state", "--write-cache")
     cache = read_cache(project)
     assert set(cache["patterns"]) == {"state_management"}
-    assert cache["project_hash"] == gradle_hash(project)
+    assert cache["project_hash"] == expected_hash(project)
 
 
 def test_cache_replaces_corrupt_file(tmp_path):
@@ -530,3 +532,247 @@ def test_script_is_executable_python3():
     assert os.access(SCRIPT, os.X_OK)
     assert SCRIPT.read_text(encoding="utf-8").startswith("#!/usr/bin/env python3\n")
     assert '"""' in SCRIPT.read_text(encoding="utf-8").split("\n", 2)[1]
+
+
+# ---- miscounting patterns ----
+
+
+def decision(project: str, category: str, key: str) -> dict:
+    return sweep(FIXTURES / project, category)[category]["decisions"][key]
+
+
+def test_dagger_only_app_is_dagger_not_hilt():
+    di = decision("dagger-only-app", "di", "di_framework")
+    assert di["cands"]["hilt"] == (0, "0.0%")
+    assert di["cands"]["dagger"] == (1, "100.0%")
+    assert (di["dominant"], di["verdict"]) == ("dagger", "match")
+
+
+def test_hilt_app_with_module_and_provides_has_no_dagger_files():
+    di = decision("hilt-modules-app", "di", "di_framework")
+    assert di["cands"]["dagger"] == (0, "0.0%")
+    assert di["cands"]["hilt"] == (2, "100.0%")
+    assert (di["dominant"], di["verdict"]) == ("hilt", "match")
+
+
+def test_file_with_hilt_markers_does_not_count_as_dagger(tmp_path):
+    write(tmp_path / "Both.kt", "@HiltAndroidApp\n@Component\n")
+    write(tmp_path / "Plain.kt", "@Subcomponent\n")
+    di = sweep(tmp_path, "di")["di"]["decisions"]["di_framework"]
+    assert di["cands"]["hilt"] == (1, "50.0%")
+    assert di["cands"]["dagger"] == (1, "50.0%")
+
+
+def test_mockk_ignores_everything_and_verify_in_prose():
+    mocks = decision("mockk-app", "testing", "testing_mocks")
+    assert mocks["cands"]["mockk"][0] == 2
+    assert mocks["cands"]["mockito"] == (0, "0.0%")
+    assert (mocks["dominant"], mocks["verdict"]) == ("mockk", "match")
+
+
+def test_mockk_annotation_file_is_not_mockito(tmp_path):
+    write(tmp_path / "A.kt", "@MockK\nlateinit var client: Client\n")
+    mocks = sweep(tmp_path, "testing")["testing"]["decisions"]["testing_mocks"]
+    assert mocks["cands"]["mockk"] == (1, "100.0%")
+    assert mocks["cands"]["mockito"] == (0, "0.0%")
+
+
+def test_mockk_file_calling_verify_with_parens_is_not_mockito(tmp_path):
+    write(tmp_path / "A.kt", "val m = mockk<Foo>()\nverify(exactly = 1) { m.go() }\n")
+    mocks = sweep(tmp_path, "testing")["testing"]["decisions"]["testing_mocks"]
+    assert mocks["cands"]["mockito"] == (0, "0.0%")
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "@Mock\nlateinit var repo: Repo",
+        "val r = mock(Repo::class.java)",
+        "val r = Mockito.mock(Repo::class.java)",
+        "verify(repo).load()",
+    ],
+)
+def test_mockito_markers_count(tmp_path, line):
+    write(tmp_path / "A.kt", line + "\n")
+    mocks = sweep(tmp_path, "testing")["testing"]["decisions"]["testing_mocks"]
+    assert mocks["cands"]["mockito"] == (1, "100.0%")
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "mockk<Foo>()",
+        "mockk()",
+        "@MockK lateinit var a: A",
+        "every { a.b() } returns 1",
+        "coEvery { a.b() } returns 1",
+        "verify { a.b() }",
+        "coVerify { a.b() }",
+    ],
+)
+def test_mockk_markers_count(tmp_path, line):
+    write(tmp_path / "A.kt", line + "\n")
+    mocks = sweep(tmp_path, "testing")["testing"]["decisions"]["testing_mocks"]
+    assert mocks["cands"]["mockk"] == (1, "100.0%")
+
+
+def test_assertthat_is_the_assertion_candidate_name(tmp_path):
+    write(tmp_path / "A.kt", "assertThat(x).isEqualTo(1)\n")
+    asserts = sweep(tmp_path, "testing")["testing"]["decisions"]["testing_assertions"]
+    assert list(asserts["cands"]) == ["assertthat", "junit"]
+    assert asserts["dominant"] == "assertthat"
+    assert run(tmp_path, "testing", "--write-cache").returncode == 0
+    assert read_cache(tmp_path)["patterns"]["testing_assertions"]["detected"] == "assertthat"
+
+
+def test_compose_screens_calling_hilt_view_model_are_not_view_models():
+    ui = sweep(FIXTURES / "compose-hiltviewmodel-app", "architecture")["architecture"]["decisions"]
+    assert ui["presentation"]["cands"]["viewmodel"] == (1, "100.0%")
+    assert ui["ui_framework"]["cands"]["compose"] == (2, "100.0%")
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "class A : ViewModel()",
+        "class A(app: Application) : AndroidViewModel(app)",
+        "public class A extends ViewModel {}",
+    ],
+)
+def test_view_model_declarations_count(tmp_path, line):
+    write(tmp_path / "A.kt", line + "\n")
+    cands = sweep(tmp_path, "architecture")["architecture"]["decisions"]["presentation"]["cands"]
+    assert cands["viewmodel"] == (1, "100.0%")
+
+
+# ---- content-based project hash ----
+
+
+def project_hash_of(project: Path) -> str:
+    result = run("--hash", project)
+    assert result.returncode == 0, result.stderr
+    line = result.stdout.strip()
+    assert re.fullmatch(r"project_hash=([0-9a-f]{64}|NO_PROJECT_FILES)", line), line
+    return line.split("=", 1)[1]
+
+
+def hash_project(tmp_path: Path) -> Path:
+    write(tmp_path / "settings.gradle.kts", 'rootProject.name = "x"\n')
+    write(tmp_path / "app/build.gradle.kts", "plugins {}\n")
+    write(tmp_path / "gradle/libs.versions.toml", '[versions]\nkotlin = "2.0"\n')
+    write(tmp_path / "app/src/main/A.kt", "class A\n")
+    write(tmp_path / "app/src/main/res/layout/main.xml", "<LinearLayout/>\n")
+    return tmp_path
+
+
+def test_hash_flag_prints_only_the_hash(tmp_path):
+    project = hash_project(tmp_path)
+    assert run("--hash", project).stdout == f"project_hash={expected_hash(project)}\n"
+
+
+def test_hash_matches_project_section_and_cache(tmp_path):
+    project = hash_project(tmp_path)
+    run(project, "--write-cache")
+    digest = project_hash_of(project)
+    assert f"project_hash={digest}" in run(project).stdout.splitlines()
+    assert read_cache(project)["project_hash"] == digest
+
+
+def test_hash_is_stable_across_runs(tmp_path):
+    project = hash_project(tmp_path)
+    assert project_hash_of(project) == project_hash_of(project)
+
+
+def test_hash_independent_of_creation_and_walk_order(tmp_path):
+    first = hash_project(tmp_path / "one")
+    second = tmp_path / "two"
+    write(second / "app/src/main/res/layout/main.xml", "<LinearLayout/>\n")
+    write(second / "app/src/main/A.kt", "class A\n")
+    write(second / "gradle/libs.versions.toml", '[versions]\nkotlin = "2.0"\n')
+    write(second / "app/build.gradle.kts", "plugins {}\n")
+    write(second / "settings.gradle.kts", 'rootProject.name = "x"\n')
+    assert project_hash_of(first) == project_hash_of(second)
+
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("detect_patterns_walk", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    real_walk = os.walk
+
+    def reversed_walk(top):
+        for current, dirs, names in real_walk(top):
+            yield current, list(reversed(dirs)), list(reversed(names))
+
+    module.os.walk = reversed_walk
+    try:
+        assert module.project_hash(first) == project_hash_of(first)
+    finally:
+        module.os.walk = real_walk
+
+
+@pytest.mark.parametrize(
+    "rel,text",
+    [
+        ("app/src/main/A.kt", "class A { val changed = 1 }\n"),
+        ("app/src/main/B.java", "class B {}\n"),
+        ("app/src/main/res/layout/main.xml", "<FrameLayout/>\n"),
+        ("app/build.gradle.kts", 'plugins { id("x") }\n'),
+        ("settings.gradle.kts", 'rootProject.name = "y"\n'),
+        ("gradle/libs.versions.toml", '[versions]\nkotlin = "2.1"\n'),
+        ("gradle/other.versions.toml", "[versions]\n"),
+        ("gradle.properties", "org.gradle.jvmargs=-Xmx2g\n"),
+        ("lib/build.gradle", "apply plugin: 'java'\n"),
+    ],
+)
+def test_hash_changes_when_scanned_or_build_file_changes(tmp_path, rel, text):
+    project = hash_project(tmp_path)
+    before = project_hash_of(project)
+    write(project / rel, text)
+    assert project_hash_of(project) != before
+
+
+@pytest.mark.parametrize(
+    "rel",
+    [
+        "app/build/Gen.kt",
+        "build/outputs/x.gradle.kts",
+        "app/build/generated/G.java",
+        ".gradle/g.properties",
+        ".artifacts/a.kt",
+        "node_modules/p/build.gradle",
+        "README.md",
+        "app/src/main/notes.txt",
+    ],
+)
+def test_hash_ignores_pruned_and_unscanned_files(tmp_path, rel):
+    project = hash_project(tmp_path)
+    before = project_hash_of(project)
+    write(project / rel, "changed\n")
+    assert project_hash_of(project) == before
+
+
+def test_hash_for_project_with_gradle_files_in_a_subfolder(tmp_path):
+    write(tmp_path / "sub/settings.gradle.kts", "x\n")
+    write(tmp_path / "sub/app/build.gradle.kts", "plugins {}\n")
+    before = project_hash_of(tmp_path)
+    assert re.fullmatch(r"[0-9a-f]{64}", before)
+    write(tmp_path / "sub/app/build.gradle.kts", 'plugins { id("x") }\n')
+    assert project_hash_of(tmp_path) != before
+
+
+def test_hash_includes_the_path_not_just_content(tmp_path):
+    write(tmp_path / "a/A.kt", "x\n")
+    one = project_hash_of(tmp_path)
+    (tmp_path / "a/A.kt").rename(tmp_path / "a/B.kt")
+    assert project_hash_of(tmp_path) != one
+
+
+def test_hash_with_no_project_files(tmp_path):
+    assert project_hash_of(tmp_path) == "NO_PROJECT_FILES"
+
+
+def test_hash_flag_missing_directory(tmp_path):
+    result = run("--hash", tmp_path / "nope")
+    assert result.returncode == 2
+    assert result.stdout == ""

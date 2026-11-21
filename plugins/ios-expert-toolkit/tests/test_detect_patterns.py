@@ -242,7 +242,7 @@ def di_project(tmp_path: Path, tca: int, singleton: int, factory: int = 0) -> Pa
     for i in range(singleton):
         write(tmp_path / f"S{i}.swift", "static let shared = S()\n")
     for i in range(factory):
-        write(tmp_path / f"F{i}.swift", "func makeThing() {}\n")
+        write(tmp_path / f"F{i}.swift", "func makeThingService() {}\n")
     return tmp_path
 
 
@@ -444,12 +444,31 @@ def read_cache(project: Path) -> dict:
     return json.loads((project / CACHE).read_text(encoding="utf-8"))
 
 
+PRUNED = {"Pods", "Carthage", ".build", "SourcePackages", "DerivedData", ".git", ".artifacts", "node_modules"}
+
+
 def project_files_hash(project: Path) -> str:
+    """Independent restatement of the documented key: sorted `relpath<TAB>sha256` lines."""
+    rows = []
+    for current, dirs, names in os.walk(project):
+        dirs[:] = [d for d in dirs if d not in PRUNED]
+        for name in names:
+            path = Path(current) / name
+            rel = path.relative_to(project).as_posix()
+            parent = path.parent.name
+            keyed = (
+                name.endswith(".swift")
+                or name in ("Package.swift", "Package.resolved")
+                or name.endswith(".xcconfig")
+                or (name == "project.pbxproj" and parent.endswith(".xcodeproj"))
+            )
+            if keyed:
+                rows.append((rel, hashlib.sha256(path.read_bytes()).hexdigest()))
+    if not rows:
+        return "NO_PROJECT_FILES"
     digest = hashlib.sha256()
-    files = [project / "Package.swift"] + sorted(project.glob("*.xcodeproj/project.pbxproj"))
-    for path in files:
-        if path.is_file():
-            digest.update(path.read_bytes())
+    for rel, sha in sorted(rows):
+        digest.update(f"{rel}\t{sha}\n".encode("utf-8"))
     return digest.hexdigest()
 
 
@@ -469,7 +488,7 @@ def test_write_cache_shape_and_keys(tmp_path):
     assert cache["project_hash"] == project_files_hash(project)
     patterns = cache["patterns"]
     assert set(patterns) == {
-        "architecture", "di_style", "testing_framework", "persistence_framework", "navigation_style",
+        "architecture", "di_style", "testing_framework", "persistence_framework", "navigation_style", "version",
     }
     for entry in patterns.values():
         assert set(entry) == {"detected", "confidence", "evidence"}
@@ -541,12 +560,18 @@ def test_cache_hash_without_project_files(tmp_path):
     assert read_cache(tmp_path)["project_hash"] == "NO_PROJECT_FILES"
 
 
-def test_cache_hash_is_sha256_of_package_then_pbxproj(tmp_path):
+def test_cache_hash_is_sha256_of_sorted_path_and_content_lines(tmp_path):
     write(tmp_path / "Package.swift", "a\n")
     write(tmp_path / "B.xcodeproj/project.pbxproj", "c\n")
     write(tmp_path / "A.xcodeproj/project.pbxproj", "b\n")
     run(tmp_path, "--write-cache")
-    assert read_cache(tmp_path)["project_hash"] == hashlib.sha256(b"a\nb\nc\n").hexdigest()
+    sha = lambda text: hashlib.sha256(text).hexdigest()
+    lines = (
+        f"A.xcodeproj/project.pbxproj\t{sha(b'b' + chr(10).encode())}\n"
+        f"B.xcodeproj/project.pbxproj\t{sha(b'c' + chr(10).encode())}\n"
+        f"Package.swift\t{sha(b'a' + chr(10).encode())}\n"
+    )
+    assert read_cache(tmp_path)["project_hash"] == hashlib.sha256(lines.encode()).hexdigest()
 
 
 def test_cache_only_holds_requested_categories(tmp_path):
@@ -555,10 +580,33 @@ def test_cache_only_holds_requested_categories(tmp_path):
     assert set(read_cache(project)["patterns"]) == {"di_style"}
 
 
-def test_version_and_concurrency_write_no_cache_entries(tmp_path):
+def test_concurrency_writes_no_cache_entry(tmp_path):
     project = copy_fixture("tca-full-app", tmp_path)
-    run(project, "version", "concurrency", "--write-cache")
+    run(project, "concurrency", "--write-cache")
     assert read_cache(project)["patterns"] == {}
+
+
+def test_version_cache_entry_carries_the_version_facts(tmp_path):
+    project = copy_fixture("tca-full-app", tmp_path)
+    run(project, "version", "--write-cache")
+    entry = read_cache(project)["patterns"]["version"]
+    assert set(entry) == {"detected", "confidence", "evidence"}
+    assert entry["detected"] == "tca=1.17.0;deployment=17.0;swift=6.0;modes=[.v6]"
+    assert entry["confidence"] == 1.0
+    assert 1 <= len(entry["evidence"]) <= 3
+    for item in entry["evidence"]:
+        rel = item.rsplit(":", 1)[0]
+        assert (project / rel).is_file(), item
+
+
+def test_version_cache_entry_without_facts(tmp_path):
+    run(tmp_path, "version", "--write-cache")
+    entry = read_cache(tmp_path)["patterns"]["version"]
+    assert entry == {
+        "detected": "tca=none;deployment=none;swift=none;modes=none",
+        "confidence": 1.0,
+        "evidence": [],
+    }
 
 
 def test_cache_merges_categories_while_hash_unchanged(tmp_path):

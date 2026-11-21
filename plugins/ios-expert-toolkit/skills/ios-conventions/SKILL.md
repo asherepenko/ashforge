@@ -21,8 +21,8 @@ python3 <this skill's folder>/scripts/preflight.py
 It is read-only and prints `NOT_FOUND` or `NONE` for anything missing. It reports: the project hash and any cached patterns, deployment targets (`IPHONEOS_DEPLOYMENT_TARGET`), `Package.swift` platforms, `swift-tools-version`, Swift language mode (`SWIFT_VERSION`, `swiftLanguageModes`), strict concurrency setting, TCA version from `Package.resolved`, all resolved packages, `import Testing` vs `import XCTest` file counts, and `@Observable` vs `ObservableObject` file counts. It skips `.build/`, `Pods/`, `Carthage/`, `SourcePackages/`, and `DerivedData/`.
 
 Use the output to:
-1. Check the cache: if `Project hash` equals the cached `project_hash` and the user did not ask for `--fresh`, use the cached `patterns` and skip to Report. The cache is [documented here](../../references/pattern-detection.md) (section *Pattern Detection Cache*); its path and keys are a stable contract read by other tools and agents.
-2. Answer the `version` area directly.
+1. Check the cache: if `Project hash` equals the cached `project_hash` and the user did not ask for `--fresh`, use the cached `patterns` and skip to Report. The hash covers every Swift file, `Package.swift`, `Package.resolved`, `project.pbxproj` and `*.xcconfig` at any depth, so any edit to them forces a re-run. The cache is [documented here](../../references/pattern-detection.md) (section *Pattern Detection Cache*); its path and keys are a stable contract read by other tools and agents.
+2. Answer the `version` area directly (the cache also holds a `version` entry).
 3. Pre-bias the `testing` and `concurrency` sweeps from the counts and settings.
 4. Read the `@Observable` and `ObservableObject` counts as a first hint for the architecture sweep. The verdict still comes from the architecture sweep below.
 
