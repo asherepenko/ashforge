@@ -1,0 +1,26 @@
+{
+  "skill_name": "ios-error-handling",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review error handling in ProfileRepository.swift — it uses try? everywhere and catch {} in a few places.",
+      "expected_output": "Findings on swallowed errors with domain-error fixes.",
+      "files": [],
+      "expectations": [
+        "Flags each try? and empty catch {} by line as hiding an error",
+        "Proposes a domain error enum for the repository layer instead of a raw Error",
+        "Rethrows or passes CancellationError through instead of turning it into a failure"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "How should I show an error message to the user when the network call in this view model fails?",
+      "expected_output": "A mapping from domain error to a localized user-facing string.",
+      "files": [],
+      "expectations": [
+        "Maps the error to a localized string from the error type, not a raw error description",
+        "Keeps cancellation out of the user-facing error path"
+      ]
+    }
+  ]
+}

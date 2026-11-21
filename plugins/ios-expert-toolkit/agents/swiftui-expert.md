@@ -1,6 +1,6 @@
 ---
 name: swiftui-expert
-description: "SwiftUI specialist: screens and components, state wiring, previews per state, accessibility, Dynamic Type, adaptive layout, animation and view performance. Reviews SwiftUI code with the swiftui-pro skill. Works from a plain brief (goal, acceptance criteria, files). Use for 'build the screen for X', 'make this view accessible', 'add previews', 'fix this layout on iPad', 'review my SwiftUI'. Not for reducer or data logic (ios-developer) or project files (xcode-build-engineer)."
+description: "SwiftUI specialist: screens and components, state wiring, previews per state, accessibility, Dynamic Type, adaptive layout, animation and view performance. Reviews SwiftUI code with /swiftui-pro. Works from a plain brief (goal, acceptance criteria, files). Use for 'build the screen for X', 'make this view accessible', 'add previews', 'fix this layout on iPad', 'review my SwiftUI'. Not for reducer or data logic (ios-developer) or project files (xcode-build-engineer)."
 tools: Read, Write, Edit, Bash, Glob, Grep, WebFetch, WebSearch
 model: sonnet
 color: orange

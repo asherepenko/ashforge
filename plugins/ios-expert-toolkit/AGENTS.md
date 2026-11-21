@@ -23,7 +23,7 @@ ios-expert-toolkit/
 │   └── xcode/                   # exported from Xcode, 9 skills listed in ios-skills.lock — do not edit
 ├── references/                  # topic references, each ≤ ~300 lines
 ├── scripts/
-│   └── sync-ios-skills.sh       # vendors community and Xcode skills (Phase 2.2)
+│   └── sync-ios-skills.py       # vendors community and Xcode skills (Phase 2.2)
 ├── ios-skills.lock              # sources, commits, skill lists
 ├── THIRD_PARTY_NOTICES.md       # licences for vendored content
 └── tests/
@@ -41,7 +41,7 @@ Skill names live in `ios-skills.lock`. Tests read them from there; don't hardcod
 
 ## Vendored skills
 
-`scripts/sync-ios-skills.sh` (added in Phase 2.2) fetches community skills at locked SHAs and exports the Xcode skills with `xcrun agent skills export`. Until it lands, `skills/community/` and `skills/xcode/` stay empty.
+`scripts/sync-ios-skills.py` (added in Phase 2.2) fetches community skills at locked SHAs and exports the Xcode skills with `xcrun agent skills export`. Until it lands, `skills/community/` and `skills/xcode/` stay empty.
 
 ## Xcode MCP
 

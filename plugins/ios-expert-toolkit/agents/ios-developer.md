@@ -24,7 +24,7 @@ Work from the caller's brief: **goal**, **acceptance criteria**, **files**, and 
 
 | Topic | Load |
 |-------|------|
-| Reducers, `@Dependency`, `@Shared` | `/tca` skill, [tca](../references/tca.md) |
+| Reducers, `@Dependency`, `@Shared` | `/tca`, [tca](../references/tca.md) |
 | View model and state shape | [swiftui](../references/swiftui.md) |
 | Repositories, persistence | [data-layer](../references/data-layer.md) |
 | SwiftData | `/swiftdata-pro` skill |

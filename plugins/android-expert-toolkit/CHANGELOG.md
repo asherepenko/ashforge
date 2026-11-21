@@ -4,6 +4,14 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.6.1] - 2026-11-21
+
+### Changed
+
+- `scripts/sync-android-skills.sh` is now `scripts/sync-android-skills.py` (Python, same CLI and output).
+- Own skills follow the /create-skill rules: descriptions at 400 characters or less, Codex labels at 64 or less, a `Done means` section, and `evals/evals.json` for each.
+- Skills, agents and references name skills as `/{name}`; `tests/test_skill_references.py` guards it.
+
 ## [4.6.0] - 2026-11-21
 
 ### Added

@@ -1,0 +1,38 @@
+{
+  "skill_name": "android-error-handling",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this repository: it does try { api.load() } catch (e: Exception) { return emptyList() } inside a suspend function.",
+      "expected_output": "A review that flags the swallowed cancellation and the null-as-failure result.",
+      "files": [],
+      "expectations": [
+        "Flags catch (e: Exception) around suspend code as swallowing CancellationException",
+        "Flags returning emptyList() to mean failure",
+        "Proposes a closed typed error such as DataError.Network and catching specific exception types"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The login screen shows `it.message ?: \"Unknown error\"` to users. Fix how errors reach the UI.",
+      "expected_output": "Error mapping from a typed error to string resources in presentation code.",
+      "files": [],
+      "expectations": [
+        "Replaces Throwable.message with a mapping to a string resource",
+        "Uses an exhaustive when over the error type with no else branch",
+        "Keeps UI state free of Throwable and stores retry as an action, not a lambda"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Design the error types for a new offline-sync feature.",
+      "expected_output": "A sealed error hierarchy per failure domain with conversion points per layer.",
+      "files": [],
+      "expectations": [
+        "Defines sealed interfaces or enums per failure domain",
+        "Converts exceptions in the data source or repository, not in upper layers",
+        "Detects and reuses the project's existing result type before proposing a new one"
+      ]
+    }
+  ]
+}

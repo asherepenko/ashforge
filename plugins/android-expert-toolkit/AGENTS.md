@@ -19,7 +19,7 @@ android-expert-toolkit/
 │       └── <official skill>/    # one directory per upstream skill
 ├── references/                  # topic references, each ≤ ~300 lines
 ├── scripts/
-│   ├── sync-android-skills.sh  # vendors the official skills at a pinned commit
+│   ├── sync-android-skills.py  # vendors the official skills at a pinned commit
 │   └── codex-agents-gen.py      # agents/*.md → codex-agents/*.toml
 ├── android-skills.lock         # upstream repo, commit, skill list
 ├── THIRD_PARTY_NOTICES.md       # Apache-2.0 attribution
@@ -38,7 +38,7 @@ android-expert-toolkit/
 
 ## Vendored official skills
 
-`scripts/sync-android-skills.sh [ref]` downloads android/skills at `ref` (default: the locked commit), replaces each listed skill directory under `skills/android/`, copies upstream `LICENSE.txt` into it, and rewrites `android-skills.lock`. `android-cli` is excluded on purpose: users often install their own and a same-named copy would shadow it. To add a skill, add it to `SKILLS` in the script, run it, list it in `THIRD_PARTY_NOTICES.md`, and route it in `skills/android-expert/SKILL.md`.
+`scripts/sync-android-skills.py [ref]` downloads android/skills at `ref` (default: the locked commit), replaces each listed skill directory under `skills/android/`, copies upstream `LICENSE.txt` into it, and rewrites `android-skills.lock`. `android-cli` is excluded on purpose: users often install their own and a same-named copy would shadow it. To add a skill, add it to `SKILLS` in the script, run it, list it in `THIRD_PARTY_NOTICES.md`, and route it in `skills/android-expert/SKILL.md`.
 
 ## Kotlin docs MCP
 

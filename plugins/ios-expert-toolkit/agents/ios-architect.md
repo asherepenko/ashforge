@@ -1,6 +1,6 @@
 ---
 name: ios-architect
-description: "iOS architecture specialist. Designs or reviews module and package structure, layer boundaries, state modelling, data flow and dependency injection for a feature or codebase, and writes short ADRs for significant decisions. Applies the TCA policy through ios-conventions. Works from a plain brief (goal, scope, constraints). Use for 'design the architecture for X', 'where should this live', 'is this layering right', or an architecture pass on a diff. Read-mostly: proposes structure and reviews; does not implement features."
+description: "iOS architecture specialist. Designs or reviews module and package structure, layer boundaries, state modelling, data flow and dependency injection for a feature or codebase, and writes short ADRs for significant decisions. Applies the TCA policy through /ios-conventions. Works from a plain brief (goal, scope, constraints). Use for 'design the architecture for X', 'where should this live', 'is this layering right', or an architecture pass on a diff. Read-mostly: proposes structure and reviews; does not implement features."
 tools: Read, Write, Bash, Glob, Grep, WebFetch, WebSearch
 model: opus
 color: blue
@@ -29,7 +29,7 @@ Work from the caller's brief: **goal**, **scope** (targets, packages or files in
 | Views, state, UIKit interop | [swiftui](../references/swiftui.md) |
 | Repositories, persistence, sync | [data-layer](../references/data-layer.md) |
 | Concurrency model | [concurrency](../references/concurrency.md) |
-| TCA structure, dependency clients | `/tca` skill, [tca](../references/tca.md) |
+| TCA structure, dependency clients | `/tca`, [tca](../references/tca.md) |
 | Errors | `/ios-error-handling` skill |
 | Navigation, deep links | [navigation](../references/navigation.md) |
 | Security boundaries | [security](../references/security.md) |

@@ -1,0 +1,42 @@
+{
+  "skill_name": "council-plan-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "council review the plan @.artifacts/plans/active/offline-sync/plan.md",
+      "expected_output": "A full council review of the plan file with a Scope Check and a saved verdict.",
+      "files": [],
+      "expectations": [
+        "reads the plan file and builds a numbered Requested Scope list tagged [PRD], [source], [goal] or [AC]",
+        "each member Round 1 position has a Pre-mortem: line and a Considered but not flagged line",
+        "Iron Man's position has an ARCHITECTURE DIAGRAM: field and Hulk's has FLOW DIAGRAM: and PATH → TEST:",
+        "the saved verdict has Scope Check, Acceptance Criteria Validation, Standards Compliance and Diagrams sections",
+        "the verdict is saved under .artifacts/reviews/"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "review my plan",
+      "expected_output": "With no argument the skill auto-detects the most recent plan file, or asks if none exists.",
+      "files": [],
+      "expectations": [
+        "uses the most recent plan file from the preflight as the target without guessing among others",
+        "asks the user what to review when no plan, PRD or review file is found",
+        "frames the review as a plan review of the named file when a plan is auto-detected"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "sanity check this approach --quick --focus testing",
+      "expected_output": "A 3-member Quick review of a free-text topic with the missing-diagram rule applied.",
+      "files": [],
+      "expectations": [
+        "scans the codebase with Glob and Grep for files relevant to the topic",
+        "runs Quick Mode with a 3-member quorum picked from the focus routing table",
+        "prints one Quick round table in chat",
+        "the Diagrams section reads not drawn — <member> not in Quick roster for any of Iron Man or Hulk who is absent",
+        "Quality comes from review-grade.py and each score passed score-check.py or carries a Score flag"
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # SwiftUI Views
 
-View structure (separate `View` structs instead of computed properties, `Group` with one child, cheap `init`) is covered by Apple's `structure.md` in swiftui-specialist; follow it. Small private helper properties that belong to the same concern as `body` and would fit in `body` if inlined may stay.
+View structure (separate `View` structs instead of computed properties, `Group` with one child, cheap `init`) is covered by Apple's `structure.md` in `/swiftui-specialist`; follow it. Small private helper properties that belong to the same concern as `body` and would fit in `body` if inlined may stay.
 
 - Flag `body` properties that are excessively long; extract subviews as described in `structure.md`.
 - Button actions should be extracted from view bodies into separate methods, to avoid mixing layout and logic.
@@ -16,7 +16,7 @@ View structure (separate `View` structs instead of computed properties, `Group` 
 
 ## Animating views
 
-Custom `Animatable` types and the `@Animatable` macro are covered by Apple's `animations.md` in swiftui-specialist; the deprecated `AnimatableModifier` is listed in its `soft-deprecated-apis.md`.
+Custom `Animatable` types and the `@Animatable` macro are covered by Apple's `animations.md` in `/swiftui-specialist`; the deprecated `AnimatableModifier` is listed in its `soft-deprecated-apis.md`.
 
 - Never use `animation(_ animation: Animation?)`; always provide a value to watch, such as `.animation(.bouncy, value: score)`.
 - Chaining animations must be done using a `completion` closure passed to `withAnimation()`, rather than trying to execute multiple `withAnimation()` calls using delays.

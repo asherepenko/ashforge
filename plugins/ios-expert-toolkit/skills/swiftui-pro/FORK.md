@@ -2,16 +2,16 @@
 
 Upstream: [twostraws/SwiftUI-Agent-Skill](https://github.com/twostraws/SwiftUI-Agent-Skill),
 tag `2.0.0`, commit `f9800713b24580bc444931949aad4519128605e8` (see `ios-skills.lock`).
-Check for upstream changes with `scripts/sync-ios-skills.sh --fork-ref <ref>`, which
+Check for upstream changes with `scripts/sync-ios-skills.py --fork-ref <ref>`, which
 prints a diff and writes nothing.
 
 The review steps and the output format (file, line, rule, before/after, summary) are unchanged.
 The sha256 of every reference kept byte for byte is in `ios-skills.lock` (`fork.swiftui-pro.sha256.*`).
 
-## Removed, delegated to Apple's swiftui-specialist
+## Removed, delegated to Apple's /swiftui-specialist
 
 | Upstream file | Review step now loads |
-|---|---|
+|---------------|-----------------------|
 | `references/api.md` | `/swiftui-specialist` `soft-deprecation.md` + `soft-deprecated-apis.md`; iOS 27 toolbar rules: `/swiftui-whats-new-27` `references/toolbar.md` |
 | `references/data.md` | `/swiftui-specialist` `dataflow.md` + `environment.md` + `foreach.md` |
 | `references/localization.md` | `/swiftui-specialist` `localization.md` |
@@ -22,7 +22,7 @@ They stay unedited so the lock hashes hold; `SKILL.md` maps those names to the r
 ## views.md versus Apple structure.md and modifiers.md
 
 | Upstream `views.md` rule | Decision |
-|---|---|
+|--------------------------|----------|
 | Avoid `some View` computed properties or methods; extract `View` structs (stated twice) | Dropped. `structure.md` covers it, with the tiny-fragment exception. |
 | Small private helpers may stay | Kept as one sentence, because `performance.md` points here for view-extraction exceptions. |
 | Remove a `Group` wrapping one view | Dropped. `structure.md` "Single Child Group" covers it. |

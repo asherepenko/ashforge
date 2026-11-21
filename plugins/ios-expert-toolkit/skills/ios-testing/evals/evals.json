@@ -1,0 +1,26 @@
+{
+  "skill_name": "ios-testing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write tests for LoginViewModel — it validates email and password and calls AuthClient.",
+      "expected_output": "A break-vector list followed by Swift Testing tests using a fake client.",
+      "files": [],
+      "expectations": [
+        "Shows the break-vector list before any test, each vector marked kept or skipped with a reason",
+        "Uses Swift Testing (@Test, #expect) and a fake AuthClient, not a mock framework",
+        "Covers a failure path from the fake, not only the happy path"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review these tests for CartTotals — what edge cases am I missing?",
+      "expected_output": "Missing vectors and redundant test pairs named.",
+      "files": [],
+      "expectations": [
+        "Names the missing break vectors",
+        "Names any redundant test pairs by test name"
+      ]
+    }
+  ]
+}

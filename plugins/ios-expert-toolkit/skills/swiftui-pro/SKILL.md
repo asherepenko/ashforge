@@ -1,10 +1,6 @@
 ---
 name: swiftui-pro
-description: "Use when reviewing SwiftUI code for modern API use, navigation, design, accessibility, resizing, performance and hygiene, or when writing a new SwiftUI screen — reports findings per file with line, rule and before/after fix. Trigger on 'review my SwiftUI', 'SwiftUI best practices', 'review this view', 'build a SwiftUI screen'. Not for observation, environment, ForEach identity, deprecated-API lookups or localization on their own (use swiftui-specialist)."
-license: MIT
-metadata:
-  author: Paul Hudson
-  version: "2.0.0"
+description: "Use when reviewing SwiftUI code for modern API use, navigation, design, accessibility, resizing, performance and hygiene, or when writing a new SwiftUI screen. Trigger on 'review my SwiftUI', 'SwiftUI best practices', 'review this view', 'build a SwiftUI screen'. Not for observation, environment, ForEach identity, deprecated-API lookups or localization alone (use /swiftui-specialist)."
 ---
 
 <!-- Adapted from twostraws SwiftUI-Agent-Skill swiftui-pro (MIT, https://github.com/twostraws/SwiftUI-Agent-Skill); deprecated-API, data-flow and localization checks delegate to Apple's swiftui-specialist, views.md trimmed to rules Apple does not cover. See FORK.md. -->
@@ -121,3 +117,9 @@ End of example.
 - `references/resizability.md` - changing window sizes, adaptive bars, safe areas, and iPhone Duo layouts.
 - `references/swift.md` - tips on writing modern Swift code, including using Swift Concurrency effectively.
 - `references/views.md` - view composition rules Apple's structure and modifiers references do not cover: actions, previews, tabs, animation chaining, reordering.
+
+## Done means
+
+- Each finding names its file, line, rule and a before/after snippet.
+- The review ends with a prioritized summary, or states that no issues were found.
+- Each rule cited traces to a loaded /swiftui-pro or `/swiftui-specialist` reference.

@@ -31,16 +31,16 @@ Claude: `/android-conventions di` or auto-trigger on natural-language prompts. O
 
 Examples:
 ```
-android-conventions              # Run all categories
-android-conventions state        # State management only
-android-conventions di           # Dependency injection only
-android-conventions testing      # Testing patterns only
-android-conventions architecture # Architecture patterns only
-android-conventions security     # Security patterns
-android-conventions performance  # Performance patterns
-android-conventions accessibility # Accessibility patterns
-android-conventions --fresh      # Force re-detection, ignore cache
-android-conventions di --fresh   # Re-detect specific category
+/android-conventions              # Run all categories
+/android-conventions state        # State management only
+/android-conventions di           # Dependency injection only
+/android-conventions testing      # Testing patterns only
+/android-conventions architecture # Architecture patterns only
+/android-conventions security     # Security patterns
+/android-conventions performance  # Performance patterns
+/android-conventions accessibility # Accessibility patterns
+/android-conventions --fresh      # Force re-detection, ignore cache
+/android-conventions di --fresh   # Re-detect specific category
 ```
 
 ## Execution
@@ -134,3 +134,8 @@ End with an overall summary:
 - Patterns with conflicts
 - Recommended actions
 - Reference to [pattern-detection](../../references/pattern-detection.md) for full decision framework
+
+## Done means
+
+- The report lists every category checked, each with its measured consistency percentage and the matrix verdict (match / conflict / adopt).
+- Each percentage is backed by detection-sweep counts from the codebase, shown in the report.

@@ -1,6 +1,6 @@
 ---
 name: council-advise
-description: "Use when the user wants the Avengers Council's views on a development question — a trade-off, a technology choice, how to approach a hard problem — before anything is written down. Triggers on 'ask the council', 'council advise', 'what would the council say about', 'get the council's opinions on'. Not for grading a written plan (use council-plan-review) or reviewing a diff (use council-code-review)."
+description: "Use when the user wants the Avengers Council's views on a development question — a trade-off, a technology choice, how to approach a hard problem — before anything is written down. Triggers on 'ask the council', 'council advise', 'what would the council say about'. Not for grading a written plan (use /council-plan-review) or reviewing a diff (use /council-code-review)."
 argument-hint: "\"<question>\" [@file ...] [--focus <area>] [--members <a,b,...>] [--debate]"
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, SendMessage, AskUserQuestion, WebSearch, WebFetch
 ---
@@ -49,7 +49,7 @@ The user invoked the `/council-advise` skill with arguments: $ARGUMENTS
 Pick 3 or 4 members, not the full council:
 
 - `--members` given → use exactly those.
-- `--focus` given → the two members for that focus from [member-registry](../../references/member-registry.md#quick-mode-member-selection), plus one or two members whose domain the framing touches.
+- `--focus` given → the two members for that focus from [quick-mode-member-selection](../../references/member-registry.md#quick-mode-member-selection), plus one or two members whose domain the framing touches.
 - Neither → choose from the topic, by the same table. Add `black-widow` when the question touches auth, user data or secrets.
 
 Announce the roster and one reason per member before spawning.
@@ -140,3 +140,8 @@ End with one next step, for example: run `/council-plan-review` once the chosen 
 - [ ] Count lines shown while answers arrived; the Debate table printed after a `--debate` round
 - [ ] Answer has Positions, Where they agree, Where they split, Captain's recommendation and Open questions
 - [ ] Fallback or missing members disclosed
+
+## Done means
+
+- The answer has Positions, Where they agree, Where they split, Captain's recommendation and Open questions.
+- Fallback or missing members are disclosed.

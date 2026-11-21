@@ -1,6 +1,6 @@
 ---
 name: ios-testing
-description: "Use when writing or reviewing iOS/Swift unit tests — view models, reducers, validators, mappers, services, repositories with fakes, SwiftData stores, async and @MainActor code. Applies an adversarial 'how would I break this?' method with Swift Testing: enumerate break vectors from the contract before writing tests, keep one distinct angle per test. Trigger on 'write tests for', 'unit test this view model', 'test the validator', 'fake client', '@Test', '#expect', 'what edge cases am I missing', 'review these tests'. Not for TCA TestStore mechanics (use tca) or Swift Testing API detail (use swift-testing-expert)."
+description: "Use when writing or reviewing iOS/Swift unit tests — view models, reducers, validators, mappers, repositories with fakes, SwiftData stores, async and @MainActor code. Trigger on 'write tests for', 'unit test this view model', 'fake client', 'what edge cases am I missing', 'review these tests'. Not for TCA TestStore mechanics (use /tca) or Swift Testing API detail (use /swift-testing-expert)."
 argument-hint: "[type or file under test]"
 ---
 
@@ -8,7 +8,7 @@ argument-hint: "[type or file under test]"
 
 Write tests as an adversary paid to make the code produce a wrong answer, crash, hang, or corrupt its state. Assume a bug is there; find the input, ordering, or collaborator response that exposes it.
 
-**Framework: Swift Testing first.** Use `@Test`, `#expect`, `#require`, parameterized `arguments:`, traits and tags. Use XCTest only for UI tests (`XCUIApplication`), performance metrics, and files in a legacy XCTest-only target. Follow the module's existing style when it is mixed (`ios-conventions testing`). API detail (expectations, traits, parameterization, `confirmation`, parallelism, XCTest migration) lives in [swift-testing-expert](../community/swift-testing-expert/SKILL.md); read it instead of working from memory. Code samples for this method: [testing-patterns](../../references/testing-patterns.md). TCA reducers: [tca](../tca/SKILL.md) owns `TestStore`.
+**Framework: Swift Testing first.** Use `@Test`, `#expect`, `#require`, parameterized `arguments:`, traits and tags. Use XCTest only for UI tests (`XCUIApplication`), performance metrics, and files in a legacy XCTest-only target. Follow the module's existing style when it is mixed (`/ios-conventions testing`). API detail (expectations, traits, parameterization, `confirmation`, parallelism, XCTest migration) lives in [/swift-testing-expert](../community/swift-testing-expert/SKILL.md); read it instead of working from memory. Code samples for this method: [testing-patterns](../../references/testing-patterns.md). TCA reducers: [/tca](../tca/SKILL.md) owns `TestStore`.
 
 ## Method
 
@@ -96,3 +96,9 @@ If a collaborator is pure logic and cheap to build, use the real one. Fake only 
 ## Output
 
 When asked to write tests, show the break-vector list first (one line each, marked kept / skipped-with-reason), then the tests. When reviewing tests, report missing vectors and redundant pairs by name.
+
+## Done means
+
+- The break-vector list is shown, each vector marked kept or skipped with a reason.
+- For written tests: the named test command exits 0 and its summary line is shown.
+- For a review: missing vectors and redundant pairs are named per test.

@@ -1,6 +1,6 @@
 # Third-party notices
 
-The vendored skills below are copied unmodified, except swiftui-pro (a fork), by `scripts/sync-ios-skills.sh`.
+The vendored skills below are copied unmodified, except swiftui-pro (a fork), by `scripts/sync-ios-skills.py`.
 Pinned commits and the Xcode build are recorded in `ios-skills.lock`. The rest of
 this plugin is MIT (see `LICENSE`).
 

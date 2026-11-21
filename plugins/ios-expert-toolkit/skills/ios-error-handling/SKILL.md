@@ -1,6 +1,6 @@
 ---
 name: ios-error-handling
-description: "Use when defining or reviewing how an iOS/Swift app handles failures — domain error enums per layer, typed throws, converting errors where they are caught, CancellationError handling in async code, Result at boundaries, TCA effect failures, and mapping errors to user-facing strings. Trigger on 'error handling', 'typed throws', 'throws(', 'swallowing CancellationError', 'try? hides errors', 'catch {}', 'LocalizedError', 'show an error message'. Not for crash diagnosis or Swift Testing of errors (use ios-testing)."
+description: "Use when defining or reviewing how an iOS/Swift app handles failures — domain error enums, typed throws, CancellationError in async code, Result at boundaries, TCA effect failures, user-facing error strings. Trigger on 'error handling', 'typed throws', 'try? hides errors', 'catch {}', 'show an error message'. Not for crash diagnosis or testing errors (use /ios-testing)."
 argument-hint: "[file, layer, or error type]"
 ---
 
@@ -26,7 +26,7 @@ Expected failures are values with a name. The layer that owns a failure catches 
 3. **Catch specific types.** `catch let error as URLError`, `catch is DecodingError`. A bare `catch` is a last resort at a boundary, and it still handles cancellation first (rule 5).
 4. **Typed throws is opt-in, not the default.**
 5. **Never swallow cancellation.** Task cancellation surfaces as `CancellationError` (thrown by `Task.sleep`, `Task.checkCancellation()`, and most async APIs) or as `URLError(.cancelled)` from `URLSession`. Treating it as a failure shows a bogus error alert and breaks cooperative cancellation.
-6. **UI shows localized strings from the error.** See [UI strings](#ui-strings).
+6. **UI shows localized strings from the error.** See [ui-strings](#ui-strings).
 7. **`Result` only at boundaries.** Use it to hand an outcome across a callback or to store a completed outcome in state. Inside `async` code, prefer `throws`.
 8. **Programming errors still crash.** A broken invariant is a bug. Use `precondition`/`assertionFailure`, not a user-facing error. Never `fatalError` for something the user can recover from (offline, bad input, missing file the user chose).
 9. **Log once, at the catching layer,** with `Logger` and the error attached; mark tokens and PII `privacy: .private` (the default for dynamic strings).
@@ -111,7 +111,7 @@ extension NetworkError: LocalizedError {
 
 ## TCA effects
 
-Handle failures inside the effect, and send a typed failure action. Details of `.run`, cancellation IDs and `TestStore` live in [tca](../tca/SKILL.md); do not restate them here.
+Handle failures inside the effect, and send a typed failure action. Details of `.run`, cancellation IDs and `TestStore` live in [/tca](../tca/SKILL.md); do not restate them here.
 
 ```swift
 case .load:
@@ -127,7 +127,7 @@ case .load:
 ```
 
 - `.run(operation:catch:)` is the same idea: its `catch` closure receives everything the operation throws, **including `CancellationError`**, so check for it first.
-- Use `Result<Value, NetworkError>` in the response action. `TaskResult` is deprecated since TCA 1.4 (soft); keep it only when the project's pinned version predates that and the tca skill's version check says so.
+- Use `Result<Value, NetworkError>` in the response action. `TaskResult` is deprecated since TCA 1.4 (soft); keep it only when the project's pinned version predates that and the /tca skill's version check says so.
 - Map to a domain error in the effect, so reducer state never holds `any Error`.
 
 ## Flag in review
@@ -149,7 +149,7 @@ case .load:
 - [ ] UI state holds a domain error or localized resource, not a raw `Error`.
 - [ ] Tests cover each error case that maps to a distinct outcome, and a collaborator that throws (`/ios-testing`).
 
-Related: pattern detection → [ios-conventions](../ios-conventions/SKILL.md).
+Related: pattern detection → [/ios-conventions](../ios-conventions/SKILL.md).
 
 ## Done means
 

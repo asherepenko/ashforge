@@ -1,0 +1,38 @@
+{
+  "skill_name": "android-testing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write unit tests for this PasswordValidator class.",
+      "expected_output": "A break-vector list first, then tests with one distinct angle each.",
+      "files": [],
+      "expectations": [
+        "Shows the break-vector list before any test, each marked kept or skipped with reason",
+        "Covers boundaries, emoji or non-ASCII input and empty input from the catalogue",
+        "Does not add several tests that fail on the same one-line change"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Unit test this ViewModel that loads from a repository and restores from SavedStateHandle.",
+      "expected_output": "Tests using a fake repository, runTest and a SavedStateHandle restoration case.",
+      "files": [],
+      "expectations": [
+        "Uses a hand-written fake repository, not mocks with verify on call patterns",
+        "Uses runTest with a main dispatcher set, with no Thread.sleep or real delay",
+        "Includes a SavedStateHandle restoration test"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Review these tests and tell me what edge cases I am missing.",
+      "expected_output": "A report of missing vectors and redundant pairs by name.",
+      "files": [],
+      "expectations": [
+        "Names missing break vectors from the contract",
+        "Names redundant test pairs",
+        "Flags tests written from the implementation instead of the contract"
+      ]
+    }
+  ]
+}

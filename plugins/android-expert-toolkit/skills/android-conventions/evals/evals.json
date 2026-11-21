@@ -1,0 +1,37 @@
+{
+  "skill_name": "android-conventions",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Check which DI framework and state-management pattern this Android app uses before I add a new feature.",
+      "expected_output": "A per-category report with consistency percentages and a match/conflict/adopt verdict for DI and state.",
+      "files": [],
+      "expectations": [
+        "Runs detection sweeps for DI and state categories",
+        "Reports a consistency percentage per category",
+        "Applies the 80/20 matrix: >=80% match existing, 50-79% conflict, <50% adopt best practice"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/android-conventions testing --fresh",
+      "expected_output": "Re-detected testing patterns, ignoring any cache.",
+      "files": [],
+      "expectations": [
+        "Ignores cached results and re-runs the detection",
+        "Covers only the testing category",
+        "Recommends fakes first, mocks only for final framework classes when no dominant pattern exists"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "aet check — audit pattern consistency across the whole project",
+      "expected_output": "A full report across all seven categories ending with a summary.",
+      "files": [],
+      "expectations": [
+        "Covers state, DI, testing, architecture, security, performance and accessibility",
+        "Ends with a summary listing categories checked, conflicts and recommended actions"
+      ]
+    }
+  ]
+}

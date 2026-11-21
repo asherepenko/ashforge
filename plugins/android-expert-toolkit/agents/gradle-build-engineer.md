@@ -1,6 +1,6 @@
 ---
 name: gradle-build-engineer
-description: "Android Gradle specialist: convention plugins, version catalogs, module setup, AGP/Kotlin/KSP configuration, build performance, R8/shrinking setup, signing and CI build steps. Works from a plain brief (goal, acceptance criteria, files). Use for 'create a feature module', 'add a dependency', 'write a convention plugin', 'speed up the build', 'fix this Gradle error'. For AGP 8 → 9 migrations use the agp-9-upgrade skill."
+description: "Android Gradle specialist: convention plugins, version catalogs, module setup, AGP/Kotlin/KSP configuration, build performance, R8/shrinking setup, signing and CI build steps. Works from a plain brief (goal, acceptance criteria, files). Use for 'create a feature module', 'add a dependency', 'write a convention plugin', 'speed up the build', 'fix this Gradle error'. For AGP 8 → 9 migrations use /agp-9-upgrade."
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 color: cyan

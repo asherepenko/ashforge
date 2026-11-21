@@ -1,6 +1,6 @@
 ---
 name: android-expert
-description: "Use for Android app development questions, implementation guidance, and code review — Jetpack Compose, ViewModel/StateFlow, Hilt/Koin, Room, DataStore, coroutines/Flow, Navigation 2/3, WorkManager, Gradle convention plugins and AGP 9, R8, security, performance, testing. Routes to the right reference or skill (including the vendored official Android skills) and to the five Android agents. Trigger on 'how should I build X on Android', 'review this Android code', 'which pattern for Y', 'Compose screen', 'Android architecture'. Not for backend/server Kotlin or non-Android Gradle builds."
+description: "Use when building, structuring or reviewing Android app code — Compose, ViewModel/StateFlow, Hilt/Koin, Room, coroutines, Navigation, WorkManager, Gradle/AGP 9, R8, security, testing. Trigger on 'how should I build X on Android', 'review this Android code', 'which pattern for Y', 'Android architecture'. Not for backend Kotlin or non-Android Gradle builds."
 argument-hint: "[question or topic] — e.g. 'Room offline-first', 'ViewModel error state', 'AGP 9 convention plugin'"
 ---
 
@@ -85,3 +85,8 @@ Typical order for a new feature: architect (if structure changes) → gradle (if
 - Constructor injection with the project's DI (Hilt for new Android-only apps).
 - Fakes over mocks; tests from break vectors, not the happy path.
 - Kotlin, AGP, and library versions: read the project's catalog; never pin from memory.
+
+## Done means
+
+- The answer names the reference, skill or agent it routed to, taken from the Topic table.
+- API-availability claims cite the `minSdk`/`compileSdk` or catalog version read from the project, or a docs lookup result.

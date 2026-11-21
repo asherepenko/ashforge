@@ -1,6 +1,6 @@
 ---
 name: tca
-description: "Use when writing, reviewing, testing, or migrating a feature built with The Composable Architecture (TCA) on iOS — reducers, state and actions, effects, dependencies, TestStore, navigation, shared state. Trigger on 'TCA', '@Reducer', '@ObservableState', 'TestStore', 'WithViewStore', 'StackState', '@Shared', 'swift-composable-architecture'. Not for plain SwiftUI or MVVM code (use swiftui-pro) or for choosing the architecture (use ios-conventions)."
+description: "Use when writing, reviewing, testing or migrating a feature built with The Composable Architecture (TCA) — reducers, effects, dependencies, TestStore, navigation, shared state. Trigger on 'TCA', '@Reducer', 'TestStore', 'WithViewStore', '@Shared'. Not for plain SwiftUI or MVVM code (use /swiftui-pro) or for choosing the architecture (use /ios-conventions)."
 argument-hint: "[feature, reducer, or file]"
 ---
 
@@ -8,7 +8,7 @@ argument-hint: "[feature, reducer, or file]"
 
 Pinned to `ComposableArchitecture 1.26` (swift-composable-architecture 1.26.2, released 2026-08-28; the library supports iOS 16 and later). Every API below is cited to the DocC articles at that tag. Detail and code live in [tca](../../references/tca.md).
 
-**Policy.** A new project uses TCA. An existing codebase keeps the style it has. The detection rule and the 80% threshold live in [ios-conventions](../ios-conventions/SKILL.md); do not restate them here.
+**Policy.** A new project uses TCA. An existing codebase keeps the style it has. The detection rule and the 80% threshold live in [/ios-conventions](../ios-conventions/SKILL.md); do not restate them here.
 
 **Version first.** Read the project's TCA version from `Package.resolved` (`/ios-conventions` does this) before advising. Flag a legacy API only when the project's version is at or above the version that deprecated it (see Deprecated). Older projects get the API they can compile.
 

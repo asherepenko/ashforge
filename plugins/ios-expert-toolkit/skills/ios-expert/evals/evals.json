@@ -1,0 +1,34 @@
+{
+  "skill_name": "ios-expert",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "How should I build offline caching for a list screen on iOS with SwiftData?",
+      "expected_output": "Guidance that routes to the persistence reference or SwiftData skill.",
+      "files": [],
+      "expectations": [
+        "Names the reference or skill it loaded, such as /swiftdata-pro or the persistence reference",
+        "Reads the deployment target and Swift version from the project, or marks them not found, before pinning APIs"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review this iOS code for a data race warning under Swift 6.",
+      "expected_output": "Routes to the concurrency skill and reports findings with file and line.",
+      "files": [],
+      "expectations": [
+        "Routes to /swift-concurrency",
+        "Each finding names its file and line"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Which agent should implement the reducer for the checkout feature?",
+      "expected_output": "Names the ios-developer agent for reducer work.",
+      "files": [],
+      "expectations": [
+        "Names ios-developer, not swiftui-expert or xcode-build-engineer"
+      ]
+    }
+  ]
+}

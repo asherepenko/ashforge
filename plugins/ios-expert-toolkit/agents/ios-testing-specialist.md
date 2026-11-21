@@ -27,7 +27,7 @@ Work from the caller's brief: **code under test**, **acceptance criteria**, **fi
 | Method, break vectors | `/ios-testing` skill |
 | `#expect`, `#require`, traits, parameterized tests | `/swift-testing-expert` skill |
 | XCTest to Swift Testing | `/modernize-tests` skill |
-| TestStore, `@Dependency` overrides | `/tca` skill, [tca](../references/tca.md) |
+| TestStore, `@Dependency` overrides | `/tca`, [tca](../references/tca.md) |
 | Fakes, spies, fixtures, async helpers | [testing-patterns](../references/testing-patterns.md) |
 | Test targets, test plans, UI test and snapshot setup | hand off to `xcode-build-engineer` agent |
 | Check behavior on a simulator, screenshots | `/device-interaction` skill |

@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 import pytest
+from test_swiftui_pro_fork import REMOVED as SWIFTUI_PRO_REMOVED
 
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -63,13 +64,13 @@ def test_negative_control_skill_script_ref_detected():
 @pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
 def test_reference_file_names_in_tables_exist(path):
     """Every backticked `x.md` named in a doc exists (skills link plugin references; see test_skills_link_plugin_references)."""
-    if path.parent.name == "swiftui-pro":
-        pytest.skip("swiftui-pro names upstream files (api.md, data.md) that its fork replaces; owned by the fork test")
     text = path.read_text(encoding="utf-8")
     refs = {p.name for p in (PROJECT_ROOT / "references").glob("*.md")}
     refs |= {p.name for p in (path.parent / "references").glob("*.md")}  # a skill's own references
     if path.name == "SKILL.md":  # a skill may name a sibling skill's reference, e.g. swiftui-specialist `structure.md`
         refs |= {p.name for p in (PROJECT_ROOT / "skills").glob("**/references/*.md")}
+    if path.parent.name == "swiftui-pro":  # names the upstream files its fork removed, to redirect them
+        refs |= set(SWIFTUI_PRO_REMOVED)
     for name in re.findall(r"`([a-z0-9-]+\.md)`", text):
         if name in ROOT_DOCS:
             continue
@@ -79,23 +80,11 @@ def test_reference_file_names_in_tables_exist(path):
 ROOT_VARS = re.compile(r"(?:CLAUDE_|ZCODE_)?PLUGIN_ROOT")
 
 
-def skips_root_var_check(path: Path) -> bool:
-    return path.name == "CHANGELOG.md" or path.parent.name == "swiftui-pro"
-
-
 @pytest.mark.parametrize("path", own_markdown(), ids=lambda p: str(p.relative_to(PROJECT_ROOT)))
 def test_no_plugin_root_variables_in_markdown(path):
     """Skills call scripts by skill-relative path; scripts find the root from __file__."""
-    if skips_root_var_check(path):
-        pytest.skip("history entries or vendored fork")
     assert ROOT_VARS.findall(path.read_text(encoding="utf-8")) == []
 
-
-def test_root_var_skip_covers_only_history_and_vendored_fork():
-    assert skips_root_var_check(PROJECT_ROOT / "skills" / "swiftui-pro" / "SKILL.md")
-    assert skips_root_var_check(PROJECT_ROOT / "CHANGELOG.md")
-    assert not skips_root_var_check(PROJECT_ROOT / "skills" / "ios-conventions" / "SKILL.md")
-    assert not skips_root_var_check(PROJECT_ROOT / "README.md")
 
 
 def test_negative_control_root_vars_detected():

@@ -1,6 +1,6 @@
 ---
 name: android-testing-specialist
-description: "Android testing specialist: writes and reviews unit, integration, and Compose UI tests using an adversarial 'how would I break this?' method — break vectors from the contract, one distinct angle per test, fakes first. Works from a plain brief (code under test, acceptance criteria, files). Use for 'write tests for X', 'what edge cases are missing', 'review these tests', 'add a fake for this repository'. For test infrastructure setup use the testing-setup skill."
+description: "Android testing specialist: writes and reviews unit, integration, and Compose UI tests using an adversarial 'how would I break this?' method — break vectors from the contract, one distinct angle per test, fakes first. Works from a plain brief (code under test, acceptance criteria, files). Use for 'write tests for X', 'what edge cases are missing', 'review these tests', 'add a fake for this repository'. For test infrastructure setup use /testing-setup."
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 color: yellow
@@ -32,7 +32,7 @@ Follow the `/android-testing` skill exactly: map the attack surface, list break 
 
 ## Rules
 
-- Use the project's test framework, assertion library, and dispatcher rule (`android-conventions testing`).
+- Use the project's test framework, assertion library, and dispatcher rule (`/android-conventions testing`).
 - Fakes first; mocks only for final framework/third-party classes or unobservable side effects.
 - No sleeps, real clocks, or real network in unit tests.
 - A test that fails must fail for one nameable reason.

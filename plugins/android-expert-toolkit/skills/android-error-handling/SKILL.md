@@ -1,6 +1,6 @@
 ---
 name: android-error-handling
-description: "Use when defining or reviewing how an Android/Kotlin app handles failures — typed error hierarchies, converting exceptions at the layer that catches them, Result/Either wrappers, try/catch around suspend calls, CancellationException handling, and mapping errors to user-facing strings. Trigger on 'error handling', 'typed errors', 'DataError', 'catch (e: Exception)', 'swallowing CancellationException', 'show an error message', 'map error to string', 'Unknown error'. Not for crash/ANR diagnosis (use anr-audit-and-fix or android-profiler)."
+description: "Use when defining or reviewing how an Android/Kotlin app handles failures — typed error hierarchies, exceptions converted at the catching layer, Result/Either, try/catch around suspend calls, CancellationException, error-to-string mapping. Trigger on 'error handling', 'typed errors', 'catch (e: Exception)', 'Unknown error'. Not for crash/ANR diagnosis (use /anr-audit-and-fix or /android-profiler)."
 argument-hint: "[file, layer, or error type]"
 ---
 
@@ -64,3 +64,8 @@ Expected failures are values, not exceptions. The layer that owns a failure catc
 - [ ] Tests cover each error variant that maps to a distinct outcome, plus the collaborator throwing instead of returning (`/android-testing` skill).
 
 Related: presentation wiring → [presentation](../../references/presentation.md); repository `safeCall` example → [data-layer](../../references/data-layer.md).
+
+## Done means
+
+- Each reviewed `catch` and `runCatching` over suspend code is marked pass or fail against the review checklist, with its file and line.
+- Each proposed change shows the typed error variant and the string-resource mapping it introduces.

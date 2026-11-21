@@ -1,6 +1,6 @@
 ---
 name: android-testing
-description: "Use when writing or reviewing Android/Kotlin unit tests — ViewModels, reducers, validators, mappers, use cases, repositories with fakes, SavedStateHandle restoration, Flow/StateFlow emissions. Applies an adversarial 'how would I break this?' method: enumerate break vectors from the contract before writing tests, keep one distinct angle per test. Trigger on 'write tests for', 'unit test this ViewModel', 'test the validator', 'fake repository', 'Turbine', 'runTest', 'what edge cases am I missing', 'review these tests'. Not for test infrastructure setup or screenshot/E2E tooling (use testing-setup)."
+description: "Use when writing or reviewing Android/Kotlin unit tests — ViewModels, reducers, validators, mappers, use cases, repositories with fakes, Flow/StateFlow emissions. Trigger on 'write tests for', 'unit test this ViewModel', 'fake repository', 'Turbine', 'what edge cases am I missing', 'review these tests'. Not for test infrastructure or screenshot/E2E tooling (use /testing-setup)."
 argument-hint: "[class or file under test]"
 ---
 
@@ -8,7 +8,7 @@ argument-hint: "[class or file under test]"
 
 Write tests as an adversary paid to make the code produce a wrong answer, crash, hang, or corrupt its state. Assume a bug is there; find the input, ordering, or collaborator response that exposes it.
 
-**Stack: detect, don't impose.** Use the test framework, assertion library, and result type the project already uses (`android-conventions testing`). JUnit 4 or 5, Truth/AssertK/kotlin.test, Turbine or manual collection — follow the module's existing tests. Mechanics and code samples: [testing-patterns](../../references/testing-patterns.md). Test infrastructure, instrumented/screenshot/E2E setup: the `/testing-setup` skill.
+**Stack: detect, don't impose.** Use the test framework, assertion library, and result type the project already uses (`/android-conventions testing`). JUnit 4 or 5, Truth/AssertK/kotlin.test, Turbine or manual collection — follow the module's existing tests. Mechanics and code samples: [testing-patterns](../../references/testing-patterns.md). Test infrastructure, instrumented/screenshot/E2E setup: `/testing-setup`.
 
 ## Method
 
@@ -125,3 +125,8 @@ Test both directions: input written to the handle on change, and state restored 
 ## Output
 
 When asked to write tests, show the break-vector list first (one line each, marked kept / skipped-with-reason), then the tests. When reviewing tests, report missing vectors and redundant pairs by name.
+
+## Done means
+
+- The break-vector list was shown before any test, each vector marked kept or skipped with a reason.
+- The new tests ran, and the run's pass/fail summary line was pasted.

@@ -1,0 +1,37 @@
+{
+  "skill_name": "android-expert",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "How should I structure an offline-first Room + Retrofit repository on Android?",
+      "expected_output": "Routes to the data-layer and offline-sync references and answers using the project's catalog versions.",
+      "files": [],
+      "expectations": [
+        "Loads the data-layer reference",
+        "Loads the offline-sync reference for the sync question",
+        "Reads versions from the project's build files rather than from memory"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review this Android screen composable and its ViewModel.",
+      "expected_output": "A review following the review-rules template with PASS/FAIL/N/A rows and one verdict.",
+      "files": [],
+      "expectations": [
+        "Follows the review-rules template with PASS/FAIL/N/A per row",
+        "Ends with a single verdict",
+        "Sends test review to /android-testing"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I want to migrate my app to Navigation 3 and then upgrade to AGP 9.",
+      "expected_output": "Routes each part to the matching skill.",
+      "files": [],
+      "expectations": [
+        "Routes Navigation 3 migration to the /navigation-3 skill",
+        "Routes the AGP upgrade to the /agp-9-upgrade skill"
+      ]
+    }
+  ]
+}

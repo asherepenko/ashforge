@@ -1,0 +1,26 @@
+{
+  "skill_name": "tca",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write a TCA reducer for a counter with a timer effect, and test it.",
+      "expected_output": "A @Reducer with @ObservableState, a cancellable effect, and a TestStore test.",
+      "files": [],
+      "expectations": [
+        "Uses @Reducer and @ObservableState",
+        "Makes the timer effect cancellable with an id",
+        "Tests the reducer with TestStore and a controlled clock dependency"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "This feature still uses WithViewStore — migrate it.",
+      "expected_output": "Migration to observation-based TCA.",
+      "files": [],
+      "expectations": [
+        "Replaces WithViewStore and names the replacement API",
+        "States which TCA version deprecates WithViewStore, checked against the project's pinned version"
+      ]
+    }
+  ]
+}

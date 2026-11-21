@@ -4,6 +4,17 @@ All notable changes to the iOS Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for removed or renamed skills and agents, minor for new ones, patch for docs and reference fixes.
 
+## [1.1.2] - 2026-11-21
+
+### Changed
+
+- Own skills and the swiftui-pro fork follow the /create-skill rules: descriptions at 400 characters or less, a `Done means` section in every skill, and `evals/evals.json` for each.
+- swiftui-pro drops the upstream `license` and `metadata` frontmatter; the attribution comment stays.
+- Link tests check swiftui-pro instead of skipping it; the unused plugin-root skip is gone.
+- `scripts/sync-ios-skills.sh` is now `scripts/sync-ios-skills.py` (Python, same flags and output).
+- Skills, agents and references name skills as `/{name}`; `tests/test_skill_references.py` guards it.
+- `ios-testing` Codex label shortened to 64 characters or less.
+
 ## [1.1.1] - 2026-11-21
 
 ### Changed

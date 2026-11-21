@@ -11,13 +11,13 @@ After printing the verdict (including the `> **Verdict saved to:** ...` path lin
 
 ## Protocol
 
-With `--handoff` (council-code-review started by another skill), skip this menu: clean up and return to the caller.
+With `--handoff` (/council-code-review started by another skill), skip this menu: clean up and return to the caller.
 
 1. Determine which options to show based on the **consensus verdict**
 2. Present options to the user:
    - **Claude:** use `AskUserQuestion` with verdict-dependent choices
    - **Codex:** print the question + numbered options as plain text and wait for the user's free-form reply (no `AskUserQuestion` tool)
-3. If the review type supports context-specific actions (council-code-review or plan), add a second question when verdict is NEEDS REVISION or BLOCKED (same Claude/Codex split)
+3. If the review type supports context-specific actions (/council-code-review or plan), add a second question when verdict is NEEDS REVISION or BLOCKED (same Claude/Codex split)
 4. Execute the chosen action
 5. Only proceed to cleanup **after** the action completes
 
@@ -110,7 +110,7 @@ Second question: "Would you like to update the plan based on findings?"
    - **Scope:** members judge the changes since the last run and the original scope. A request for new features, refactors or polish outside that scope is a follow-up, never a condition. A real defect the last run missed still counts at its severity.
    - **Since last run:** read the previous verdict (the path saved in Phase 5). Add the **Since last run** table and its `Findings:` line under the Consensus table, in the format [verdict-template](../assets/verdict-template.md) sets: Quality, average score and each member whose score moved, as Last run, Now and Trend (📈 better · 📉 worse · ➖ same); then fixed, still open and new findings. Only a re-review adds them.
 
-### "Apply suggested fixes" (council-code-review only)
+### "Apply suggested fixes" (/council-code-review only)
 1. Collect all findings that include both a `file:line` reference and a suggested fix
 2. Present the list of fixes to the user for confirmation
 3. Apply each fix using the Edit tool

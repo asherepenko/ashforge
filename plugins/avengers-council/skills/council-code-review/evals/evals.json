@@ -1,0 +1,43 @@
+{
+  "skill_name": "council-code-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "council code review --pr 482",
+      "expected_output": "The skill fetches the PR, checks CI and open threads first, then runs the council and saves a verdict.",
+      "files": [],
+      "expectations": [
+        "runs gh pr view and gh pr diff for PR 482",
+        "runs gh pr checks and lists unresolved review threads before spawning members",
+        "asks whether to fix failing checks or open threads first when any exist",
+        "every finding has a severity and a file:line reference and states Introduced here: yes or pre-existing",
+        "the verdict is saved to a file, and the chat shows the Consensus block with Quality, Risk, Vote and Score rows"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "review my changes before merge --quick --focus security",
+      "expected_output": "A 3-member Quick Mode review of the uncommitted diff, weighted to security.",
+      "files": [],
+      "expectations": [
+        "reviews the uncommitted diff (git diff and git diff --cached) because no target was given",
+        "runs Quick Mode with a 3-member quorum that includes black-widow",
+        "prints a single Quick round table in chat",
+        "the Quality row comes from review-grade.py output, not a hand-picked letter",
+        "findings that rest on pre-existing code appear only in the Pre-existing section and do not change the vote"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "council code review --files src/auth/TokenStore.kt,src/auth/Refresh.kt --handoff",
+      "expected_output": "A file-scoped review that saves and shows the verdict and returns without the post-verdict menu.",
+      "files": [],
+      "expectations": [
+        "reads both files and runs git log -5 on them",
+        "skips the clean-up question and the post-verdict menu because --handoff is passed",
+        "each member position includes a Considered but not flagged section or says Nothing material — diff too narrow",
+        "saves the verdict with findings grouped by severity, CRITICAL first"
+      ]
+    }
+  ]
+}

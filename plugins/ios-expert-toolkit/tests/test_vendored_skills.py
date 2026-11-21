@@ -46,7 +46,7 @@ def frontmatter_name(skill_md: Path) -> str:
 def lock():
     data = read_lock()
     if not community_names(data) and not xcode_names(data):
-        pytest.skip("ios-skills.lock lists no skills yet; run scripts/sync-ios-skills.sh --update-xcode")
+        pytest.skip("ios-skills.lock lists no skills yet; run scripts/sync-ios-skills.py --update-xcode")
     return data
 
 

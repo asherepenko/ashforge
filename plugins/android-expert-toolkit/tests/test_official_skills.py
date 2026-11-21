@@ -31,8 +31,8 @@ def test_lock_pins_a_commit():
 def test_android_cli_is_never_vendored():
     assert not (SKILLS / "android-cli").exists()
     assert "android-cli" not in lock_values("skill")
-    script = (PROJECT_ROOT / "scripts" / "sync-android-skills.sh").read_text(encoding="utf-8")
-    skills_block = script.split("SKILLS=(", 1)[1].split(")", 1)[0]
+    script = (PROJECT_ROOT / "scripts" / "sync-android-skills.py").read_text(encoding="utf-8")
+    skills_block = script.split("SKILLS = [", 1)[1].split("]", 1)[0]
     assert "android-cli" not in skills_block
 
 

@@ -1,2 +1,2 @@
 interface:
-  short_description: "Detect Android codebase pattern consistency with the 80/20 matrix"
+  short_description: "Detect Android pattern consistency, 80/20 matrix"

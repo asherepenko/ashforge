@@ -1,6 +1,6 @@
 ---
 name: ios-expert
-description: "Use for iOS app development questions, implementation guidance, and code review — SwiftUI, @Observable and MVVM, TCA, SwiftData and Core Data, Swift concurrency, navigation and deep links, Swift Testing, App Intents, Instruments, Xcode builds and security settings. Routes to the right reference or skill (including the vendored community and Xcode skills), to the Xcode MCP tools, and to the five iOS agents. Trigger on 'how should I build X on iOS', 'review this iOS code', 'which pattern for Y', 'SwiftUI screen', 'iOS architecture'. Not for server-side Swift or non-Apple platforms."
+description: "Use when building, structuring or reviewing iOS app code — SwiftUI, @Observable, TCA, SwiftData, Swift concurrency, navigation, testing, App Intents, Instruments, Xcode builds. Routes to the matching reference, skill, Xcode MCP tool or iOS agent. Trigger on 'how should I build X on iOS', 'review this iOS code', 'iOS architecture'. Not for server-side Swift or non-Apple platforms."
 argument-hint: "[question or topic] — e.g. 'SwiftData migration', 'deep links', 'Swift 6 data race'"
 ---
 
@@ -99,3 +99,9 @@ Typical order for a new feature: architect (if structure changes) → build engi
 - Constructor injection; in TCA, `@Dependency` clients.
 - Swift Testing for new tests; fakes over mocks; tests from break vectors, not the happy path.
 - Package versions, deployment target, Swift version: read the project; never pin from memory.
+
+## Done means
+
+- The answer names each reference, skill, Xcode MCP tool or agent it used.
+- Package versions, deployment target and Swift version come from the project's files, or are marked not found.
+- For a review: each finding names its file and line.

@@ -4,6 +4,13 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.10] - 2026-11-21
+
+### Changed
+
+- Skills follow the /create-skill rules: descriptions at 400 characters or less, Codex labels at 64 or less, section-link text matching its anchor, `evals/evals.json` for each, and a short `## Done means` proof list after each skill's `## Verification` checklist.
+- Skills and references name skills as `/{name}`; `tests/test_skill_references.py` guards it.
+
 ## [5.0.9] - 2026-11-12
 
 ### Changed

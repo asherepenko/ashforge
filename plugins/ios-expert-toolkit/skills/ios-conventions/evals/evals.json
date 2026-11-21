@@ -1,0 +1,26 @@
+{
+  "skill_name": "ios-conventions",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Which architecture does this app use? Should the new Settings feature use TCA?",
+      "expected_output": "An architecture verdict with file counts and a recommendation for the new feature.",
+      "files": [],
+      "expectations": [
+        "States one verdict out of NEW, TCA, MVVM or MIXED, with the three file counts behind it",
+        "Applies the TCA decision rule to the new feature and names the rule's outcome",
+        "Lists TCA version, deployment target and Swift mode, or marks each not found"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Check patterns in this iOS codebase for dependency injection and testing.",
+      "expected_output": "Dominant pattern and share for DI and testing.",
+      "files": [],
+      "expectations": [
+        "Reports a dominant pattern and its share for DI and for testing, or says the pattern is absent",
+        "Does not report areas the prompt did not ask for"
+      ]
+    }
+  ]
+}

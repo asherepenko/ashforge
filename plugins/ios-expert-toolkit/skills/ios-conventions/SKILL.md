@@ -1,6 +1,6 @@
 ---
 name: ios-conventions
-description: "Use when analyzing pattern consistency in an iOS codebase or choosing the architecture for new iOS code — TCA vs MVVM vs UIKit, dependency injection, testing framework, persistence, concurrency, navigation. Runs detection sweeps and applies the TCA decision rule and 80/20 matrix. Trigger on 'check patterns', 'which architecture does this app use', 'should this feature use TCA', 'iOS conventions', 'iet check'."
+description: "Use when checking pattern consistency in an iOS codebase or choosing the architecture for new iOS code — TCA vs MVVM vs UIKit, dependency injection, testing framework, persistence, concurrency, navigation. Trigger on 'check patterns', 'which architecture does this app use', 'should this feature use TCA', 'iOS conventions', 'iet check'."
 argument-hint: "[architecture | di | testing | persistence | concurrency | navigation | version | all]"
 ---
 
