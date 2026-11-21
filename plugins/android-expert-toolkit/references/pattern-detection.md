@@ -4,6 +4,8 @@
 
 Read this reference when deciding whether to match existing codebase conventions or propose modern alternatives. Used by android-architect early in a review, and by android-developer before introducing patterns that diverge from what the project already uses. Detects existing patterns to ground decisions in codebase reality, not assumed conventions.
 
+This file is the single source for the sweep patterns. `skills/android-conventions/scripts/detect-patterns.py` runs them for the seven `/android-conventions` categories and applies the matrix below; a test keeps its patterns identical to the commands here. The commands below stay as the manual form.
+
 ## Detection Commands
 
 ### State Management Patterns

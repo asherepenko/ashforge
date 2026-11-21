@@ -11,6 +11,8 @@ PROJECT_ROOT = Path(__file__).parent.parent
 SCRIPT = PROJECT_ROOT / "skills" / "ios-conventions" / "scripts" / "preflight.py"
 
 HEADERS = [
+    "== Project hash ==",
+    "== Cached patterns ==",
     "== Deployment targets (IPHONEOS_DEPLOYMENT_TARGET) ==",
     "== Package platforms ==",
     "== swift-tools-version ==",
@@ -43,15 +45,17 @@ def test_empty_project(tmp_path):
     assert result.returncode == 0, result.stderr
     parsed = sections(result.stdout)
     assert list(parsed) == HEADERS
-    assert parsed[HEADERS[0]] == ["NOT_FOUND"]
-    assert parsed[HEADERS[1]] == ["NOT_FOUND"]
+    assert parsed[HEADERS[0]] == ["NO_PROJECT_FILES"]
+    assert parsed[HEADERS[1]] == ["NO_CACHE"]
     assert parsed[HEADERS[2]] == ["NOT_FOUND"]
     assert parsed[HEADERS[3]] == ["NOT_FOUND"]
     assert parsed[HEADERS[4]] == ["NOT_FOUND"]
     assert parsed[HEADERS[5]] == ["NOT_FOUND"]
-    assert parsed[HEADERS[6]] == ["NONE"]
-    assert parsed[HEADERS[7]] == ["Testing: 0", "XCTest: 0"]
-    assert parsed[HEADERS[8]] == ["@Observable: 0", "ObservableObject: 0"]
+    assert parsed[HEADERS[6]] == ["NOT_FOUND"]
+    assert parsed[HEADERS[7]] == ["NOT_FOUND"]
+    assert parsed[HEADERS[8]] == ["NONE"]
+    assert parsed[HEADERS[9]] == ["Testing: 0", "XCTest: 0"]
+    assert parsed[HEADERS[10]] == ["@Observable: 0", "ObservableObject: 0"]
 
 
 def test_populated_project(tmp_path):
@@ -94,15 +98,15 @@ def test_populated_project(tmp_path):
     result = run(tmp_path)
     assert result.returncode == 0, result.stderr
     parsed = sections(result.stdout)
-    assert parsed[HEADERS[0]] == ["16.4", "17.0"]
-    assert parsed[HEADERS[1]] == [".iOS(.v17)", ".macOS(.v14)"]
-    assert parsed[HEADERS[2]] == ["6.0"]
-    assert parsed[HEADERS[3]] == ["SWIFT_VERSION = 6.0", "swiftLanguageModes: [.v6]"]
-    assert parsed[HEADERS[4]] == ["SWIFT_STRICT_CONCURRENCY = complete"]
-    assert parsed[HEADERS[5]] == ["1.17.0"]
-    assert parsed[HEADERS[6]] == ["some-branch-pin main", "swift-composable-architecture 1.17.0", "swift-dependencies 1.6.2"]
-    assert parsed[HEADERS[7]] == ["Testing: 1", "XCTest: 2"]
-    assert parsed[HEADERS[8]] == ["@Observable: 1", "ObservableObject: 1"]
+    assert parsed[HEADERS[2]] == ["16.4", "17.0"]
+    assert parsed[HEADERS[3]] == [".iOS(.v17)", ".macOS(.v14)"]
+    assert parsed[HEADERS[4]] == ["6.0"]
+    assert parsed[HEADERS[5]] == ["SWIFT_VERSION = 6.0", "swiftLanguageModes: [.v6]"]
+    assert parsed[HEADERS[6]] == ["SWIFT_STRICT_CONCURRENCY = complete"]
+    assert parsed[HEADERS[7]] == ["1.17.0"]
+    assert parsed[HEADERS[8]] == ["some-branch-pin main", "swift-composable-architecture 1.17.0", "swift-dependencies 1.6.2"]
+    assert parsed[HEADERS[9]] == ["Testing: 1", "XCTest: 2"]
+    assert parsed[HEADERS[10]] == ["@Observable: 1", "ObservableObject: 1"]
 
 
 def test_bad_package_resolved_does_not_crash(tmp_path):
@@ -110,8 +114,8 @@ def test_bad_package_resolved_does_not_crash(tmp_path):
     result = run(tmp_path)
     assert result.returncode == 0, result.stderr
     parsed = sections(result.stdout)
-    assert parsed[HEADERS[5]] == ["NOT_FOUND"]
-    assert parsed[HEADERS[6]] == ["NONE"]
+    assert parsed[HEADERS[7]] == ["NOT_FOUND"]
+    assert parsed[HEADERS[8]] == ["NONE"]
 
 
 def test_runs_from_other_cwd_without_env(tmp_path):

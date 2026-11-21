@@ -4,6 +4,13 @@ All notable changes to the iOS Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for removed or renamed skills and agents, minor for new ones, patch for docs and reference fixes.
 
+## [1.1.4] - 2026-11-21
+
+### Changed
+
+- `run-sweeps.py` becomes `detect-patterns.py`, matching Android: same command line and output, covering architecture, DI, testing, persistence, concurrency, navigation and version. The NEW/TCA/MVVM/MIXED verdict is kept in the architecture section; usage errors now exit 2.
+- `--write-cache` writes `.artifacts/iet/cache/detected-patterns.json` in Android's schema; `preflight.py` prints the project hash and cached patterns; ios-architect and ios-developer read the cache.
+
 ## [1.1.3] - 2026-11-21
 
 ### Changed

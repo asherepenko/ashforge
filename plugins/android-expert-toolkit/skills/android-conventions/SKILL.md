@@ -6,9 +6,9 @@ argument-hint: "[state | di | testing | architecture | security | performance | 
 
 # Android Expert Pattern Check
 
-Run pattern detection from [pattern-detection](../../references/pattern-detection.md) against the current codebase. Reports consistency percentages and applies the 80/20 decision matrix.
+Run pattern detection from [pattern-detection](../../references/pattern-detection.md) against the current codebase. Reports consistency percentages and applies the 80/20 decision matrix. Counting is done by `scripts/detect-patterns.py`.
 
-> **Platform notes:** Read-only apart from the cache file — uses Grep, Glob, Read, and shell. No subagent dispatch, no interactive prompts. Works the same on every runtime (Claude Code, Codex, and others); substitute the runtime's shell tool where this says Bash.
+> **Platform notes:** Read-only apart from the cache file — uses shell and Read. No subagent dispatch, no interactive prompts. Works the same on every runtime (Claude Code, Codex, and others); substitute the runtime's shell tool where this says Bash.
 
 ## Pre-flight Context
 
@@ -22,8 +22,7 @@ The script collects: project hash (shasum over settings.gradle.kts + build.gradl
 
 Use the output to:
 1. Skip the cache compute step if the `Project hash` value matches cached `project_hash` (Step 1.5).
-2. Decide whether full Grep sweep is needed — if `Kotlin file count` < 50, single-pass detection suffices.
-3. Pre-bias detection categories: if `DI fingerprint` shows `@HiltAndroidApp` → skip Koin/Dagger sweeps in the `di` category. Same logic for `Testing fingerprint` (MockK/Test doubles markers) and `State fingerprint` (StateFlow/LiveData counts).
+2. Sanity-check the counts later: the fingerprints show which markers exist (`@HiltAndroidApp` for DI, MockK or test doubles for testing, StateFlow/LiveData counts for state), so a detection result that contradicts them needs a look.
 
 ## Invocation
 
@@ -58,36 +57,36 @@ Before running detection, check for a valid cache at `.artifacts/aet/cache/detec
 1. If `--fresh` flag is present, skip cache and proceed to Step 2
 2. If cache file does not exist, proceed to Step 2
 3. If cache file exists:
-   - Compute current `project_hash`: `cat settings.gradle.kts build.gradle.kts 2>/dev/null | shasum -a 256 | cut -d' ' -f1`
-   - Compare `project_hash` in cache with computed hash
+   - Compare `project_hash` in cache with the `Project hash` from pre-flight
    - Check if `timestamp` is less than 24 hours old
    - If both match: **cache hit** — use cached patterns, skip to Step 4 (Report Results)
    - If either differs: **cache stale** — proceed to Step 2
 
-After detection completes (Step 3), write results to `.artifacts/aet/cache/detected-patterns.json` following the schema in [pattern-detection](../../references/pattern-detection.md) (section *Pattern Detection Cache*). The path and keys are a stable contract read by other tools; don't change them.
+The path and keys are a stable contract read by other tools; don't change them. Schema: [pattern-detection](../../references/pattern-detection.md) (section *Pattern Detection Cache*).
 
 ### 2. Run Detection
 
-For each category (or all), use the Grep tool to count pattern occurrences. Summary of what each category sweeps:
+Run the counting script with the project root as `<project-dir>` and the requested categories (none = all). It also writes the cache, so a stale or missing cache is refreshed here:
 
-| Category | Patterns counted (summary) |
-|----------|----------------------------|
-| `state` | StateFlow vs LiveData/MutableLiveData vs Flow vs RxJava markers |
-| `di` | Hilt vs Koin vs Dagger vs manual DI (`ViewModelProvider.Factory`) markers |
-| `testing` | Mockito vs MockK vs test doubles (`Test*`/`Fake*`) vs Turbine usage |
-| `architecture` | ViewModels, `@Composable` vs XML layouts, Repository and UseCase classes |
-| `security` | network security config, certificate pinning, encrypted storage, hardcoded secrets, ProGuard/R8 config |
-| `performance` | Baseline Profiles, missing `remember`, Lazy lists without stable `key`, `GlobalScope`, `stateIn` sharing policy |
-| `accessibility` | `contentDescription` coverage, `Modifier.semantics`, touch target sizes, `mergeDescendants` |
+```bash
+python3 <this-skill-folder>/scripts/detect-patterns.py <project-dir> [category ...] --write-cache
+```
 
-Canonical sweep definitions (exact grep patterns, file globs, and counting rules): [pattern-detection](../../references/pattern-detection.md) — read it before running detection; do not improvise patterns from this table.
+Do not recount by hand or improvise patterns. The script holds the sweeps from [pattern-detection](../../references/pattern-detection.md) and prints `== section ==` blocks:
 
-### 3. Calculate Consistency
+- `files_scanned=` — Kotlin and Java files under the project (build, generated and tooling directories pruned; test source sets kept).
+- `decision <key>` — competing patterns in `state`, `di`, `testing` and `architecture`: one `<pattern> files=N share=P%` line each, then `dominant=… consistency=P% verdict=match|conflict|adopt|none`.
+- `count <id> files=N` — sweeps that do not compete (every `security`, `performance` and `accessibility` sweep, plus `flow`, `turbine`, `repository`, `usecase`, `activity`, `fragment`).
 
-For each category, calculate the consistency percentage within that category:
-- Find the dominant pattern (highest count)
-- Calculate: `dominant_count / total_count * 100`
-- Apply 80/20 threshold
+A count is files with at least one match, not occurrences. Exit 2 means a usage error or a missing directory: fix the call, don't fall back to manual greps.
+
+### 3. Read the Counts
+
+Judgment stays with you:
+
+- `verdict=none` → no evidence of that pattern; say so, don't infer one.
+- Overlaps in the reference regexes can inflate a count, for example `@Module` appears in Hilt modules too, and `verify` matches Mockito as well as MockK. When a verdict hinges on one of these, open a few files from the cache `evidence` list or grep the sample before reporting.
+- For `security`, `performance` and `accessibility`, read each count as a finding: non-zero `hardcoded_secrets`, `cleartext_traffic`, `global_scope`, `lazy_items_without_key`, `icon_without_content_description` or `image_without_content_description` need a named follow-up; zero `network_security_config`, `proguard_rules` or `baseline_profile_*` is a gap to mention.
 
 ### 4. Report Results
 
@@ -97,16 +96,16 @@ Format output as rendered markdown (real headings and tables, never inside a cod
 ## Pattern Detection Report
 
 ### State Management
-| Pattern | Count | Percentage |
-|---------|-------|------------|
+| Pattern | Files | Share |
+|---------|-------|-------|
 | StateFlow | 45 | 82% |
 | LiveData | 10 | 18% |
 
 Consistency: 82% → **Match existing pattern (StateFlow)**
 
 ### Dependency Injection
-| Pattern | Count | Percentage |
-|---------|-------|------------|
+| Pattern | Files | Share |
+|---------|-------|-------|
 | Hilt | 30 | 55% |
 | Koin | 25 | 45% |
 
@@ -115,10 +114,10 @@ Consistency: 55% → **Pattern conflict (<80%) — consider standardization**
 
 ### 5. Apply 80/20 Matrix
 
-For each category:
-- **≥80% consistency**: "Match existing pattern — use [dominant] for new code"
-- **50-79% consistency**: "Pattern conflict — propose standardization on [recommended]"
-- **<50% consistency**: "No dominant pattern — adopt modern best practice: [recommendation]"
+Turn each `verdict` into advice:
+- `match` (≥80%): "Match existing pattern — use [dominant] for new code"
+- `conflict` (50-79%): "Pattern conflict — propose standardization on [recommended]"
+- `adopt` (<50%): "No dominant pattern — adopt modern best practice: [recommendation]"
 
 Modern best practice recommendations:
 - State: StateFlow
@@ -137,5 +136,5 @@ End with an overall summary:
 
 ## Done means
 
-- The report lists every category checked, each with its measured consistency percentage and the matrix verdict (match / conflict / adopt).
-- Each percentage is backed by detection-sweep counts from the codebase, shown in the report.
+- The report lists every category checked. `state`, `di`, `testing` and `architecture` show each decision's measured consistency percentage and matrix verdict (match / conflict / adopt); `security`, `performance` and `accessibility` show their counts and findings.
+- Every number comes from `detect-patterns.py` file counts, shown in the report.

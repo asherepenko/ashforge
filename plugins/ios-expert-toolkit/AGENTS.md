@@ -38,6 +38,7 @@ Skill names live in `ios-skills.lock`. Tests read them from there; don't hardcod
 - **Own skills via `/create-skill`.** Author or review every own skill and agent with it.
 - **Defer to vendored skills.** When a community or Xcode skill covers a topic, the reference keeps a one-line pointer, not a copy.
 - **Verify facts.** API claims are checked with the Xcode `DocumentationSearch` tool from the Xcode MCP, and third-party packages with a docs lookup tool (such as a doc-lookup skill or the Context7 MCP), if one is installed; cite the page when a reference states a deprecation or an availability level.
+- **Cache contract.** `/ios-conventions` writes `.artifacts/iet/cache/detected-patterns.json`. External tools read it; don't move it or rename existing keys.
 
 ## Vendored skills
 

@@ -3,14 +3,18 @@
 
 Read-only. Run from the project root. Output is labeled with `== section ==`
 headers. Missing files print NOT_FOUND or NONE; the script never fails hard.
-Use the output for the version sweep and to pre-bias the testing and
+Use the output for the cache-hit check (project hash against the cached
+`project_hash`), the version sweep, and to pre-bias the testing and
 architecture sweeps.
 """
 
+import hashlib
 import json
 import os
 import re
+from pathlib import Path
 
+CACHE = Path(".artifacts/iet/cache/detected-patterns.json")
 SKIP_DIRS = {".build", "Pods", "Carthage", "SourcePackages", "DerivedData", ".git"}
 DEPLOY = re.compile(r"IPHONEOS_DEPLOYMENT_TARGET\s*=\s*([\d.]+)")
 SWIFT_VERSION = re.compile(r"SWIFT_VERSION\s*=\s*([\d.]+)")
@@ -65,6 +69,24 @@ def resolved_pins():
     return pins
 
 
+def project_hash():
+    """Same value detect-patterns.py writes to the cache: root Package.swift, then root project.pbxproj files."""
+    files = [Path("Package.swift")] if os.path.isfile("Package.swift") else []
+    files += sorted(p for p in Path(".").glob("*.xcodeproj/project.pbxproj") if p.is_file())
+    if not files:
+        return "NO_PROJECT_FILES"
+    digest = hashlib.sha256()
+    for path in files:
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
+def cached_patterns():
+    if not CACHE.is_file():
+        return ["NO_CACHE"]
+    return read(CACHE).splitlines()[:40]
+
+
 def unique(values):
     return sorted(set(values)) or ["NOT_FOUND"]
 
@@ -82,7 +104,8 @@ def main():
     strict = [f"SWIFT_STRICT_CONCURRENCY = {v}" for v in sorted(set(STRICT.findall(pbx)))]
     strict += sorted(set(STRICT_SPM.findall(pkg)))
 
-    out = ["== Deployment targets (IPHONEOS_DEPLOYMENT_TARGET) =="]
+    out = ["== Project hash ==", project_hash(), "== Cached patterns =="] + cached_patterns()
+    out += ["== Deployment targets (IPHONEOS_DEPLOYMENT_TARGET) =="]
     out += unique(DEPLOY.findall(pbx))
     out += ["== Package platforms =="] + unique(PLATFORM.findall(pkg))
     out += ["== swift-tools-version =="] + unique(TOOLS.findall(pkg))

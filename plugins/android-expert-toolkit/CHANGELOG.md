@@ -4,6 +4,12 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.6.2] - 2026-11-21
+
+### Added
+
+- `/android-conventions` runs `scripts/detect-patterns.py`: per-category file counts, shares, dominant pattern and 80/20 verdict, with `--write-cache`. The cache path and existing keys are unchanged; `testing_mocks`, `testing_assertions` and `presentation` are new keys.
+
 ## [4.6.1] - 2026-11-21
 
 ### Changed

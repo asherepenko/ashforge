@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 FIXTURES = Path(__file__).parent / "fixtures"
-SCRIPT = FIXTURES.parent.parent / "skills" / "ios-conventions" / "scripts" / "run-sweeps.py"
+SCRIPT = FIXTURES.parent.parent / "skills" / "ios-conventions" / "scripts" / "detect-patterns.py"
 
 EXPECTED = {
     "tca-app": "TCA",
@@ -20,20 +20,29 @@ EXPECTED = {
     "exactly-80-mvvm": "MVVM",
     "observable-not-named-model": "MVVM",
     "pods-ignored-app": "MVVM",
+    "tca-full-app": "TCA",
+    "mvvm-observable-app": "MVVM",
+    "mixed-60-40-app": "MIXED",
 }
 
 
 def sweep(path: Path) -> subprocess.CompletedProcess:
     return subprocess.run(
-        [sys.executable, str(SCRIPT), str(path)], capture_output=True, text=True, timeout=30
+        [sys.executable, str(SCRIPT), str(path), "architecture"], capture_output=True, text=True, timeout=30
     )
+
+
+def verdict_of(result: subprocess.CompletedProcess) -> str:
+    lines = [l for l in result.stdout.splitlines() if l.startswith("verdict_architecture=")]
+    assert len(lines) == 1, result.stdout
+    return lines[0].split("=", 1)[1]
 
 
 @pytest.mark.parametrize("name,verdict", sorted(EXPECTED.items()))
 def test_fixture_verdict(name, verdict):
     result = sweep(FIXTURES / name)
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == verdict
+    assert verdict_of(result) == verdict
 
 
 def test_every_fixture_directory_has_an_expectation():
@@ -41,15 +50,25 @@ def test_every_fixture_directory_has_an_expectation():
     assert on_disk == set(EXPECTED)
 
 
-def test_stdout_is_exactly_one_verdict_line():
+def test_architecture_section_has_counts_then_one_verdict_line():
     result = sweep(FIXTURES / "mixed-app")
-    assert result.stdout.splitlines() == ["MIXED"]
+    assert result.stdout.splitlines()[4:] == [
+        "== architecture ==",
+        "count tca files=3",
+        "count mvvm_observable files=1",
+        "count mvvm_object files=1",
+        "count mvvm files=2",
+        "count uikit files=0",
+        "count feature_files files=5",
+        "verdict_architecture=MIXED",
+    ]
 
 
 def test_pods_tests_and_previews_are_ignored():
     # Pods/, *Tests/ and *Preview* files hold six reducers; counting any would flip the verdict.
-    assert sweep(FIXTURES / "pods-ignored-app").stdout.strip() == "MVVM"
-    assert "tca=0" in sweep(FIXTURES / "pods-ignored-app").stderr
+    result = sweep(FIXTURES / "pods-ignored-app")
+    assert verdict_of(result) == "MVVM"
+    assert "count tca files=0" in result.stdout.splitlines()
 
 
 def test_missing_directory_argument_fails():
@@ -65,4 +84,4 @@ def test_negative_control_unexcluded_pods_would_change_the_verdict(tmp_path):
     dst = tmp_path / "app"
     shutil.copytree(src, dst)
     shutil.move(str(dst / "Pods"), str(dst / "Vendor"))
-    assert sweep(dst).stdout.strip() != "MVVM"
+    assert verdict_of(sweep(dst)) != "MVVM"

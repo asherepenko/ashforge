@@ -13,7 +13,7 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent
 CODEX_LINK = PROJECT_ROOT / "hooks" / "link-codex-agents.py"
 CURSOR_LINK = PROJECT_ROOT / "hooks" / "link-cursor-agents.py"
-SWEEPS = PROJECT_ROOT / "skills" / "ios-conventions" / "scripts" / "run-sweeps.py"
+SWEEPS = PROJECT_ROOT / "skills" / "ios-conventions" / "scripts" / "detect-patterns.py"
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures"
 
 
@@ -125,16 +125,34 @@ def test_cursor_hook_survives_an_unwritable_agents_dir(tmp_path):
     assert "cannot create" in result.stderr
 
 
-def test_sweeps_stderr_reports_the_counts():
-    result = run(SWEEPS, [str(FIXTURES / "mixed-app")])
-    assert re.fullmatch(r"tca=\d+ mvvm=\d+ uikit=\d+ feature_files=\d+\n", result.stderr)
-    assert result.stdout == "MIXED\n"
+def verdict_of(result) -> str:
+    lines = [l for l in result.stdout.splitlines() if l.startswith("verdict_architecture=")]
+    assert len(lines) == 1, result.stdout
+    return lines[0].split("=", 1)[1]
+
+
+def counts_of(result) -> dict:
+    return {
+        l.split()[1]: int(l.split("=")[1]) for l in result.stdout.splitlines() if l.startswith("count ")
+    }
+
+
+def test_sweeps_stdout_reports_the_architecture_counts_and_verdict():
+    result = run(SWEEPS, [str(FIXTURES / "mixed-app"), "architecture"])
+    assert result.returncode == 0
+    assert result.stderr == ""
+    assert verdict_of(result) == "MIXED"
+    assert set(counts_of(result)) == {"tca", "mvvm_observable", "mvvm_object", "mvvm", "uikit", "feature_files"}
 
 
 def test_sweeps_counts_for_new_app_and_pods_fixture():
-    assert run(SWEEPS, [str(FIXTURES / "new-app")]).stderr == "tca=0 mvvm=0 uikit=0 feature_files=0\n"
-    pods = run(SWEEPS, [str(FIXTURES / "pods-ignored-app")]).stderr
-    assert pods.startswith("tca=0 mvvm=")
+    new = run(SWEEPS, [str(FIXTURES / "new-app"), "architecture"])
+    assert verdict_of(new) == "NEW"
+    assert counts_of(new) == {
+        "tca": 0, "mvvm_observable": 0, "mvvm_object": 0, "mvvm": 0, "uikit": 0, "feature_files": 0,
+    }
+    pods = run(SWEEPS, [str(FIXTURES / "pods-ignored-app"), "architecture"])
+    assert counts_of(pods)["tca"] == 0
 
 
 def test_sweeps_missing_directory_fails_with_usage():
@@ -151,24 +169,25 @@ def test_sweeps_nonexistent_directory_fails(tmp_path):
 
 
 def test_sweeps_empty_directory_is_new(tmp_path):
-    result = run(SWEEPS, [str(tmp_path)])
+    result = run(SWEEPS, [str(tmp_path), "architecture"])
     assert result.returncode == 0
-    assert result.stdout == "NEW\n"
-    assert result.stderr == "tca=0 mvvm=0 uikit=0 feature_files=0\n"
+    assert verdict_of(result) == "NEW"
+    assert result.stderr == ""
 
 
 def test_sweeps_classifies_uikit_and_counts_a_file_once(tmp_path):
     (tmp_path / "A.swift").write_text("final class A: UIViewController {}\n", encoding="utf-8")
     (tmp_path / "B.swift").write_text("@Observable\nclass B: ObservableObject {}\n", encoding="utf-8")
-    result = run(SWEEPS, [str(tmp_path)])
-    assert result.stdout == "MVVM\n"
-    assert result.stderr == "tca=0 mvvm=1 uikit=1 feature_files=2\n"
+    result = run(SWEEPS, [str(tmp_path), "architecture"])
+    assert verdict_of(result) == "MVVM"
+    counts = counts_of(result)
+    assert (counts["tca"], counts["mvvm"], counts["uikit"], counts["feature_files"]) == (0, 1, 1, 2)
 
 
 def test_sweeps_skips_main_and_contentview_when_counting_features(tmp_path):
     (tmp_path / "ContentView.swift").write_text("struct ContentView {}\n", encoding="utf-8")
     (tmp_path / "App.swift").write_text("@main struct App {}\n", encoding="utf-8")
     (tmp_path / "Thing.swift").write_text("struct Thing {}\n", encoding="utf-8")
-    result = run(SWEEPS, [str(tmp_path)])
-    assert result.stdout == "MIXED\n"
-    assert result.stderr == "tca=0 mvvm=0 uikit=0 feature_files=1\n"
+    result = run(SWEEPS, [str(tmp_path), "architecture"])
+    assert verdict_of(result) == "MIXED"
+    assert counts_of(result)["feature_files"] == 1
