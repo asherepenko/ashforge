@@ -79,7 +79,7 @@ Persona body content (specialty lens, planning/code-review checklists, debate be
 Python tests live under `tests/`. Run:
 
 ```bash
-pytest tests/
+uvx pytest tests/
 ```
 
 All collected tests must pass.
