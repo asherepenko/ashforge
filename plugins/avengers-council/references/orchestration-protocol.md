@@ -178,7 +178,7 @@ session — `captain-america` is NOT a valid recipient name) using the Round-1 f
 references/debate-protocol.md#round-1--initial-assessment (canonical — do not improvise fields):
 - RESEARCH BRIEF (only when your spawn prompt has a RESEARCH BRIEF block): [date — findings with URLs | Nothing material]
 - Verdict: APPROVE / CONCERNS / REJECT
-- DOMAIN SCORE: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none> (pick the band from your own findings and WEAK criteria; see references/verdict-rules.md#domain-scoring)
+- DOMAIN SCORE: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none> (pick the band from your own findings and WEAK criteria; see references/verdict-rules.md#domain-scoring) Score is a number 1-10 written N/10, never a letter grade (A-F is the Quality row, not your score).
 - Key Findings: max 5, each with severity (CRITICAL/HIGH/MEDIUM/LOW); in code reviews, also 'Introduced here: yes | pre-existing'
 - Red Line Violations: any from references/red-lines.md (or 'None')
 - Vote Basis (code reviews, CONCERNS or REJECT only): the findings the verdict rests on — own by number, a teammate's as '<member>#<n>', a red line by name
@@ -251,6 +251,8 @@ Agents self-start Round 1 immediately from their spawn prompt — no broadcast n
    ```
 
    Print the block as rendered markdown: a heading, a real table and a plain line. Never wrap it in a code fence; the fence above only shows the source. Before every member is in, print only the count line, never a partial table.
+
+   **Format gate (before the table).** Check each report's Score and Verdict first. Score must match `^([1-9]|10)/10$`; Verdict must be exactly APPROVE, CONCERNS or REJECT. A letter grade (`B`), a bare number, a missing score, or a verdict outside those three words fails the gate. Send that member one correction message ("Your DOMAIN SCORE must be N/10, 1-10, never a letter: letters belong to the Quality row only. Your Verdict must be APPROVE, CONCERNS or REJECT. Resend both lines.") and wait for the reply within the timeout. If it is still invalid, write `n/a ⚠` in the cell and carry `Score flag: invalid format` to the verdict. Never copy an invalid value into the table.
 
    One row per spawned member, in spawn order. Fill Score, Verdict and Findings from the member's Round-1 report; Top concern is its highest-severity finding in under 10 words. Write `🚫 VETO` in Status for a black-widow veto, and `⌛ silent` for a member past the timeout.
 3. Mark Round 1 task as completed
@@ -495,7 +497,7 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
    - RESEARCH BRIEF (only when your spawn prompt has a RESEARCH BRIEF block): [date — findings with URLs | Nothing material]
    - Verdict: APPROVE / CONCERNS / REJECT
    - Key Findings: max 3, each with severity (CRITICAL/HIGH/MEDIUM/LOW); in code reviews, also 'Introduced here: yes | pre-existing'
-   - DOMAIN SCORE: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none>
+   - DOMAIN SCORE: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none> — N/10, 1-10, never a letter grade
    - ARCHITECTURE DIAGRAM / FLOW DIAGRAM + PATH → TEST (plan reviews only): iron-man adds ARCHITECTURE DIAGRAM and hulk adds FLOW DIAGRAM and PATH → TEST, each only when that member is in the roster
    - Recommendation: 1-2 sentences
    ```

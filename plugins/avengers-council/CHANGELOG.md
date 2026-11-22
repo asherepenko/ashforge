@@ -4,6 +4,12 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [5.0.11] - 2026-11-22
+
+### Fixed
+
+- The Round 1 table no longer shows a letter grade (such as `B`) in the Score column. A format gate checks each member's score (`N/10`, 1-10) and verdict (APPROVE, CONCERNS or REJECT) before the table prints. It asks the member once to fix a bad value, then shows `n/a ⚠` with a `Score flag`. The member prompts now say the score is never a letter grade. `tests/test_score_format_contract.py` guards both rules.
+
 ## [5.0.10] - 2026-11-21
 
 ### Changed

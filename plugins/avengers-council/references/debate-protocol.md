@@ -44,6 +44,7 @@ When Captain America sends context (stay-alive: spawn prompt + team channel; hub
    RESEARCH BRIEF (only when your spawn prompt has a RESEARCH BRIEF block): [date — findings with URLs | Nothing material]
    VERDICT: [APPROVE | CONCERNS | REJECT]
    DOMAIN SCORE: X/10 ([your domain name]) — basis: <own finding numbers | weak: <slugs> | none>
+   (X is 1-10. Never a letter grade such as B: letters are the Quality row. VERDICT is exactly APPROVE, CONCERNS or REJECT.)
 
    FINDINGS:
    1. [CRITICAL|HIGH|MEDIUM|LOW] Description (file:line if code review) — Introduced here: yes | pre-existing (code review only)
