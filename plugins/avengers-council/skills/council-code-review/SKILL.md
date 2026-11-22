@@ -86,7 +86,7 @@ Follow [phase-1--assemble-the-council-full-mode](../../references/orchestration-
   - Include commit message format check against project standards
   - Require file:line references for all findings
   - **Grading rubric**: Read [rubric-code-quality](../../references/rubric-code-quality.md) and include its 5 criteria in the spawn prompt. Each council member grades findings using STRONG/ADEQUATE/WEAK per criterion. Only report WEAK findings, each as `weak: <slug>` (`correctness`, `simplicity`, `consistency`, `robustness`, `maintainability`). A weakness that rests only on pre-existing findings is not WEAK.
-  - **Score basis**: every `DOMAIN SCORE` line carries `basis: <own finding numbers | weak: <slugs> | none>`, with the score picked from the anchored bands in [domain-scoring](../../references/verdict-rules.md#domain-scoring). Only the member's own `Introduced here: yes` findings count. A bare score is sent back once, then reported as `n/a`. The score is informational and never changes the verdict.
+  - **No member score**: members send findings (with `Introduced here: yes | pre-existing`) and `weak: <slug>` lines, never a score. Captain America computes it per [domain-scoring](../../references/verdict-rules.md#domain-scoring) from the member's own `Introduced here: yes` counts. The score is informational and never changes the verdict.
   - **Anti-leniency directive** (include verbatim in the spawn prompt):
     > Your job is to find problems, not to be encouraging. If you identify an issue, report it — do not rationalize it away or soften it. LLM evaluators have a documented tendency to praise LLM-generated work even when quality is mediocre. Resist this. When in doubt, flag it. The user decides what's acceptable, not you.
   - **Failure-first directive** (include verbatim in the spawn prompt):
@@ -116,16 +116,23 @@ Follow [phase-1--assemble-the-council-full-mode](../../references/orchestration-
   - Group findings by severity (CRITICAL first)
   - Move every `Introduced here: pre-existing` finding to the verdict's Pre-existing section. Exclude these findings from the consensus rules, the unmitigated-CRITICAL rules, and Black Widow's VETO
   - Collect each member's `CONCERN FOR THE USER` from Round 3. Per [orchestration-protocol](../../references/orchestration-protocol.md) Phase 4, a concern that meets a severity definition or a red line is a finding: move it into the findings before grading. List only a residual trade-off under Concerns for the User (advisory, never a condition, not counted in Quality)
-  - Run `score-check.py` once per member score with that member's own counts (`yes` findings only), per [checking-the-score](../../references/verdict-rules.md#checking-the-score). Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. Exit 1 is a FLAG: an unresolved one (or any FLAG in Quick/fallback modes) is printed as `Score flag:` under the member. A FLAG never changes the verdict:
+  - Run `domain-score.py` once per member on that member's own counts (`yes` findings only, plus `weak:` lines), per [computing-the-score](../../references/verdict-rules.md#computing-the-score), and paste the output verbatim. Never write the score by hand. Exit 2 reads `n/a (reason)`. The aggregate is `domain-score.py --average` over the members' `N/10` or `n/a`, pasted verbatim. The score never changes the verdict:
     ```bash
-    python3 "<plugin root from preflight>/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
+    python3 "<plugin root from preflight>/scripts/domain-score.py" --critical N --high N --medium N --low N --weak N
     ```
   - Grade Quality: count the `yes` findings by severity (pre-existing excluded) and run the script. Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored), then append the weak-slug suffix per [quality](../../references/verdict-rules.md#quality) (none on `not scored`). On a script error the row reads `not scored ({reason})`. Never write the letter by hand:
     ```bash
     python3 "<plugin root from preflight>/scripts/review-grade.py" --ladder severity --critical N --high N --medium N --low N
     ```
-  - Set Risk from the tier table in [quality-and-risk](../../references/verdict-rules.md#quality-and-risk), applied to the diff's touched paths. Highest tier wins. Put `<emoji> <level> — <basis>` in the **Risk** row (🟢 low, 🟡 medium, 🔴 high) and name the paths that set it
-  - Quality, Risk and the average domain score are informational. The verdict comes from the consensus rules
+  - Set Risk with `risk-tier.py`: tag what the diff's touched paths touch from the list in [risk](../../references/verdict-rules.md#risk) (see [quality-and-risk](../../references/verdict-rules.md#quality-and-risk)), run it and paste the output verbatim. Never write the Risk by hand. Highest tier wins. Put `<emoji> <level> — <basis>` in the **Risk** row (🟢 low, 🟡 medium, 🔴 high), with level and basis from the script line:
+    ```bash
+    python3 "<plugin root from preflight>/scripts/risk-tier.py" --touches TAG[,TAG...]
+    ```
+  - **Compute the verdict:** run `verdict.py` on the final Round-3 votes and the `Introduced here: yes` counts (`--critical` is unmitigated CRITICAL; `--veto` only for a Black Widow veto) and paste the output line verbatim. Never write the verdict by hand. Exit 2: stop and fix the counts. Only `NO CONSENSUS` runs the tiebreaker, recorded with the step that resolved it:
+    ```bash
+    python3 "<plugin root from preflight>/scripts/verdict.py" --mode full|quick --approve N --concerns N --reject N --critical N --high N --red-lines N --standards N [--veto]
+    ```
+  - Quality, Risk and the average domain score are informational. The verdict comes from `verdict.py`
   - **Chat output:** show the verdict in the chat as the template's `## Chat Output` section sets out: the `## Consensus` block as it is (emoji headline plus the Quality, Risk, Vote and Score table), one line per condition or blocking finding with its severity emoji, then the saved path. Never a one-line prose recap of the grade and the verdict.
   - Include file:line references for each finding
   - Include suggested fixes where available
@@ -158,7 +165,7 @@ Follow [phase-1--assemble-the-council-full-mode](../../references/orchestration-
 - A pre-existing finding counted toward NEEDS REVISION, BLOCKED, an unmitigated-CRITICAL rule, or Black Widow's VETO
 - `REVIEW.md` read from the change under review instead of the base ref
 - Writing the Quality letter by hand instead of running `review-grade.py`
-- A domain score without a `basis:`, or a score treated as able to override or re-open the verdict
+- A domain score written by hand instead of pasted from `domain-score.py`, or a score treated as able to override or re-open the verdict
 - A council (Full or Quick) ended with only a file write and a prose recap, no round table in chat
 
 ## Verification
@@ -171,8 +178,9 @@ After code review completes, confirm:
 - [ ] CRITICAL/HIGH findings include suggested fixes
 - [ ] Rubric grading applied (5 criteria, STRONG/ADEQUATE/WEAK); WEAK criteria reported as slugs
 - [ ] **Quality** row is the `review-grade.py` output on the `yes` finding counts (or `not scored ({reason})`)
-- [ ] **Risk** row starts with the tier emoji (🟢/🟡/🔴), names the tier and the touched paths that set it
-- [ ] Every domain score has a `basis:` and passed `score-check.py`, or carries a `Score flag:`
+- [ ] **Risk** row is the `risk-tier.py` output with the tier emoji (🟢/🟡/🔴), never a hand-picked tier
+- [ ] Verdict is the `verdict.py` output, pasted verbatim
+- [ ] Every domain score and the average are `domain-score.py` output on the `yes` counts, pasted verbatim (or `n/a (reason)`)
 - [ ] Standards compliance checked (naming, style, testing, commit format)
 - [ ] Round 2 challenges exchanged between members (stay-alive: via SendMessage; hub: via re-spawn with consolidated context)
 - [ ] A table printed in chat after each round (Full: Rounds 1, 2, 3; Quick: its one round)
@@ -185,4 +193,4 @@ After code review completes, confirm:
 
 - The verdict file is saved, with findings grouped by severity.
 - The **Quality** row is the `review-grade.py` output on the `yes` finding counts, or `not scored ({reason})`.
-- Every domain score passed `score-check.py`, or carries a `Score flag:`.
+- Every domain score is `domain-score.py` output, pasted verbatim.

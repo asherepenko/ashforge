@@ -8,7 +8,7 @@ Engineering advisory board (8 core members + Captain America orchestrator) for r
 - **Research Briefs** — In Round 1, Black Widow checks current advisories and facts on every review. Other members research only when their Research Focus applies. Without web tools, the skip is stated in the verdict.
 - **Scope Check** — Plan reviews list what the plan's source and acceptance criteria asked for, and flag each missing or partial item as a finding. Plan reviews also carry Iron Man and Hulk diagrams, and any review can add advisory Concerns for the User.
 - **3-Round Debate** — Assessment → Challenge → Final Position. Members critique each other's findings before consensus.
-- **Domain Scoring** — Each member scores 1–10 in their specialty from anchored bands and states the `basis:`. The score and its average are informational and never change the verdict. Every verdict also carries a **Quality** grade (A–F from finding counts) and a **Risk** tier (low, medium, high), both informational.
+- **Domain Scoring** — Members send findings, not a score. Captain America computes each member's 1–10 domain score with `scripts/domain-score.py` from that member's own findings. The score and its average are informational and never change the verdict. Every verdict also carries a **Quality** grade (A–F from finding counts) and a **Risk** tier (low, medium, high), both informational.
 - **Black Widow VETO** — Unmitigated CRITICAL security issues trigger automatic BLOCKED verdict (cannot be overridden).
 - **Verdict Archive** — Every review saved to `.artifacts/reviews/{plans,code}/council/YYYY-MM-DD/HHMMSS-review-{verdict}.md`.
 - **Quick Mode** — 3-member quorum with `--quick --focus <area>` when full council is overkill; also the documented autonomous cost-control path on hub-only runtimes (orchestration protocol → Mode Selection).
@@ -118,10 +118,10 @@ Seven phases per review:
 
 1. **Standards Detection** — Read `CLAUDE.md`, `CONTRIBUTING.md`, audit codebase.
 2. **Assemble** — Claude: parallel `Agent` calls spawn the 8 core members (plus topic-matched specialists) into the session team. Codex: parallel `spawn_agent` (no team primitive).
-3. **Round 1 — Assessment** — Each member delivers verdict (APPROVE/CONCERNS/REJECT), domain score, and up to 5 findings with severity.
+3. **Round 1 — Assessment** — Each member delivers verdict (APPROVE/CONCERNS/REJECT) and up to 5 findings with severity.
 4. **Round 2 — Challenge** — Claude: members DM challenges to each other via `SendMessage`. Codex: Captain consolidates Round-1 findings and re-spawns each member with a per-recipient challenge prompt.
-5. **Round 3 — Final Position** — Final verdict, updated score, confidence, unresolved disagreements. Claude: same agents stay alive. Hub transport: bounded dispatch or continued workers receive the consolidated Round-2 context.
-6. **Verdict Synthesis** — Captain America tallies, checks red lines, applies veto, runs tiebreakers.
+5. **Round 3 — Final Position** — Final verdict, severity changes, confidence, unresolved disagreements. Claude: same agents stay alive. Hub transport: bounded dispatch or continued workers receive the consolidated Round-2 context.
+6. **Verdict Synthesis** — Captain America counts votes and findings, then runs `scripts/verdict.py` for the verdict (veto and red lines included) and `scripts/risk-tier.py` for Risk. The tiebreaker runs only on `NO CONSENSUS`.
 7. **Save & Follow-up** — Verdict written to disk; interactive menu to address findings or save TODOs.
 
 Verdicts: **APPROVED**, **APPROVED WITH CONDITIONS**, **NEEDS REVISION**, **BLOCKED**.

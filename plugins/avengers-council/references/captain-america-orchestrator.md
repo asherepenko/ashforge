@@ -63,7 +63,7 @@ Follow [debate-protocol](debate-protocol.md). Captain America orchestrates all r
 
 - **Round 1**: Collect VERDICT/FINDINGS/RECOMMENDATION from each teammate
 - **Round 2**: Facilitate cross-team challenges and support
-- **Round 3**: Collect FINAL VERDICT/CONFIDENCE/UNRESOLVED DISAGREEMENTS/KEY CONDITION, FINAL DOMAIN SCORE (with basis), and the optional CONCERN FOR THE USER from each teammate
+- **Round 3**: Collect FINAL VERDICT/SEVERITY CHANGES/CONFIDENCE/UNRESOLVED DISAGREEMENTS/KEY CONDITION and the optional CONCERN FOR THE USER from each teammate
 
 Severity levels: CRITICAL (blocks deploy), HIGH (must fix), MEDIUM (should fix), LOW (nice to have).
 
@@ -76,7 +76,7 @@ Severity levels: CRITICAL (blocks deploy), HIGH (must fix), MEDIUM (should fix),
 
 ### Consensus Rules
 
-Apply consensus rules from [verdict-rules](verdict-rules.md) to determine the verdict.
+Run `scripts/verdict.py` on the final Round-3 votes and the counts (code reviews: `Introduced here: yes` only) and paste its line as the verdict; never write the verdict by hand. The rules are in [verdict-rules](verdict-rules.md). Only a `NO CONSENSUS` line sends you to the tiebreaker, and the decision is recorded with the step that resolved it.
 Apply shared principles from [shared-principles](shared-principles.md) for tiebreakers.
 Check red lines from [red-lines](red-lines.md) for automatic escalation triggers.
 
@@ -84,7 +84,7 @@ Check red lines from [red-lines](red-lines.md) for automatic escalation triggers
 - **Black Widow VETO** (unmitigated CRITICAL security finding) → automatic **BLOCKED**
 - **Red line violation** (any domain, unmitigated) → automatic "NEEDS REVISION" minimum
 - **Mandatory standards violations** → automatic "NEEDS REVISION" minimum (unless explicitly waived by the user)
-- **Missing acceptance criteria** → automatic "NEEDS REVISION" minimum
+- **Missing acceptance criteria** → pass the count as `verdict.py --missing-ac N`; the script forces "NEEDS REVISION"
 - **Pre-existing findings** (code reviews, `Introduced here: pre-existing`) → excluded from every rule above; list them in the verdict's Pre-existing section ([verdict-rules](verdict-rules.md#pre-existing-findings))
 
 ## Roster & Standards Detection
@@ -99,11 +99,11 @@ Before any council decision, Captain America determines the active roster and ga
 
 For the full verdict synthesis and recording protocol, see [verdict-template](../assets/verdict-template.md).
 
-In plan and code reviews, set the verdict's **Risk** row (`🟢 low | 🟡 medium | 🔴 high`, then the basis) and the matching recommended human review of the resulting code (low → automated checks only, medium → one person, high → two people). Set the tier by what the change touches, never by who writes it. The tier table is in [verdict-rules](verdict-rules.md#quality-and-risk). In plan reviews, treat any unmitigated pre-mortem failure mode in a member's primary domain as at least HIGH.
+In plan and code reviews, set the verdict's **Risk** row (`🟢 low | 🟡 medium | 🔴 high`, then the basis) and the matching recommended human review of the resulting code (low → automated checks only, medium → one person, high → two people). Set the tier by what the change touches, never by who writes it: run `scripts/risk-tier.py --touches TAG[,TAG...]` and paste the output; never write the Risk by hand. The tag table is in [verdict-rules](verdict-rules.md#risk). In plan reviews, treat any unmitigated pre-mortem failure mode in a member's primary domain as at least HIGH.
 
 In code reviews, list findings marked `Introduced here: pre-existing` in the verdict's Pre-existing section and keep them out of the consensus.
 
-Every verdict also carries two info rows, neither of which changes the verdict ([verdict-rules](verdict-rules.md#quality-and-risk)): Quality from `review-grade.py --ladder severity` on `yes` findings (plans: all findings), and Risk from the tier table (highest tier wins; name what sets it). In the **Quality** row, strip the leading `Quality: ` from the script output, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) and append the weak-slug suffix per [verdict-rules](verdict-rules.md#quality) (none on `not scored`); in the **Risk** row, write `<emoji> <level> — <basis>`. Run `score-check.py` once per member score; Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again in synthesis, and an unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. The domain score is informational.
+Every verdict also carries two info rows, neither of which changes the verdict ([verdict-rules](verdict-rules.md#quality-and-risk)): Quality from `review-grade.py --ladder severity` on `yes` findings (plans: all findings), and Risk from `risk-tier.py --touches ...` (highest tier wins; paste the output). In the **Quality** row, strip the leading `Quality: ` from the script output, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) and append the weak-slug suffix per [verdict-rules](verdict-rules.md#quality) (none on `not scored`); in the **Risk** row, write `<emoji> <level> — <basis>`. Members send no domain score. Run `scripts/domain-score.py` once per member on that member's own counts and paste the output verbatim; never write a score by hand ([verdict-rules](verdict-rules.md#computing-the-score)). The domain score is informational.
 
 A member may raise a `CONCERN FOR THE USER` in Round 3. Before grading, check each one against the severity guidelines and the red lines. A concern that meets a severity definition or a red line is a finding, not a concern. Move it into the findings before grading. Only a residual trade-off stays in the verdict's Concerns for the User section, which is advisory: never a condition, not counted in Quality, never changes the verdict.
 

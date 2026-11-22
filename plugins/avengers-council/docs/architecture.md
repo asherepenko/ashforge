@@ -44,14 +44,15 @@
 │                                                                 │
 │  PHASE 5: SYNTHESIZE VERDICT                                    │
 │  ├─ Tally votes: APPROVE, CONCERNS, REJECT                      │
-│  ├─ Compute informational avg domain score (score-check.py)     │
+│  ├─ Compute domain scores + avg (domain-score.py, info)         │
 │  ├─ Check red lines (references/red-lines.md)                   │
 │  ├─ Check standards compliance:                                 │
 │  │   ├─ Mandatory standard violated? → min "NEEDS REVISION"     │
 │  │   ├─ CRITICAL security finding? → min "NEEDS REVISION"       │
 │  │   ├─ Missing AC (plans)? → min "NEEDS REVISION"              │
 │  ├─ Apply consensus rules (N-based thresholds)                  │
-│  ├─ Grade Quality (A–F) and set Risk tier — info only           │
+│  ├─ verdict.py → verdict; risk-tier.py → Risk (info only)       │
+│  ├─ Grade Quality (A–F) — info only                             │
 │  ├─ Apply tiebreaker hierarchy if contested (shared-principles) │
 │  ├─ Document conditions & action items                          │
 │  └─ Add Captain's own assessment                                │
@@ -247,21 +248,21 @@ START: council-plan-review @proposal.md
   ├─ Spawn N teammates with context (standards, audit, principles, red lines)
   │
   ├─ ROUND 1: Agents self-start assessment
-  │  └─ Collect N responses (verdict + domain score + findings)
+  │  └─ Collect N responses (verdict + findings)
   │
   ├─ ROUND 2: Challenge & peer debate
   │  └─ Members send direct challenges to teammates
   │
   ├─ ROUND 3: Final positions
-  │  └─ Collect final verdicts + updated domain scores + confidence
+  │  └─ Collect final verdicts + severity changes + confidence
   │
   ├─ Captain synthesizes:
-  │  ├─ Tallies votes + computes avg domain score (info)
+  │  ├─ Tallies votes + computes domain scores + avg (info)
   │  ├─ Checks: Red line violations?
   │  ├─ Checks: Standards violated?
   │  ├─ Checks: CRITICAL findings?
   │  ├─ Applies N-based consensus rules
-  │  ├─ Grades Quality, sets Risk (info only)
+  │  ├─ Grades Quality; verdict.py + risk-tier.py set verdict and Risk
   │  ├─ Applies tiebreaker hierarchy if contested
   │  └─ Adds conditions if needed
   │
@@ -291,21 +292,21 @@ START: council-code-review --pr 123
   ├─ Spawn N teammates with context (diff, standards, audit, principles, red lines)
   │
   ├─ ROUND 1: Agents self-start assessment
-  │  └─ Collect N responses (verdict + domain score + findings)
+  │  └─ Collect N responses (verdict + findings)
   │
   ├─ ROUND 2: Challenge specific findings
   │  └─ Members debate code issues directly
   │
   ├─ ROUND 3: Final positions
-  │  └─ Collect final verdicts + updated domain scores + confidence
+  │  └─ Collect final verdicts + severity changes + confidence
   │
   ├─ Captain synthesizes:
-  │  ├─ Tallies votes + computes avg domain score (info)
+  │  ├─ Tallies votes + computes domain scores + avg (info)
   │  ├─ Checks: Red line violations?
   │  ├─ Checks: Standards violated?
   │  ├─ Checks: CRITICAL findings?
   │  ├─ Applies N-based consensus rules
-  │  ├─ Grades Quality, sets Risk (info only)
+  │  ├─ Grades Quality; verdict.py + risk-tier.py set verdict and Risk
   │  ├─ Applies tiebreaker hierarchy if contested
   │  └─ Adds conditions if needed
   │
@@ -326,7 +327,7 @@ Captain America enforces project standards, shared principles, and red lines in 
 2. **Determining** roster — core members + topic-matched optional members
 3. **Indexing** standards by impact (Mandatory, Strong, Aspirational)
 4. **Validating** against red lines and shared principles
-5. **Scoring** — each member provides a domain score with a `basis:`; the score and average are informational and never change the verdict. Quality (A–F) and Risk (low, medium, high) are computed after the debate, also informational
+5. **Scoring** — members send findings and `weak:` lines, and Captain America computes each domain score with `scripts/domain-score.py`; the score and average are informational and never change the verdict. Quality (A–F) and Risk (low, medium, high) are computed after the debate, also informational
 6. **Applying** N-based consensus rules with graduated escalation hierarchy
 7. **Recording** verdicts with scores, standards compliance, and conditions
 

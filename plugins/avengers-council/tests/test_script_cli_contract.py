@@ -51,30 +51,31 @@ def test_review_grade_usage_errors(args):
     assert r.returncode == 2 and r.stdout == "" and r.stderr.startswith("usage: review-grade.py")
 
 
-@pytest.mark.parametrize("args,out,rc", [
-    (["--score", "8"], "ok\n", 0),
-    (["--score", "08"], "ok\n", 0),
-    (["--score", "5", "--critical", "1"],
-     "FLAG: score 5 with 1 CRITICAL; a CRITICAL caps the score at 4 (band 3-4 or lower)\n", 1),
-    (["--score", "7", "--high", "2"],
-     "FLAG: score 7 with 2 HIGH; a HIGH caps the score at 6 (band 5-6 or lower)\n", 1),
-    (["--score", "7", "--medium", "2", "--weak", "1"],
-     "FLAG: score 7 with 3 MEDIUM/WEAK; three or more cap the score at 6 (band 5-6 or lower)\n", 1),
-    (["--score", "9", "--weak", "1", "--low", "5"],
-     "FLAG: score 9 with 1 MEDIUM/WEAK; any cap the score at 8 (band 7-8 or lower)\n", 1),
-    (["--score", "6"],
-     "FLAG: score 6 with no CRITICAL, HIGH, MEDIUM or WEAK findings; a clean domain scores 7 or more (band 7-8 or higher)\n", 1),
+@pytest.mark.parametrize("args,out", [
+    ([], "10/10\n"),
+    (["--low", "5"], "10/10\n"),
+    (["--weak", "1"], "8/10\n"),
+    (["--medium", "1", "--weak", "1"], "7/10\n"),
+    (["--medium", "2", "--weak", "1"], "6/10\n"),
+    (["--high", "1"], "6/10\n"),
+    (["--high", "1", "--medium", "3"], "5/10\n"),
+    (["--high", "2"], "5/10\n"),
+    (["--critical", "1"], "3/10\n"),
+    (["--critical", "2"], "1/10\n"),
+    (["--average", "6/10", "8/10", "n/a"], "7.0/10\n"),
+    (["--average", "n/a"], "n/a\n"),
 ])
-def test_score_check_output(args, out, rc):
-    r = run("scripts/score-check", *args)
-    assert (r.returncode, r.stdout) == (rc, out)
+def test_domain_score_output(args, out):
+    r = run("scripts/domain-score", *args)
+    assert (r.returncode, r.stdout) == (0, out)
 
 
-@pytest.mark.parametrize("args", [[], ["--score"], ["--score", "0"], ["--score", "11"],
-                                  ["--score", "x"], ["--score", "5", "--bogus"]])
-def test_score_check_usage_errors(args):
-    r = run("scripts/score-check", *args)
-    assert r.returncode == 2 and r.stdout == "" and r.stderr.startswith("usage: score-check.py")
+@pytest.mark.parametrize("args", [["--score", "5"], ["--high"], ["--high", "x"], ["--high", "-1"],
+                                  ["--bogus", "1"], ["--average"], ["--average", "B"],
+                                  ["--average", "11/10"]])
+def test_domain_score_usage_errors(args):
+    r = run("scripts/domain-score", *args)
+    assert r.returncode == 2 and r.stdout == "" and r.stderr.startswith("usage: domain-score.py")
 
 
 @pytest.mark.parametrize("n,bucket", [("0", "good"), ("200", "good"), ("201", "acceptable"),

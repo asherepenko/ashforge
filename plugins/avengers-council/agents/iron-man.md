@@ -81,7 +81,7 @@ When reviewing implementation:
 
 ## Debate Protocol
 
-Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Domain Score and Red Line Violations).
+Round output format: follow [debate-protocol](../references/debate-protocol.md) exactly (includes Weak Criteria and Red Line Violations; no score, Captain America computes it).
 
 ## Debate Behavior
 

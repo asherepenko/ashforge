@@ -70,11 +70,11 @@ Headline emoji: ✅ APPROVED and APPROVED WITH CONDITIONS, ⚠️ NEEDS REVISION
 
 [Include this section for plan reviews and code reviews.]
 
-**Risk tier**: [low | medium | high]
+**Risk tier**: [low | medium | high] (the `risk-tier.py` output line, pasted verbatim)
 **Recommended human review of the resulting code**: [automated checks only | one person | two people]
-**Basis**: [what the change touches that sets the tier — e.g. "adds a billing webhook handler"]
+**Basis**: [the tag list `risk-tier.py` prints — e.g. "touches: billing"]
 
-Set the tier by what the change touches, never by who writes it. See @references/verdict-rules.md#quality-and-risk for the tier table.
+Set the tier by what the change touches, never by who writes it: run `scripts/risk-tier.py --touches TAG[,TAG...]` and paste its output; never write the Risk by hand. See @references/verdict-rules.md#risk for the tag table. The verdict line is the `scripts/verdict.py` output, pasted verbatim.
 
 ## Executive Summary
 [2-3 sentences from Captain America]
@@ -83,20 +83,18 @@ Set the tier by what the change touches, never by who writes it. See @references
 
 > Each position uses this shape:
 > ```
-> ### [Member] ([Domain]) — [VERDICT] | Score: X/10 — basis: …
+> ### [Member] ([Domain]) — [VERDICT] | Score: N/10
 > **Findings:**
 > - [Finding 1 with file:line]
 > - [Finding 2 with file:line]
 >
 > - Research: (only for a member who researched) [date — findings with URLs | Nothing material | failed (<reason>)]
 >
-> **Score flag:** (only when a score-check FLAG was not resolved in Round 3: the flag text)
->
 > **Considered but not flagged:** (1–3 near-misses with reasoning, or "Nothing material — diff too narrow for near-misses")
 > - [Pattern that looked wrong + why it's actually fine]
 > ```
 
-### Iron Man (Architecture & Scalability) — [VERDICT] | Score: X/10 — basis: …
+### Iron Man (Architecture & Scalability) — [VERDICT] | Score: N/10
 **Findings:**
 - [Finding 1]
 - [Finding 2]
@@ -104,49 +102,49 @@ Set the tier by what the change touches, never by who writes it. See @references
 **Considered but not flagged:**
 - [Near-miss with reasoning]
 
-### Thor (Backend & API) — [VERDICT] | Score: X/10 — basis: …
+### Thor (Backend & API) — [VERDICT] | Score: N/10
 **Findings:**
 - [Finding 1]
 
 **Considered but not flagged:**
 - [Near-miss with reasoning]
 
-### Scarlet Witch (Frontend & UX) — [VERDICT] | Score: X/10 — basis: …
+### Scarlet Witch (Frontend & UX) — [VERDICT] | Score: N/10
 **Findings:**
 - [Finding 1]
 
 **Considered but not flagged:**
 - [Near-miss with reasoning]
 
-### Hulk (Testing & QA) — [VERDICT] | Score: X/10 — basis: …
+### Hulk (Testing & QA) — [VERDICT] | Score: N/10
 **Findings:**
 - [Finding 1]
 
 **Considered but not flagged:**
 - [Near-miss with reasoning]
 
-### Black Widow (Security & Privacy) — [VERDICT] | Score: X/10 — basis: …
+### Black Widow (Security & Privacy) — [VERDICT] | Score: N/10
 **Findings:**
 - [Finding 1]
 
 **Considered but not flagged:**
 - [Near-miss with reasoning]
 
-### Hawkeye (Mobile Platforms) — [VERDICT] | Score: X/10 — basis: …
+### Hawkeye (Mobile Platforms) — [VERDICT] | Score: N/10
 **Findings:**
 - [Finding 1]
 
 **Considered but not flagged:**
 - [Near-miss with reasoning]
 
-### Vision (Data & Observability) — [VERDICT] | Score: X/10 — basis: …
+### Vision (Data & Observability) — [VERDICT] | Score: N/10
 **Findings:**
 - [Finding 1]
 
 **Considered but not flagged:**
 - [Near-miss with reasoning]
 
-### Doctor Strange (DevOps & Cross-platform) — [VERDICT] | Score: X/10 — basis: …
+### Doctor Strange (DevOps & Cross-platform) — [VERDICT] | Score: N/10
 **Findings:**
 - [Finding 1]
 
@@ -161,7 +159,7 @@ Set the tier by what the change touches, never by who writes it. See @references
 - [Near-miss with reasoning]
 
 <!-- If optional members participated, add their positions here using the same shape -->
-### Ant-Man (Reuse & Placement) — [VERDICT] | Score: X/10 — basis: …
+### Ant-Man (Reuse & Placement) — [VERDICT] | Score: N/10
 **Findings:**
 - [Finding 1]
 
@@ -171,20 +169,22 @@ Set the tier by what the change touches, never by who writes it. See @references
 
 ## Domain Scores
 
+Every score is `scripts/domain-score.py` output on that member's own counts, pasted verbatim (`n/a (reason)` on exit 2). The average is `domain-score.py --average`, pasted verbatim. Never write a score by hand.
+
 | Member | Domain | Score |
 |--------|--------|-------|
-| Iron Man | Architecture & Scalability | X/10 |
-| Thor | Backend & API | X/10 |
-| Scarlet Witch | Frontend & UX | X/10 |
-| Hulk | Testing & QA | X/10 |
-| Black Widow | Security & Privacy | X/10 |
-| Hawkeye | Mobile Platforms | X/10 |
-| Vision | Data & Observability | X/10 |
-| Doctor Strange | DevOps & Infrastructure | X/10 |
-| Ant-Man (optional) | Reuse & Placement | X/10 |
+| Iron Man | Architecture & Scalability | N/10 |
+| Thor | Backend & API | N/10 |
+| Scarlet Witch | Frontend & UX | N/10 |
+| Hulk | Testing & QA | N/10 |
+| Black Widow | Security & Privacy | N/10 |
+| Hawkeye | Mobile Platforms | N/10 |
+| Vision | Data & Observability | N/10 |
+| Doctor Strange | DevOps & Infrastructure | N/10 |
+| Ant-Man (optional) | Reuse & Placement | N/10 |
 | *[Other optional members — add rows if active]* | | |
 
-**Average: X.X/10** | **Voters: N** | (info — never changes the verdict)
+**Average: N.N/10** | **Voters: N** | (info — never changes the verdict)
 
 ## Disagreements
 [Specific points where members disagree, with reasoning]

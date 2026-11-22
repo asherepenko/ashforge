@@ -18,7 +18,7 @@ agents/                    — 8 core member personas (Captain America: referenc
 skills/                    — council-plan-review, council-code-review (each with SKILL.md + scripts/preflight.py); council-advise (SKILL.md only, reuses the plan-review preflight)
 references/                — Protocols, templates, shared docs (incl. runtime-adapters.md)
 docs/                      — Detailed documentation
-scripts/                   — review-grade.py, change-size.py and score-check.py (stdlib Python, run as `python3 scripts/<name>.py`)
+scripts/                   — review-grade.py, change-size.py, domain-score.py, verdict.py and risk-tier.py (stdlib Python, run as `python3 scripts/<name>.py`)
 tests/                     — Script and contract tests
 ```
 
@@ -54,8 +54,9 @@ Exposed tools are authoritative. Modern Codex `[agents] enabled` defaults true; 
 - **Skill references.** Name a skill as `/{name}` in skills, agents, references and router tables, so every runtime resolves it. README and install docs show the command a person types: `/{plugin}:{name}`. Agents stay plain backticked names (`{agent}`): they are not slash commands.
 - **Own skills via `/create-skill`.** Author or review every own skill and agent with it.
 - Skills use explicit `Read @references/...` — not bare `@references/` lines.
-- Agents include a domain score (1-10) with a `basis:` in every assessment. The score is informational: it never changes the verdict. `scripts/score-check.py` flags scores that contradict the member's own findings.
-- Every verdict shows **Quality** (A-F, from `scripts/review-grade.py`) and **Risk** (low | medium | high). Both are info rows; votes and findings decide the verdict.
+- Members never pick a domain score. They send findings (with `Introduced here: yes | pre-existing` in code reviews) and `weak: <slug>` lines; Captain America runs `scripts/domain-score.py` on each member's own counts and pastes the output verbatim. The score is informational: it never changes the verdict.
+- Captain America never applies the consensus rules or picks the Risk tier by hand: `scripts/verdict.py` computes the verdict from the final votes and counts, and `scripts/risk-tier.py` computes Risk from what the change touches. Both outputs are pasted verbatim.
+- Every verdict shows **Quality** (A-F, from `scripts/review-grade.py`) and **Risk** (low | medium | high, from `scripts/risk-tier.py`). Both are info rows; votes and findings decide the verdict.
 - APPROVED WITH CONDITIONS means no CRITICAL and every HIGH is a condition. Merge only after every condition is fixed; the post-verdict menu offers "Override — record why" if the user merges anyway.
 - Optional members auto-join based on topic matching. Add new ones via `member-registry.md`. The roster decision happens before any spawn — platform-agnostic.
 - Black Widow retains VETO power on unmitigated CRITICAL security issues — platform-agnostic.

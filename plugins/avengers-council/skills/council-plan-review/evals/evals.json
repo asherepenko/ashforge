@@ -35,7 +35,7 @@
         "runs Quick Mode with a 3-member quorum picked from the focus routing table",
         "prints one Quick round table in chat",
         "the Diagrams section reads not drawn — <member> not in Quick roster for any of Iron Man or Hulk who is absent",
-        "Quality comes from review-grade.py and each score passed score-check.py or carries a Score flag"
+        "Quality comes from review-grade.py and each score and the average are domain-score.py output pasted verbatim, with no member-picked score"
       ]
     }
   ]

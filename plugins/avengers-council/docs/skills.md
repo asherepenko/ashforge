@@ -274,12 +274,12 @@ Recommended human review of the resulting code: [automated checks only | one per
 
 ## Council Positions
 
-### Iron Man (Architecture & Scalability) — [VERDICT] | Score: X/10 — basis: …
+### Iron Man (Architecture & Scalability) — [VERDICT] | Score: N/10
 - [Finding 1 with severity]
 - [Finding 2 with severity]
 - Research: [date — findings with URLs | Nothing material] (only for a member who researched)
 
-### Thor (Backend & API) — [VERDICT] | Score: X/10 — basis: …
+### Thor (Backend & API) — [VERDICT] | Score: N/10
 [...]
 
 [... all council members ...]
@@ -324,9 +324,9 @@ When a member is not in the Quick roster, its slot reads `not drawn — <member>
 2. [...]
 ```
 
-The block under `## Consensus` is a headline with a status emoji (✅ approved, ⚠️ needs revision, ⛔ blocked) and a Quality/Risk/Vote/Score table. It is computed after the debate. The verdict comes from votes and findings alone. **Quality** is a grade A–F from the finding counts (`scripts/review-grade.py`: any CRITICAL is F, any HIGH is D, 3+ MEDIUM is C, 1–2 MEDIUM or more than 3 LOW is B, otherwise A). **Risk** is the tier with its basis. **Score** is the average of the members' domain scores, for information only: it never raises or lowers the verdict. Each member's score sits in a band set by their own findings and carries a `basis:`; `scripts/score-check.py` flags a score that contradicts the member's own findings. An optional member that joins, such as Ant-Man, adds a position in the same shape and a Domain Scores row (`| Ant-Man (optional) | Reuse & Placement | X/10 |`).
+The block under `## Consensus` is a headline with a status emoji (✅ approved, ⚠️ needs revision, ⛔ blocked) and a Quality/Risk/Vote/Score table. It is computed after the debate. The verdict comes from votes and findings alone: Captain America runs `scripts/verdict.py` on the counts and pastes its line, never applying the rules by hand. **Quality** is a grade A–F from the finding counts (`scripts/review-grade.py`: any CRITICAL is F, any HIGH is D, 3+ MEDIUM is C, 1–2 MEDIUM or more than 3 LOW is B, otherwise A). **Risk** is the `scripts/risk-tier.py` output: the tier with the tags that set it. **Score** is the average of the members' domain scores, for information only: it never raises or lowers the verdict. Members send no score: Captain America counts each member's own findings and runs `scripts/domain-score.py`, then pastes the output verbatim. An optional member that joins, such as Ant-Man, adds a position in the same shape and a Domain Scores row (`| Ant-Man (optional) | Reuse & Placement | N/10 |`).
 
-Plan and code verdicts both include the Risk Tier section. The tier is set by what the change touches, never by who writes it: `low` for docs, copy, internal-only work, or additive behavior behind a flag; `medium` for an ordinary product change; `high` for auth, permissions, billing or payments, data migrations, CI/deploy/release, auto-update, secrets, or any other path that always needs two people. Each member also gives a 1–2 item pre-mortem in Round 1. An unmitigated failure mode in a member's primary domain is at least HIGH.
+Plan and code verdicts both include the Risk Tier section. The tier is set by what the change touches, never by who writes it. Captain America tags what the change touches and runs `scripts/risk-tier.py`; the highest tier wins. `low` for docs, copy, internal-only work, or additive behavior behind a flag; `medium` for an ordinary product change; `high` for auth, permissions, billing or payments, data migrations, CI/deploy/release, auto-update, secrets, or any other path that always needs two people. Each member also gives a 1–2 item pre-mortem in Round 1. An unmitigated failure mode in a member's primary domain is at least HIGH.
 
 Plan reviews also carry a Diagrams section. Iron Man draws the architecture diagram (`ARCHITECTURE DIAGRAM:`). Hulk draws the user/state flow diagram (`FLOW DIAGRAM:`) and maps each path to a planned test (`PATH → TEST:`). Each `unmapped` path is a Hulk finding. A member-specific field applies only to its named member; in Quick Mode a member outside the roster reads `not drawn — <member> not in Quick roster`.
 
@@ -355,7 +355,7 @@ Full consensus rules and severity guidelines: see @references/verdict-rules.md
 - **Model usage:** 2x Sonnet (selected members) + 1x Captain America (session model)
 - **Token cost:** Low (single round, focused review)
 - **Best for:** Focused reviews, time-sensitive decisions, smaller scope
-- **Output:** the two specialists report severities and a domain score with `basis:`; the verdict still shows Quality, Risk and Score as rows of the Consensus table
+- **Output:** the two specialists report severities and `weak:` lines, and Captain America computes their scores; the verdict still shows Quality, Risk and Score as rows of the Consensus table
 
 **Member Selection (Quick Mode):**
 When `--quick` is specified, Captain America selects the 2 most relevant members based on `--focus` or topic analysis:

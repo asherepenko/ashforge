@@ -4,6 +4,21 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [6.0.0] - 2026-11-22
+
+### Changed
+
+- **Breaking:** members no longer send a domain score. They send findings, a `WEAK CRITERIA` line (Round 1) and a `SEVERITY CHANGES` line (Round 3). Captain America runs `scripts/domain-score.py` on each member's own counts and pastes the output, so the same findings always give the same score. `--average` gives the aggregate.
+- `references/verdict-rules.md` replaces the two-value bands with one exact first-match table. "Contained vs fundamental CRITICAL" is now 1 vs 2+ CRITICAL.
+- The Round 1 format gate checks only the Verdict now. The score cell is script output.
+- **Breaking:** Captain America no longer applies the consensus rules by hand. `scripts/verdict.py` computes the verdict from the final votes, unmitigated CRITICAL and HIGH counts, red lines, mandatory standard violations, missing acceptance criteria (`--missing-ac`, plan reviews) and the Black Widow veto, in full and quick mode. A majority APPROVE with a HIGH is APPROVED WITH CONDITIONS; 1 standard violation is NEEDS REVISION, 2+ is BLOCKED. The tiebreaker runs only when the script prints `NO CONSENSUS`. The BLOCKED threshold is at least 1 REJECT, so a small roster (members timed out) never blocks with zero REJECT votes.
+- **Breaking:** the Risk row comes from `scripts/risk-tier.py`. Captain America tags what the change touches from a fixed list; the highest tier wins.
+- With `review-grade.py`, every computed part of the verdict (score, Quality, Risk, verdict) is now a script. Only the labels stay judgment: severities, votes, and the touched-area tags.
+
+### Removed
+
+- `scripts/score-check.py` and every `Score flag` step. A score nobody picks needs no check.
+
 ## [5.0.11] - 2026-11-22
 
 ### Fixed

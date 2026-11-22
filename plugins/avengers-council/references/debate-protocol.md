@@ -5,7 +5,7 @@
 - [Identity](#identity) — council member role
 - [Communication Rules](#communication-rules) — how findings flow between rounds (platform-dependent transport)
 - [Round Structure](#round-structure) — Round 1 (assessment), Round 2 (challenge), Round 3 (final position) — canonical output formats
-- [Domain Scoring](#domain-scoring) — per-member 1-10 domain scores
+- [Domain Scoring](#domain-scoring) — domain names; Captain America computes the score
 - [Severity Definitions](#severity-definitions) — CRITICAL / HIGH / MEDIUM / LOW
 - [Behavioral Guidelines](#behavioral-guidelines) — conduct rules, Black Widow veto
 - [Example Challenges](#example-challenges) — good vs poor challenges, response format
@@ -43,13 +43,14 @@ When Captain America sends context (stay-alive: spawn prompt + team channel; hub
    ```
    RESEARCH BRIEF (only when your spawn prompt has a RESEARCH BRIEF block): [date — findings with URLs | Nothing material]
    VERDICT: [APPROVE | CONCERNS | REJECT]
-   DOMAIN SCORE: X/10 ([your domain name]) — basis: <own finding numbers | weak: <slugs> | none>
-   (X is 1-10. Never a letter grade such as B: letters are the Quality row. VERDICT is exactly APPROVE, CONCERNS or REJECT.)
+   (VERDICT is exactly APPROVE, CONCERNS or REJECT. Do not send a score; Captain America computes it from your findings.)
 
    FINDINGS:
    1. [CRITICAL|HIGH|MEDIUM|LOW] Description (file:line if code review) — Introduced here: yes | pre-existing (code review only)
    2. [CRITICAL|HIGH|MEDIUM|LOW] Description (file:line if code review) — Introduced here: yes | pre-existing (code review only)
    ... (max 5)
+
+   WEAK CRITERIA: [one `weak: <slug>` line per criterion clearly below acceptable (correctness, simplicity, consistency, robustness, maintainability), or "None"]
 
    RED LINE VIOLATIONS: [any from references/red-lines.md, or "None"]
 
@@ -94,7 +95,7 @@ Only after both Round-2 completion barriers, when Cap sends a separate Round-3 t
 1. Produce your final position using this exact format:
    ```
    FINAL VERDICT: [APPROVE | CONCERNS | REJECT]
-   FINAL DOMAIN SCORE: X/10 ([your domain name]) — basis: <own finding numbers | weak: <slugs> | none>
+   SEVERITY CHANGES: [each own finding whose severity changed in debate as "<n>: OLD → NEW", each changed `weak: <slug>` line, or "None". Do not send a score; Captain America computes it from your final findings.]
    CONFIDENCE: [HIGH | MEDIUM | LOW]
    FINAL VOTE BASIS (code review, CONCERNS or REJECT only): [same form as Round 1 VOTE BASIS]
 
@@ -110,9 +111,9 @@ Only after both Round-2 completion barriers, when Cap sends a separate Round-3 t
 
 ## Domain Scoring
 
-Each member provides a score from 1-10 in their domain of expertise. Scores reflect how well the proposal performs in that domain specifically, independent of the overall verdict.
+Each member has a domain of expertise. Members do not send a score. Captain America counts each member's own findings and `weak:` lines and runs `scripts/domain-score.py`, so the 1-10 score reflects how the proposal performs in that domain, independent of the overall verdict.
 
-| Member | Domain Score |
+| Member | Domain |
 |--------|--------------|
 | Iron Man | Architecture & Scalability |
 | Thor | Backend & API |
@@ -124,9 +125,7 @@ Each member provides a score from 1-10 in their domain of expertise. Scores refl
 | Doctor Strange | DevOps & Infrastructure |
 | Ant-Man (optional) | Reuse & Placement |
 
-Pick your score from the bands in @references/verdict-rules.md#domain-scoring. A score without a basis is sent back once, then reported as `n/a`.
-
-Score interpretation (informational): see @references/verdict-rules.md#domain-scoring.
+Scoring rules and interpretation (informational): see @references/verdict-rules.md#domain-scoring.
 
 ## Severity Definitions
 

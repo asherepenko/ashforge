@@ -44,12 +44,14 @@ def test_verdict_template_risk_section_covers_code_reviews():
     assert "Omit it for code reviews" not in template
 
 
-def test_verdict_template_member_headers_carry_basis_and_scores_are_info():
+def test_verdict_template_member_headers_carry_script_score_and_scores_are_info():
     template = read("assets/verdict-template.md")
-    assert "| Score: X/10 — basis:" in template
+    assert "| Score: N/10" in template
+    assert "— basis:" not in template
     assert "Interpretation per verdict-rules.md" not in template
     assert "(info — never changes the verdict)" in template
-    assert "Score flag:" in template
+    assert "domain-score.py" in template
+    assert "Score flag" not in template
 
 
 def test_verdict_rules_drop_score_override_and_use_new_conditions_wording():
@@ -61,8 +63,11 @@ def test_verdict_rules_drop_score_override_and_use_new_conditions_wording():
     assert "Merge only after every condition is fixed" in rules
 
 
-def test_debate_protocol_requires_score_basis():
-    assert "— basis:" in read("references/debate-protocol.md")
+def test_debate_protocol_asks_members_for_weak_lines_not_a_score():
+    debate = read("references/debate-protocol.md")
+    assert "weak: <slug>" in debate
+    assert "Do not send a score" in debate
+    assert "— basis:" not in debate
 
 
 def test_post_verdict_actions_conditions_menu():
@@ -73,11 +78,14 @@ def test_post_verdict_actions_conditions_menu():
     assert "Override — record why" in conditions
 
 
-def test_score_check_runs_before_round_3_in_both_trigger_blocks():
+def test_round_3_triggers_ask_for_severity_changes_not_a_score():
     protocol = read("references/orchestration-protocol.md")
     debate = protocol.split("**Barrier B:**", 1)[1].split("## Phase 4", 1)[0]
-    assert "score-check.py" in debate
-    assert debate.count("Score flag") >= 2
+    assert "score-check" not in debate
+    assert "Score flag" not in debate
+    assert debate.count("SEVERITY CHANGES") + debate.count("Severity Changes") >= 2
+    assert debate.count("Do not") >= 2 and "score" in debate
+    assert "Score flag" not in debate.split("After the Round-2 response pass:", 1)[1].split("After Round 3:", 1)[0]
 
 
 def test_quality_line_weak_suffix_has_a_producer_in_rules_and_protocol():
@@ -162,7 +170,7 @@ def test_producer_docs_name_quality_and_risk_rows():
 def test_producer_docs_name_grading_steps():
     for path in PRODUCER_DOCS:
         text = read(path)
-        assert "score-check.py" in text, path
+        assert "domain-score.py" in text, path
         assert "review-grade.py" in text, path
         assert "verdict-rules.md#quality-and-risk" in text, path
 
@@ -171,7 +179,7 @@ def test_quick_flow_names_grading_steps():
     text = read("references/orchestration-protocol.md")
     quick = text[text.index("### Quick Flow"):]
     quick = quick[: quick.index("\n## ")] if "\n## " in quick else quick
-    for fact in ["score-check.py", "review-grade.py", "Score flag:", "**Risk**"]:
+    for fact in ["domain-score.py", "review-grade.py", "**Risk**"]:
         assert fact in quick, fact
 
 
@@ -185,9 +193,10 @@ def test_fallback_and_protocol_fill_rows_the_same_way():
         assert "`<emoji> <level> — <basis>`" in text, path
 
 
-def test_captain_round_3_collects_final_score_with_basis():
+def test_captain_round_3_collects_severity_changes_not_a_score():
     line = next(l for l in read("references/captain-america-orchestrator.md").splitlines() if l.startswith("- **Round 3**:"))
-    assert "FINAL DOMAIN SCORE (with basis)" in line
+    assert "SEVERITY CHANGES" in line
+    assert "DOMAIN SCORE" not in line
     assert "CONCERN FOR THE USER" in line
 
 

@@ -84,25 +84,38 @@ Follow [phase-1--assemble-the-council-full-mode](../../references/orchestration-
     > It is three months after this plan shipped and it failed in your domain. What happened? Give 1–2 failure modes. Tie each one to the plan section it comes from, and state the plan's mitigation for it, or `unmitigated`. An unmitigated failure mode in your primary domain is a finding of at least HIGH severity.
   - Each member's Round 1 response must include a `Pre-mortem:` line with 1–2 failure modes in the shape `[plan section] — [what failed] — [mitigation | unmitigated]`.
   - Iron Man's Round 1 response must include an `ARCHITECTURE DIAGRAM:` field (mermaid or ASCII: components, data flow, dependencies, boundaries). Hulk's must include a `FLOW DIAGRAM:` field (user/state flow with happy, error and edge paths) and a `PATH → TEST:` list of `<path> → <planned test | unmapped>`. Each `unmapped` path is a Hulk finding. These fields go only in those members' prompts, per [member-specific-fields-plan-review-only](../../references/debate-protocol.md#member-specific-fields-plan-review-only); in Quick Mode and fallback they apply when the member is present.
-  - Each member's `DOMAIN SCORE` line must carry a basis: `basis: <own finding numbers | weak: <slugs> | none>`. Pick the band per [domain-scoring](../../references/verdict-rules.md#domain-scoring). A score without a basis is sent back once, then reported as `n/a`.
+  - Each member reports WEAK criteria as `weak: <slug>` lines and sends no score. Captain America computes it per [domain-scoring](../../references/verdict-rules.md#domain-scoring).
 - **Verdict synthesis additions:**
   - First, print the Round 3 table in chat (`### Council — Round 3: Final positions`, per [orchestration-protocol](../../references/orchestration-protocol.md) Phase 3 "Round tables"), same as Rounds 1 and 2. Quick Mode prints its one round table instead (`### Council — Quick round`, [quick-flow](../../references/orchestration-protocol.md#quick-flow) step 4). Then grade and save
   - Check if acceptance criteria are testable and measurable
-  - If major criteria missing → downgrade to "NEEDS REVISION" minimum
+  - Count major criteria missing; pass it to `verdict.py --missing-ac N` (any → NEEDS REVISION)
   - Add Scope Check, Acceptance Criteria Validation and Standards Compliance sections to saved verdict
   - **Scope Check:** mark each Requested Scope item ✅ covered, 🟡 partial, ❌ missing or 📋 deferred. ❌ is one HIGH finding and 🟡 is one MEDIUM finding; 📋 is no finding, and only when the source itself defers the item (a plan that defers a source requirement on its own is 🟡 partial). Count them before grading. One underlying gap counts once across Scope Check, AC Validation and member findings; the highest severity wins. The Scope Check row cites the finding it shares. An unreadable linked source is disclosed as `Source not readable: <path>`.
   - Add a Diagrams section after Standards Compliance: Iron Man's architecture diagram, Hulk's flow diagram and `PATH → TEST:` list. A member not in the Quick roster reads `not drawn — <member> not in Quick roster`.
   - Collect each member's `CONCERN FOR THE USER` from Round 3. Per [orchestration-protocol](../../references/orchestration-protocol.md) Phase 4, a concern that meets a severity definition or a red line is a finding: move it into the findings before grading. List only a residual trade-off under Concerns for the User (advisory, never a condition, not counted in Quality)
   - Collect every member's pre-mortem failure modes. List each `unmitigated` one under Conditions for Approval with its plan section
   - **Count missing major acceptance criteria as one HIGH finding.** Add it to the finding list before grading.
-  - **Check each score:** run `score-check.py` once per member, per [orchestration-protocol](../../references/orchestration-protocol.md) Phase 4. Full mode checks Round-1 scores and sends a FLAG back once in the Round 3 trigger; final scores are checked again here. An unresolved FLAG (or any FLAG in Quick/fallback modes) becomes `Score flag:` in the verdict. A FLAG never changes the verdict.
+  - **Compute each score:** count each member's own findings (plans: all of them) and its `weak:` lines, then run the script once per member and paste the output verbatim. Never write the score by hand. Exit 2 reads `n/a (reason)`. The aggregate is `domain-score.py --average` over the members' `N/10` or `n/a`, pasted verbatim. Per [orchestration-protocol](../../references/orchestration-protocol.md) Phase 4. The score never changes the verdict:
+
+    ```bash
+    python3 "<plugin root from preflight>/scripts/domain-score.py" --critical N --high N --medium N --low N --weak N
+    ```
   - **Grade quality:** plans have no pre-existing split, so run the script on all findings (each underlying issue once, highest severity wins). Put its output, without the leading `Quality: `, in the Consensus table's **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored), then append the weak-slug suffix per [quality](../../references/verdict-rules.md#quality) (none on `not scored`). On a script error the row reads `not scored ({reason})`:
 
     ```bash
     python3 "<plugin root from preflight>/scripts/review-grade.py" --ladder severity \
       --critical N --high N --medium N --low N
     ```
-  - **Set the risk tier** from the tier table in [quality-and-risk](../../references/verdict-rules.md#quality-and-risk) and put it in the **Risk** row as `<emoji> <level> — <basis>` (🟢 low, 🟡 medium, 🔴 high). State the basis: name what the plan touches that sets the tier. Highest tier wins. Quality and Risk are info only; neither changes the verdict.
+  - **Set the risk tier** with `risk-tier.py`: tag what the plan touches from the list in [risk](../../references/verdict-rules.md#risk) (see [quality-and-risk](../../references/verdict-rules.md#quality-and-risk)), run it and paste the output verbatim. Never write the Risk by hand. Put it in the **Risk** row as `<emoji> <level> — <basis>` (🟢 low, 🟡 medium, 🔴 high), with level and basis from the script line. Highest tier wins. Quality and Risk are info only; neither changes the verdict:
+
+    ```bash
+    python3 "<plugin root from preflight>/scripts/risk-tier.py" --touches TAG[,TAG...]
+    ```
+  - **Compute the verdict:** run `verdict.py` on the final Round-3 votes and all findings (`--critical` is unmitigated CRITICAL; `--veto` only for a Black Widow veto) and paste the output line verbatim. Never write the verdict by hand. Exit 2: stop and fix the counts. Only `NO CONSENSUS` runs the tiebreaker, recorded with the step that resolved it. Pass the count of major acceptance criteria missing as `--missing-ac`; the script applies the downgrade:
+
+    ```bash
+    python3 "<plugin root from preflight>/scripts/verdict.py" --mode full|quick --approve N --concerns N --reject N --critical N --high N --red-lines N --standards N --missing-ac N [--veto]
+    ```
   - **Chat output:** show the verdict in the chat as the template's `## Chat Output` section sets out: the `## Consensus` block as it is (emoji headline plus the Quality, Risk, Vote and Score table), one line per condition or blocking finding with its severity emoji, then the saved path. Never a one-line prose recap of the grade and the verdict.
   - If `plan_mode_source` is true, include in verdict header:
     ```
@@ -115,7 +128,7 @@ Follow [phase-1--assemble-the-council-full-mode](../../references/orchestration-
 |-----------------|---------|
 | "The plan looks reasonable, approve it quickly" | Rubber-stamping defeats the purpose. Every council member must evaluate against their checklist — even if the plan seems straightforward. |
 | "Only 2-3 members need to weigh in on this" | Use `--quick` explicitly, or the Mode Selection section's cost-controlled degradation (capability + proportionality + user-unavailable — all three, disclosed in the verdict). "Looks simple" alone never justifies a downgrade. Default is full council — each member catches domain-specific issues others miss. |
-| "The acceptance criteria are implied, no need to list them" | Missing acceptance criteria → downgrade to NEEDS REVISION minimum. Implied criteria are untestable criteria. |
+| "The acceptance criteria are implied, no need to list them" | Missing acceptance criteria → count them into `verdict.py --missing-ac`, which forces NEEDS REVISION. Implied criteria are untestable criteria. |
 | "This finding is minor, I'll soften it" | Report findings at their actual severity. LLM evaluators have a documented tendency to praise LLM-generated work. Resist. |
 | "I considered flagging this design choice but it's probably fine" | Silent dismissals are opaque. Record near-misses in the "Considered but not flagged" section with reasoning. The user decides whether your judgment was correct. |
 | "The plan is written by a senior engineer, so the risk tier is low" | The tier is set by what the change touches, never by who writes it. |
@@ -135,11 +148,11 @@ Follow [phase-1--assemble-the-council-full-mode](../../references/orchestration-
 - Council member deferring on their primary expertise area
 - On hub-transport runtimes: skipping the Round-2/3 spawn fan-out because "the Round-1 verdicts looked unanimous" — debate rounds are mandatory in full mode
 - Quick Mode ran without `--quick` and without the three-trigger cost-controlled disclosure — a silent downgrade is a hidden fidelity loss
-- Risk set from the author or the plan's size instead of what the change touches
+- Risk or verdict written by hand instead of pasted from `risk-tier.py` / `verdict.py`, or Risk set from the author or the plan's size
 - An unmitigated pre-mortem failure mode in a member's primary domain reported below HIGH
 - Plan verdict without the architecture or flow diagram, or an `unmapped` path not raised as a Hulk finding
 - Writing the Quality letter by hand
-- A domain score with no basis, or a score-check FLAG neither fixed nor noted
+- A domain score written by hand instead of pasted from `domain-score.py`
 - A council (Full or Quick) ended with only a file write and a prose recap, no round table in chat
 
 ## Verification
@@ -156,9 +169,10 @@ After council review completes, confirm:
 - [ ] Each Round 1 position includes a `Pre-mortem:` line with 1–2 failure modes tied to plan sections
 - [ ] Iron Man's Round 1 position includes an `ARCHITECTURE DIAGRAM:` field; Hulk's includes `FLOW DIAGRAM:` and `PATH → TEST:` (or the Diagrams section reads `not drawn — <member> not in Quick roster`)
 - [ ] **Quality** row comes from `review-grade.py` (or `not scored ({reason})`), never a hand-picked letter
-- [ ] **Risk** row starts with the tier emoji (🟢/🟡/🔴) and states the basis
+- [ ] **Risk** row is the `risk-tier.py` output with the tier emoji (🟢/🟡/🔴)
+- [ ] Verdict is the `verdict.py` output, pasted verbatim
 - [ ] Risk line states `low | medium | high` with its basis, and the Risk Tier section gives the recommended human review
-- [ ] Every score has a basis and passed `score-check.py`, or carries a flag
+- [ ] Every score and the average are `domain-score.py` output, pasted verbatim (or `n/a (reason)`)
 - [ ] Each position includes a "Considered but not flagged" section (or explicit "Nothing material — plan scope too narrow")
 - [ ] Research brief present for every selected member, or the skip disclosed
 - [ ] Verdict saved to `.artifacts/reviews/`
@@ -167,5 +181,5 @@ After council review completes, confirm:
 ## Done means
 
 - The verdict file exists under `.artifacts/reviews/`.
-- The **Quality** row is the `review-grade.py` output, and every score passed `score-check.py` or carries a flag.
+- The **Quality** row is the `review-grade.py` output, and every score is `domain-score.py` output.
 - The post-verdict action taken (approved, conditions, revision or blocked) is named.

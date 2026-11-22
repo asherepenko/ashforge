@@ -56,8 +56,8 @@ Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1
      ```
      RESEARCH BRIEF (selected researchers only): date — findings with URLs | Nothing material
      VERDICT: APPROVE / CONCERNS / REJECT
-     DOMAIN SCORE: X/10 ([domain]) — basis: <own finding numbers | weak: <slugs> | none>
      KEY FINDINGS: max 5, each with severity (code review: plus Introduced here: yes | pre-existing)
+     WEAK CRITERIA: one `weak: <slug>` line per criterion clearly below acceptable, or None (no score: Captain America computes it)
      VOTE BASIS (code review, CONCERNS or REJECT only): the findings the verdict rests on
      ARCHITECTURE DIAGRAM (plan review, iron-man only): mermaid or ASCII
      FLOW DIAGRAM + PATH → TEST (plan review, hulk only): mermaid or ASCII; <path> → <planned test | unmapped>
@@ -70,11 +70,10 @@ Replace every spawn callsite from `references/orchestration-protocol.md` Phase 1
 3. **Skip Rounds 2 and 3.** Without parallel instances, there is no debate dynamic — Captain America cannot challenge themselves while wearing a different persona hat and produce trustworthy disagreement. Document this explicitly in the verdict header.
 
 4. **Aggregate the per-member blocks** using the same logic as the full mode (`references/verdict-rules.md`):
-   - Tally votes
-   - Compute the average domain score (informational; never changes the verdict)
-   - Run `score-check.py` per member and note any FLAG in the verdict (no Round 3 in fallback)
-   - Run `review-grade.py --ladder severity` on `yes` finding counts (plans: all findings; on a script error the Quality row reads `not scored ({reason})`) and set Risk from the tier table (`references/verdict-rules.md#quality-and-risk`); both go in the Consensus table's **Quality** and **Risk** rows. For **Quality**, strip the leading `Quality: ` from the script output, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) and append the weak-slug suffix per `references/verdict-rules.md#quality` (none on `not scored`). For **Risk**, write `<emoji> <level> — <basis>`
-   - Check red lines (per `references/red-lines.md`)
+   - Tally votes, then run `scripts/verdict.py --mode full|quick` on the counts (the roster size decides the mode; code review: `Introduced here: yes` only; `--veto` only for a Black Widow veto) and paste the output verbatim. Never write the verdict by hand. Exit 2: stop and fix the counts. Only `NO CONSENSUS` sends you to the tiebreaker
+   - Run `scripts/domain-score.py` per member on that member's own counts (code review: `Introduced here: yes` only; plans: all findings; plus the `weak:` count) and paste the output verbatim; then `domain-score.py --average` over the results for the aggregate (informational; never changes the verdict)
+   - Run `review-grade.py --ladder severity` on `yes` finding counts (plans: all findings; on a script error the Quality row reads `not scored ({reason})`) and set Risk with `scripts/risk-tier.py --touches TAG[,TAG...]`, pasting the output verbatim and never writing it by hand (`references/verdict-rules.md#risk`; Quality and Risk rows: `references/verdict-rules.md#quality-and-risk`); both go in the Consensus table's **Quality** and **Risk** rows. For **Quality**, strip the leading `Quality: ` from the script output, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) and append the weak-slug suffix per `references/verdict-rules.md#quality` (none on `not scored`). For **Risk**, write `<emoji> <level> — <basis>`
+   - Count red line violations (per `references/red-lines.md`) for `--red-lines`
    - Apply Black Widow veto on unmitigated CRITICAL security findings
 
 ### Step 3 — Verdict downgrade cap

@@ -178,7 +178,7 @@ session — `captain-america` is NOT a valid recipient name) using the Round-1 f
 references/debate-protocol.md#round-1--initial-assessment (canonical — do not improvise fields):
 - RESEARCH BRIEF (only when your spawn prompt has a RESEARCH BRIEF block): [date — findings with URLs | Nothing material]
 - Verdict: APPROVE / CONCERNS / REJECT
-- DOMAIN SCORE: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none> (pick the band from your own findings and WEAK criteria; see references/verdict-rules.md#domain-scoring) Score is a number 1-10 written N/10, never a letter grade (A-F is the Quality row, not your score).
+- Weak criteria: one `weak: <slug>` line per criterion clearly below acceptable (correctness, simplicity, consistency, robustness, maintainability), or 'None'. Do not send a score; Captain America computes it from your findings.
 - Key Findings: max 5, each with severity (CRITICAL/HIGH/MEDIUM/LOW); in code reviews, also 'Introduced here: yes | pre-existing'
 - Red Line Violations: any from references/red-lines.md (or 'None')
 - Vote Basis (code reviews, CONCERNS or REJECT only): the findings the verdict rests on — own by number, a teammate's as '<member>#<n>', a red line by name
@@ -243,7 +243,7 @@ Agents self-start Round 1 immediately from their spawn prompt — no broadcast n
 
    | Member | Status | Score | Verdict | Findings | Top concern |
    |--------|--------|-------|---------|----------|-------------|
-   | 🛡️ black-widow | ✅ done | 7/10 | CONDITIONAL | 🟠 1 HIGH · 🟡 2 MED | Token stored in plain prefs |
+   | 🛡️ black-widow | ✅ done | 6/10 | CONDITIONAL | 🟠 1 HIGH · 🟡 2 MED | Token stored in plain prefs |
    | 🧪 hulk | ✅ done | 6/10 | CONDITIONAL | 🟡 3 MED | No test for retry path |
    | 🔧 doctor-strange | ⏳ waiting | — | — | — | — |
 
@@ -252,9 +252,9 @@ Agents self-start Round 1 immediately from their spawn prompt — no broadcast n
 
    Print the block as rendered markdown: a heading, a real table and a plain line. Never wrap it in a code fence; the fence above only shows the source. Before every member is in, print only the count line, never a partial table.
 
-   **Format gate (before the table).** Check each report's Score and Verdict first. Score must match `^([1-9]|10)/10$`; Verdict must be exactly APPROVE, CONCERNS or REJECT. A letter grade (`B`), a bare number, a missing score, or a verdict outside those three words fails the gate. Send that member one correction message ("Your DOMAIN SCORE must be N/10, 1-10, never a letter: letters belong to the Quality row only. Your Verdict must be APPROVE, CONCERNS or REJECT. Resend both lines.") and wait for the reply within the timeout. If it is still invalid, write `n/a ⚠` in the cell and carry `Score flag: invalid format` to the verdict. Never copy an invalid value into the table.
+   **Format gate (before the table).** Check each report's Verdict first. It must be exactly APPROVE, CONCERNS or REJECT; any other word or a missing verdict fails the gate. Send that member one correction message ("Your Verdict must be APPROVE, CONCERNS or REJECT. Resend that line.") and wait for the reply within the timeout. If it is still invalid, write `n/a ⚠` in the cell. Never copy an invalid value into the table.
 
-   One row per spawned member, in spawn order. Fill Score, Verdict and Findings from the member's Round-1 report; Top concern is its highest-severity finding in under 10 words. Write `🚫 VETO` in Status for a black-widow veto, and `⌛ silent` for a member past the timeout.
+   One row per spawned member, in spawn order. Fill Verdict and Findings from the member's Round-1 report. Fill Score by running `domain-score.py` on that member's own Round-1 counts, as in Phase 4 step 4, and paste the output verbatim; an exit 2 reads `n/a (reason)`; Top concern is its highest-severity finding in under 10 words. Write `🚫 VETO` in Status for a black-widow veto, and `⌛ silent` for a member past the timeout.
 3. Mark Round 1 task as completed
 
 ## Phase 3 — Rounds 2 & 3: Challenge and Final Position
@@ -277,20 +277,18 @@ After collecting Round 1 responses:
 
    **Barrier A:** Collect ROUND2_CHALLENGES_COMPLETE from every participating reviewer (apply timeout/quorum policy and disclose omissions). Consolidate every challenge/support by recipient, then send each reviewer its received challenges and the full consolidated debate. Ask for responses to incoming challenges and ROUND2_RESPONSES_COMPLETE; members with no received challenges must explicitly acknowledge that. Do not request final positions yet.
 
-   **Barrier B:** Collect ROUND2_RESPONSES_COMPLETE from every participating reviewer. Consolidate the responses with the challenges. Then run `score-check.py` once per member on that member's Round-1 `DOMAIN SCORE` and own finding counts (code reviews: `Introduced here: yes` only; plus the WEAK count), as in Phase 4 step 4. Only then send a separate Round-3 trigger to every reviewer:
+   **Barrier B:** Collect ROUND2_RESPONSES_COMPLETE from every participating reviewer. Consolidate the responses with the challenges. Only then send a separate Round-3 trigger to every reviewer:
 
    ```
    ROUND 3 — FINAL POSITION
    [All Round-2 challenges, supports and responses, including disclosed omissions]
    Reconsider your initial position using the completed debate. Send FINAL VERDICT,
-   FINAL DOMAIN SCORE with its basis, CONFIDENCE, FINAL VOTE BASIS (code review), UNRESOLVED DISAGREEMENTS,
+   SEVERITY CHANGES, CONFIDENCE, FINAL VOTE BASIS (code review), UNRESOLVED DISAGREEMENTS,
    KEY CONDITION and CONCERN FOR THE USER (optional) to team-lead using debate-protocol.md's canonical final format.
    [Code review, only for a member whose vote rests on pre-existing findings or gave no basis
    (verdict-rules.md#votes-that-rest-on-pre-existing-findings): "Your vote basis [list] is
    pre-existing / missing. Restate your vote on findings this change introduced, or APPROVE."]
-   [Only for a member whose Round-1 score was flagged by score-check.py, or was a bare score with no basis:
-   "Score flag: <FLAG text>. Fix the score or the severity labels in your FINAL DOMAIN SCORE and its basis."
-   (bare score: "Give the basis for your score.")]
+   Do not ask for a score; Captain America computes it from the final counts.
    ```
 
    **Hub:** Round-1 workers have returned results; a completed turn does not prove thread release. Resume/continue by the actual tool schema when available, close then replace when close exists, or reuse the bounded pool as described in runtime-adapters.md. Dispatch Round 2 for the full roster using bounded batches or continued workers per runtime-adapters.md. Each prompt embeds the persona + REVIEW CONTEXT + the consolidated Round-1 findings block + a Round-2 instruction block:
@@ -315,7 +313,7 @@ After collecting Round 1 responses:
    Return CHALLENGES and SUPPORTS as the result of this spawn. Do not request your final verdict yet — that's Round 3.
    ```
 
-   After all Round-2 challenge batches are collected, consolidate cross-member challenges/supports by recipient. Dispatch a bounded Round-2 RESPONSE pass to every participating member with all received challenges, asking for an evidence-backed response and explicit completion (or "no received challenges"). Collect every response batch, and run `score-check.py` once per member on that member's Round-1 `DOMAIN SCORE` and own finding counts (code reviews: `Introduced here: yes` only; plus the WEAK count), before constructing the Round-3 context block containing all challenges, supports and responses. Do not request final votes during either Round-2 pass. Dispatch Round 3 for the full roster using the same bounded scheduling, with the completed debate:
+   After all Round-2 challenge batches are collected, consolidate cross-member challenges/supports by recipient. Dispatch a bounded Round-2 RESPONSE pass to every participating member with all received challenges, asking for an evidence-backed response and explicit completion (or "no received challenges"). Collect every response batch before constructing the Round-3 context block containing all challenges, supports and responses. Do not request final votes during either Round-2 pass. Dispatch Round 3 for the full roster using the same bounded scheduling, with the completed debate:
 
    ```
    ROUND 3 — FINAL POSITION (you are [agent-name]):
@@ -325,7 +323,7 @@ After collecting Round 1 responses:
 
    Reach your final position. Return:
    - Verdict: APPROVE / CONCERNS / REJECT
-   - Final Domain Score: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none>
+   - Severity Changes: each own finding whose severity changed in debate (`<n>: OLD → NEW`) or changed `weak: <slug>` line, or 'None'
    - Confidence: HIGH / MEDIUM / LOW
    - Final Vote Basis (code review, CONCERNS or REJECT only): the findings the verdict rests on
    - Unresolved Disagreements: reference the specific Round-2 exchanges that did not converge
@@ -334,9 +332,7 @@ After collecting Round 1 responses:
 
    [Code review, only for a member whose vote rests on pre-existing findings or gave no basis:
    the same restate request as the stay-alive Round-3 trigger above.]
-   [Only for a member whose Round-1 score was flagged by score-check.py, or was a bare score with no basis:
-   "Score flag: <FLAG text>. Fix the score or the severity labels in your FINAL DOMAIN SCORE and its basis."
-   (bare score: "Give the basis for your score.")]
+   Do not send a score; Captain America computes it from your final findings.
    ```
 
    **Round tables (both transports).** Each later round ends the same way as Round 1: count lines while members report, then one table in chat when the round is done. Never only a file write or a prose recap. Print each table as rendered markdown, never inside a code fence; the fences below only show the source. One row per member, in spawn order; `⌛ silent` for a member past the timeout. Cells are under 10 words.
@@ -361,13 +357,13 @@ After collecting Round 1 responses:
    ```
    ### Council — Round 2b: Responses (9/9 in)
 
-   | Member | Status | Received | Conceded | Held | Score flag | Main response |
-   |--------|--------|----------|----------|------|------------|---------------|
-   | 🦾 iron-man | ✅ done | 3 | 1 | 2 | 🔔 cap 6 | Keep browser overwrite, add pin per replace |
-   | 🐜 ant-man | ✅ done | 0 | — | — | ok | no received challenges |
+   | Member | Status | Received | Conceded | Held | Main response |
+   |--------|--------|----------|----------|------|---------------|
+   | 🦾 iron-man | ✅ done | 3 | 1 | 2 | Keep browser overwrite, add pin per replace |
+   | 🐜 ant-man | ✅ done | 0 | — | — | no received challenges |
    ```
 
-   Conceded and Held split the received challenges; Score flag is the `score-check.py` result for that member.
+   Conceded and Held split the received challenges.
 
    After Round 3:
 
@@ -406,29 +402,32 @@ In code reviews, first set aside every finding marked `Introduced here: pre-exis
 
 3. **Tally votes:** count APPROVE, CONCERNS, REJECT from all responding members
 
-4. **Compute aggregate domain score:**
-   - Collect final domain scores from all responding members
-   - Calculate average per @references/verdict-rules.md#domain-scoring (informational — never changes the verdict)
-   - A score with no basis is asked for once; if still missing, report `n/a` and leave it out of the average
-
-   **Check each score:** run `score-check.py` once per member with their own counts. Full mode already checked the Round-1 scores and sent any FLAG back in the Round 3 trigger; this run covers the final scores. Exit 1 is a FLAG: a FLAG still present after Round 3, or any FLAG in Quick and fallback modes (no Round 3), is printed as `Score flag:` under the member in the verdict. A FLAG never changes the verdict.
+4. **Compute domain scores:**
+   - Count each member's own findings by severity and its `weak:` lines, after any severity changes in debate (code reviews: `Introduced here: yes` only; plan reviews: all own findings). Run `domain-score.py` once per member and paste the output verbatim. Never write the score by hand. Exit 2 reads `n/a (reason)`.
+   - Aggregate: run `domain-score.py --average` with each member's `N/10` or `n/a`, and paste the output verbatim (informational — never changes the verdict, @references/verdict-rules.md#domain-scoring)
+   - Full mode: the Round 1 table's Score column is the script on Round-1 counts; the Round 3 table's `Score R1→R3` is the script output on Round-1 counts → the script output on the final counts
 
    ```bash
-   python3 "<plugin root from preflight>/scripts/score-check.py" --score X --critical N --high N --medium N --low N --weak N
+   python3 "<plugin root from preflight>/scripts/domain-score.py" --critical N --high N --medium N --low N --weak N
+   python3 "<plugin root from preflight>/scripts/domain-score.py" --average 6/10 8/10 n/a
    ```
 
    **Scope Check (plan reviews):** count each `❌ missing` row as one HIGH finding and each `🟡 partial` row as one MEDIUM finding before grading. An underlying gap already raised by a member or in AC Validation counts once, at the highest severity, and its Scope Check row cites that finding.
 
-   **Grade quality and set risk:** run `review-grade.py` on the `yes` finding counts (plans: all findings), then set Risk from the tier table (highest tier wins; name what sets it). Put the script output, without its leading `Quality: `, in the **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) of the Consensus table and append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error the row reads `not scored ({reason})`. Put Risk in the **Risk** row as `<emoji> <level> — <basis>`. Both are info only (@references/verdict-rules.md#quality-and-risk).
+   **Grade quality and set risk:** run `review-grade.py` on the `yes` finding counts (plans: all findings), then run `risk-tier.py --touches TAG[,TAG...]` with the tags for what the change touches (highest tier wins) and paste the output verbatim; never write the Risk row by hand (@references/verdict-rules.md#risk). Put the script output, without its leading `Quality: `, in the **Quality** row, start the row with the grade's emoji (🟢 A/B, 🟡 C, 🟠 D, 🔴 F, ⚪ not scored) of the Consensus table and append the weak-slug suffix per @references/verdict-rules.md#quality (none on `not scored`). On a script error the row reads `not scored ({reason})`. Put Risk in the **Risk** row as `<emoji> <level> — <basis>`, with level and basis from the script line (🟢 low, 🟡 medium, 🔴 high). On exit 2 fix the tags and run again. Both are info only (@references/verdict-rules.md#quality-and-risk).
 
    ```bash
    python3 "<plugin root from preflight>/scripts/review-grade.py" --ladder severity --critical N --high N --medium N --low N
+   python3 "<plugin root from preflight>/scripts/risk-tier.py" --touches auth,secrets
    ```
 
-5. **Apply consensus rules** per @references/verdict-rules.md (single source of truth — do not restate here)
-   - For contested votes, apply the escalation hierarchy from verdict-rules.md
+5. **Compute the verdict** with `scripts/verdict.py`, per @references/verdict-rules.md (single source of truth — do not restate the rules here). Never write the verdict by hand. Pass the final Round-3 votes and the counts (code reviews: `Introduced here: yes` findings only; `--critical` is unmitigated CRITICAL), and paste the output line verbatim. Exit 2: stop and fix the counts; the verdict cannot be `n/a`.
+   ```bash
+   python3 "<plugin root from preflight>/scripts/verdict.py" --mode full --approve N --concerns N --reject N --critical N --high N --red-lines N --standards N [--veto]
+   ```
+   - Only when the script prints `NO CONSENSUS`, apply the escalation hierarchy from verdict-rules.md and record the tiebreak decision with the step that resolved it
 
-6. **Check Black Widow VETO** — if a CRITICAL security finding introduced by this change is unmitigated → override to BLOCKED
+6. **Black Widow VETO** — pass `--veto` to the step 5 command when a CRITICAL security finding introduced by this change is unmitigated; the script returns BLOCKED. No other case sets the flag
 
 7. **Add Captain America's assessment:** standards compliance, acceptance criteria, codebase audit alignment, conditions
 
@@ -497,13 +496,13 @@ Based on `--focus` or topic analysis, pick 2 most relevant members + yourself (C
    - RESEARCH BRIEF (only when your spawn prompt has a RESEARCH BRIEF block): [date — findings with URLs | Nothing material]
    - Verdict: APPROVE / CONCERNS / REJECT
    - Key Findings: max 3, each with severity (CRITICAL/HIGH/MEDIUM/LOW); in code reviews, also 'Introduced here: yes | pre-existing'
-   - DOMAIN SCORE: X/10 (your domain) — basis: <own finding numbers | weak: <slugs> | none> — N/10, 1-10, never a letter grade
+   - Weak criteria: one `weak: <slug>` line per criterion clearly below acceptable, or 'None'. Do not send a score; Captain America computes it from your findings.
    - ARCHITECTURE DIAGRAM / FLOW DIAGRAM + PATH → TEST (plan reviews only): iron-man adds ARCHITECTURE DIAGRAM and hulk adds FLOW DIAGRAM and PATH → TEST, each only when that member is in the roster
    - Recommendation: 1-2 sentences
    ```
 3. Collect 2 positions + add your own = 3 votes (stay-alive: messages arrive automatically; hub: results return per spawn — `wait_agent` on each, Codex)
-4. **Print the round table**, in the Round 1 format (Phase 2 step 2). Count all 3 voters, Captain America's own vote included: a count line per report (`Quick round: 2/3 in. Waiting on hulk.`), then once all are in, `### Council — Quick round (3/3 in)` with the Phase 2 columns and the `Veto:` line. One row per spawned member, then a last row for Captain America: Status `👑 lead`, and his own Score, Verdict, Findings and Top concern. Rendered markdown, never a code fence. Print it before grading or saving; a file write or a prose recap does not replace it.
-5. Quick consensus per @references/verdict-rules.md Quick Mode section. Then grade, as in Phase 4 step 4: run `score-check.py` per member (any FLAG becomes `Score flag:` in the verdict; Quick has no Round 3), run `review-grade.py --ladder severity` on the `yes` findings (plans: all findings) for the **Quality** row, and set the **Risk** row from the tier table (@references/verdict-rules.md#quality-and-risk). Fill both rows as Phase 4 describes
+4. **Print the round table**, in the Round 1 format (Phase 2 step 2). Count all 3 voters, Captain America's own vote included: a count line per report (`Quick round: 2/3 in. Waiting on hulk.`), then once all are in, `### Council — Quick round (3/3 in)` with the Phase 2 columns and the `Veto:` line. One row per spawned member, then a last row for Captain America: Status `👑 lead`, and his own Verdict, Findings and Top concern (Score `—`: Captain America does not score). Rendered markdown, never a code fence. Print it before grading or saving; a file write or a prose recap does not replace it.
+5. Quick consensus per @references/verdict-rules.md Quick Mode section. Then compute the verdict with `verdict.py --mode quick` (3 voters, Captain America's vote included; same counts and `--veto` rule as Phase 4 steps 5-6; paste the output verbatim) and grade, as in Phase 4 step 4: run `domain-score.py` per specialist and `--average` over them (output pasted verbatim; the Round table's Score column is the same script run), run `review-grade.py --ladder severity` on the `yes` findings (plans: all findings) for the **Quality** row, and set the **Risk** row with `risk-tier.py --touches ...` (@references/verdict-rules.md#risk). Fill both rows as Phase 4 describes
 6. Format abbreviated verdict (3 positions only)
 7. Save verdict (same Phase 5)
 8. Interactive follow-up (Phase 6)
