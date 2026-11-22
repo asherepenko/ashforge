@@ -40,9 +40,13 @@ def usage():
 
 def parse(argv):
     mode, veto, c = None, False, {k: None for k in COUNTS}
+    seen = set()
     i = 0
     while i < len(argv):
         flag = argv[i]
+        if flag in seen:
+            usage()
+        seen.add(flag)
         if flag == "--veto":
             veto = True
             i += 1

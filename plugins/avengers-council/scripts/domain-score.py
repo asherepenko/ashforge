@@ -74,11 +74,13 @@ def main(argv):
         print(average(argv[1:]))
         return 0
     counts = {"--critical": 0, "--high": 0, "--medium": 0, "--low": 0, "--weak": 0}
+    seen = set()
     i = 0
     while i < len(argv):
         flag = argv[i]
-        if flag not in counts:
+        if flag not in counts or flag in seen:
             usage()
+        seen.add(flag)
         counts[flag] = count(argv[i + 1] if i + 1 < len(argv) else None)
         i += 2
     mw = counts["--medium"] + counts["--weak"]

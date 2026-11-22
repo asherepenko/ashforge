@@ -94,3 +94,14 @@ def test_small_full_roster_never_blocks_without_reject(approve, concerns):
 
 def test_small_full_roster_one_reject_blocks():
     assert v(approve=2, reject=1).startswith("BLOCKED")
+
+
+@pytest.mark.parametrize("args", [
+    ["--mode", "full", "--mode", "quick", "--approve", "3", "--concerns", "0", "--reject", "0"],
+    ["--mode", "quick", "--approve", "3", "--concerns", "0", "--reject", "0", "--reject", "1"],
+    ["--mode", "quick", "--approve", "3", "--concerns", "0", "--reject", "0", "--veto", "--veto"],
+])
+def test_repeated_flag_exits_2(args):
+    r = run(*args)
+    assert r.returncode == 2
+    assert r.stdout == ""

@@ -71,3 +71,9 @@ def test_average_all_na():
 def test_average_rejects_letter_grade():
     r = run("--average", "6/10", "B")
     assert r.returncode == 2
+
+
+def test_repeated_flag_exits_2():
+    r = run("--high", "1", "--high", "0")
+    assert r.returncode == 2
+    assert r.stdout == ""
