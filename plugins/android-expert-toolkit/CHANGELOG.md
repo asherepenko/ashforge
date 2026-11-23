@@ -4,6 +4,14 @@ All notable changes to the Android Expert Toolkit plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), scoped as described in `CLAUDE.md`: major for breaking skill or agent contract changes, minor for new skills, agents, or pipeline types, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [4.7.0] - 2026-11-23
+
+### Added
+
+- `/android-material-design`: answers Material Design 3 questions for Compose and Views (XML) from official docs fetched at answer time. Compose pages come from the Android Knowledge Base via `android docs`; Views pages from `material-components-android` via `scripts/resolve-doc.py` and `scripts/fetch-doc.py`. Moved here from a personal harness.
+- `references/material-compose.md`: Compose M3 page map, the Android mobile design guides, and design rules (8 dp grid, 48 dp touch targets, dynamic color, experimental opt-in).
+- `references/material-views.md`: Views status (maintenance mode since I/O 2026), theme parents, theme attributes and style rules.
+
 ## [4.6.3] - 2026-11-21
 
 ### Fixed

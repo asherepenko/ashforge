@@ -1,0 +1,65 @@
+{
+  "skill_name": "android-material-design",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/android-material-design (in a Views/XML project)",
+      "expected_output": "With no argument the catalog is shown and the user is asked what they need.",
+      "files": [],
+      "expectations": [
+        "runs resolve-doc.py with no argument",
+        "shows the catalog of component and topic names",
+        "asks what the user needs instead of picking a doc"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/android-material-design button how do I make a tonal button with a leading icon in XML",
+      "expected_output": "Outline first, then only the matching sections, answered with the source URL cited.",
+      "files": [],
+      "expectations": [
+        "runs fetch-doc.py button --toc before reading any section",
+        "runs fetch-doc.py with --section using a keyword taken from the outline",
+        "does not fetch the whole document",
+        "cites the SOURCE= URL (CommonButton.md) in the answer",
+        "marks any attribute not found in a fetched section as checked with `android docs search` or the library source"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/android-material-design foo-widget (in a Views/XML project)",
+      "expected_output": "An unknown name (exit 4) shows the catalog and asks rather than guessing a URL.",
+      "files": [],
+      "expectations": [
+        "fetch-doc.py exits 4",
+        "shows the catalog and asks the user which page they mean",
+        "does not guess or invent a docs URL"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "/android-material-design which button should the Save action use on this Compose settings screen",
+      "expected_output": "Compose toolkit picked; the Compose button page fetched through the android CLI and the variant chosen from its purpose table.",
+      "files": [],
+      "expectations": [
+        "names Compose as the toolkit",
+        "loads references/material-compose.md",
+        "runs android docs fetch kb://android/develop/ui/compose/components/button, taken from the page map",
+        "does not run fetch-doc.py",
+        "recommends the variant whose documented purpose matches a primary action and cites the page URL"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "/android-material-design compose split button",
+      "expected_output": "No Compose page exists for the component; the answer says so and checks the API outside memory.",
+      "files": [],
+      "expectations": [
+        "searches with android docs search before concluding there is no page",
+        "says the Compose docs have no page for the component",
+        "takes design intent from m3.material.io or the Views doc and checks the API in the androidx.compose.material3 reference or release notes",
+        "does not invent composable names or parameters"
+      ]
+    }
+  ]
+}

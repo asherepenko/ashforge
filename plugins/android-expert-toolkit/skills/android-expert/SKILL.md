@@ -41,6 +41,7 @@ Each row owns its trigger phrases; no phrase appears in two rows. References are
 | widget updates, updateAll, Glance background sync, RemoteViews bitmap memory | `/glance-appwidget-updates-and-memory` skill |
 | recomposition, stability, Compose jank | `/jetpack-compose-performance` skill |
 | XML layout to Compose | `/migrate-xml-views-to-jetpack-compose` skill |
+| Material 3 guidelines, which Material component, M3 Expressive, Material Components for Views (XML), MaterialButton attributes, theme overlays | `/android-material-design` skill |
 | port an iOS/Swift app or feature to Android | `/ios-to-android` skill |
 | Navigation 2, NavHost, deep links, App Links | [navigation](../../references/navigation.md) |
 | Navigation 3, NavDisplay, Nav 2 to 3 migration, scenes | `/navigation-3` skill |

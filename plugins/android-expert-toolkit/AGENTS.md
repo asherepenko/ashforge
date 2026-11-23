@@ -15,6 +15,7 @@ android-expert-toolkit/
 │   ├── android-testing/         # own skill
 │   ├── android-error-handling/  # own skill
 │   ├── android-conventions/     # own skill: pattern detection + cache
+│   ├── android-material-design/ # own skill: Material 3 for Compose + Views, docs fetcher
 │   └── android/                 # vendored official skills, listed in android-skills.lock — do not edit
 │       └── <official skill>/    # one directory per upstream skill
 ├── references/                  # topic references, each ≤ ~300 lines
@@ -46,7 +47,7 @@ android-expert-toolkit/
 
 ## Codex
 
-- Skills: `.codex-plugin/plugin.json` → `"skills": "./skills/"`. Codex scans that path recursively, so it also finds the vendored group in `skills/android/` with no array and no symlinks. Checked with Codex CLI 0.164.0: an isolated `CODEX_HOME`, `codex plugin marketplace add .`, `codex plugin add android-expert-toolkit@ashforge`, then `skills/list` over `codex app-server` returned all 17 skills once. A `["./skills/", "./skills/android/"]` array also loads (no duplicates), but is not needed. The Claude manifest does need the array. Each own skill has `agents/openai.yaml` with `interface.short_description`; vendored skills are left as upstream ships them.
+- Skills: `.codex-plugin/plugin.json` → `"skills": "./skills/"`. Codex scans that path recursively, so it also finds the vendored group in `skills/android/` with no array and no symlinks. Checked with Codex CLI 0.164.0: an isolated `CODEX_HOME`, `codex plugin marketplace add .`, `codex plugin add android-expert-toolkit@ashforge`, then `skills/list` over `codex app-server` returned all 17 skills once (before `/android-material-design` was added). A `["./skills/", "./skills/android/"]` array also loads (no duplicates), but is not needed. The Claude manifest does need the array. Each own skill has `agents/openai.yaml` with `interface.short_description`; vendored skills are left as upstream ships them.
 - Agents: Codex custom agents are TOML. After editing `agents/*.md`, run `python3 scripts/codex-agents-gen.py --write`; `tests/test_codex_packaging.py` fails on drift.
 - One hook per runtime, both `SessionStart` agent linkers: Claude runs `hooks/link-cursor-agents.py` (links `agents/*.md` into `~/.cursor/agents/`), Codex runs `hooks/link-codex-agents.py`.
 

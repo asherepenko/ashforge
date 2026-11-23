@@ -166,6 +166,8 @@ fun AppTheme(darkTheme: Boolean = isSystemInDarkTheme(), dynamicColor: Boolean =
 }
 ```
 
+Material 3 design guidelines (which component, variants, spacing, touch targets) → [material-compose](material-compose.md).
+
 Composables read `MaterialTheme.typography` and `MaterialTheme.colorScheme`; a raw `fontSize = 16.sp` or `Color(0xFF…)` bypasses dark mode, dynamic color, and the app's type scale.
 
 ## Adaptive layouts
