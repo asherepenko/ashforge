@@ -17,6 +17,7 @@ Captain America is the session the user is talking to. Never delegate the orches
 - **Spawned by another agent?** Do not start. Return exactly `COUNCIL NOT RUN — the council must run in the main session; invoke the skill there.` and stop.
 - **A calling skill** (`/verify`, `/dev-flow`, …) invokes the council skill in its own turn on the main thread, with `--handoff` when it owns what comes next. `--handoff` never means "hand the run to an agent".
 - **Never return before `verdict.py`.** Wait for every dispatched member (or the timeout rule in Step 4). If the run stops early for any reason, the chat output's first line is `NO VERDICT — incomplete: {returned} of {dispatched} member reports` and nothing after it may read as a verdict, grade or score.
+- **`/council-advise`** runs no `verdict.py`; its end point is the Step 4 answer. An early stop there opens with `NO RECOMMENDATION — incomplete: {returned} of {asked} member answers`.
 
 ## Table of Contents
 

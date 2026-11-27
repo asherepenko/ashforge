@@ -42,3 +42,11 @@ def test_protocol_forbids_partial_verdict():
     text = read(PROTOCOL)
     assert NO_VERDICT_LINE in text
     assert "before `verdict.py`" in text
+
+
+def test_advise_end_point_is_recommendation_not_verdict():
+    text = read(ROOT / "skills" / "council-advise" / "SKILL.md")
+    block = text.split(MAIN_SESSION_MARKER)[1].split("</main-session-only>")[0]
+    assert "verdict.py" not in block
+    assert "NO RECOMMENDATION" in block
+    assert "NO RECOMMENDATION" in read(PROTOCOL)

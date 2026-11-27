@@ -8,7 +8,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ### Fixed
 
-- A council run handed to a subagent returned after dispatching Round 1, with no round tables and no verdict. The orchestrator must now be the main session: a spawned orchestrator returns `COUNCIL NOT RUN` and stops, and a run that stops early opens with `NO VERDICT — incomplete`. The rule is in `references/orchestration-protocol.md` (Main session only) and at the top of all three council skills.
+- A council run handed to a subagent returned after dispatching Round 1, with no round tables and no verdict. The orchestrator must now be the main session: a spawned orchestrator returns `COUNCIL NOT RUN` and stops, and a graded run that stops early opens with `NO VERDICT — incomplete` (`/council-advise`, which has no verdict, opens with `NO RECOMMENDATION — incomplete`). The rule is in `references/orchestration-protocol.md` (Main session only) and at the top of all three council skills.
 
 ## [6.0.1] - 2026-11-22
 
