@@ -4,6 +4,12 @@ All notable changes to the Avengers Council plugin.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): major for breaking skill or agent contract changes, minor for new skills, agents, or review modes, patch for docs, references, hook fixes, and agent prompt tuning.
 
+## [6.0.2] - 2026-11-27
+
+### Fixed
+
+- A council run handed to a subagent returned after dispatching Round 1, with no round tables and no verdict. The orchestrator must now be the main session: a spawned orchestrator returns `COUNCIL NOT RUN` and stops, and a run that stops early opens with `NO VERDICT — incomplete`. The rule is in `references/orchestration-protocol.md` (Main session only) and at the top of all three council skills.
+
 ## [6.0.1] - 2026-11-22
 
 ### Fixed

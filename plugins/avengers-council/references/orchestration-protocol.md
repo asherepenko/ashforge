@@ -10,8 +10,17 @@ Shared flow for all council skills. Each skill handles context gathering indepen
 
 > **Lead identity (stay-alive runtimes):** the orchestrating session's persona is **Captain America**, but its wire name on the team channel is `team-lead` — that name is owned by the harness and is not configurable. Every `SendMessage` a teammate addresses to the lead MUST use `to: "team-lead"`; `captain-america` is not a registered teammate name and such a send goes nowhere. Personas in prose stay Captain America. Ordinary Claude hub subagents address `main`; other hub runtimes use the actual orchestrator identity exposed by their tools.
 
+## Main session only
+
+Captain America is the session the user is talking to. Never delegate the orchestrator to a subagent or background agent, and never run a council skill inside one. A spawned orchestrator dispatches its members, then ends its turn to wait for them; a subagent's turn ending returns it to its caller, so the run hands back with no round tables and no verdict. The user also sees only a subagent's final message, never the tables each round must print in chat.
+
+- **Spawned by another agent?** Do not start. Return exactly `COUNCIL NOT RUN — the council must run in the main session; invoke the skill there.` and stop.
+- **A calling skill** (`/verify`, `/dev-flow`, …) invokes the council skill in its own turn on the main thread, with `--handoff` when it owns what comes next. `--handoff` never means "hand the run to an agent".
+- **Never return before `verdict.py`.** Wait for every dispatched member (or the timeout rule in Step 4). If the run stops early for any reason, the chat output's first line is `NO VERDICT — incomplete: {returned} of {dispatched} member reports` and nothing after it may read as a verdict, grade or score.
+
 ## Table of Contents
 
+- [Main session only](#main-session-only) — who may orchestrate, and the no-partial-verdict rule
 - [Standards Detection](#standards-detection-shared-across-all-commands) — project conventions discovery
 - [Codebase Audit](#codebase-audit-shared-across-all-commands) — project structure, naming, architecture grounding
 - [Mode Selection](#mode-selection--cost-controlled-degradation) — full vs quick, autonomous cost-controlled degradation
